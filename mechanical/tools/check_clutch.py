@@ -39,7 +39,9 @@ for released in (False, True):
     arm = allp["armature"]
     print("  armature<->rotor min dist %.3f" % arm.distance_to(allp["rotor"]))
     print("  armature<->hub   min dist %.3f" % arm.distance_to(allp["hub"]))
-print("rotor<->motor pilot/flange dist", C.rotor().distance_to(C.motor_stub()))
+from build123d import Box, Cylinder as Cyl, Align as Al
+pilot_flange = Pos(0, 0, -10) * Box(57, 57, 10, align=(Al.CENTER, Al.CENTER, Al.MIN)) + Cyl(p.pilot_d / 2, p.pilot_h, align=(Al.CENTER, Al.CENTER, Al.MIN))
+print("rotor<->motor pilot/flange dist %.2f (the shaft itself sits in the bore)" % C.rotor().distance_to(pilot_flange))
 print("hub start z", p.hub_start, "pilot h", p.pilot_h)
 # hub-end screw heads (DIN 7984 low head M3: Ø5.5 x 2.0) under the strap, vs the armature
 from build123d import Cylinder, Align

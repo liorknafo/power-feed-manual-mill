@@ -61,9 +61,15 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Output shaft: Ø12 h6 ground rod × 78. Flats 0.6 deep: × 22 at the pulley end, × 10 under the hub boss. DIN 471-12 groove (Ø11.5 × 1.1) at 29.6 from its motor-side end, just outboard of the inner bearing.
 - Leaf springs: 3× 0.3 mm blue spring-steel shim, 14 wide with full-round ends, holes Ø3.3 at 27.7 centres. **Flat when released**; engaged they bend 1.1 mm (≈25 N total).
 - Spacers: 3× Ø7 × 2.40, Ø3.3 hole (steel or brass), between the armature and the strap.
-- Bearing stack (front to back): circlip, outer 6001, spacer tube Ø27.95/Ø25 × 13.0 (outer races), inner 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.5 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft. Assembly: outer circlip, outer bearing from the cavity side, spacer tube, then the shaft with the inner bearing and its circlip already fitted (press through the outer bearing, supporting its inner race), inner circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.
+- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 13.0 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.5 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
+- Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):
+  1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.
+  3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,
+     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).
+  4. DIN 471-12 down the bore into its groove (~12 deep) with a cone on the shaft end and a push tube.
+  5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
-- Bearings: 2× 6001-2RS (k6 shaft / H7 bore: tighter on the rotating inner ring). Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate).
+- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate).
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
 - Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus 15.0 deep.
 
