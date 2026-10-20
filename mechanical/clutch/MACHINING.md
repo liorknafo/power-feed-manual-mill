@@ -71,8 +71,6 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
 - Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
-- Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus 15.0 deep.
-
 ## Teeth
 - 30 radial teeth, flanks **flat planes** at 30° from the axis: every flank is the plane through a radial line at the pitch
   plane, so a 60° chamfer mill cuts it exactly in one straight pass, and the rotor's gaps and the armature's teeth share those
@@ -88,9 +86,11 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
   - Hold: rotor by its hub in a collet block, teeth up; armature on a fixture plate with a Ø11.5 spigot in its bore and
     3× M3 from below into its spring holes. Centre both on the Ø76 OD.
   - **Z zero on the turned TIP surface** (same on both parts). Pitch plane = 0.35 below it; root floor = 1.30 below it.
-  1. Rough each gap with a Ø2 flat end mill to the root floor, leaving 0.2 on the flanks (radial passes from r 31.0 out past the OD).
-  2. Finish each flank with a **60° chamfer mill** (pointed or ≤ 0.2 flat), one straight radial pass per flank: the cone's side
-     on the flank line at the pitch plane, offset by the cone radius at that depth. 60 flanks per part, same program for both.
+  1. Rough each gap with a Ø2 flat end mill to the root floor, radial passes with the **cutter centre from r 32** out past the
+     OD (starting further in notches the inner pole face), leaving ~0.1 on the flanks (the floor gap is only 2.25 wide at r 32).
+  2. Finish each flank with a **60° chamfer mill** (pointed or ≤ 0.2 flat), one straight radial pass per flank, **tip at the root
+     floor (Z −1.30)** (anywhere at or below Z −0.70 still covers the working flank): the cone's side on the flank line at the
+     pitch plane, offset by the cone radius at that depth. 60 flanks per part, same program for both.
   3. Measure the chamfer mill's actual angle and point first: each 0.01 mm of flank error on both parts moves the armature 0.035
      axially. **Acceptance:** mate the pair dry and check the pole gap with feeler gauges: 0.15 ± 0.05.
 - Lap the pair together with fine compound after cutting; re-check the gap.

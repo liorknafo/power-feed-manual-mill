@@ -59,8 +59,8 @@ class P:
     tooth_r_out: float = 38.0
     tooth_h: float = 0.9             # full (un-truncated) tooth height; flanks meet at 0.9 root-to-root
     tip_trunc: float = 0.1           # tips cut 0.1 lower: the flanks carry the load
-    root_relief: float = 0.5         # roots cut 0.5 below where the flanks meet (flanks continue down): a Ø2 ball end
-                                     # mill's root fillet (tangent 0.5 up the flank) stays below the mating tip -> 0.6 clear
+    root_relief: float = 0.5         # root floor 0.5 below where the flanks meet (flanks continue down to it): the mating
+                                     # tip sits 0.6 above the floor, clear of the rougher's and the cone's corners
     tooth_runout: float = 1.0        # turned run-out groove 1 mm inside the teeth: the Ø2 rougher and the chamfer mill
                                      # (0.75 cone radius at the top) pass r 32 into it (costs ~12 % of the outer pole face)
     flank_deg: float = 30.0          # flank angle from the axis, at the mean radius
@@ -488,7 +488,6 @@ def dimension_sheet(z_front):
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
     w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
-    w("- Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus %.1f deep.\n" % (p.housing_len - p.back_plate))
     w("## Teeth")
     w("- %d radial teeth, flanks **flat planes** at %.0f° from the axis: every flank is the plane through a radial line at the pitch" % (p.teeth, p.flank_deg))
     w("  plane, so a 60° chamfer mill cuts it exactly in one straight pass, and the rotor's gaps and the armature's teeth share those")
@@ -505,9 +504,11 @@ def dimension_sheet(z_front):
     w("  - Hold: rotor by its hub in a collet block, teeth up; armature on a fixture plate with a Ø11.5 spigot in its bore and")
     w("    3× M3 from below into its spring holes. Centre both on the Ø%.0f OD." % p.rotor_od)
     w("  - **Z zero on the turned TIP surface** (same on both parts). Pitch plane = %.2f below it; root floor = %.2f below it." % (p.tooth_h / 2 - p.tip_trunc, p.tooth_h - p.tip_trunc + p.root_relief))
-    w("  1. Rough each gap with a Ø2 flat end mill to the root floor, leaving 0.2 on the flanks (radial passes from r %.1f out past the OD)." % (p.tooth_r_in - p.tooth_runout))
-    w("  2. Finish each flank with a **60° chamfer mill** (pointed or ≤ 0.2 flat), one straight radial pass per flank: the cone's side")
-    w("     on the flank line at the pitch plane, offset by the cone radius at that depth. %d flanks per part, same program for both." % (2 * p.teeth))
+    w("  1. Rough each gap with a Ø2 flat end mill to the root floor, radial passes with the **cutter centre from r %.0f** out past the" % p.tooth_r_in)
+    w("     OD (starting further in notches the inner pole face), leaving ~0.1 on the flanks (the floor gap is only 2.25 wide at r %.0f)." % p.tooth_r_in)
+    w("  2. Finish each flank with a **60° chamfer mill** (pointed or ≤ 0.2 flat), one straight radial pass per flank, **tip at the root")
+    w("     floor (Z −%.2f)** (anywhere at or below Z −%.2f still covers the working flank): the cone's side on the flank line at the" % (p.tooth_h - p.tip_trunc + p.root_relief, p.tooth_h - p.tip_trunc - 0.1))
+    w("     pitch plane, offset by the cone radius at that depth. %d flanks per part, same program for both." % (2 * p.teeth))
     w("  3. Measure the chamfer mill's actual angle and point first: each 0.01 mm of flank error on both parts moves the armature 0.035")
     w("     axially. **Acceptance:** mate the pair dry and check the pole gap with feeler gauges: 0.15 ± 0.05.")
     w("- Lap the pair together with fine compound after cutting; re-check the gap.")
