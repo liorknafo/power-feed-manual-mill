@@ -164,7 +164,7 @@ function frame(objs) {
   for (const o of objs) if (o.visible) box.expandByObject(o);
   if (box.isEmpty()) return;
   const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() / 2;
-  const d = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 0.85;
+  const d = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 1.25;
   controls.target.copy(c);
   camera.position.copy(c).add(new THREE.Vector3(0.55, -0.75, 0.42).normalize().multiplyScalar(d));
   camera.updateProjectionMatrix();
