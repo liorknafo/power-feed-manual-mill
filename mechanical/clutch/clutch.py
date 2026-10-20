@@ -61,8 +61,8 @@ class P:
     tip_trunc: float = 0.1           # tips cut 0.1 lower: the flanks carry the load
     root_relief: float = 0.5         # roots cut 0.5 below where the flanks meet (flanks continue down): a Ø2 ball end
                                      # mill's root fillet (tangent 0.5 up the flank) stays below the mating tip -> 0.6 clear
-    tooth_runout: float = 0.5        # turned tooth band starts 0.5 mm inside the teeth: the gaps run out into it, so no
-                                     # milled end wall sits under a mating tooth (costs ~6 % of the outer pole face)
+    tooth_runout: float = 1.0        # turned run-out groove 1 mm inside the teeth: the Ø2 rougher and the chamfer mill
+                                     # (0.75 cone radius at the top) pass r 32 into it (costs ~12 % of the outer pole face)
     flank_deg: float = 30.0          # flank angle from the axis, at the mean radius
     engaged_gap: float = 0.15        # pole-face gap when meshed
     stroke: float = 1.1              # armature travel; released pole gap = engaged_gap + stroke
@@ -98,7 +98,7 @@ class P:
     cover_cavity_d: float = 78.0     # = shoulder on the housing rim; clears the Ø76 rotor/armature by 1 mm
     cover_screws: int = 6
     circlip_groove: float = 1.3      # DIN 472-28 groove width
-    circlip_land: float = 2.0        # material outside each bore groove (DIN 472 edge margin)
+    circlip_land: float = 2.1        # material outside each bore groove (DIN 472-28 minimum edge margin)
 
 
 p = P()
@@ -136,25 +136,45 @@ def arc_slot(r_in, r_out, a0, a1, z0, z1):
 
 
 def tooth_ring(z_root, direction, phase):
-    """Radial face teeth. Angular trapezoid profile; tips point along `direction` (+1 or -1)."""
+    """Radial face teeth with FLAT flanks, as a 60-degree chamfer mill cuts them on a 3-axis CNC.
+
+    Every flank is the plane through a radial line at the PITCH plane (half-way between where the flanks meet on the
+    rotor and on the armature, so it is the same plane on both parts when engaged), tilted `flank_deg` from the axis.
+    A rotor gap and the armature tooth that fills it share those radial lines, so their flanks coincide exactly;
+    both parts are cut by the same program. `z_root` is where adjacent flanks meet; the root floor is `root_relief`
+    deeper; tips point along `direction` (+1 or -1) and are truncated by `tip_trunc`."""
     pitch = 2 * math.pi / p.teeth
-    r_mean = (p.tooth_r_in + p.tooth_r_out) / 2
-    flank = p.tooth_h * math.tan(math.radians(p.flank_deg)) / r_mean      # angular flank run
-    land = (pitch - 2 * flank) / 2                                        # equal tip and root lands
-    solids = []
-    h = p.tooth_h - p.tip_trunc
-    z_tip = z_root + direction * h
-    tip_half = land / 2 + flank * p.tip_trunc / p.tooth_h      # same flank planes, tip cut lower
-    base_half = land / 2 + flank * (1 + p.root_relief / p.tooth_h)   # flanks continue down into the root relief
-    z_base = z_root - direction * p.root_relief
+    t = math.tan(math.radians(p.flank_deg))
+    z_p = z_root + direction * p.tooth_h / 2                  # pitch plane: tooth width = gap width = half a pitch
+    z_floor = z_root - direction * p.root_relief
+    z_tip = z_root + direction * (p.tooth_h - p.tip_trunc)
+
+    def section(c, z):
+        """Tooth cross-section at height z: between the two flank traces, clipped to the tooth band."""
+        o = (z - z_p) * direction * t                         # >0 above the pitch plane: the tooth gets narrower
+        f1, f2 = c - pitch / 4, c + pitch / 4                 # flank radial lines at the pitch plane
+        n1 = (-math.sin(f1), math.cos(f1))                    # toward the tooth centre
+        n2 = (math.sin(f2), -math.cos(f2))
+
+        def on(f, n, r):                                      # point on a flank trace at radius r
+            tt = math.sqrt(r * r - o * o)
+            return (tt * math.cos(f) + o * n[0], tt * math.sin(f) + o * n[1])
+
+        def ang(pt):                                          # unwrapped near the tooth centre (no jump at +-pi)
+            return c + math.remainder(math.atan2(pt[1], pt[0]) - c, 2 * math.pi)
+        pts = [on(f1, n1, p.tooth_r_in), on(f1, n1, p.tooth_r_out)]
+        a0, a1 = ang(pts[-1]), ang(on(f2, n2, p.tooth_r_out))
+        pts += [(p.tooth_r_out * math.cos(a0 + (a1 - a0) * i / 4), p.tooth_r_out * math.sin(a0 + (a1 - a0) * i / 4)) for i in range(1, 4)]
+        pts += [on(f2, n2, p.tooth_r_out), on(f2, n2, p.tooth_r_in)]
+        a0, a1 = ang(pts[-1]), ang(pts[0])
+        pts += [(p.tooth_r_in * math.cos(a0 + (a1 - a0) * i / 4), p.tooth_r_in * math.sin(a0 + (a1 - a0) * i / 4)) for i in range(1, 4)]
+        return make_face(Polyline(*[(x, y, z) for x, y in pts], close=True))
+
+    out = None
     for k in range(p.teeth):
         c = phase + k * pitch
-        base = sector_face(p.tooth_r_in, p.tooth_r_out, c - base_half, c + base_half, z_base, n=4)
-        tip = sector_face(p.tooth_r_in, p.tooth_r_out, c - tip_half, c + tip_half, z_tip, n=4)
-        solids.append(loft([base, tip]))
-    out = solids[0]
-    for s in solids[1:]:
-        out = out + s
+        tooth = loft([section(c, z_floor), section(c, z_tip)])  # straight flank traces at both ends -> planar flanks
+        out = tooth if out is None else out + tooth
     return out
 
 
@@ -181,6 +201,9 @@ def field_housing():
     s = chamfer(top, 0.5)
     s = s - Pos(0, 0, p.back_plate) * Cylinder(p.coil_r_out, p.housing_len, align=MIN)
     s = s + ring(p.coil_r_in, p.bore_d / 2, p.housing_len)                  # inner pole wall
+    bore_edge = [e for e in s.edges().filter_by(GeomType.CIRCLE)
+                 if abs(e.center().Z - p.housing_len) < 1e-6 and abs(e.radius - p.bore_d / 2) < 1e-3]
+    s = chamfer(bore_edge, 0.5)                                             # clears the rotor's hub-to-disc corner
     s = s - Cylinder(p.pilot_d / 2 + 0.1, p.pilot_h + 0.4, align=MIN)       # locates on the motor pilot
     for k in range(4):                                                     # M5 through the motor flange
         a = math.radians(45 + 90 * k)
@@ -285,7 +308,8 @@ def output_shaft():
     tip = z0 + p.out_shaft_len
     flat = (Align.CENTER, Align.CENTER, Align.MIN)
     s = s - Pos(p.out_shaft_d / 2 - 0.6 + 5, 0, tip - 22) * Box(10, 20, 22, align=flat)                 # pulley flat
-    s = s - Pos(p.out_shaft_d / 2 - 0.6 + 5, 0, Z_HUB + p.hub_flange_t) * Box(10, 20, p.hub_boss_len, align=flat)  # hub flat
+    zh = Z_HUB + p.hub_flange_t + p.hub_boss_len / 2                     # hub flat: spot-faced with a Ø10 end mill
+    s = s - Pos(p.out_shaft_d / 2 - 0.6, 0, zh) * Rot(0, 90, 0) * Cylinder(p.hub_boss_len / 2, 10, align=MIN)
     zg = bearing_zs()[0] + p.bearing_w + 0.1          # DIN 471-12 groove: outboard of the inner (locating) bearing
     s = s - Pos(0, 0, zg) * (Cylinder(p.out_shaft_d / 2 + 1, 1.1, align=MIN) - Cylinder(11.5 / 2, 1.1, align=MIN))
     return s
@@ -321,7 +345,7 @@ def cover():
         a = math.radians(deg)
         s = s - Pos(p.cover_bolt_r * math.cos(a), p.cover_bolt_r * math.sin(a), z_front) * Cylinder(2.1, p.cover_front_t, align=MIN)
     # radial M5 at +Y for the feed unit's belt-tension drawbolt (+Y = away from the leadscrew when mounted)
-    s = s - Pos(0, r_out - 7, z_front + p.cover_front_t / 2) * Rot(-90, 0, 0) * Cylinder(2.1, 8, align=MIN)
+    s = s - Pos(0, r_out - 7, z_front + p.cover_front_t / 2) * Rot(-90, 0, 0) * Cylinder(1.65, 8, align=MIN)   # M4
     return s, z_front
 
 
@@ -414,15 +438,15 @@ def dimension_sheet(z_front):
     w("| Length | %.1f | ±0.05 — sets the 0.3 mm rotor face gap |" % p.housing_len)
     w("| Motor pilot recess (back) | **Ø%.1f (measure your motor) × %.1f deep** | slide fit on the pilot, ≤0.02 play; the model shows +0.2 |" % (p.pilot_d, p.pilot_h + 0.4))
     w("| Inner pole bore | **Ø%.1f** through | concentric with OD and pilot within 0.03 |" % p.bore_d)
-    w("| Coil cavity | Ø%.1f … Ø%.1f, %.1f deep from the front | |" % (2 * p.coil_r_in, 2 * p.coil_r_out, p.housing_len - p.back_plate))
+    w("| Coil cavity | Ø%.1f … Ø%.1f, %.1f deep from the front | **CNC:** circular pocket with a Ø8–10 end mill round the inner pole (a boring bar can't reach the inner wall), or a face-grooving tool on the lathe. Cut the 4 Ø9 counterbores FIRST: only 1.8 mm of wall is left between each and the cavity |" % (2 * p.coil_r_in, 2 * p.coil_r_out, p.housing_len - p.back_plate))
     w("| Back plate | %.1f thick | |" % p.back_plate)
     w("| Motor screws | 4× Ø5.5 thru on %.2f square, c'bore Ø9 from front to z=6 | M5×30 SHCS + nuts behind the motor flange |" % p.bolt_square)
     w("| Coil leads | Ø3.2 thru at r=20.5 + 3.2×1.5 groove on the back face | |")
-    w("| Cover screws | %d× M4 tapped radial, every %.0f°, %.1f from the back face (motor side) | |\n" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW))
+    w("| Cover screws | %d× M4 tapped radial, every %.0f°, %.1f from the back face (motor side) | no 4th axis needed: fit the cover, then drill Ø3.3 through the cover's holes into the housing, and tap |\n" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW))
     w("## Rotor (steel) — `rotor.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
     w("| Hub OD | **Ø%.1f** × %.1f long | runs in the Ø%.1f bore: 0.3 radial gap, keep runout < 0.05. Starts %.1f above the motor flange, clear of the %.1f pilot |" % (p.hub_od, Z_FACE_BACK - p.hub_start, p.bore_d, p.hub_start, p.pilot_h))
-    w("| Shaft bore | **Ø%.0f H7**, depth = **measured shaft length − %.1f ± 0.03** (model: %.1f) | round; Loctite 641 on the D-shaft. The depth sets the 0.3 face gap |" % (p.shaft_d, p.hub_start, p.shaft_len - p.hub_start))
+    w("| Shaft bore | **Ø%.0f H7**, **flat bottom %.2f ± 0.03 in front of the face disc's back face** (that is what sets the 0.3 face gap); depth from the hub end ≈ %.1f with the model's shaft length | finish the bottom with a boring bar (a reamer can't reach it); measure your motor's shaft length beyond the flange, the bottom must sit at that length + %.1f from the housing back. Loctite 641 on the D-shaft |" % (p.shaft_d, p.shaft_len - Z_FACE_BACK, p.shaft_len - p.hub_start, p.face_gap + p.housing_len - p.housing_len))
     w("| Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 3.2 from the front | M3×8 SHCS (3.0 head, sits 0.2 below the pole face) into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |")
     w("| Face disc | **Ø%.1f** × %.1f thick | back face sits %.1f from the housing front; front face = pole face |" % (p.rotor_od, p.face_t, p.face_gap))
     w("| Banana slots | %d × %.0f° arcs, r %.1f … %.1f, through (%.0f° bridges), full-round ends | CNC, Ø3 end mill on the r 20.5 arc (slot = tool width) |" % (p.slot_count, p.slot_span_deg, p.slot_r_in, p.slot_r_out, 360 / p.slot_count - p.slot_span_deg))
@@ -432,7 +456,7 @@ def dimension_sheet(z_front):
     w("| OD × thickness | **Ø%.1f × %.1f** | faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
     w("| Bore | Ø%.1f | clearance over the M3 head |" % p.armature_bore)
     w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | flanks meet %.2f behind the pole face, root floor %.2f behind it (from r %.1f out), tips truncated %.1f |" % (pitch_deg / 2, Z_ARM_ROOT - Z_ARM, Z_ARM_ROOT - Z_ARM + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tip_trunc))
-    w("| Spring holes | 3× M3 blind at r=%.1f, 90°/210°/330°, front face | drill Ø2.5 × 4.5, thread 4 |" % p.spring_r)
+    w("| Spring holes | 3× M3 blind at r=%.1f, 90°/210°/330°, front face | drill Ø2.5 × 4.5, bottoming tap, ≥ 3.3 full threads |" % p.spring_r)
     w("| Screw-head pockets | 3× Ø8 × %.1f deep at r=%.1f, %.0f° after each spring hole, front face | clear the hub-end low-head screws |\n" % (p.arm_pocket, p.spring_r, p.spring_twist_deg))
     w("## Output hub (steel or 6061) — `output_hub.step`")
     w("| Feature | Dimension | Note |\n|---|---|---|")
@@ -445,13 +469,13 @@ def dimension_sheet(z_front):
     w("| OD | Ø%.1f | |" % (p.housing_od + 2 * p.cover_wall))
     w("| Spigot bore (over the housing) | **Ø%.1f H7** × %.1f | slide fit on the housing OD, same chucking as the bearing bore |" % (p.housing_od, p.housing_len - p.cover_spigot_z))
     w("| Shoulder / inner cavity | Ø%.1f | the step from the spigot sits on the housing rim and locates the cover axially; clears the Ø%.0f rotor / armature |" % (p.cover_cavity_d, p.rotor_od))
-    w("| Bearing bore | **Ø%.0f H7**, straight through the %.0f wall + %.0f boss | bored from the cavity side in the same chucking as the spigot |" % (p.bearing_od, p.cover_front_t, BOSS_LEN))
+    w("| Bearing bore | **Ø%.0f H7**, straight through the %.0f wall + %.0f boss (≈ 89 mm from the open face) | two setups: (1) grip the spigot OD, turn the boss and the front, rough the bore to Ø26, cut the OUTER circlip groove from the outer end; (2) grip the Ø38 boss (not the 4 mm spigot wall), bore the spigot, the Ø78 cavity, the Ø28 H7 bore and the INNER groove |" % (p.bearing_od, p.cover_front_t, BOSS_LEN))
     w("| Circlip grooves | 2× for DIN 472-28: Ø29.4 × %.1f, **%.1f land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |" % (p.circlip_groove, p.circlip_land))
-    w("| Radial screws | %d× Ø4.5 every %.0f°, %.1f from the open end | M4×8 into the housing |" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW - p.cover_spigot_z))
+    w("| Radial screws | %d× Ø4.5 every %.0f°, %.1f from the open end | M4×8 into the housing; drilled together with the housing (see there) |" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW - p.cover_spigot_z))
     w("| Front wall | %.0f thick, 4× M5 tapped thru on r=%.0f at %s° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |" % (p.cover_front_t, p.cover_bolt_r, "/".join("%.0f" % a for a in p.cover_bolt_deg)))
-    w("| Drawbolt hole | M5 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 | feed-unit belt tension; it points away from the leadscrew |\n")
+    w("| Drawbolt hole | M4 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew |\n")
     w("## Other parts")
-    w("- Output shaft: Ø%.0f h6 ground rod × %.0f. Flats 0.6 deep: × 22 at the pulley end, × %.0f under the hub boss. DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - (Z_HUB + 1.0)))
+    w("- Output shaft: Ø%.0f h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × %.0f. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø%.0f spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - (Z_HUB + 1.0)))
     w("- Leaf springs: 3× 0.3 mm blue spring-steel shim, %.0f wide with full-round ends, holes Ø3.3 at %.1f centres. **Flat when released**; engaged they bend %.1f mm (≈25 N total)." % (p.spring_w, 2 * p.spring_r * math.sin(math.radians(p.spring_twist_deg / 2)), p.stroke))
     w("- Spacers: 3× Ø7 × %.2f, Ø3.3 hole (steel or brass), between the armature and the strap." % p.spacer_h)
     w("- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × %.1f (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
@@ -462,27 +486,33 @@ def dimension_sheet(z_front):
     w("  4. DIN 471-12 down the bore into its groove (~%.0f deep from the outer end) with a cone on the shaft end and a push tube." % (Z_FRONT + p.cover_front_t + BOSS_LEN - (zb[0] + p.bearing_w + 0.1)))
     w("  5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate)." % p.cover_screws)
+    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
     w("- Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus %.1f deep.\n" % (p.housing_len - p.back_plate))
     w("## Teeth")
-    w("- %d radial teeth, true angular profile: equal tip and root lands, flanks %.0f° from the axis at the mean radius." % (p.teeth, p.flank_deg))
+    w("- %d radial teeth, flanks **flat planes** at %.0f° from the axis: every flank is the plane through a radial line at the pitch" % (p.teeth, p.flank_deg))
+    w("  plane, so a 60° chamfer mill cuts it exactly in one straight pass, and the rotor's gaps and the armature's teeth share those")
+    w("  lines: both parts come off the SAME program and mate exactly.")
     w("- Engaged pole gap %.2f, stroke %.1f -> released gap %.2f." % (p.engaged_gap, p.stroke, p.engaged_gap + p.stroke))
-    w("- Tips truncated %.1f mm; roots relieved %.1f mm below where the flanks meet. So a mating tip sits %.1f mm above the root floor:" % (p.tip_trunc, p.root_relief, p.tip_trunc + p.root_relief))
-    w("  the flanks carry all the load and the root corners never touch anything.")
-    w("- **Cutting them (CNC, 3-axis):**")
-    w("  1. Lathe first: face the pole face, then turn the tooth band (r %.1f to the OD) down to the root-floor depth. The" % (p.tooth_r_in - p.tooth_runout))
-    w("     extra %.1f mm inside r %.0f is run-out for the cutter, so no milled end wall sits at the inner end of the teeth." % (p.tooth_runout, p.tooth_r_in))
-    w("  2. Rough the tooth gaps with a Ø2 flat end mill (radial passes, from r %.1f out past the OD)." % (p.tooth_r_in - p.tooth_runout))
-    w("  3. Finish the flanks with a **Ø2 ball end mill** (or smaller), 3D finishing along the radial direction. The ball's")
-    w("     root fillet (R1) is tangent to the flank only 0.5 mm above the root floor, below the mating tip at %.1f mm." % (p.tip_trunc + p.root_relief))
-    w("     A bigger ball does NOT fit: Ø3 -> tangent at 0.75 mm, into the working flank.")
-    w("  4. Or, faster: a 60° chamfer mill (30° half-angle = the flank angle) for the flanks. The radial teeth's flank angle")
-    w("     varies 28–32° from inner to outer radius, so finish the last 0.05 with the ball after it.")
-    w("- Machine both rings with the same CAM program and tool, in the same orientation, then lap them together.")
-    w("- Break the tooth tips' edges lightly (0.1 × 45°, a stone is enough).")
-    w("- `flank_deg = 45` suits a standard 90° chamfer mill exactly at the mean radius, but the cam-out force then rises ~1.8x,")
-    w("  so expect ~1.3x more hold current; re-calibrate per design.md §7.4.\n")
+    w("- Tips truncated %.1f (break them 0.1 × 45° after), roots relieved %.1f below where the flanks meet: a mating tip sits %.1f above" % (p.tip_trunc, p.root_relief, p.tip_trunc + p.root_relief))
+    w("  the root floor, so the flanks carry all the load and the root corners never touch.")
+    zt_r, zt_a = (Z_ROTOR_ROOT + p.tooth_h - p.tip_trunc) - Z_POLE, Z_ARM - (Z_ARM_ROOT - p.tooth_h + p.tip_trunc)
+    w("- **Turning (before milling), both parts:**")
+    w("  - tooth band r %.0f → OD: turn to the TIP height: **%.2f proud of the rotor pole face, %.2f proud of the armature pole face**;" % (p.tooth_r_in, zt_r, zt_a))
+    w("  - run-out groove r %.1f … %.0f: turn down to the root floor, %.1f below the tip height (the cutter runs out into it);" % (p.tooth_r_in - p.tooth_runout, p.tooth_r_in, p.tooth_h - p.tip_trunc + p.root_relief))
+    w("  - face the pole face inside r %.1f as dimensioned." % (p.tooth_r_in - p.tooth_runout))
+    w("- **Milling (3-axis CNC, no indexer needed):**")
+    w("  - Hold: rotor by its hub in a collet block, teeth up; armature on a fixture plate with a Ø11.5 spigot in its bore and")
+    w("    3× M3 from below into its spring holes. Centre both on the Ø%.0f OD." % p.rotor_od)
+    w("  - **Z zero on the turned TIP surface** (same on both parts). Pitch plane = %.2f below it; root floor = %.2f below it." % (p.tooth_h / 2 - p.tip_trunc, p.tooth_h - p.tip_trunc + p.root_relief))
+    w("  1. Rough each gap with a Ø2 flat end mill to the root floor, leaving 0.2 on the flanks (radial passes from r %.1f out past the OD)." % (p.tooth_r_in - p.tooth_runout))
+    w("  2. Finish each flank with a **60° chamfer mill** (pointed or ≤ 0.2 flat), one straight radial pass per flank: the cone's side")
+    w("     on the flank line at the pitch plane, offset by the cone radius at that depth. %d flanks per part, same program for both." % (2 * p.teeth))
+    w("  3. Measure the chamfer mill's actual angle and point first: each 0.01 mm of flank error on both parts moves the armature 0.035")
+    w("     axially. **Acceptance:** mate the pair dry and check the pole gap with feeler gauges: 0.15 ± 0.05.")
+    w("- Lap the pair together with fine compound after cutting; re-check the gap.")
+    w("- `flank_deg = 45` suits a standard 90° chamfer mill, but the cam-out force then rises ~1.8x (expect ~1.3x more hold current;")
+    w("  re-calibrate per design.md §7.4).\n")
     w("## Corners (what the tools leave, and why it doesn't matter)")
     w("- Every internal corner along a cutter's axis is modelled round (slot ends, pockets) or is a drilled/counterbored hole.")
     w("  `mechanical/tools/check_machinable.py` checks this on every machined part.")
@@ -491,9 +521,9 @@ def dimension_sheet(z_front):
     w("  - field housing: coil cavity floor corners (the bobbin has 0.3 clearance; chamfer its corners) and the motor-pilot recess")
     w("    floor (the motor's pilot edge is chamfered);")
     w("  - rotor: hub → face-disc corner (the housing bore's front edge is chamfered 0.5 × 45° to clear it).")
-    w("- Rotor shaft bore: the motor shaft's end seats on its bottom, so the bottom must be **flat**: drill under size, then")
-    w("  finish with a boring bar or a Ø10 flat end mill to depth, then ream/bore to H7. A drill point there sets the rotor")
-    w("  wrong by ~3 mm.\n")
+    w("- Rotor shaft bore: the motor shaft's end seats on its bottom, so the bottom must be **flat** and is dimensioned from the")
+    w("  face disc (see Rotor): drill under size, bore to H7 and finish the bottom with the boring bar (a reamer can't reach it).")
+    w("  A drill point there would set the rotor ~3 mm wrong.\n")
     return "\n".join(L) + "\n"
 
 

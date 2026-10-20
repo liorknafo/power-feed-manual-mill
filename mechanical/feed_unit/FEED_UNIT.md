@@ -18,14 +18,14 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 ## Parts to make
 | Part | Material | Notes |
 |---|---|---|
-| Plate | 6061, 28 mm | **Ø32 H7 straight through** (one setup) with DIN 472-32 grooves (Ø33.7 × 1.3) leaving a **2.5 land** at each face (keep the entry chamfer smaller); slotted Ø40 hole + 4× Ø5.5 slots (±3) for the clutch module; 4× Ø6.6 for the standoffs; 3× M3 × 8 deep on r=23 (encoder posts, outer face); 2× M5 × 12 for the tension block. Top edge 44 above the leadscrew so it covers the guard |
+| Plate | 6061, 28 mm, CNC | **Ø32 H7 straight through**: too big to swing on the lathe (300 mm needed), so bore it on the mill with a boring head. DIN 472-32 grooves (Ø33.7 × 1.3) leaving a **2.6 land** at each face: keyseat cutter (head ≤ Ø28, 1.0–1.2 wide, two passes) by circular interpolation, one face, then flip for the other. Clutch-module hole slotted Ø40 and 4× Ø5.5 slots (±3): 5×D deep, cut them from both faces. 4× Ø6.6 for the standoffs; 3× M3 × 8 deep on r=23 (encoder posts, outer face); 2× M5 × 12 for the tension block. Edge holes (M3 × 8 for the housing): stand the plate in the vise on its edge, or use a drill-guide block. Corners R9 |
 | Standoffs | steel or 6061 | 4× Ø14 × 35, Ø6.6 thru (M6 screws into the table end) |
-| Leadscrew stub | steel, Ø15 ground | from the table side: tongue 4.8 × 14 × 4 (across the Oldham slot), Ø15 with a 0.6 flat for the 40T set screws, **Ø18 × 2 shoulder** on the inner bearing's inner race, Ø15 k6 at the inner (locating) bearing and h6 at the outer (floating) one, DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø8 × 10 encoder end |
-| Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 2.0, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
+| Leadscrew stub | steel, turned from **Ø20** stock | from the table side: tongue 4.8 × 14 × 4 (across the Oldham slot), Ø15 with a 0.6 flat for the 40T set screws, **Ø18 × 2 shoulder** on the inner bearing's inner race (corner radius ≤ 0.3 so the bearing's chamfer clears it), Ø15 h6 at both bearings with **Loctite 641 on the inner one** (as on the clutch; easier than holding k6 and h6 bands on a manual lathe), DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø8 × 10 encoder end |
+| Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 1.8, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø24 × 9: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 4.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, 5 mm | Ø50 with a flat 20 from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r=23 (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
 | Encoder posts | 3× M3 hex standoffs F-F, 21 mm | |
-| Tension block | steel | 44 × 14 × 12 on the plate's outer face below the module, 2× M5 to the plate; M5 drawbolt through it into a radial M5 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
+| Tension block | steel | 44 × 14 × 12 on the plate's outer face below the module, 2× M5 to the plate; M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø28 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
 ## Assembly
@@ -44,7 +44,7 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 - 2× 6002-2RS, 2× DIN 472-32, 1× DIN 471-15.
 - Flexible coupling 6 × 8 mm (encoder).
 - LPD3806-600BM-G5-24C encoder.
-- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module (28 plate + 8 wall: the tips stop clear of the hub); 2× M5×20 + 1× M5×30 (tension block, drawbolt); 3× M3 hex standoffs 21 mm and 6× M3×8.
+- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module (28 plate + 8 wall: the tips stop clear of the hub); 2× M5×20 (tension block) + 1× M4×30 (drawbolt); 3× M3 hex standoffs 21 mm and 6× M3×8.
 
 ## Notes
 - The module hangs ≈177 mm off the plate on 4 M5 into the cover. The cover's spigot over the clutch housing is

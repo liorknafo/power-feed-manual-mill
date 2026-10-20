@@ -12,29 +12,29 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Length | 20.0 | ±0.05 — sets the 0.3 mm rotor face gap |
 | Motor pilot recess (back) | **Ø38.1 (measure your motor) × 2.0 deep** | slide fit on the pilot, ≤0.02 play; the model shows +0.2 |
 | Inner pole bore | **Ø19.2** through | concentric with OD and pilot within 0.03 |
-| Coil cavity | Ø28.0 … Ø54.0, 15.0 deep from the front | |
+| Coil cavity | Ø28.0 … Ø54.0, 15.0 deep from the front | **CNC:** circular pocket with a Ø8–10 end mill round the inner pole (a boring bar can't reach the inner wall), or a face-grooving tool on the lathe. Cut the 4 Ø9 counterbores FIRST: only 1.8 mm of wall is left between each and the cavity |
 | Back plate | 5.0 thick | |
 | Motor screws | 4× Ø5.5 thru on 47.14 square, c'bore Ø9 from front to z=6 | M5×30 SHCS + nuts behind the motor flange |
 | Coil leads | Ø3.2 thru at r=20.5 + 3.2×1.5 groove on the back face | |
-| Cover screws | 6× M4 tapped radial, every 60°, 12.0 from the back face (motor side) | |
+| Cover screws | 6× M4 tapped radial, every 60°, 12.0 from the back face (motor side) | no 4th axis needed: fit the cover, then drill Ø3.3 through the cover's holes into the housing, and tap |
 
 ## Rotor (steel) — `rotor.step`
 | Feature | Dimension | Tolerance / note |
 |---|---|---|
 | Hub OD | **Ø18.6** × 18.1 long | runs in the Ø19.2 bore: 0.3 radial gap, keep runout < 0.05. Starts 2.2 above the motor flange, clear of the 1.6 pilot |
-| Shaft bore | **Ø10 H7**, depth = **measured shaft length − 2.2 ± 0.03** (model: 18.8) | round; Loctite 641 on the D-shaft. The depth sets the 0.3 face gap |
+| Shaft bore | **Ø10 H7**, **flat bottom 0.70 ± 0.03 in front of the face disc's back face** (that is what sets the 0.3 face gap); depth from the hub end ≈ 18.8 with the model's shaft length | finish the bottom with a boring bar (a reamer can't reach it); measure your motor's shaft length beyond the flange, the bottom must sit at that length + 0.3 from the housing back. Loctite 641 on the D-shaft |
 | Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 3.2 from the front | M3×8 SHCS (3.0 head, sits 0.2 below the pole face) into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |
 | Face disc | **Ø76.0** × 5.6 thick | back face sits 0.3 from the housing front; front face = pole face |
 | Banana slots | 3 × 112° arcs, r 19.0 … 22.0, through (8° bridges), full-round ends | CNC, Ø3 end mill on the r 20.5 arc (slot = tool width) |
-| Tooth ring | r 32.0 … 38.0, 30 teeth (12.0° pitch), flank 30° from axis | flanks meet 0.5 below the pole face; root floor 0.5 deeper (1.0 below the pole face, from r 31.5 out to the OD); tips 0.80 above where the flanks meet; see Teeth |
+| Tooth ring | r 32.0 … 38.0, 30 teeth (12.0° pitch), flank 30° from axis | flanks meet 0.5 below the pole face; root floor 0.5 deeper (1.0 below the pole face, from r 31.0 out to the OD); tips 0.80 above where the flanks meet; see Teeth |
 
 ## Armature (steel) — `armature.step`
 | Feature | Dimension | Tolerance / note |
 |---|---|---|
 | OD × thickness | **Ø76.0 × 6.0** | faces parallel within 0.02 |
 | Bore | Ø11.5 | clearance over the M3 head |
-| Tooth ring | as the rotor, rotated half a pitch (6.0°) | flanks meet 0.25 behind the pole face, root floor 0.75 behind it (from r 31.5 out), tips truncated 0.1 |
-| Spring holes | 3× M3 blind at r=30.0, 90°/210°/330°, front face | drill Ø2.5 × 4.5, thread 4 |
+| Tooth ring | as the rotor, rotated half a pitch (6.0°) | flanks meet 0.25 behind the pole face, root floor 0.75 behind it (from r 31.0 out), tips truncated 0.1 |
+| Spring holes | 3× M3 blind at r=30.0, 90°/210°/330°, front face | drill Ø2.5 × 4.5, bottoming tap, ≥ 3.3 full threads |
 | Screw-head pockets | 3× Ø8 × 1.5 deep at r=30.0, 55° after each spring hole, front face | clear the hub-end low-head screws |
 
 ## Output hub (steel or 6061) — `output_hub.step`
@@ -51,17 +51,17 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | OD | Ø88.0 | |
 | Spigot bore (over the housing) | **Ø80.0 H7** × 18.0 | slide fit on the housing OD, same chucking as the bearing bore |
 | Shoulder / inner cavity | Ø78.0 | the step from the spigot sits on the housing rim and locates the cover axially; clears the Ø76 rotor / armature |
-| Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss | bored from the cavity side in the same chucking as the spigot |
-| Circlip grooves | 2× for DIN 472-28: Ø29.4 × 1.3, **2.0 land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |
-| Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end | M4×8 into the housing |
+| Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss (≈ 89 mm from the open face) | two setups: (1) grip the spigot OD, turn the boss and the front, rough the bore to Ø26, cut the OUTER circlip groove from the outer end; (2) grip the Ø38 boss (not the 4 mm spigot wall), bore the spigot, the Ø78 cavity, the Ø28 H7 bore and the INNER groove |
+| Circlip grooves | 2× for DIN 472-28: Ø29.4 × 1.3, **2.1 land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |
+| Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end | M4×8 into the housing; drilled together with the housing (see there) |
 | Front wall | 8 thick, 4× M5 tapped thru on r=36 at 55/125/190/350° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |
-| Drawbolt hole | M5 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 | feed-unit belt tension; it points away from the leadscrew |
+| Drawbolt hole | M4 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew |
 
 ## Other parts
-- Output shaft: Ø12 h6 ground rod × 78. Flats 0.6 deep: × 22 at the pulley end, × 10 under the hub boss. DIN 471-12 groove (Ø11.5 × 1.1) at 29.6 from its motor-side end, just outboard of the inner bearing.
+- Output shaft: Ø12 h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × 78. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø10 spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at 29.7 from its motor-side end, just outboard of the inner bearing.
 - Leaf springs: 3× 0.3 mm blue spring-steel shim, 14 wide with full-round ends, holes Ø3.3 at 27.7 centres. **Flat when released**; engaged they bend 1.1 mm (≈25 N total).
 - Spacers: 3× Ø7 × 2.40, Ø3.3 hole (steel or brass), between the armature and the strap.
-- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 13.0 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.5 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
+- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 12.8 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.6 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
 - Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):
   1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.
   3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,
@@ -69,28 +69,33 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
   4. DIN 471-12 down the bore into its groove (~24 deep from the outer end) with a cone on the shaft end and a push tube.
   5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
-- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate).
+- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
 - Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus 15.0 deep.
 
 ## Teeth
-- 30 radial teeth, true angular profile: equal tip and root lands, flanks 30° from the axis at the mean radius.
+- 30 radial teeth, flanks **flat planes** at 30° from the axis: every flank is the plane through a radial line at the pitch
+  plane, so a 60° chamfer mill cuts it exactly in one straight pass, and the rotor's gaps and the armature's teeth share those
+  lines: both parts come off the SAME program and mate exactly.
 - Engaged pole gap 0.15, stroke 1.1 -> released gap 1.25.
-- Tips truncated 0.1 mm; roots relieved 0.5 mm below where the flanks meet. So a mating tip sits 0.6 mm above the root floor:
-  the flanks carry all the load and the root corners never touch anything.
-- **Cutting them (CNC, 3-axis):**
-  1. Lathe first: face the pole face, then turn the tooth band (r 31.5 to the OD) down to the root-floor depth. The
-     extra 0.5 mm inside r 32 is run-out for the cutter, so no milled end wall sits at the inner end of the teeth.
-  2. Rough the tooth gaps with a Ø2 flat end mill (radial passes, from r 31.5 out past the OD).
-  3. Finish the flanks with a **Ø2 ball end mill** (or smaller), 3D finishing along the radial direction. The ball's
-     root fillet (R1) is tangent to the flank only 0.5 mm above the root floor, below the mating tip at 0.6 mm.
-     A bigger ball does NOT fit: Ø3 -> tangent at 0.75 mm, into the working flank.
-  4. Or, faster: a 60° chamfer mill (30° half-angle = the flank angle) for the flanks. The radial teeth's flank angle
-     varies 28–32° from inner to outer radius, so finish the last 0.05 with the ball after it.
-- Machine both rings with the same CAM program and tool, in the same orientation, then lap them together.
-- Break the tooth tips' edges lightly (0.1 × 45°, a stone is enough).
-- `flank_deg = 45` suits a standard 90° chamfer mill exactly at the mean radius, but the cam-out force then rises ~1.8x,
-  so expect ~1.3x more hold current; re-calibrate per design.md §7.4.
+- Tips truncated 0.1 (break them 0.1 × 45° after), roots relieved 0.5 below where the flanks meet: a mating tip sits 0.6 above
+  the root floor, so the flanks carry all the load and the root corners never touch.
+- **Turning (before milling), both parts:**
+  - tooth band r 32 → OD: turn to the TIP height: **0.30 proud of the rotor pole face, 0.55 proud of the armature pole face**;
+  - run-out groove r 31.0 … 32: turn down to the root floor, 1.3 below the tip height (the cutter runs out into it);
+  - face the pole face inside r 31.0 as dimensioned.
+- **Milling (3-axis CNC, no indexer needed):**
+  - Hold: rotor by its hub in a collet block, teeth up; armature on a fixture plate with a Ø11.5 spigot in its bore and
+    3× M3 from below into its spring holes. Centre both on the Ø76 OD.
+  - **Z zero on the turned TIP surface** (same on both parts). Pitch plane = 0.35 below it; root floor = 1.30 below it.
+  1. Rough each gap with a Ø2 flat end mill to the root floor, leaving 0.2 on the flanks (radial passes from r 31.0 out past the OD).
+  2. Finish each flank with a **60° chamfer mill** (pointed or ≤ 0.2 flat), one straight radial pass per flank: the cone's side
+     on the flank line at the pitch plane, offset by the cone radius at that depth. 60 flanks per part, same program for both.
+  3. Measure the chamfer mill's actual angle and point first: each 0.01 mm of flank error on both parts moves the armature 0.035
+     axially. **Acceptance:** mate the pair dry and check the pole gap with feeler gauges: 0.15 ± 0.05.
+- Lap the pair together with fine compound after cutting; re-check the gap.
+- `flank_deg = 45` suits a standard 90° chamfer mill, but the cam-out force then rises ~1.8x (expect ~1.3x more hold current;
+  re-calibrate per design.md §7.4).
 
 ## Corners (what the tools leave, and why it doesn't matter)
 - Every internal corner along a cutter's axis is modelled round (slot ends, pockets) or is a drilled/counterbored hole.
@@ -100,7 +105,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
   - field housing: coil cavity floor corners (the bobbin has 0.3 clearance; chamfer its corners) and the motor-pilot recess
     floor (the motor's pilot edge is chamfered);
   - rotor: hub → face-disc corner (the housing bore's front edge is chamfered 0.5 × 45° to clear it).
-- Rotor shaft bore: the motor shaft's end seats on its bottom, so the bottom must be **flat**: drill under size, then
-  finish with a boring bar or a Ø10 flat end mill to depth, then ream/bore to H7. A drill point there sets the rotor
-  wrong by ~3 mm.
+- Rotor shaft bore: the motor shaft's end seats on its bottom, so the bottom must be **flat** and is dimensioned from the
+  face disc (see Rotor): drill under size, bore to H7 and finish the bottom with the boring bar (a reamer can't reach it).
+  A drill point there would set the rotor ~3 mm wrong.
 
