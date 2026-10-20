@@ -92,6 +92,8 @@ The OLED should show `NO 36V`. The TMC5160 is configured automatically once 36 V
 - Flip the switch to LEFT. The coil stays off until the motor is at a standstill, then pulls in. About 200 ms later the display shows `CLUTCH OPEN`, because no coil is connected and so no current is measured.
   - This proves the driver enable, the clutch drive and the coil check.
   - To also see the engagement jog, connect a 22–33 Ω, ≥10 W resistor as a dummy coil. The motor then jogs about 12 full steps and faults with `CLUTCH NO ENGAGE`, because the encoder isn't connected.
+  - The dummy coil should be **inductive**: a solenoid, a relay coil, or the real clutch coil. A plain resistor carries current only during the PWM on-time. The 1 ms sample can then land in the off-time and read 0 mA, giving `CLUTCH OPEN` on roughly one boot in eight. The real coil carries continuous current and isn't affected.
+- Interrupt the 36 V supply briefly while running, using the PSU switch. The display must show `DRIVER NOT READY` (or `NO 36V`) and stay faulted after the power returns, until you centre the switch. This tests the TMC re-initialisation path.
 
 ### 3. E-stop
 Open the E-stop loop in any state. The display shows `E-STOP`, the motor goes limp and the clutch drops. It stays that way until the loop is closed **and** the switch is centred.
