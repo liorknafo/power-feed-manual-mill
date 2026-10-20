@@ -110,24 +110,36 @@ pub fn ihold_irun(ihold: u32, irun: u32, delay: u32) -> u32 {
     (ihold & 31) | ((irun & 31) << 8) | ((delay & 15) << 16)
 }
 
-/// ENC_CONST in decimal mode (ENCMODE.enc_sel_decimal = 1): integer part in [31:16],
-/// fractional part in [15:0] as 0..9999 (factor = int + frac/10000).
+/// ENC_CONST in decimal mode (ENCMODE.enc_sel_decimal = 1): signed integer part in [31:16],
+/// fractional part in [15:0] as 0..9999 (factor = int + frac/10000). A negative factor reverses
+/// the encoder direction: e.g. -21.3333 = int -22, frac 6667.
 pub fn enc_const_decimal(usteps_per_count: f32) -> u32 {
-    let int = usteps_per_count as u32;
-    let frac = ((usteps_per_count - int as f32) * 10_000.0 + 0.5) as u32;
-    let (int, frac) = if frac >= 10_000 { (int + 1, 0) } else { (int, frac) };
-    (int << 16) | frac
+    let mut int = usteps_per_count as i32;
+    if (int as f32) > usteps_per_count {
+        int -= 1; // floor for negative values
+    }
+    let mut frac = ((usteps_per_count - int as f32) * 10_000.0 + 0.5) as u32;
+    if frac >= 10_000 {
+        int += 1;
+        frac = 0;
+    }
+    ((int as i16 as u16 as u32) << 16) | frac
 }
+
+/// SW_MODE: enable both reference-switch stops, active HIGH (pol_stop_l/r = 0).
+/// The limit switches are NC to GND with pull-ups, so the inputs go high when hit or broken.
+pub const SW_MODE_LIMITS: u32 = 0b0011;
 
 /// Recommended static configuration. Chopper values are the datasheet's quick-config defaults
 /// for a 36 V, 3-4 A NEMA 23; tune on the bench.
-pub fn init_sequence(run_ma: u32, hold_ma: u32, usteps_per_count: f32) -> [(u8, u32); 14] {
+pub fn init_sequence(run_ma: u32, hold_ma: u32, usteps_per_count: f32, motor_reverse: bool) -> [(u8, u32); 14] {
     let (gs, irun) = current_to_scaler(run_ma);
     let ihold = cs_for(hold_ma, run_ma);
     [
         // GCONF: en_pwm_mode=0 (spreadCycle for torque), multistep_filt=1; diag0_int_pushpull=0 (open drain),
         // diag0_error=1, diag0_otpw=1 -> DIAG0 interrupt on driver error / overtemp warning.
-        (reg::GCONF, (1 << 3) | (1 << 5) | (1 << 6)),
+        // shaft (bit 4) reverses the motor without rewiring
+        (reg::GCONF, (1 << 3) | (1 << 5) | (1 << 6) | ((motor_reverse as u32) << 4)),
         (reg::GLOBALSCALER, gs),
         (reg::IHOLD_IRUN, ihold_irun(ihold, irun, 6)),
         (reg::TPOWERDOWN, 10),
@@ -139,9 +151,8 @@ pub fn init_sequence(run_ma: u32, hold_ma: u32, usteps_per_count: f32) -> [(u8, 
         (reg::A1, 0),
         (reg::V1, 0), // V1 = 0: single-stage AMAX/DMAX ramp
         (reg::D1, 0x100), // must not be 0 in positioning mode, even with V1 = 0 (datasheet §14)
-        // SW_MODE: stop_l_enable, stop_r_enable, pol_stop_l/r = 1 (active high: NC switch to GND,
-        // pulled up -> high when hit or broken), en_softstop = 0 (hard stop at a limit)
-        (reg::SW_MODE, 0b1111),
+        // hard stop at a limit (en_softstop = 0); see SW_MODE_LIMITS for the polarity
+        (reg::SW_MODE, SW_MODE_LIMITS),
         // ENCMODE: enc_sel_decimal = 1
         (reg::ENCMODE, 1 << 10),
         (reg::ENC_CONST, enc_const_decimal(usteps_per_count)),
@@ -189,5 +200,19 @@ mod tests {
         // 51200 usteps / 2400 counts = 21.3333
         assert_eq!(enc_const_decimal(21.3333), (21 << 16) | 3333);
         assert_eq!(enc_const_decimal(2.0), 2 << 16);
+        // reversed encoder: -21.3333 = -22 + 0.6667
+        assert_eq!(enc_const_decimal(-21.3333), (0xFFEA << 16) | 6667);
+    }
+
+    #[test]
+    fn limit_switches_stop_on_high() {
+        // datasheet SW_MODE: bit0/1 enable the stops; bit2/3 = pol_stop_l/r, 0 = high level stops.
+        // Our limits read HIGH when hit (NC to GND, pulled up), so polarity bits must be 0.
+        assert_eq!(SW_MODE_LIMITS & 0b0011, 0b0011, "both stops enabled");
+        assert_eq!(SW_MODE_LIMITS & 0b1100, 0, "high-active polarity");
+        let seq = init_sequence(3000, 1000, 21.33, false);
+        assert!(seq.contains(&(reg::SW_MODE, SW_MODE_LIMITS)));
+        let gconf = |rev| init_sequence(3000, 1000, 21.33, rev).iter().find(|(a, _)| *a == reg::GCONF).unwrap().1;
+        assert_eq!(gconf(true) ^ gconf(false), 1 << 4, "motor_reverse only flips GCONF.shaft");
     }
 }

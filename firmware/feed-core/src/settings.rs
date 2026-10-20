@@ -43,6 +43,10 @@ pub struct Settings {
     /// Bus voltage limits, mV.
     pub bus_min_mv: u32,
     pub bus_max_mv: u32,
+    /// Reverse the motor direction in the driver (TMC5160 GCONF.shaft) instead of rewiring.
+    pub motor_reverse: bool,
+    /// Reverse the encoder count direction (negative ENC_CONST).
+    pub encoder_reverse: bool,
 }
 
 impl Default for Settings {
@@ -60,7 +64,7 @@ impl Default for Settings {
             run_current_ma: 3000,
             hold_current_ma: 1000,
             clutch_pull_in_ms: 60,
-            clutch_hold_ma: 350,
+            clutch_hold_ma: 250, // ≤0.3 A: the clutch PTC holds 0.5 A and derates when warm (design.md §8a)
             clutch_release_ms: 40,
             jog_max_steps: 12, // ~1.5 tooth pitches of a 30-tooth clutch (6.7 steps per pitch)
             jog_speed_steps_s: 60,
@@ -68,6 +72,8 @@ impl Default for Settings {
             stall_tolerance_steps: 8,
             bus_min_mv: 30_000,
             bus_max_mv: 42_000,
+            motor_reverse: false,
+            encoder_reverse: false,
         }
     }
 }
@@ -99,7 +105,7 @@ impl Settings {
             self.stall_tolerance_steps,
             self.bus_min_mv,
             self.bus_max_mv,
-            0,
+            (self.motor_reverse as u32) | ((self.encoder_reverse as u32) << 1),
         ];
         let mut out = [0u8; BLOB_LEN];
         out[0..4].copy_from_slice(&MAGIC.to_le_bytes());
@@ -143,6 +149,8 @@ impl Settings {
             stall_tolerance_steps: w(17),
             bus_min_mv: w(18),
             bus_max_mv: w(19),
+            motor_reverse: w(20) & 1 != 0,
+            encoder_reverse: w(20) & 2 != 0,
         };
         s.is_sane().then_some(s)
     }
@@ -164,7 +172,7 @@ impl Settings {
             && self.accel_mm_s2 > 0.0
             && self.run_current_ma <= 4200
             && self.hold_current_ma <= self.run_current_ma
-            && self.clutch_hold_ma <= 800
+            && self.clutch_hold_ma <= 400
             && self.clutch_pull_in_ms <= 200
             && self.bus_min_mv < self.bus_max_mv
             && self.bus_max_mv <= 48_000
@@ -189,7 +197,7 @@ mod tests {
     fn roundtrip() {
         let mut s = Settings::default();
         s.leadscrew_pitch_mm = 2.5;
-        s.clutch_hold_ma = 420;
+        s.clutch_hold_ma = 380;
         let b = s.to_bytes();
         assert_eq!(Settings::from_bytes(&b), Some(s));
     }

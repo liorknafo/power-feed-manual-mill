@@ -95,7 +95,7 @@ pub fn draw<D: DrawTarget<Color = BinaryColor>>(d: &mut D, s: &Status) {
     }
     let mut top: Buf<24> = Buf::new();
     let _ = write!(top, "{}", s.state.name());
-    if let State::Running { dir } | State::Engaging { dir, .. } = s.state {
+    if let State::Running { dir, .. } | State::Engaging { dir, .. } = s.state {
         let _ = write!(top, " {}", if dir == Dir::Left { "<<" } else { ">>" });
     }
     let _ = Text::with_text_style(top.as_str(), Point::new(64, 1), if faulted { small_inv } else { small }, center).draw(d);

@@ -41,10 +41,14 @@ impl<'d> Tmc5160<'d> {
     }
 
     /// Full configuration. Returns false if the chip does not answer (IOIN version byte != 0x30).
-    pub fn init(&mut self, run_ma: u32, hold_ma: u32, usteps_per_count: f32, amax: u32) -> bool {
+    /// `usteps_per_count` is signed: negative reverses the encoder direction.
+    pub fn init(&mut self, run_ma: u32, hold_ma: u32, usteps_per_count: f32, amax: u32, motor_reverse: bool) -> bool {
         let version = self.read(reg::IOIN) >> 24;
-        self.read(reg::GSTAT); // reading clears reset/error flags
-        for (addr, val) in tmc::init_sequence(run_ma, hold_ma, usteps_per_count) {
+        if version != 0x30 {
+            return false;
+        }
+        self.clear_gstat();
+        for (addr, val) in tmc::init_sequence(run_ma, hold_ma, usteps_per_count, motor_reverse) {
             self.write(addr, val);
         }
         self.set_accel(amax);
@@ -54,7 +58,19 @@ impl<'d> Tmc5160<'d> {
         self.write(reg::X_ENC, 0);
         self.write(reg::ENC_DEVIATION, 0);
         self.last_motion = Some(Motion::Stop);
-        version == 0x30
+        self.clear_gstat();
+        self.status & spi_status::RESET_FLAG == 0
+    }
+
+    /// GSTAT is write-1-to-clear: clears the reset, driver-error and undervoltage flags
+    /// (the driver error comes back at once if its cause is still present).
+    pub fn clear_gstat(&mut self) {
+        self.write(reg::GSTAT, 0b111);
+    }
+
+    /// The chip reset since it was configured (power loss on VM, brown-out).
+    pub fn was_reset(&self) -> bool {
+        self.status & spi_status::RESET_FLAG != 0
     }
 
     pub fn set_accel(&mut self, amax: u32) {
@@ -87,9 +103,10 @@ impl<'d> Tmc5160<'d> {
                 self.write(reg::VMAX, tmc::vmax_from_usteps_s(if v >= 0.0 { v } else { -v }));
             }
             Motion::Jog { target, speed } => {
+                // target first, so switching to position mode never heads for a stale target
+                self.write(reg::XTARGET, target as u32);
                 self.write(reg::VMAX, tmc::vmax_from_usteps_s(speed));
                 self.write(reg::RAMPMODE, rampmode::POSITION);
-                self.write(reg::XTARGET, target as u32);
             }
         }
         self.last_motion = Some(m);

@@ -141,10 +141,16 @@ fn read_mode(hw: &ControlHw) -> Mode {
 }
 
 fn configure_tmc(hw: &mut ControlHw, s: &Settings) -> bool {
-    let usteps_per_count = units::usteps_per_count(s);
+    let upc = units::usteps_per_count(s) * if s.encoder_reverse { -1.0 } else { 1.0 };
     let amax = feed_core::tmc::amax_from_usteps_s2(units::accel_to_usteps_s2(s, s.accel_mm_s2));
-    hw.tmc.init(s.run_current_ma, s.hold_current_ma, usteps_per_count, amax)
+    hw.tmc.init(s.run_current_ma, s.hold_current_ma, upc, amax, s.motor_reverse)
 }
+
+/// Consecutive bad readings before a sensor fault.
+const ADC_ERR_LIMIT: u32 = 20;
+/// Coil commanded on for this long with almost no current measured = open coil / dead sense amp.
+const COIL_OPEN_MS: u32 = 200;
+const COIL_OPEN_MA: u32 = 20;
 
 #[embassy_executor::task]
 async fn control(mut hw: ControlHw) {
@@ -152,21 +158,23 @@ async fn control(mut hw: ControlHw) {
         warn!("no valid settings in flash, using defaults");
         Settings::default()
     });
-    let tmc_ok = configure_tmc(&mut hw, &settings);
-    if !tmc_ok {
-        warn!("TMC5160 not responding");
-    }
     let mut ctrl = Controller::new(settings);
+    // configured later, once the 36 V bus is up (the board may be powered from USB first)
+    let mut tmc_ready = false;
+    let mut next_init_try = 0u32;
     let mut clutch = ClutchController::default();
     let mut quad = Quadrature::new(hw.dial_a.is_high(), hw.dial_b.is_high());
     let mut accel = DialAccel::new();
     let mut button = Button::new();
     let mut menu = Menu::new();
+    let mut edit = ctrl.settings; // menu working copy, applied only on save
     let mut fine = false;
-    let mut saved_until = 0u32;
+    let mut saved_ticks = 0u32;
     let mut deviation_armed = false;
     let mut bus_mv = 0u32;
     let mut clutch_ma = 0u32;
+    let mut adc_errors = 0u32;
+    let mut coil_on_low_ms = 0u32;
     let t_start = Instant::now();
 
     hw.watchdog.start(Duration::from_millis(100));
@@ -178,99 +186,151 @@ async fn control(mut hw: ControlHw) {
         n = n.wrapping_add(1);
         let now = t_start.elapsed().as_millis() as u32;
 
-        // ---- analog (bus every 10 ms, clutch current every tick)
-        if n % 10 == 0 {
-            if let Ok(c) = hw.adc.blocking_read(&mut hw.vm_sense) {
-                bus_mv = adc_to_bus_mv(c);
+        // ---- analog (bus every 10 ms, clutch current every tick); persistent errors -> fault
+        if n.is_multiple_of(10) {
+            match hw.adc.blocking_read(&mut hw.vm_sense) {
+                Ok(c) => {
+                    bus_mv = adc_to_bus_mv(c);
+                    adc_errors = adc_errors.saturating_sub(1);
+                }
+                Err(_) => adc_errors += 2,
             }
         }
-        if let Ok(c) = hw.adc.blocking_read(&mut hw.clutch_sense) {
-            clutch_ma = (clutch_ma * 7 + adc_to_ma(c)) / 8; // light smoothing of PWM ripple
+        match hw.adc.blocking_read(&mut hw.clutch_sense) {
+            Ok(c) => clutch_ma = (clutch_ma * 7 + adc_to_ma(c)) / 8, // light smoothing of PWM ripple
+            Err(_) => adc_errors += 2,
         }
 
-        // ---- dial + button (menu only while idle)
+        // ---- TMC5160: (re)configure once the bus is healthy, and again after any chip reset
+        let bus_ok = bus_mv >= ctrl.settings.bus_min_mv && bus_mv <= ctrl.settings.bus_max_mv;
+        if tmc_ready && hw.tmc.was_reset() {
+            warn!("TMC5160 reset, reconfiguring");
+            tmc_ready = false;
+        }
+        if !tmc_ready && bus_ok && now.wrapping_sub(next_init_try) < 0x8000_0000 {
+            hw.watchdog.feed(Duration::from_millis(100));
+            tmc_ready = configure_tmc(&mut hw, &ctrl.settings);
+            deviation_armed = false;
+            if !tmc_ready {
+                warn!("TMC5160 not responding");
+                next_init_try = now.wrapping_add(500);
+            }
+        }
+        if !bus_ok {
+            tmc_ready = false; // VM lost: the chip resets, configure again when it returns
+        }
+
+        // ---- dial + button (menu only while idle; edits go to a working copy)
         let detents = quad.update(hw.dial_a.is_high(), hw.dial_b.is_high());
         let fast = detents != 0 && accel.is_fast(now);
-        let idle = matches!(ctrl.state, State::Idle | State::Interlock);
+        let idle = matches!(ctrl.state, State::Idle | State::Interlock | State::Fault(_));
         let mut dial_to_feed = detents;
         match button.update(hw.dial_sw.is_low(), now) {
             Some(Press::Long) if menu.active => {
                 menu.active = false;
-                if hw.storage.save(&ctrl.settings) {
-                    saved_until = now + 1500;
+                // the save pauses everything for up to ~0.4 s (sector erase): only ever while idle
+                hw.watchdog.feed(Duration::from_secs(2));
+                let ok = hw.storage.save(&edit);
+                hw.watchdog.feed(Duration::from_millis(100));
+                ctrl.set_settings(edit);
+                tmc_ready = false; // re-apply currents, accel, direction, encoder scaling
+                if ok {
+                    saved_ticks = 1500;
                 }
-                configure_tmc(&mut hw, &ctrl.settings);
             }
-            Some(Press::Long) if idle => menu.active = true,
+            Some(Press::Long) if idle => {
+                edit = ctrl.settings;
+                menu.active = true;
+            }
             Some(Press::Short) if menu.active => menu.next(),
             Some(Press::Short) => fine = !fine,
             _ => {}
         }
         if menu.active {
             if !idle {
-                menu.active = false; // never edit while the feed is running
+                menu.active = false; // never edit while the feed is running; unsaved edits are dropped
             } else if detents != 0 {
-                ctrl.settings = menu.item().adjust(&ctrl.settings, detents);
+                edit = menu.item().adjust(&edit, detents);
             }
             dial_to_feed = 0;
         }
+        saved_ticks = saved_ticks.saturating_sub(1);
 
         // ---- TMC5160 status (every read refreshes the SPI status byte)
-        let motor_usteps = hw.tmc.xactual();
-        let enc_usteps = hw.tmc.x_enc();
-        let deviation = deviation_armed && hw.tmc.deviation();
-        let usteps_per_count = units::usteps_per_count(&ctrl.settings);
+        let (motor_usteps, enc_usteps, deviation) = if tmc_ready {
+            (hw.tmc.xactual(), hw.tmc.x_enc(), deviation_armed && hw.tmc.deviation())
+        } else {
+            (0, 0, false)
+        };
+        let mode = read_mode(&hw);
+        // a latched driver error is cleared (if its cause is gone) when the operator centres the switch
+        if tmc_ready && hw.tmc.driver_error() && mode == Mode::Center {
+            hw.tmc.clear_gstat();
+        }
+        let upc = units::usteps_per_count(&ctrl.settings);
+
+        // ---- coil plausibility: commanded on but (almost) no current = open coil or dead sense amp
+        if clutch.last_duty() > 0 && clutch_ma < COIL_OPEN_MA {
+            coil_on_low_ms += 1;
+        } else {
+            coil_on_low_ms = 0;
+        }
 
         let inputs = Inputs {
             now_ms: now,
-            mode: read_mode(&hw),
+            mode,
             rapid: hw.rapid.is_low(),
             estop_ok: hw.e_ok.is_high(),
             limit_left: hw.lim_l.is_high(), // NC to GND: high = hit or broken wire
             limit_right: hw.lim_r.is_high(),
-            driver_fault: hw.tmc.driver_error(),
+            driver_fault: tmc_ready && hw.tmc.driver_error(),
             deviation,
-            standstill: hw.tmc.standstill(),
+            standstill: !tmc_ready || hw.tmc.standstill(),
             motor_usteps,
-            output_counts: (enc_usteps as f32 / usteps_per_count) as i32,
+            output_counts: (enc_usteps as f32 / upc) as i32,
             bus_mv,
             dial_detents: if fine { dial_to_feed } else { dial_to_feed * 2 },
             dial_fast: fast,
+            driver_ready: tmc_ready,
+            sensor_fault: adc_errors >= ADC_ERR_LIMIT || coil_on_low_ms >= COIL_OPEN_MS,
         };
         let out = ctrl.step(&inputs);
 
         // ---- apply: driver enable, motion, stall monitor, clutch
-        hw.drv_en.set_level(if out.driver_enable { Level::High } else { Level::Low });
-        if out.driver_enable {
-            hw.tmc.apply(out.motion);
-        } else {
-            hw.tmc.apply(feed_core::Motion::Stop);
-            hw.tmc.invalidate();
-        }
-        if out.resync_encoder {
-            hw.tmc.resync_encoder();
-        }
-        if out.deviation_monitor != deviation_armed {
-            let lim = if out.deviation_monitor { ctrl.settings.stall_tolerance_steps * units::MICROSTEPS } else { 0 };
-            hw.tmc.set_deviation_limit(lim);
-            deviation_armed = out.deviation_monitor;
+        hw.drv_en.set_level(if out.driver_enable && tmc_ready { Level::High } else { Level::Low });
+        if tmc_ready {
+            if out.driver_enable {
+                hw.tmc.apply(out.motion);
+            } else {
+                hw.tmc.apply(feed_core::Motion::Stop);
+                hw.tmc.invalidate();
+            }
+            if out.resync_encoder {
+                hw.tmc.resync_encoder();
+            }
+            if out.deviation_monitor != deviation_armed {
+                let lim = if out.deviation_monitor { ctrl.settings.stall_tolerance_steps * units::MICROSTEPS } else { 0 };
+                hw.tmc.set_deviation_limit(lim);
+                deviation_armed = out.deviation_monitor;
+            }
         }
         let drive = clutch.step(out.clutch, ctrl.settings.clutch_hold_ma, clutch_ma, bus_mv, 0.001);
         hw.clutch_ls.set_level(if drive.low_side { Level::High } else { Level::Low });
         hw.clutch_pwm.set_duty_cycle_fraction(drive.duty, DUTY_MAX).ok();
 
         // ---- publish for the display (every 50 ms)
-        if n % 50 == 0 {
+        if n.is_multiple_of(50) {
+            let shown = if menu.active { &edit } else { &ctrl.settings };
             let st = ui::Status {
                 state: ctrl.state,
                 feed_mm_min: ctrl.display_feed(inputs.rapid),
-                rapid: inputs.rapid && matches!(ctrl.state, State::Running { .. }),
+                rapid: inputs.rapid && matches!(ctrl.state, State::Running { rapid_armed: true, .. }),
                 fine,
                 bus_mv,
                 limit: ctrl.limit_hold,
-                menu: if menu.active { Some((menu.item(), menu.item().value(&ctrl.settings))) } else { None },
-                saved: now < saved_until,
-                tmc_ok,
+                menu: if menu.active { Some((menu.item(), menu.item().value(shown))) } else { None },
+                saved: saved_ticks > 0,
+                tmc_ok: tmc_ready,
             };
             ui::STATUS.lock(|c| c.set(st));
         }

@@ -68,10 +68,22 @@ pub enum Item {
     Rapid,
     FeedMax,
     Accel,
+    MotorReverse,
+    EncoderReverse,
 }
 
-pub const ITEMS: [Item; 8] =
-    [Item::Pitch, Item::BeltRatio, Item::RunCurrent, Item::HoldCurrent, Item::ClutchHold, Item::Rapid, Item::FeedMax, Item::Accel];
+pub const ITEMS: [Item; 10] = [
+    Item::Pitch,
+    Item::BeltRatio,
+    Item::RunCurrent,
+    Item::HoldCurrent,
+    Item::ClutchHold,
+    Item::Rapid,
+    Item::FeedMax,
+    Item::Accel,
+    Item::MotorReverse,
+    Item::EncoderReverse,
+];
 
 impl Item {
     pub fn label(self) -> &'static str {
@@ -84,6 +96,8 @@ impl Item {
             Item::Rapid => "RAPID mm/min",
             Item::FeedMax => "FEED MAX mm/min",
             Item::Accel => "ACCEL mm/s2",
+            Item::MotorReverse => "MOTOR REVERSE 0/1",
+            Item::EncoderReverse => "ENCODER REVERSE 0/1",
         }
     }
 
@@ -97,6 +111,8 @@ impl Item {
             Item::Rapid => s.rapid_mm_min,
             Item::FeedMax => s.feed_max_mm_min,
             Item::Accel => s.accel_mm_s2,
+            Item::MotorReverse => s.motor_reverse as u8 as f32,
+            Item::EncoderReverse => s.encoder_reverse as u8 as f32,
         }
     }
 
@@ -113,6 +129,9 @@ impl Item {
             Item::Rapid => n.rapid_mm_min = (n.rapid_mm_min + d * 25.0).max(0.0),
             Item::FeedMax => n.feed_max_mm_min = (n.feed_max_mm_min + d * 10.0).max(0.0),
             Item::Accel => n.accel_mm_s2 = (n.accel_mm_s2 + d * 5.0).max(0.0),
+            // any turn of the dial toggles
+            Item::MotorReverse => n.motor_reverse ^= detents % 2 != 0,
+            Item::EncoderReverse => n.encoder_reverse ^= detents % 2 != 0,
         }
         if n.is_sane() {
             n

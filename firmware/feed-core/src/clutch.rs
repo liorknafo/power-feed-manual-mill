@@ -39,6 +39,7 @@ pub fn adc_to_bus_mv(counts: u16) -> u32 {
 
 pub struct ClutchController {
     integ: f32,
+    last_duty: u16,
     /// Coil resistance estimate for feed-forward, ohms (≈24 Ω from the coil design).
     pub coil_ohm: f32,
     pub kp: f32,
@@ -47,13 +48,24 @@ pub struct ClutchController {
 
 impl Default for ClutchController {
     fn default() -> Self {
-        ClutchController { integ: 0.0, coil_ohm: 24.0, kp: 0.0008, ki: 0.02 }
+        ClutchController { integ: 0.0, last_duty: 0, coil_ohm: 24.0, kp: 0.0008, ki: 0.02 }
     }
 }
 
 impl ClutchController {
+    /// High-side duty of the previous step (for plausibility checks).
+    pub fn last_duty(&self) -> u16 {
+        self.last_duty
+    }
+
     /// One control step. `dt_s` is the loop period.
     pub fn step(&mut self, cmd: ClutchCmd, hold_ma: u32, measured_ma: u32, bus_mv: u32, dt_s: f32) -> ClutchDrive {
+        let d = self.step_inner(cmd, hold_ma, measured_ma, bus_mv, dt_s);
+        self.last_duty = d.duty;
+        d
+    }
+
+    fn step_inner(&mut self, cmd: ClutchCmd, hold_ma: u32, measured_ma: u32, bus_mv: u32, dt_s: f32) -> ClutchDrive {
         match cmd {
             ClutchCmd::Off => {
                 self.integ = 0.0;
