@@ -1,10 +1,10 @@
-//! Mill power feed firmware (Raspberry Pi Pico / RP2040).
+//! Mill power feed firmware (RP2040 on the controller board).
 //!
 //! * `control` runs every 1 ms on a high-priority interrupt executor: reads the panel, the TMC5160 and
 //!   the ADCs, steps the `feed_core::Controller` state machine, and applies its outputs.
 //! * `display` runs in thread mode at ~10 Hz and draws the OLED; the control loop pre-empts it.
 //! * The hardware interlock (NAND/AND gates with E_OK) cuts the driver and clutch independently of
-//!   this code; firmware faults are an additional layer. A watchdog resets the Pico if the loop hangs,
+//!   this code; firmware faults are an additional layer. A watchdog resets the RP2040 if the loop hangs,
 //!   and the pull-downs on the enable lines keep everything off through the reset.
 //!
 //! Pin map: docs/design.md §4.

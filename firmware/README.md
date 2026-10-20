@@ -1,10 +1,10 @@
-# Firmware (Rust, Raspberry Pi Pico / RP2040)
+# Firmware (Rust, RP2040)
 
 ```
 firmware/
   feed-core/   no_std logic, unit-tested on the PC: state machine, units, TMC5160 maths,
                clutch current control, dial decoder, button/menu, settings blob
-  feed-app/    Embassy application for the Pico (hardware glue)
+  feed-app/    Embassy application for the board's RP2040 (hardware glue)
   tools/elf2uf2.py   ELF -> UF2 for drag-and-drop flashing
 ```
 
@@ -23,8 +23,8 @@ python3 ../tools/elf2uf2.py target/thumbv6m-none-eabi/release/feed-app ../power-
 ```
 
 **Flashing options:**
-- **UF2:** hold BOOTSEL on the Pico while plugging in USB, then copy `power-feed.uf2` onto the `RPI-RP2` drive.
-- **probe-rs:** with a Raspberry Pi Debug Probe on the Pico's SWD pads, run `cargo run --release` (uses probe-rs, gives live `defmt` logs).
+- **UF2:** connect USB-C, hold the board's BOOTSEL button and tap RESET, then copy `power-feed.uf2` onto the `RPI-RP2` drive. A blank board always comes up this way.
+- **probe-rs:** with a Raspberry Pi Debug Probe on the 3-pin JST-SH SWD connector, run `cargo run --release` (uses probe-rs, gives live `defmt` logs).
 
 ## Structure
 
@@ -51,8 +51,8 @@ Draws the OLED from a status snapshot. The control loop pre-empts it.
 
 ### Safety layers, outermost first
 1. **Hardware interlock:** the E-stop cuts DRV_ENN and both clutch gates, whatever the firmware does.
-2. **Pull-downs:** the Pico's enable outputs have pull-downs, so a reset or crash means driver off and clutch off.
-3. **Watchdog:** 100 ms. A hung loop resets the Pico.
+2. **Pull-downs:** the MCU's enable outputs have pull-downs, so a reset or crash means driver off and clutch off.
+3. **Watchdog:** 100 ms. A hung loop resets the RP2040.
 4. **State-machine faults:**
    - E-stop;
    - TMC5160 driver error, or driver not configured (re-initialised automatically when 36 V appears or the chip resets);
@@ -131,5 +131,5 @@ Calibrate hold current against cam-out torque with a torque wrench (design.md §
 | bus window | 30–42 V | |
 
 ## Not implemented yet
-- **PIO cross-check:** a second, Pico-side quadrature count of the output encoder on GP0/GP1, comparing against the TMC5160's own deviation detection. The pins are wired; it's a firmware addition.
+- **PIO cross-check:** a second, MCU-side quadrature count of the output encoder on GP0/GP1, comparing against the TMC5160's own deviation detection. The pins are wired; it's a firmware addition.
 - **StallGuard2:** could be added as a third stall layer at higher speeds.

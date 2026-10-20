@@ -26,21 +26,21 @@ Status: draft. The mechanical design is deferred until the mill model is known.
  │  input fuse, reverse-polarity protection, TVS, bulk caps                   │
  │     ├─► TMC5160 + 4× MOSFET half-bridges ─────────────────────► NEMA 23    │
  │     ├─► clutch driver (P+N half-bridge, PWM current control, fast decay) ─► EM clutch
- │     └─► 36 V → 5 V buck ─► Pico (3.3 V from the Pico's own regulator)      │
+ │     └─► 36 V → 5 V buck ─► 3.3 V LDO ─► RP2040 (bare chip on the PCB)      │
  │                                                                            │
- │  Pico ◄─SPI─► TMC5160      TMC5160 ◄─ clutch-side encoder (A/B/N)          │
- │  Pico ◄─ speed dial encoder, 3-pos switch, rapid button, E-stop sense      │
- │  Pico ─► OLED (I²C)        TMC5160 ◄─ limit switches (REFL/REFR)           │
+ │  MCU  ◄─SPI─► TMC5160      TMC5160 ◄─ clutch-side encoder (A/B/N)          │
+ │  MCU  ◄─ speed dial encoder, 3-pos switch, rapid button, E-stop sense      │
+ │  MCU  ─► OLED (I²C)        TMC5160 ◄─ limit switches (REFL/REFR)           │
  │  E-stop chain ─► hardware disable of the driver (DRV_ENN) and the clutch gate │
  └────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ### Why the TMC5160
 - Motor current is set over SPI, so the torque cap (R7) is a firmware setting. Feed and rapid can use different caps.
-- It has its own ramp generator. The Pico only sends a target velocity, and acceleration and deceleration happen in the chip.
+- It has its own ramp generator. The MCU only sends a target velocity, and acceleration and deceleration happen in the chip.
 - It has an encoder interface with deviation detection. With the encoder on the *output side of the clutch*, a motor stall, a clutch cam-out (teeth ratcheting) or a table jam all show up as a mismatch between commanded and actual motion.
   - The encoder inputs only work in SPI motion-controller mode (SD_MODE=0); in step/dir mode they become dcStep pins.
-  - On a mismatch the chip only sets `ENC_STATUS.deviation_warn` and pulses DIAG0. It does **not** stop by itself, so the Pico's DIAG0 interrupt handler must stop the motor and release the clutch.
+  - On a mismatch the chip only sets `ENC_STATUS.deviation_warn` and pulses DIAG0. It does **not** stop by itself, so the MCU's DIAG0 interrupt handler must stop the motor and release the clutch.
 - StallGuard2 gives a sensorless load reading as a second protection layer at medium and higher speeds. It is unreliable at very low speed, which is why the encoder is the primary detector.
 - Its reference-switch inputs (REFL/REFR) let the limit switches stop the motor in hardware.
 - External MOSFETs keep the heat off the controller chip at about 3.5 A RMS.
@@ -93,13 +93,13 @@ Rules:
 - A long press opens settings: motor current limit, clutch hold current (sets the cam-out torque), stall sensitivity, rapid speed, units, leadscrew pitch, gear ratio. Settings are saved to flash.
 - Units: mm/min or in/min. Both need the leadscrew pitch and gear ratio, which are set once the mechanics are known. Until then the screen shows motor RPM.
 
-## 4. Pico pin allocation
+## 4. RP2040 pin allocation (GPIO numbers as on a Pico, so a Pico works for breadboard bring-up)
 
 This is the authoritative version; it matches `hardware/tools/build_schematic.py`.
 
 | GPIO | Net | Notes |
 |---|---|---|
-| GP0  | ENC_OUT_A | output-side encoder A. It also goes to TMC5160 ENCA, so the Pico can cross-check with PIO |
+| GP0  | ENC_OUT_A | output-side encoder A. It also goes to TMC5160 ENCA, so the MCU can cross-check with PIO |
 | GP1  | ENC_OUT_B | output-side encoder B. It also goes to TMC5160 ENCB |
 | GP2  | CLUTCH_HS_PWM | clutch high-side PWM (PWM1A); ANDed with E_OK in hardware; 100k pull-down |
 | GP3  | E_OK_SENSE | E-stop loop status, read through 100k so firmware can never drive the interlock; high = loop closed / OK. Keep GP3 an input **with its internal pull disabled**. It shares PWM slice 1 with GP2. A pull-down would make it read ~1 V (a fault at every boot); a pull-up would hide an open E-stop from the firmware |
@@ -136,7 +136,7 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | Sense resistors | 2× 0.050 Ω, low-inductance (≈ 4.7 A RMS full scale, trimmed down with GLOBALSCALER) | to pick |
 | 5 V buck | TI LM5164DDAR (6–100 V in, 1 A), LCSC C477928. Fallback: LMR51610XDBVR (4–65 V), C20539658 | to buy |
 | Clutch driver | 60 V P-FET (high side) + 60 V logic-level N-FET (low side), 2× SS210 diodes, 0.1 Ω shunt + TLV9061, ≥60 V PTC (see §7.6) | to pick |
-| Controller | Raspberry Pi Pico | owned |
+| Controller | RP2040 + W25Q16JV flash + 12 MHz crystal, on the PCB (a Pico is still handy for breadboard bring-up) | on the BOM |
 | Dial | rotary encoder with push button (Cylewet CYT1100) | owned |
 | Display | 1.3" 128×64 I²C OLED — confirm SH1106 vs SSD1306 with the seller. Power it from **3.3 V**, because its on-board I²C pull-ups go to its supply | to buy |
 | Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
@@ -183,7 +183,7 @@ The user builds the clutch in their own shop (CNC, manual lathe, manual mill), s
 
 - **Coil off:** the leaf springs lift the armature so the teeth are fully out of mesh, with 0.3 mm clearance. The handwheel turns freely.
 - **Fail-safe — no power means disengaged:** only the coil holds the clutch engaged; the springs always disengage it.
-  - On power loss, E-stop, a firmware crash or a Pico reset, the gate drive drops: the 5 V AND gates go low and the Pico outputs have pull-downs.
+  - On power loss, E-stop, a firmware crash or an MCU reset, the gate drive drops: the 5 V AND gates go low and the MCU outputs have pull-downs.
   - The coil current then dies through the fast-decay diodes, and the springs lift the teeth out.
   - The ≈25 N spring preload (§7.4) is sized to overcome residual magnetism, so the armature can't stick engaged.
 - **Coil on:** the flux runs inner pole → armature → outer pole and pulls the teeth into mesh. Torque passes through the tooth flanks.
@@ -272,7 +272,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
   - **`core` crate**, `no_std` and hardware-free: state machine, speed/unit math, fault logic. It's unit-tested on the PC with `cargo test`.
   - **`app` crate:** the Embassy tasks that tie `core` to the hardware.
   - **Motor back-ends:** a step/dir one (PIO) for the DM556 breadboard stage and an SPI one for the TMC5160 on the PCB.
-- **Flashing / debugging:** `probe-rs` with a Raspberry Pi Debug Probe (or a second Pico as a probe). Plain UF2 drag-and-drop also works.
+- **Flashing / debugging:** `probe-rs` with a Raspberry Pi Debug Probe (or a Pico running debugprobe). Plain UF2 drag-and-drop also works.
 
 ## 8a. Safety notes
 - **E-stop scope:** the E-stop removes the driver enable (TMC5160 outputs float) and the clutch drive (the table becomes mechanically free). It does **not** disconnect the 36 V bus. A mains-side contactor would be a separate addition.
@@ -285,7 +285,8 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
   - FAULT stays latched until the mode switch returns to centre (§3).
   - A hardware latch with a reset button is a possible future addition.
 - **Clutch PTC:** its hold current derates with temperature, so keep the clutch hold current ≤0.3 A. When confirming the 2920L050/60 part, check its derating curve against the enclosure temperature.
-- **Debugging:** SWD comes from the Pico module's own SWCLK/GND/SWDIO pads at the module edge. Solder a 3-pin header there for probe-rs.
+- **Debugging:** SWD on the 3-pin JST-SH connector (Raspberry Pi Debug Probe pinout: SWCLK, GND, SWDIO).
+- **Blank board:** hold BOOTSEL, tap RESET, and the RP2040 shows up as the `RPI-RP2` USB drive (USB-C on the connector edge).
 
 ## 9. Open questions
 - Mill model: determines the leadscrew pitch, the clutch dimensions and the mounting.

@@ -22,7 +22,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 |---|---|---|
 | `docs/` | The spec, plus notes about the mill | `docs/design.md`, `docs/mill.md` |
 | `hardware/` | KiCad 9 schematic + 4-layer 100×100 mm PCB, order files | `hardware/README.md`, `hardware/fab/README.md` |
-| `firmware/` | Rust firmware for the Raspberry Pi Pico (Embassy). Core logic is unit-tested on the PC | `firmware/README.md` |
+| `firmware/` | Rust firmware for the RP2040 (Embassy). Core logic is unit-tested on the PC | `firmware/README.md` |
 | `mechanical/clutch/` | Tooth clutch: parametric CAD + machining sheet | `mechanical/clutch/MACHINING.md` |
 | `mechanical/feed_unit/` | The whole power feed in one box at the left table end: plate, 2:1 belt, leadscrew stub, encoder, clutch module, motor, controller PCB and control panel | `mechanical/feed_unit/FEED_UNIT.md` |
 | `mechanical/viewer/` | Interactive 3D view of everything (`sh mechanical/viewer/build.sh`) | `mechanical/README.md` |
@@ -51,7 +51,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 3. **Order the PCB:**
    - upload `hardware/fab/power-feed-gerbers.zip` to JLCPCB: 4 layers, 1.6 mm, 2 oz outer copper if possible;
    - stencil plus the BOM/CPL for assembly, or reflow it yourself;
-   - the Pico is hand-soldered.
+   - everything is SMD on the top side, including the RP2040 (QFN-56, 0.4 mm pitch: use the stencil).
 4. **Make the clutch** (`MACHINING.md`). Then calibrate it on the bench: pull force and cam-out torque against hold current.
 5. **Flash and commission:** follow `firmware/README.md` → *Commissioning*, in order, before mounting on the mill.
 

@@ -143,7 +143,7 @@ pub struct Inputs {
     pub limit_right: bool,
     /// TMC5160 driver error (overtemperature, short) from SPI status / DIAG0.
     pub driver_fault: bool,
-    /// Encoder deviation (TMC5160 ENC_STATUS.deviation_warn) or the Pico's own cross-check.
+    /// Encoder deviation (TMC5160 ENC_STATUS.deviation_warn) or the MCU's own cross-check.
     pub deviation: bool,
     /// TMC5160 reports zero velocity.
     pub standstill: bool,
@@ -743,7 +743,7 @@ mod tests {
         s.i.mode = Mode::Center;
         s.tick(1);
         assert_eq!(s.c.state, State::Idle);
-        s.i.bus_mv = 5_000; // PSU off, Pico on USB
+        s.i.bus_mv = 5_000; // PSU off, board on USB
         s.tick(1);
         assert_eq!(s.c.state, State::Fault(Fault::UnderVoltage));
     }

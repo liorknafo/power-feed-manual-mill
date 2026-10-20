@@ -28,7 +28,7 @@ Every pin gets a short wire stub and a net label; there are no long wires. Conne
 
 While the circuit is still changing, edit `build_schematic.py` and regenerate. Edits made in the KiCad GUI are overwritten on regeneration. Once the circuit is frozen for layout, stop regenerating, and from then on edit the schematic in KiCad directly.
 
-Sheets: power input and 5 V buck · TMC5160 driver · Pico and E-stop interlock · clutch driver · panel I/O. See `docs/design.md` §4 for the pin map and §7.6 for the clutch driver.
+Sheets: power input and 5 V buck · TMC5160 driver · RP2040 (flash, crystal, USB-C, 3.3 V LDO) and E-stop interlock · clutch driver · panel I/O. See `docs/design.md` §4 for the pin map and §7.6 for the clutch driver.
 
 ## PCB
 
