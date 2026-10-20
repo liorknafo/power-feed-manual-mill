@@ -1,0 +1,12 @@
+[package]
+name = "feed-core"
+version = "0.1.0"
+edition = "2021"
+description = "Hardware-independent logic for the mill power feed: state machine, units, TMC5160 math, clutch control"
+license = "MIT"
+
+[dependencies]
+
+[features]
+default = []
+std = []
