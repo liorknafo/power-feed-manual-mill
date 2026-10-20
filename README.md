@@ -24,8 +24,8 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | `hardware/` | KiCad 9 schematic + 4-layer 100×100 mm PCB, order files | `hardware/README.md`, `hardware/fab/README.md` |
 | `firmware/` | Rust firmware for the Raspberry Pi Pico (Embassy). Core logic is unit-tested on the PC | `firmware/README.md` |
 | `mechanical/clutch/` | Tooth clutch: parametric CAD + machining sheet | `mechanical/clutch/MACHINING.md` |
-| `mechanical/feed_unit/` | Mount at the left table end: plate, 2:1 belt, leadscrew stub, encoder | `mechanical/feed_unit/FEED_UNIT.md` |
-| `mechanical/enclosure/`, `mechanical/panel/` | 3D-printed controller box + front-panel pendant | `mechanical/README.md` |
+| `mechanical/feed_unit/` | The whole power feed in one box at the left table end: plate, 2:1 belt, leadscrew stub, encoder, clutch module, motor, controller PCB and control panel | `mechanical/feed_unit/FEED_UNIT.md` |
+| `mechanical/viewer/` | Interactive 3D view of everything (`sh mechanical/viewer/build.sh`) | `mechanical/README.md` |
 
 ## Status
 
@@ -36,7 +36,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | Firmware | Builds for the RP2040. Core state machine has 47 passing tests. Needs bench commissioning (`firmware/README.md`) |
 | Clutch CAD | Ready to machine, after you measure the motor shaft length. Independently reviewed (interference checked engaged and released). Magnetic sizing must be bench-calibrated |
 | Feed unit CAD | Structure reviewed: Oldham drive, circlip bearing stack, encoder adapter, guard, drawbolt tensioner. **Mill-side dimensions are placeholders until measured** |
-| Enclosure + panel | Ready to print. Reviewed (PCB insertion sweep, press-fit holes) |
+| Housing (one box: drive + PCB + controls) | Modelled: aluminium panels and bars on the feed-unit plate, PCB on the partition, controls on the front panel. Interference-checked; see FEED_UNIT.md → "Housing" |
 
 ## What you need to do
 

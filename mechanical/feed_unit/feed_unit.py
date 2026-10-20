@@ -21,8 +21,8 @@ import os
 import sys
 from dataclasses import dataclass
 
-from build123d import (Align, Box, Compound, Cylinder, Polyline, Pos, Rot, export_step, export_stl, extrude,
-                       make_face)
+from build123d import (Align, Box, Compound, Cylinder, Plane, Polyline, Pos, Rot, Solid, Text, export_step, export_stl,
+                       extrude, make_face)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "clutch"))
@@ -76,6 +76,18 @@ class F:
     enc_disc_d: float = 50.0
     enc_disc_t: float = 5.0
     enc_disc_flat: float = 20.0      # flat toward the clutch module (its cover top is ~27 below the stub)
+    # --- housing: ONE box for the drive, the electronics and the controls (see housing section below)
+    panel_t: float = 3.0             # 6061 plate, CNC-cut flat panels
+    bar: float = 10.0                # 10x10 6061 square bar along the inside edges, M3 tapped
+    x_back: float = -55.0            # back edge of the plate = inside of the back wall
+    x_part: float = 50.0             # partition, motor-bay face (clutch cover OD is at 44)
+    bay: float = 61.0                # electronics bay depth, partition -> front panel (E-stop body 50 + spare)
+    tail_clear: float = 6.0          # motor tail -> end panel
+    pcb_standoff: float = 6.0
+    pcb_w0: float = 180.0            # W of the PCB's x=0 edge; PCB x runs toward the plate (-W)
+    pcb_y0: float = 28.0             # world y of the PCB's y=0 edge; the connector edge (y=100) is at the bottom
+    col_w: float = 214.0             # control column centre (W): E-stop, toggle, rapid
+    disp_w: float = 135.0            # OLED + dial column centre (W), over the PCB
 
 
 f = F()
@@ -181,10 +193,18 @@ def bolt_heads(t=0.0):
     return [Pos(x, y, Z_PLATE_IN - 5.0) * Cylinder(4.25, 5.0, align=MIN) for x, y in module_bolts(t)]
 
 
+PLATE_TOP = max(max(y for _, y in f.standoffs) + 14, GUARD_R1 + 2.0 + 4.0)   # covers the guard's open face
+X_PART = f.x_part + f.panel_t                       # partition, electronics-bay face
+X_FRONT = X_PART + f.bay                            # front edge of the plate = inside of the front (control) panel
+
+
 def plate():
-    w_side = 55.0
-    top = max(max(y for _, y in f.standoffs) + 14, GUARD_R1 + 2.0 + 4.0)   # covers the guard's open face
-    s = Pos(0, (top + PLATE_BOT) / 2, Z_PLATE_IN) * Box(2 * w_side, top - PLATE_BOT, f.plate_t, align=MIN)
+    """Back wall of the whole unit: carries the stub bearings and the clutch module, and is widened to the operator
+    side (+X) to close the electronics bay. The bay part is pocketed from the table side down to 6 mm."""
+    s = Pos((f.x_back + X_FRONT) / 2, (PLATE_TOP + PLATE_BOT) / 2, Z_PLATE_IN) * Box(
+        X_FRONT - f.x_back, PLATE_TOP - PLATE_BOT, f.plate_t, align=MIN)
+    s = s - Pos((X_PART + 7 + X_FRONT - 8) / 2, (PLATE_TOP + PLATE_BOT) / 2, Z_PLATE_IN) * Box(
+        X_FRONT - 8 - X_PART - 7, PLATE_TOP - PLATE_BOT - 16, f.plate_t - 6, align=MIN)
     # stub bearings: straight-through Ø32 H7 bore (one setup), DIN 472-32 grooves at both faces
     s = s - Pos(0, 0, Z_PLATE_IN) * Cylinder(f.bearing_od / 2, f.plate_t, align=MIN)
     for zg in (Z_PLATE_IN + f.circlip_land, Z_PLATE_OUT - f.circlip_land - f.circlip_groove):
@@ -310,6 +330,216 @@ def mill_reference():
     return bracket + table + screw
 
 
+# ------------------------------------------------------------------ housing: everything in one box
+# +X points at the operator: at the LEFT table end, Y (up) x Z (out of the table, i.e. to the operator's left) = toward
+# the front of the mill. So the electronics bay and the control panel are on +X, and as the operator sees the front
+# panel, W increases to the LEFT.
+#   motor bay        x_back .. x_part      clutch module, motor, encoder
+#   partition        x_part .. X_PART      PCB on standoffs on its bay face, grommet for the motor/clutch/encoder wires
+#   electronics bay  X_PART .. X_FRONT     PCB, E-stop/toggle/rapid column, OLED + dial over the PCB
+# Panels wrap the plate (top, bottom, back, front) and screw into its edges; the end panel and the far edges use 10x10
+# bars. The 36 V PSU stays outside (mains on a moving table, and its size): 36 V and the limit switches come in
+# through two cable glands in the bottom of the bay.
+T = f.panel_t
+Y0, Y1 = PLATE_BOT, PLATE_TOP
+W_TAIL = W0 + 114.0                                 # motor tail (motor_stub flange + 104 body)
+W_END = W_TAIL + f.tail_clear + T                   # outer face of the end panel
+W_BAR_END = W_END - T - f.bar                       # where the long bars meet the end bars
+XB = f.x_back
+BAR = f.bar
+
+
+def bx(x0, x1, y0, y1, w0, w1):
+    return Pos(x0, y0, w0) * Box(x1 - x0, y1 - y0, w1 - w0, align=(Align.MIN, Align.MIN, Align.MIN))
+
+
+def pcb_to_world(px, py, h):
+    """PCB coordinates (x right, y down, h up from the board's underside) -> feed-unit world, PCB facing the operator."""
+    return (X_PART + f.pcb_standoff + h, f.pcb_y0 - py, f.pcb_w0 - px)
+
+
+def pcb_box(px0, px1, py0, py1, h0, h1):
+    a, b = pcb_to_world(px0, py0, h0), pcb_to_world(px1, py1, h1)
+    return bx(min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1]), min(a[2], b[2]), max(a[2], b[2]))
+
+
+# PCB bodies from the KiCad layout (the same numbers the old enclosure used); heights are assumptions
+PCB_HOLES = ((4, 4), (96, 4), (4, 96), (96, 96))
+
+
+def pcb_placeholder():
+    parts = [pcb_box(0, 100, 0, 100, 0, 1.6)]
+    for cx, cy in ((15.5, 37.0), (19.0, 74.0)):                                   # 12.5 x 25 bulk caps
+        x, y, w = pcb_to_world(cx, cy, 1.6)
+        parts.append(Pos(x, y, w) * Rot(0, 90, 0) * Cylinder(6.25, 25.0, align=MIN))
+    parts.append(pcb_box(37, 91, 3, 27, 1.6, 5.6))                                # Pico
+    for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1..J3
+        parts.append(pcb_box(x0, x1, 89, 100, 1.6, 13.6))
+    parts.append(pcb_box(65.6, 72.4, 77, 98, 1.6, 10.1))                          # J5
+    parts.append(pcb_box(73.0, 83.9, 66.4, 92.9, 1.6, 11.6))                      # J4
+    parts.append(pcb_box(0.0, 11.0, 59, 87, 1.6, 14.6))                           # fuse holder
+    return parts
+
+
+def pcb_standoffs():
+    out = []
+    for px, py in PCB_HOLES:
+        _, y, w = pcb_to_world(px, py, 0)
+        out.append(Pos(X_PART, y, w) * Rot(0, 90, 0) * Cylinder(3.0, f.pcb_standoff, align=MIN))
+    return out
+
+
+# front (control) panel layout, in (W, y) on the panel; X_FP = outer face
+X_FP = X_FRONT + T
+CTRL = {
+    "estop": (f.col_w, 0.0), "toggle": (f.col_w, -55.0), "rapid": (f.col_w, -95.0),
+    "oled": (f.disp_w, 8.0), "dial": (f.disp_w, -35.0), "adapter": (105.0, -100.0),
+}
+LABELS = (("SPEED", f.disp_w, -58.0), ("LEFT", f.col_w + 16, -41.0), ("STOP", f.col_w, -41.0),
+          ("RIGHT", f.col_w - 17, -41.0), ("RAPID", f.col_w, -113.0))
+
+
+def xcyl(r, x0, x1, y, w):
+    return Pos(x0, y, w) * Rot(0, 90, 0) * Cylinder(r, x1 - x0, align=MIN)
+
+
+def housing_bars():
+    yt, yb = (Y1 - BAR, Y1), (Y0, Y0 + BAR)
+    xb, xf = (XB, XB + BAR), (X_FRONT - BAR, X_FRONT)
+    we = (W_BAR_END, W_END - T)
+    long_w = (Z_PLATE_OUT, W_BAR_END)
+    return {
+        "bar_top_back": bx(*xb, *yt, *long_w), "bar_top_front": bx(*xf, *yt, *long_w),
+        "bar_bot_back": bx(*xb, *yb, *long_w), "bar_bot_front": bx(*xf, *yb, *long_w),
+        "bar_end_top": bx(XB + BAR, X_FRONT - BAR, *yt, *we), "bar_end_bot": bx(XB + BAR, X_FRONT - BAR, *yb, *we),
+        "bar_end_back": bx(*xb, Y0 + BAR, Y1 - BAR, *we), "bar_end_front": bx(*xf, Y0 + BAR, Y1 - BAR, *we),
+        "bar_part_top": bx(X_PART, X_PART + BAR, *yt, *long_w), "bar_part_bot": bx(X_PART, X_PART + BAR, *yb, *long_w),
+    }
+
+
+def housing_panels(bars):
+    full_w = (Z_PLATE_IN, W_END)
+    top = bx(XB - T, X_FP, Y1, Y1 + T, *full_w)
+    bot = bx(XB - T, X_FP, Y0 - T, Y0, *full_w)
+    back = bx(XB - T, XB, Y0, Y1, *full_w)
+    front = bx(X_FRONT, X_FP, Y0, Y1, *full_w)
+    end = bx(XB, X_FRONT, Y0, Y1, W_END - T, W_END)
+    part = bx(f.x_part, X_PART, Y0, Y1, Z_PLATE_OUT, W_END - T) - bars["bar_end_top"] - bars["bar_end_bot"]
+    # bottom: drawbolt access under the tension block, 2x M16 cable glands (36 V, limit switches) under J1 / J5,
+    # vent slots under the motor and under the driver; end panel: vent slots high up (chimney flow, out of the chips)
+    bot = bot - Pos(MX, Y0 - T - 1, Z_PLATE_OUT + 4) * Rot(-90, 0, 0) * Cylinder(6.0, T + 2, align=MIN)
+    for w in (110.0, 160.0):
+        bot = bot - Pos(84.0, Y0 - T - 1, w) * Rot(-90, 0, 0) * Cylinder(8.1, T + 2, align=MIN)
+    for i in range(11):
+        bot = bot - bx(-35 + 7 * i - 1.5, -35 + 7 * i + 1.5, Y0 - T - 1, Y0 + 1, 150, 215)
+    for i in range(4):
+        bot = bot - bx(68 + 8 * i - 1.5, 68 + 8 * i + 1.5, Y0 - T - 1, Y0 + 1, 122, 148)
+    for x0, x1 in ((-38, 38), (66, 100)):
+        for i in range(4):
+            end = end - bx(x0, x1, 2 + 7 * i, 5 + 7 * i, W_END - T - 1, W_END + 1)
+    # partition: grommet for the motor, clutch and encoder wires (below the PCB), M3 for the PCB standoffs
+    part = part - xcyl(10.0, f.x_part - 1, X_PART + 1, -100.0, 120.0)
+    for px, py in PCB_HOLES:
+        _, y, w = pcb_to_world(px, py, 0)
+        part = part - xcyl(1.7, f.x_part - 1, X_PART + 1, y, w)
+    front = control_cutouts(front)
+    return {"panel_top": top, "panel_bottom": bot, "panel_back": back, "panel_front": front, "panel_end": end,
+            "partition": part}
+
+
+def control_cutouts(fp):
+    w, y = CTRL["estop"]; fp = fp - xcyl(11.25, X_FRONT - 1, X_FP + 1, y, w)
+    w, y = CTRL["toggle"]; fp = fp - xcyl(6.2, X_FRONT - 1, X_FP + 1, y, w)
+    w, y = CTRL["rapid"]; fp = fp - xcyl(8.15, X_FRONT - 1, X_FP + 1, y, w)
+    w, y = CTRL["dial"]; fp = fp - xcyl(3.7, X_FRONT - 1, X_FP + 1, y, w) - xcyl(1.6, X_FRONT - 1, X_FRONT + 1.0, y + 7.8, w)
+    w, y = CTRL["oled"]; fp = fp - bx(X_FRONT - 1, X_FP + 1, y - 8, y + 8, w - 15, w + 15)
+    for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):   # OLED M2 tapped
+        fp = fp - xcyl(0.8, X_FRONT - 1, X_FRONT + 2.0, y - 2 + dy, w + dw)
+    w, y = CTRL["adapter"]
+    for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):              # adapter board M3 tapped
+        fp = fp - xcyl(1.25, X_FRONT - 1, X_FRONT + 2.0, y + dy, w + dw)
+    for txt, w, y in LABELS:                                                       # engraved 0.4 deep
+        pl = Plane(origin=(X_FP, y, w), x_dir=(0, 0, -1), z_dir=(1, 0, 0))
+        try:
+            fp = fp - extrude(pl * Text(txt, 4.5), amount=-0.4)
+        except Exception as e:  # noqa: BLE001 - a missing font must not stop the build
+            print("label %s skipped: %s" % (txt, e))
+    return fp
+
+
+def controls():
+    """Placeholder bodies for the checks and renders (not machined)."""
+    c = []
+    w, y = CTRL["estop"]
+    c += [xcyl(11.0, X_FRONT - 50, X_FRONT, y, w), xcyl(20.0, X_FP + 1, X_FP + 26, y, w), xcyl(30.0, X_FP, X_FP + 1, y, w)]
+    w, y = CTRL["toggle"]
+    c += [bx(X_FRONT - 25, X_FRONT, y - 6.5, y + 6.5, w - 6.5, w + 6.5), xcyl(2.0, X_FP, X_FP + 20, y, w)]
+    w, y = CTRL["rapid"]
+    c += [xcyl(8.0, X_FRONT - 25, X_FRONT, y, w), xcyl(10.0, X_FP, X_FP + 10, y, w)]
+    w, y = CTRL["dial"]
+    c += [bx(X_FRONT - 15, X_FRONT, y - 6, y + 6, w - 6, w + 6), xcyl(15.0, X_FP + 2, X_FP + 17, y, w)]
+    w, y = CTRL["oled"]
+    c += [bx(X_FRONT - 7.5, X_FRONT - 2.5, y - 2 - 17, y - 2 + 17, w - 18, w + 18)]
+    for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):
+        c.append(xcyl(1.25, X_FRONT - 2.5, X_FRONT, y - 2 + dy, w + dw))
+    w, y = CTRL["adapter"]
+    c += [bx(X_FRONT - 6.6, X_FRONT - 5, y - 14, y + 14, w - 22.5, w + 22.5), bx(X_FRONT - 15.6, X_FRONT - 6.6, y - 5, y + 5, w - 18, w + 18)]
+    for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):
+        c.append(xcyl(2.5, X_FRONT - 5, X_FRONT, y + dy, w + dw))
+    return c
+
+
+def screw_joints():
+    """(panel, target, outer point, inward unit vector): M3 countersunk through the panel, tapped 8 deep in the target."""
+    j = []
+    yT, yB = Y1 + T, Y0 - T
+    wp = (Z_PLATE_IN + Z_PLATE_OUT) / 2
+    for x in (-35.0, 10.0, 60.0, 100.0):
+        j += [("panel_top", "plate", (x, yT, wp), (0, -1, 0)), ("panel_bottom", "plate", (x, yB, wp), (0, 1, 0))]
+    for w in (100.0, 160.0, 215.0):
+        j += [("panel_top", "bar_top_back", (XB + BAR / 2, yT, w), (0, -1, 0)),
+              ("panel_top", "bar_top_front", (X_FRONT - BAR / 2, yT, w), (0, -1, 0)),
+              ("panel_bottom", "bar_bot_back", (XB + BAR / 2, yB, w), (0, 1, 0)),
+              ("panel_bottom", "bar_bot_front", (X_FRONT - BAR / 2, yB, w), (0, 1, 0)),
+              ("panel_back", "bar_top_back", (XB - T, Y1 - BAR / 2, w), (1, 0, 0)),
+              ("panel_back", "bar_bot_back", (XB - T, Y0 + BAR / 2, w), (1, 0, 0)),
+              ("panel_front", "bar_top_front", (X_FP, Y1 - BAR / 2, w), (-1, 0, 0)),
+              ("panel_front", "bar_bot_front", (X_FP, Y0 + BAR / 2, w), (-1, 0, 0))]
+    for w in (110.0, 190.0):
+        j += [("panel_top", "bar_part_top", (X_PART + BAR / 2, yT, w), (0, -1, 0)),
+              ("panel_bottom", "bar_part_bot", (X_PART + BAR / 2, yB, w), (0, 1, 0)),
+              ("partition", "bar_part_top", (f.x_part, Y1 - BAR / 2, w), (1, 0, 0)),
+              ("partition", "bar_part_bot", (f.x_part, Y0 + BAR / 2, w), (1, 0, 0))]
+    we = W_END - T - BAR / 2
+    for x in (-15.0, 30.0, 80.0):
+        j += [("panel_top", "bar_end_top", (x, yT, we), (0, -1, 0)), ("panel_bottom", "bar_end_bot", (x, yB, we), (0, 1, 0)),
+              ("panel_end", "bar_end_top", (x, Y1 - BAR / 2, W_END), (0, 0, -1)),
+              ("panel_end", "bar_end_bot", (x, Y0 + BAR / 2, W_END), (0, 0, -1))]
+    for y in (-90.0, -40.0, 10.0):
+        j += [("panel_back", "plate", (XB - T, y, wp), (1, 0, 0)), ("panel_front", "plate", (X_FP, y, wp), (-1, 0, 0))]
+    for y in (-120.0, -75.0, 25.0):     # clear of the E-stop legend ring and the toggle labels
+        j += [("panel_back", "bar_end_back", (XB - T, y, we), (1, 0, 0)), ("panel_front", "bar_end_front", (X_FP, y, we), (-1, 0, 0)),
+              ("panel_end", "bar_end_back", (XB + BAR / 2, y, W_END), (0, 0, -1)),
+              ("panel_end", "bar_end_front", (X_FRONT - BAR / 2, y, W_END), (0, 0, -1))]
+    return j
+
+
+def housing():
+    bars = housing_bars()
+    parts = dict(bars)
+    parts.update(housing_panels(bars))
+    return parts
+
+
+def apply_screws(parts):
+    for panel, target, p, d in screw_joints():
+        pl = Plane(origin=p, z_dir=d)
+        parts[panel] = parts[panel] - Solid.make_cylinder(1.7, T + 0.01, pl) - Solid.make_cone(3.25, 1.7, 1.55, pl)
+        inner = Plane(origin=tuple(p[i] + d[i] * T for i in range(3)), z_dir=d)
+        parts[target] = parts[target] - Solid.make_cylinder(1.25, 8.0, inner)
+    return parts
+
+
 def build():
     os.makedirs(OUT, exist_ok=True)
     cov, _ = clutch.cover()
@@ -348,9 +578,14 @@ def build():
         "mill_reference": mill_reference(),
     }
     parts.update(module)
+    parts.update(housing())
+    parts = apply_screws(parts)
+    parts["pcb_placeholder"] = Compound(children=pcb_placeholder())
+    parts["pcb_standoffs"] = Compound(children=pcb_standoffs())
+    parts["controls"] = Compound(children=controls())
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "controls")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -372,7 +607,7 @@ def notes():
 | Centre distance | {C:.2f} mm, tension slot ±{f.tension_slot:.0f} mm along the centre line |
 | Module position | {C:.1f} mm from the leadscrew at {f.motor_angle_deg:.0f}° (below) |
 | Belt plane | {W_PULLEY:.1f} mm out from the bracket face |
-| Overall | ≈{out_len:.0f} mm out from the table end (motor tail) |
+| Overall | ≈{W_END:.0f} mm out from the table end (housing end panel) |
 
 Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 2400` (per leadscrew turn; the encoder is on the stub).
 
@@ -413,11 +648,40 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
   table end is optional if the mill vibrates a lot.
 - The chamber ({f.chamber:.0f} mm) is set by the Oldham disc plus the belt plane: the 40T pulley's inner flange clears the stub tongue.
 
+## Housing: the whole power feed in one box
+The drive, the controller PCB and the controls share one housing on the table end. Outside it there is only the
+belt chamber (closed by the guard cup), the 36 V supply and the limit switches.
+
+| | |
+|---|---|
+| Outer size | {X_FP - (XB - T):.0f} (front-back) × {Y1 - Y0 + 2 * T:.0f} (high) × {W_END - Z_PLATE_IN:.0f} mm (along the table), plus the {f.chamber:.0f} mm belt chamber and the controls proud of the front |
+| Back wall | the plate, widened to x = {X_FRONT:.0f} on the operator side; the bay part pocketed to 6 mm from the table side |
+| Motor bay | clutch module, motor, encoder; {f.tail_clear:.0f} mm from the motor tail to the end panel |
+| Partition | x {f.x_part:.0f}…{X_PART:.0f}; the PCB stands on 4× M3 × {f.pcb_standoff:.0f} hex standoffs on its bay face, components toward the operator, connector edge down; Ø20 grommet below the PCB for the motor, clutch and encoder wires |
+| Electronics bay | {f.bay:.0f} deep (E-stop body 50 + spare); the controls hang from the front panel, the E-stop column beside the PCB |
+| Front panel = control panel | E-stop, LEFT/STOP/RIGHT toggle and RAPID in a column at the outer end; OLED and SPEED dial over the PCB; labels engraved 0.4 deep; adapter board (2×7 IDC) on M3 posts, 150 mm ribbon to J4 so the panel can come off and hang beside the unit |
+| Bottom | Ø12 access to the drawbolt; 2× M16 cable glands under J1 (36 V) and J5 (limit switches); vent slots under the motor and under the driver |
+| End panel | vent slots high up (air in at the bottom, out at the top of the end face, away from falling chips) |
+| Construction | 3 mm 6061 panels, CNC-cut flat; 10 × 10 6061 bars along the far edges and the partition; M3 countersunk screws, tapped 8 deep into the plate edges and the bars ({len(screw_joints())} screws) |
+
+Panels: top and bottom {X_FP - (XB - T):.0f} × {W_END - Z_PLATE_IN:.0f}; back and front {Y1 - Y0:.0f} × {W_END - Z_PLATE_IN:.0f}; end {X_FRONT - XB:.0f} × {Y1 - Y0:.0f};
+partition {Y1 - Y0:.0f} × {W_END - T - Z_PLATE_OUT:.0f} (notched for the end bars). Bars: 4× {W_BAR_END - Z_PLATE_OUT:.0f} long-edge, 2× {W_BAR_END - Z_PLATE_OUT:.0f} partition,
+2× {X_FRONT - XB - 2 * BAR:.0f} and 2× {Y1 - Y0 - 2 * BAR:.0f} at the end.
+
+- **USB / fuse:** take the front panel off (the ribbon stays plugged in). The Pico's USB faces the plate with ≈26 mm free.
+- **Heat:** the motor is inside. Default run current is 3 A (~16 W in the coils), held 1 A at standstill. On the bench,
+  run it closed for 30 min: if the motor case passes ~70 °C, lower `MOTOR mA` in the menu (light feeds need far less)
+  or fit a 40 mm fan on the end panel's vents.
+- **Order:** plate (bearings, stub, module, encoder) → partition + bars → PCB → back, top, bottom, end panels →
+  wire through the grommet → front panel with its controls last.
+
 ## PLACEHOLDERS (measure, then edit `F`)
 - `screw_d`, `screw_end_slot_w`, `screw_end_slot_d`, `screw_end_z`: the left leadscrew end and its drive slot.
   - If there is no slot, use a pinned sleeve coupling instead of the tongue.
 - `standoffs`: where M6 can go into the table end or the left bracket.
 - `motor_angle_deg`: rotate the module if it hits the saddle, the base or the DRO cable at full travel.
+- The housing reaches {X_FP + 26 - 90:.0f} mm in front of the table's front edge (E-stop head included) and {-(Y0 - T):.0f} mm below the
+  leadscrew: check both against the saddle, the DRO reader and the base at full right travel.
 - `chamber`: the minimum is set by the clutch output shaft; the script asserts it fits.
 """
 

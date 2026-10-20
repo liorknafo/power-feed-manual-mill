@@ -1,7 +1,7 @@
 #!/bin/sh
 # Builds the 3D viewer's PCB model and serves the viewer.
 #   sh mechanical/viewer/build.sh          -> then open http://localhost:8765/mechanical/viewer/
-# The STL parts come from the CAD scripts' out/ folders (run clutch.py, feed_unit.py, enclosure.py, panel.py first).
+# The STL parts come from the CAD scripts' out/ folders (run clutch.py and feed_unit.py first).
 set -e
 cd "$(dirname "$0")/../.."
 KC=${KICAD_CLI:-/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli}

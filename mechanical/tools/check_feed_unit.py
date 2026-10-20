@@ -51,3 +51,24 @@ for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
             bad += 1
         print("  heads t=%+.0f vs %-12s overlap %.3f mm3, min dist %.2f" % (t, name, v, d))
 print("bad pairs incl. bolt heads", bad)
+# housing clearances: the clutch module moves +-tension_slot along the belt centre line, the housing does not
+housing_names = [n for n in parts if n.startswith(("panel_", "bar_", "partition"))]
+ux, uy = FU.math.cos(FU.ANG), FU.math.sin(FU.ANG)
+moving = ("motor", "clutch_cover", "clutch_field_housing", "pulley_20T")
+worst = {}
+for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
+    for m in moving:
+        sh = Pos(ux * t, uy * t, 0) * parts[m]
+        for h in housing_names:
+            d = sh.distance_to(parts[h])
+            if d < worst.get(m, (99, ""))[0]:
+                worst[m] = (d, "%s at t=%+.0f" % (h, t))
+for m, (d, where) in worst.items():
+    print("  housing clearance %-22s %.2f mm (%s)" % (m, d, where))
+    if d < 2.0:
+        bad += 1
+for a, b in (("pcb_placeholder", "controls"), ("pcb_placeholder", "partition"), ("controls", "partition"),
+             ("encoder", "partition"), ("encoder", "panel_top"), ("tension_block", "panel_bottom"),
+             ("pcb_placeholder", "bar_part_top"), ("controls", "bar_top_front"), ("controls", "bar_end_front")):
+    print("  clearance %-16s <-> %-14s %.2f mm" % (a, b, parts[a].distance_to(parts[b])))
+print("bad incl. housing clearances", bad)
