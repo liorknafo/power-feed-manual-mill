@@ -257,6 +257,8 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 - **Pole separation:** a non-magnetic ring between the inner and outer pole on the rotor (brass, bronze or aluminium, or machined slots). It forces the flux through the armature.
 - **Mating tooth rings:** cut them as a pair with the same setup (same cutter and indexing) so all 30 teeth bear evenly. A CNC with a V/chamfer cutter or the mill with an indexer both work.
 - **Leaf springs:** spring-steel shim, three tangential straps. They carry torque with no backlash and set the lift-off force.
+- **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 648 onto the motor's D-shaft. That holds >40 N·m against the motor's 3 N·m, and avoids broaching a D-bore. An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
+- **Model and machining data:** `mechanical/clutch/clutch.py` holds the parametric model; `mechanical/clutch/MACHINING.md` has the dimension tables, fits and tooth-cutting notes, generated from the same parameters.
 - **Shimming:** set the 0.15 mm engaged pole gap and the 1.3 mm stroke with shims.
 
 ## 8. Firmware
