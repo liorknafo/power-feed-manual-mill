@@ -449,7 +449,8 @@ class Project:
                                   [Sym("stroke"), [Sym("width"), 0], [Sym("type"), Sym("default")]],
                                   [Sym("uuid"), uid(self.name, p.ref, p.unit, "wire", num)]])
                     prev = last_end.get((outward, net))
-                    if prev and abs(prev[0] - ex) + abs(prev[1] - ey) <= 2 * GRID + 0.01:
+                    # only bridge directly adjacent stubs, so the wire can never cross another pin's stub
+                    if prev and abs(prev[0] - ex) + abs(prev[1] - ey) <= GRID + 0.01:
                         # bridge to the neighbouring stub of the same net instead of a second label
                         items.append([Sym("wire"), [Sym("pts"), [Sym("xy"), prev[0], prev[1]], [Sym("xy"), ex, ey]],
                                       [Sym("stroke"), [Sym("width"), 0], [Sym("type"), Sym("default")]],

@@ -3278,8 +3278,8 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "bc17e2bc-aac3-5587-af10-673b69bd9a42")
-		(property "Reference" "J4"
+		(uuid "1c5caeb6-cc13-505a-807d-9eb72a5c6d20")
+		(property "Reference" "J3"
 			(at 38.1 96.52 0)
 			(effects
 				(font
@@ -3332,15 +3332,15 @@
 			)
 		)
 		(pin "1"
-			(uuid "6381021b-6b0e-58a9-9eca-27f37df7ac9a")
+			(uuid "f17813c0-889b-5c68-a4c2-03acd5107e36")
 		)
 		(pin "2"
-			(uuid "027d9d45-3942-55f6-8f54-7ec73a62fd22")
+			(uuid "3d5e941a-632e-5d21-b4ae-b5dabee06344")
 		)
 		(instances
 			(project "power-feed"
 				(path "/8e300617-3fca-5828-bedd-07eaa661f340/fee9f53f-ca95-5009-a118-475b15ee829d"
-					(reference "J4")
+					(reference "J3")
 					(unit 1)
 				)
 			)
@@ -3355,7 +3355,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1a7ea941-9f9f-504b-837c-12fb9fdf6fa5")
+		(uuid "828a7157-5570-50df-87e5-315573aaf337")
 	)
 	(label "COIL_P"
 		(at 30.48 99.06 180)
@@ -3377,7 +3377,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "72747949-e315-5aaf-a320-dfd7977905b8")
+		(uuid "8ed100b3-82fb-54d6-a96b-e7df84b5b599")
 	)
 	(label "COIL_N"
 		(at 30.48 101.6 180)

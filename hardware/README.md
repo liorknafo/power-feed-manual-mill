@@ -29,3 +29,17 @@ Every pin gets a short wire stub and a net label; there are no long wires. Conne
 While the circuit is still changing, edit `build_schematic.py` and regenerate. Edits made in the KiCad GUI are overwritten on regeneration. Once the circuit is frozen for layout, stop regenerating, and from then on edit the schematic in KiCad directly.
 
 Sheets: power input and 5 V buck · TMC5160 driver · Pico and E-stop interlock · clutch driver · panel I/O. See `docs/design.md` §4 for the pin map and §7.6 for the clutch driver.
+
+## PCB
+
+```sh
+KPY=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3
+$KPY hardware/tools/build_pcb.py --route   # place, planes, Freerouting, power pours, GND stitching
+$KPY hardware/tools/fix_planes.py          # vias to planes for anything the router left
+python3 hardware/tools/check_pcb.py        # KiCad DRC + schematic parity
+hardware/tools/render_pcb.sh               # 2D layer PNGs; 3D: kicad-cli pcb render
+```
+
+- **Board:** 100×100 mm, 4 layers: F.Cu signals + GND pour, In1 GND plane, In2 split +36V (power area) / +3V3, B.Cu signals + GND pour.
+- **Autorouter:** Freerouting 2.4.1, run on Java 25. Set `FREEROUTING_JAR` to point at your copy.
+- **Order** with 2 oz outer copper if possible (motor phases ~3.5 A RMS).

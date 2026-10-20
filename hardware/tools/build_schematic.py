@@ -38,6 +38,7 @@ PICO = "Module:RaspberryPi_Pico_SMD"
 TB2 = "Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_2-G-5,08_1x02_P5.08mm_Horizontal"
 TB4 = "Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_4-G-5,08_1x04_P5.08mm_Horizontal"
 XH = "Connector_JST:JST_XH_B%dB-XH-A_1x0%d_P2.50mm_Vertical"
+IDC_2X7 = "Connector_IDC:IDC-Header_2x07_P2.54mm_Vertical"
 FUSE_5X20 = "power_feed:Fuseholder_XC_BLX-A_5x20mm_P22.00mm"
 PTC = "Fuse:Fuse_2920_7451Metric"
 SOT223 = "Package_TO_SOT_SMD:SOT-223-3_TabPin2"
@@ -264,7 +265,6 @@ def build():
         R("100k", "CLUTCH_HS_PWM", GND),
     )
     s.row(
-        XH_CONN(2, ["ESTOP_SRC", "ESTOP_RET"], props={"Description": "E-stop, normally-closed contact"}),
         R("330", V3, "ESTOP_SRC"),
         R("1k", "ESTOP_RET", "E_OK"),
         R("10k", "E_OK", GND),
@@ -323,11 +323,16 @@ def build():
            "Switch contacts go to GND (active low). Limit switches are NC to GND, so a broken wire reads as 'hit'.\n"
            "Output encoder (LPD3806, NPN open collector) powered from 5 V, pulled up to 3.3 V (safe for Pico + TMC5160).")
     s.row(
-        XH_CONN(4, [GND, "MODE_L_RAW", "MODE_R_RAW", "RAPID_RAW"], props={"Description": "ON-OFF-ON mode switch + rapid button"}),
-        XH_CONN(4, [GND, "DIAL_A_RAW", "DIAL_B_RAW", "DIAL_SW_RAW"], props={"Description": "speed dial encoder"}),
-        XH_CONN(3, [GND, "LIM_L_RAW", "LIM_R_RAW"], props={"Description": "limit switches (NC)"}),
-        XH_CONN(4, [GND, V3, "OLED_SCL", "OLED_SDA"], props={"Description": "OLED (3.3 V only)"}),
-        XH_CONN(5, [V5, GND, "ENC_A_RAW", "ENC_B_RAW", "ENC_N_RAW"], props={"Description": "output-side encoder"}),
+        # one ribbon to the front panel: OLED, E-stop, mode switch, rapid button, speed dial
+        Part("J", "Connector_Generic:Conn_02x07_Odd_Even", "PANEL 2x7 IDC", IDC_2X7,
+             {"1": GND, "2": V3, "3": "OLED_SCL", "4": "OLED_SDA", "5": GND, "6": "ESTOP_SRC", "7": "ESTOP_RET",
+              "8": "MODE_L_RAW", "9": "MODE_R_RAW", "10": "RAPID_RAW", "11": "DIAL_A_RAW", "12": "DIAL_B_RAW",
+              "13": "DIAL_SW_RAW", "14": GND},
+             props={"MPN": "2x7 2.54 mm shrouded box header", "LCSC": "",
+                    "Description": "front panel ribbon; E-stop NC loop on pins 6-7, so an unplugged ribbon = E-stop"}),
+        # one cable from the feed unit: output encoder + both limit switches
+        XH_CONN(7, [V5, GND, "ENC_A_RAW", "ENC_B_RAW", "ENC_N_RAW", "LIM_L_RAW", "LIM_R_RAW"],
+                props={"Description": "feed unit: encoder (5 V, A, B, N) + NC limit switches L/R"}),
     )
     inputs = [  # raw net, clean net, pull-up, series R, filter C
         ("MODE_L_RAW", "MODE_L", "10k", "1k", "100nF"),
