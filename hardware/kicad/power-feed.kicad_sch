@@ -109,7 +109,7 @@
 			(color 0 0 0 0)
 		)
 		(uuid "3c72cfd4-92c3-582a-b64e-caafbb679003")
-		(property "Sheetname" "Pico, SPI, E-stop interlock"
+		(property "Sheetname" "RP2040, SPI, E-stop interlock"
 			(at 152.4 39.9284 0)
 			(effects
 				(font

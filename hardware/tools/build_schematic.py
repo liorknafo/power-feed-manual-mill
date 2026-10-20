@@ -34,7 +34,11 @@ SOT23_6 = "Package_TO_SOT_SMD:SOT-23-6"
 DPAK = "Package_TO_SOT_SMD:TO-252-2"
 LED0603 = "LED_SMD:LED_0603_1608Metric"
 TQFP48 = "Package_QFP:TQFP-48-1EP_7x7mm_P0.5mm_EP5x5mm_ThermalVias"
-PICO = "Module:RaspberryPi_Pico_SMD"
+QFN56 = "Package_DFN_QFN:QFN-56-1EP_7x7mm_P0.4mm_EP3.2x3.2mm_ThermalVias"
+SOIC8_208 = "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
+XTAL3225 = "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm"
+USB_C = "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
+SH3 = "Connector_JST:JST_SH_SM03B-SRSS-TB_1x03-1MP_P1.00mm_Horizontal"
 TB2 = "Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_2-G-5,08_1x02_P5.08mm_Horizontal"
 TB4 = "Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_4-G-5,08_1x04_P5.08mm_Horizontal"
 XH = "Connector_JST:JST_XH_B%dB-XH-A_1x0%d_P2.50mm_Vertical"
@@ -74,6 +78,8 @@ RES_PARTS = {
     ("31.6k", R0603): ("UNI-ROYAL 0603WAF3162T5E", "C25967"),    # E (no Basic E96 value)
     ("4.7", R0402): ("UNI-ROYAL 0402WGF470KTCE", "C25121"),      # E (no Basic 0402 value)
     ("4.7k", R1206): ("UNI-ROYAL 1206W4F4701T5E", "C17936"),     # B, 250 mW
+    ("27", R0603): ("UNI-ROYAL 0603WAF270JT5E", "C25190"),       # B   (RP2040 USB series)
+    ("5.1k", R0603): ("UNI-ROYAL 0603WAF5101T5E", "C23186"),     # B   (USB-C CC pull-downs)
 }
 CAP_PARTS = {
     ("2.2nF 50V", C0603): ("FH 0603B222K500NT", "C1604"),                    # B, 50 V X7R
@@ -90,6 +96,8 @@ CAP_PARTS = {
     ("2.2uF 100V", C1210): ("Murata GRM32ER72A225KA35L", "C86054"),          # E, 100 V X7R
     ("100pF", C0603): ("Samsung CL10C101JB8NNNC", "C14858"),                 # B, 50 V C0G
     ("22uF 10V", C1206): ("Samsung CL31A226KAHNNNE", "C12891"),              # B, 25 V X5R
+    ("1uF", C0603): ("Samsung CL10A105KB8NNNC", "C15849"),                   # B, 50 V X5R (RP2040 VREG, LDO)
+    ("15pF", C0603): ("Samsung CL10C150JB8NNNC", "C1644"),                   # B, 50 V C0G (12 MHz crystal)
 }
 
 GND, V3, V5, VM = "GND", "+3V3", "+5V", "+36V"
@@ -273,29 +281,74 @@ def build():
     )
 
     # ================================================================ MCU + interlock
-    s = pr.sheet("mcu", "mcu.kicad_sch", "Pico, SPI, E-stop interlock")
+    s = pr.sheet("mcu", "mcu.kicad_sch", "RP2040, SPI, E-stop interlock")
     s.note("Interlock (hardware, independent of firmware):\n"
-           "  TMC_DRV_ENN = NAND(DRV_EN, E_OK)      -> driver off unless Pico enables it AND E-stop loop closed\n"
-           "  CLUTCH_*    = AND(Pico request, E_OK) -> clutch off on E-stop\n"
-           "Pico outputs have pull-downs so everything is off while the Pico is in reset.\n"
+           "  TMC_DRV_ENN = NAND(DRV_EN, E_OK)      -> driver off unless the MCU enables it AND E-stop loop closed\n"
+           "  CLUTCH_*    = AND(MCU request, E_OK)  -> clutch off on E-stop\n"
+           "MCU outputs have pull-downs so everything is off while the RP2040 is in reset.\n"
            "E-stop: NC contact between ESTOP_SRC (+3V3 via 330R) and ESTOP_RET. Open or broken wire -> E_OK low.\n"
-           "The Pico only reads E_OK through 100k (E_OK_SENSE), so firmware can never hold the interlock enabled.\n"
+           "The MCU only reads E_OK through 100k (E_OK_SENSE), so firmware can never hold the interlock enabled.\n"
            "The E-stop removes driver enable and clutch drive; it does not disconnect the 36 V bus.\n"
-           "SWD: solder a 3-pin header to the Pico's own SWCLK/GND/SWDIO pads (module edge).")
-    pico = {str(i): None for i in range(1, 41)}
-    pico.update({"3": GND, "8": GND, "13": GND, "18": GND, "23": GND, "28": GND, "38": GND, "33": GND,
-                 "1": "ENC_OUT_A", "2": "ENC_OUT_B", "4": "CLUTCH_HS_PWM", "5": "E_OK_SENSE",
-                 "6": "I2C_SDA", "7": "I2C_SCL", "9": "LIM_L", "10": "LIM_R", "11": "CLUTCH_LS_EN",
-                 "14": "DIAL_A", "15": "DIAL_B", "16": "DIAL_SW", "17": "MODE_L", "19": "MODE_R", "20": "RAPID",
-                 "21": "SPI_MISO", "22": "SPI_CS", "24": "SPI_SCK", "25": "SPI_MOSI", "26": "DRV_EN",
-                 "27": "TMC_DIAG0", "29": "TMC_DIAG1", "30": "RUN", "31": "VM_SENSE", "32": "CLUTCH_ISENSE",
-                 "36": V3, "39": "VSYS"})
-    s.row(Part("A", "MCU_Module:RaspberryPi_Pico", "Raspberry Pi Pico", PICO, pico,
-               props=P("user-supplied, hand-solder")))  # not a JLCPCB part: no LCSC number on purpose
-    pr.pwr_flags += [("mcu", "VSYS")]
+           "RP2040 per Raspberry Pi's minimal design: 12 MHz crystal (1k series), W25Q16JV 2 MB QSPI flash, internal\n"
+           "1.1 V core regulator. GPIO numbers are the ones the old Pico module used, so the firmware is unchanged.\n"
+           "+3V3: AP2112K from VSYS = +5V or USB VBUS through Schottkys (USB alone powers the logic for flashing).\n"
+           "Flash a blank board: hold BOOTSEL, tap RESET, copy the UF2. SWD on J_SWD (Raspberry Pi Debug Probe pinout).")
+    mcu = {str(i): None for i in range(1, 58)}
+    mcu.update({
+        "1": V3, "10": V3, "22": V3, "33": V3, "42": V3, "49": V3,              # IOVDD
+        "43": V3, "44": V3, "48": V3,                                          # ADC_AVDD, VREG_VIN, USB_VDD
+        "45": "VDD_CORE", "23": "VDD_CORE", "50": "VDD_CORE",                  # VREG_VOUT -> DVDD
+        "19": GND, "57": GND,                                                  # TESTEN, exposed pad
+        "20": "XIN", "21": "XOUT", "24": "SWCLK", "25": "SWDIO", "26": "RUN",
+        "46": "USB_DM", "47": "USB_DP",
+        "51": "QSPI_SD3", "52": "QSPI_SCLK", "53": "QSPI_SD0", "54": "QSPI_SD2", "55": "QSPI_SD1", "56": "QSPI_SS",
+        "2": "ENC_OUT_A", "3": "ENC_OUT_B", "4": "CLUTCH_HS_PWM", "5": "E_OK_SENSE",          # GPIO0..3
+        "6": "I2C_SDA", "7": "I2C_SCL", "8": "LIM_L", "9": "LIM_R", "11": "CLUTCH_LS_EN",    # GPIO4..8
+        "13": "DIAL_A", "14": "DIAL_B", "15": "DIAL_SW", "16": "MODE_L", "17": "MODE_R",    # GPIO10..14
+        "18": "RAPID", "27": "SPI_MISO", "28": "SPI_CS", "29": "SPI_SCK", "30": "SPI_MOSI",  # GPIO15..19
+        "31": "DRV_EN", "32": "TMC_DIAG0", "34": "TMC_DIAG1", "37": "LED_STAT",              # GPIO20..22, 25
+        "38": "VM_SENSE", "39": "CLUTCH_ISENSE",                                             # GPIO26/27 = ADC0/1
+    })
+    s.row(Part("U", "MCU_RaspberryPi:RP2040", "RP2040", QFN56, mcu, props=P("Raspberry Pi RP2040", "C2040")))
+    s.row(*[C("100nF", V3, GND) for _ in range(6)], C("100nF", V3, GND), C("100nF", V3, GND),   # IOVDD x6, AVDD, USB_VDD
+          C("1uF", V3, GND), C("1uF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND))
     s.row(
-        D("Device:D_Schottky", "B5819W", "VSYS", V5, SOD123, props=P("Changjing B5819W SL", "C8598")),
+        Part("U", "Memory_Flash:W25Q16JVSS", "W25Q16JVSS", SOIC8_208,
+             {"1": "QSPI_SS", "2": "QSPI_SD1", "3": "QSPI_SD2", "4": GND, "5": "QSPI_SD0", "6": "QSPI_SCLK",
+              "7": "QSPI_SD3", "8": V3}, props=P("Winbond W25Q16JVSSIQ", "")),
+        C("100nF", V3, GND),
+        R("10k", "QSPI_SS", V3),
+        R("1k", "QSPI_SS", "BOOTSEL_SW"),
+        Part("SW", "Switch:SW_Push", "BOOTSEL", BUTTON, {"1": "BOOTSEL_SW", "2": GND}, props=P("Omron B3S-1000", "C2733655")),
+        Part("Y", "Device:Crystal_GND24", "12MHz", XTAL3225, {"1": "XIN", "2": GND, "3": "XTAL_OUT", "4": GND},
+             props=P("Abracon ABM8-272-T3 (12 MHz, CL 10 pF)", "")),
+        R("1k", "XOUT", "XTAL_OUT"),
+        C("15pF", "XIN", GND), C("15pF", "XTAL_OUT", GND),
+    )
+    s.row(
         Part("SW", "Switch:SW_Push", "RESET", BUTTON, {"1": "RUN", "2": GND}, props=P("Omron B3S-1000", "C2733655")),
+        R("10k", "RUN", V3),
+        Part("J", "Connector_Generic:Conn_01x03", "SWD", SH3, {"1": "SWCLK", "2": GND, "3": "SWDIO"},
+             props=P("JST SM03B-SRSS-TB(LF)(SN)", "C160403")),
+        R("1k", "LED_STAT", "LED_STAT_A"),
+        D("Device:LED", "green", GND, "LED_STAT_A", LED0603, props=P("KENTO KT-0603G", "C12624")),
+    )
+    pr.pwr_flags += [("mcu", "VSYS"), ("mcu", "VBUS"), ("mcu", GND)]   # GND: no symbol drives it now the Pico is gone
+    s.row(
+        Part("J", "Connector:USB_C_Receptacle_USB2.0_16P", "USB-C", USB_C,
+             {"A4": "VBUS", "A9": "VBUS", "B4": "VBUS", "B9": "VBUS", "A1": GND, "A12": GND, "B1": GND, "B12": GND,
+              "S1": GND, "A5": "USB_CC1", "B5": "USB_CC2", "A6": "USB_CONN_DP", "B6": "USB_CONN_DP",
+              "A7": "USB_CONN_DM", "B7": "USB_CONN_DM", "A8": None, "B8": None},
+             props=P("HRO TYPE-C-31-M-12", "C165948")),
+        R("5.1k", "USB_CC1", GND), R("5.1k", "USB_CC2", GND),
+        R("27", "USB_CONN_DP", "USB_DP"), R("27", "USB_CONN_DM", "USB_DM"),
+        D("Device:D_Schottky", "B5819W", "VSYS", V5, SOD123, props=P("Changjing B5819W SL", "C8598")),
+        D("Device:D_Schottky", "B5819W", "VSYS", "VBUS", SOD123, props=P("Changjing B5819W SL", "C8598")),
+        Part("U", "Regulator_Linear:AP2112K-3.3", "AP2112K-3.3", SOT23_5,
+             {"1": "VSYS", "2": GND, "3": "VSYS", "4": None, "5": V3}, props=P("Diodes AP2112K-3.3TRG1", "C51118")),
+        C("1uF", "VSYS", GND), C("4.7uF 10V", V3, GND, fp=C0805),
+    )
+    s.row(
         R("33", "SPI_SCK", "TMC_SCK"),
         R("33", "SPI_MOSI", "TMC_SDI"),
         R("33", "SPI_CS", "TMC_CSN"),
@@ -375,7 +428,7 @@ def build():
     s = pr.sheet("io", "io.kicad_sch", "Panel and sensor I/O")
     s.note("All panel inputs: pull-up at the connector, ESD array, series R + RC filter into the logic.\n"
            "Switch contacts go to GND (active low). Limit switches are NC to GND, so a broken wire reads as 'hit'.\n"
-           "Output encoder (LPD3806, NPN open collector) powered from 5 V, pulled up to 3.3 V (safe for Pico + TMC5160).")
+           "Output encoder (LPD3806, NPN open collector) powered from 5 V, pulled up to 3.3 V (safe for the RP2040 + TMC5160).")
     s.row(
         # one ribbon to the front panel: OLED, E-stop, mode switch, rapid button, speed dial
         Part("J", "Connector_Generic:Conn_02x07_Odd_Even", "PANEL 2x7 IDC", IDC_2X7,

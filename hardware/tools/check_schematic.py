@@ -15,10 +15,7 @@ OUT = os.path.abspath(build_schematic.OUT)
 TOP = os.path.join(OUT, "power-feed.kicad_sch")
 
 # Known, reviewed ERC findings that are not design errors.
-ALLOWED = [
-    # The Pico symbol marks both GND and AGND as power outputs; tying them together is correct.
-    ("pin_to_pin", "Symbol A1 Pin 3 [GND"),
-]
+ALLOWED = []
 
 
 def run(args):
