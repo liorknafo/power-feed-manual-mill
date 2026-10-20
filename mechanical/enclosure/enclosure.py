@@ -11,7 +11,8 @@ PCB top-left corner = (0, 0). Floor underside = Z 0.
 
 Parts
   base       floor + 4 standoffs (PCB 6 mm up) + walls + connector notch + USB hole + 2 mounting ears
-             + 4 hanging lid-screw bosses in the corners (M3 self-tapping, 8 mm deep).
+             + 4 hanging lid-screw bosses on the left / right walls, entirely OUTSIDE the 100 x 100 board outline
+               (the PCB drops straight down between them; see insertion_sweep()).
   lid        plate with inner locating lip, 4 counterbored M3 holes, vent slots over the driver area,
              a fuse access opening + rebate, and a front skirt that closes the top of the J1..J3 window.
   fuse_hatch small plate that covers the fuse opening (2x M3x8 into lid-underside bosses).
@@ -64,7 +65,7 @@ class P:
     usb_z: float = 2.4                           # hole centre above PCB top (Pico USB centre line)
     # ---- shell
     wall: float = 2.5
-    pcb_clear: float = 1.0                       # gap PCB edge -> inner wall
+    pcb_clear: float = 1.0                       # gap PCB edge -> inner wall at the top (y = 0) and connector (y = 100) edges
     standoff_h: float = 6.0                      # PCB underside above the floor
     standoff_d: float = 7.0
     pilot_d: float = 2.6                         # M3 self-tapping pilot in PETG (2.5 tap drill in alu)
@@ -77,8 +78,10 @@ class P:
     lip_h: float = 3.0
     lip_t: float = 1.6
     lip_gap: float = 0.25                        # lip to inner wall clearance
-    boss_r: float = 4.5                          # lid-screw boss radius (corner, hanging from the rim)
-    boss_off: float = 3.5                        # boss centre distance from the two inner wall faces
+    boss_r: float = 3.5                          # lid-screw boss radius (hangs from the rim on the left / right walls)
+    boss_gap: float = 0.8                        # boss surface -> PCB edge (the PCB passes beside the bosses)
+    boss_embed: float = 1.5                      # how far the boss sinks into the side wall
+    boss_y: tuple = (3.0, 97.5)                  # boss centres along the wall (PCB y)
     boss_h: float = 9.0
     boss_hole: float = 2.6
     boss_hole_depth: float = 8.0
@@ -135,8 +138,18 @@ class P:
         return self.z_rim + self.lid_t
 
     @property
+    def side_clear(self):
+        """Gap PCB edge -> inner side wall: room for a boss beside the board (2r + gap - embed = 6.3 mm)."""
+        return 2 * self.boss_r + self.boss_gap - self.boss_embed
+
+    @property
+    def filler_y(self):
+        """PCB-y range of the right-wall pad around the USB hole (starts 1 mm past the top boss)."""
+        return (self.boss_y[0] + self.boss_r + 1.0, self.usb_y + 12.0)
+
+    @property
     def inner_w(self):
-        return self.pcb_w + 2 * self.pcb_clear
+        return self.pcb_w + 2 * self.side_clear
 
     @property
     def inner_d(self):
@@ -180,10 +193,9 @@ class P:
 
     @property
     def boss_pts(self):
-        c, o = self.pcb_clear, self.boss_off
-        xs = (-c + o, self.pcb_w + c - o)
-        ys = (-c + o, self.pcb_h + c - o)
-        return [(x, y) for y in ys for x in xs]       # PCB coordinates
+        d = self.boss_r + self.boss_gap
+        xs = (-d, self.pcb_w + d)
+        return [(x, y) for y in self.boss_y for x in xs]       # PCB coordinates; all outside x 0..100
 
 
 p = P()
@@ -223,7 +235,7 @@ def base():
         so = zcyl(x, y, p.z_floor - 0.5, p.standoff_h + 0.5, p.standoff_d / 2)
         so = so - zcyl(x, y, p.z_floor + p.standoff_h - p.pilot_depth, p.pilot_depth + 1, p.pilot_d / 2)
         s = s + so
-    # lid-screw bosses hanging from the rim in the four corners (45 degree cone underneath = printable)
+    # lid-screw bosses hanging from the rim on the side walls, beside the board (45 degree cone underneath = printable)
     cone_h = p.boss_r - 1.0
     for (x, y) in p.boss_pts:
         b = zcyl(x, y, p.z_rim - p.boss_h, p.boss_h, p.boss_r)
@@ -234,7 +246,7 @@ def base():
     # mounting ears on the left / right walls
     cy = -p.ear_y
     for side in (-1, 1):
-        x_out = -p.pcb_clear - p.wall if side < 0 else p.pcb_w + p.pcb_clear + p.wall
+        x_out = -p.side_clear - p.wall if side < 0 else p.pcb_w + p.side_clear + p.wall
         x_c = x_out + side * (p.ear_len / 2 - 1.0)                      # 1 mm buried into the wall
         ear = Pos(x_c, cy, 0) * Box(p.ear_len, p.ear_w, p.ear_t, align=MIN)
         slot_c = x_out + side * (p.ear_len / 2 + 1.5)
@@ -245,10 +257,14 @@ def base():
     y_out = y_in + p.wall
     nx0, nx1 = p.notch_x
     s = s - pbox(nx0, y_in - 1.0, nx1, y_out + 1.0, p.notch_bot, p.z_rim + 1)
+    # right wall pad around the USB hole: brings the inside face back to pcb_clear so the Pico micro-USB is only
+    # a few mm behind the wall (a plug cannot reach it across the 6.3 mm boss strip)
+    fy0, fy1 = p.filler_y
+    s = s + pbox(p.pcb_w + p.pcb_clear, fy0, p.pcb_w + p.side_clear + 0.5, fy1, p.z_floor - 0.5, p.z_rim)
     # micro-USB hole in the +x wall
     xi = p.pcb_w + p.pcb_clear
     zc = p.z_pcb_top + p.usb_z
-    s = s - pbox(xi - 1.0, p.usb_y - p.usb_w / 2, xi + p.wall + 1.0, p.usb_y + p.usb_w / 2, zc - p.usb_h / 2, zc + p.usb_h / 2)
+    s = s - pbox(xi - 1.0, p.usb_y - p.usb_w / 2, p.pcb_w + p.side_clear + p.wall + 1.0, p.usb_y + p.usb_w / 2, zc - p.usb_h / 2, zc + p.usb_h / 2)
     return s
 
 
@@ -259,14 +275,14 @@ def lid():
     g = p.lip_gap
     lip = rprism(p.inner_w - 2 * g, p.inner_d - 2 * g, max(p.r_in - g, 0.5), p.z_rim - p.lip_h, p.z_rim)
     lip = lip - rprism(p.inner_w - 2 * g - 2 * p.lip_t, p.inner_d - 2 * g - 2 * p.lip_t, 0.5, p.z_rim - p.lip_h - 1, p.z_rim + 1)
-    for (x, y) in p.boss_pts:                                    # relief around the corner bosses
+    for (x, y) in p.boss_pts:                                    # relief around the side-wall bosses
         lip = lip - zcyl(x, y, p.z_rim - p.lip_h - 1, p.lip_h + 2, p.boss_r + 0.4)
     nx0, nx1 = p.notch_x
     y_in = p.pcb_h + c
     y_out = y_in + p.wall
+    fy0, fy1 = p.filler_y
+    lip = lip - pbox(p.pcb_w + c - 0.5, fy0 - 0.5, p.pcb_w + p.side_clear + 1.0, fy1 + 0.5, p.z_rim - p.lip_h - 1, p.z_rim + 1)   # right lip gap at the pad
     lip = lip - pbox(nx0 - 0.5, y_in - 3.0, nx1 + 0.5, y_in + 0.5, p.z_rim - p.lip_h - 1, p.z_rim + 1)   # front lip gap
-    hx0, hy0, hx1, hy1 = p.hatch_rebate
-    lip = lip - pbox(hx0 - 1.0, hy0, hx1 + 1.0, hy1, p.z_rim - p.lip_h - 1, p.z_rim + 1)               # left lip gap at the hatch
     s = s + lip
     # skirt that closes the top of the J1..J3 window (flush with the outer wall face)
     wx0, wx1 = p.win_x
@@ -351,6 +367,30 @@ def interference(parts):
     return bad
 
 
+def insertion_sweep(base_shape, top=45.0, step=1.0):
+    """Lift the PCB placeholder (board + every part on it) straight up from its seat in `step` mm increments and
+    intersect it with the base at each height. This is the reverse of installing the board: all zero means the
+    board can be lowered onto the standoffs without touching anything. dz = 0 is the seated position."""
+    pieces = [pc for pc in pcb_placeholder()]
+    worst = 0.0
+    n = int(round(top / step))
+    for i in range(n + 1):
+        dz = i * step
+        for pc in pieces:
+            v = (base_shape & (Pos(0, 0, dz) * pc)).volume
+            worst = max(worst, v)
+            if v > 0.01:
+                print("  INSERTION COLLISION at dz=%.1f mm: %.3f mm3" % (dz, v))
+    ok = worst <= 0.01
+    print("insertion sweep: PCB lifted 0..%.0f mm in %.1f mm steps (%d positions), max intersection with base %.4f mm3 -> %s"
+          % (top, step, n + 1, worst, "CLEAR" if ok else "COLLISION"))
+    # also report the nearest approach of any boss to the board outline
+    d = min(abs(x - 0) - p.boss_r if x < 50 else abs(x - p.pcb_w) - p.boss_r for x, _ in p.boss_pts)
+    print("boss surface to PCB edge: %.2f mm; boss axis to nearest PCB screw axis: %.1f mm"
+          % (d, min(math.hypot(bx - hx, by - hy) for bx, by in p.boss_pts for hx, hy in p.holes)))
+    return ok
+
+
 def build(suffix=""):
     os.makedirs(OUT, exist_ok=True)
     parts = {"base": base(), "lid": lid(), "fuse_hatch": fuse_hatch()}
@@ -413,5 +453,6 @@ if __name__ == "__main__":
         parts = build()
     info(parts)
     interference(parts)
+    insertion_sweep(parts["base"])
     if "--alu" not in sys.argv:
         render(parts)
