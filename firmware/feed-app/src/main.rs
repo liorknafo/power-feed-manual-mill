@@ -204,8 +204,10 @@ async fn control(mut hw: ControlHw) {
         // ---- TMC5160: (re)configure once the bus is healthy, and again after any chip reset
         let bus_ok = bus_mv >= ctrl.settings.bus_min_mv && bus_mv <= ctrl.settings.bus_max_mv;
         if tmc_ready && hw.tmc.was_reset() {
-            warn!("TMC5160 reset, reconfiguring");
+            warn!("TMC5160 reset, reconfiguring in 500 ms");
             tmc_ready = false;
+            // not in this tick: the state machine must see driver_ready = false and latch a fault
+            next_init_try = now.wrapping_add(500);
         }
         if !tmc_ready && bus_ok && now.wrapping_sub(next_init_try) < 0x8000_0000 {
             hw.watchdog.feed(Duration::from_millis(100));
@@ -216,8 +218,9 @@ async fn control(mut hw: ControlHw) {
                 next_init_try = now.wrapping_add(500);
             }
         }
-        if !bus_ok {
+        if !bus_ok && tmc_ready {
             tmc_ready = false; // VM lost: the chip resets, configure again when it returns
+            next_init_try = now.wrapping_add(500);
         }
 
         // ---- dial + button (menu only while idle; edits go to a working copy)
@@ -265,7 +268,7 @@ async fn control(mut hw: ControlHw) {
         let mode = read_mode(&hw);
         // a latched driver error is cleared (if its cause is gone) when the operator centres the switch
         if tmc_ready && hw.tmc.driver_error() && mode == Mode::Center {
-            hw.tmc.clear_gstat();
+            hw.tmc.clear_driver_error();
         }
         let upc = units::usteps_per_count(&ctrl.settings);
 
@@ -292,7 +295,8 @@ async fn control(mut hw: ControlHw) {
             dial_detents: if fine { dial_to_feed } else { dial_to_feed * 2 },
             dial_fast: fast,
             driver_ready: tmc_ready,
-            sensor_fault: adc_errors >= ADC_ERR_LIMIT || coil_on_low_ms >= COIL_OPEN_MS,
+            sensor_fault: adc_errors >= ADC_ERR_LIMIT,
+            clutch_open: coil_on_low_ms >= COIL_OPEN_MS,
         };
         let out = ctrl.step(&inputs);
 

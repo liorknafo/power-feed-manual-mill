@@ -68,6 +68,11 @@ impl<'d> Tmc5160<'d> {
         self.write(reg::GSTAT, 0b111);
     }
 
+    /// Clear only the latched driver-error flag (GSTAT.drv_err); leaves the reset flag visible.
+    pub fn clear_driver_error(&mut self) {
+        self.write(reg::GSTAT, 0b010);
+    }
+
     /// The chip reset since it was configured (power loss on VM, brown-out).
     pub fn was_reset(&self) -> bool {
         self.status & spi_status::RESET_FLAG != 0
@@ -103,10 +108,11 @@ impl<'d> Tmc5160<'d> {
                 self.write(reg::VMAX, tmc::vmax_from_usteps_s(if v >= 0.0 { v } else { -v }));
             }
             Motion::Jog { target, speed } => {
-                // target first, so switching to position mode never heads for a stale target
+                // target first, then position mode, then speed: never heads for a stale target
+                // or keeps the old velocity-mode direction
                 self.write(reg::XTARGET, target as u32);
-                self.write(reg::VMAX, tmc::vmax_from_usteps_s(speed));
                 self.write(reg::RAMPMODE, rampmode::POSITION);
+                self.write(reg::VMAX, tmc::vmax_from_usteps_s(speed));
             }
         }
         self.last_motion = Some(m);

@@ -14,7 +14,7 @@ firmware/
 # one-time
 rustup target add thumbv6m-none-eabi
 
-# logic tests on the PC (45 tests: every state-machine rule in docs/design.md §3)
+# logic tests on the PC (47 tests: every state-machine rule in docs/design.md §3)
 cd firmware/feed-core && cargo test
 
 # firmware
@@ -61,7 +61,8 @@ Draws the OLED from a status snapshot. The control loop pre-empts it.
    - switch wiring;
    - clutch failed to engage (the output must follow the motor, not just move);
    - the limit *behind* the table tripping, which means the direction is reversed;
-   - sensor fault (stuck ADC, open clutch coil);
+   - sensor fault (stuck ADC);
+   - clutch open (coil on but no current);
    - stop timeout (derived from speed ÷ acceleration).
 
    Every fault latches until the switch returns to centre.
@@ -74,7 +75,7 @@ Draws the OLED from a status snapshot. The control loop pre-empts it.
 **Dial:**
 - turn: change the feed;
 - short press: fine / coarse steps;
-- **long press while stopped:** opens the settings menu.
+- **long press while stopped** (ready, or in a fault): opens the settings menu.
   - turn: change the value;
   - press: next item;
   - long press: save to flash and exit.
@@ -88,8 +89,9 @@ The OLED should show `NO 36V`. The TMC5160 is configured automatically once 36 V
 
 ### 2. 36 V on, motor on the bench, clutch disconnected
 - The state should reach READY with the switch centred. `DRIVER NOT READY` means the TMC5160 isn't answering: check SPI and VCC_IO.
-- Flip the switch to LEFT. The coil stays off until the motor is at a standstill. The engagement jog then turns the motor about 12 full steps and faults with `CLUTCH NO ENGAGE`, because the encoder isn't connected yet.
-- This proves the driver enable, the jog and the fault path.
+- Flip the switch to LEFT. The coil stays off until the motor is at a standstill, then pulls in. About 200 ms later the display shows `CLUTCH OPEN`, because no coil is connected and so no current is measured.
+  - This proves the driver enable, the clutch drive and the coil check.
+  - To also see the engagement jog, connect a 22–33 Ω, ≥10 W resistor as a dummy coil. The motor then jogs about 12 full steps and faults with `CLUTCH NO ENGAGE`, because the encoder isn't connected.
 
 ### 3. E-stop
 Open the E-stop loop in any state. The display shows `E-STOP`, the motor goes limp and the clutch drops. It stays that way until the loop is closed **and** the switch is centred.

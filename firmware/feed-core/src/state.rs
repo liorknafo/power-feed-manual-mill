@@ -65,8 +65,10 @@ pub enum Fault {
     StopTimeout,
     /// TMC5160 not configured (no answer, or it reset).
     DriverNotReady,
-    /// ADC readings implausible / clutch coil open.
+    /// ADC readings implausible.
     Sensor,
+    /// Clutch commanded on but no coil current: coil unplugged / open, or the sense amp is dead.
+    ClutchOpen,
     /// The limit BEHIND the table tripped while feeding: motor or limit wiring reversed.
     WrongDirection,
 }
@@ -84,6 +86,7 @@ impl Fault {
             Fault::StopTimeout => "STOP TIMEOUT",
             Fault::DriverNotReady => "DRIVER NOT READY",
             Fault::Sensor => "SENSOR FAULT",
+            Fault::ClutchOpen => "CLUTCH OPEN",
             Fault::WrongDirection => "LIMIT WRONG WAY",
         }
     }
@@ -154,8 +157,10 @@ pub struct Inputs {
     pub dial_fast: bool,
     /// The TMC5160 answered and is configured.
     pub driver_ready: bool,
-    /// The app detected an implausible ADC reading or an open clutch coil.
+    /// The app detected implausible ADC readings.
     pub sensor_fault: bool,
+    /// The app saw the clutch commanded on with (almost) no coil current.
+    pub clutch_open: bool,
 }
 
 impl Inputs {
@@ -178,6 +183,7 @@ impl Inputs {
             dial_fast: false,
             driver_ready: true,
             sensor_fault: false,
+            clutch_open: false,
         }
     }
 }
@@ -240,6 +246,9 @@ impl Controller {
         }
         if i.sensor_fault {
             return Some(Fault::Sensor);
+        }
+        if i.clutch_open {
+            return Some(Fault::ClutchOpen);
         }
         if i.driver_fault {
             return Some(Fault::DriverError);
@@ -889,6 +898,38 @@ mod tests {
         s.i.sensor_fault = true;
         let o = s.tick(1);
         assert_eq!(s.c.state, State::Fault(Fault::Sensor));
+        assert!(!o.driver_enable && o.clutch == ClutchCmd::Off);
+    }
+
+    #[test]
+    fn driver_reset_mid_run_latches_until_centre() {
+        let mut s = Sim::new();
+        s.run_to_running(Mode::Right);
+        // the app sees the TMC5160 reset flag: one step with the driver not ready...
+        s.i.driver_ready = false;
+        let o = s.tick(1);
+        assert_eq!(s.c.state, State::Fault(Fault::DriverNotReady));
+        assert!(!o.driver_enable && o.clutch == ClutchCmd::Off);
+        // ...and even after it is configured again, nothing restarts while the switch is still on
+        s.i.driver_ready = true;
+        let o = s.tick(500);
+        assert!(matches!(s.c.state, State::Fault(_)) && !o.driver_enable);
+        s.i.mode = Mode::Center;
+        s.tick(1);
+        assert_eq!(s.c.state, State::Idle);
+    }
+
+    #[test]
+    fn open_clutch_coil_faults_with_its_own_message() {
+        let mut s = Sim::new();
+        s.i.mode = Mode::Center;
+        s.tick(2);
+        s.i.mode = Mode::Left;
+        s.tick(30);
+        s.i.clutch_open = true;
+        let o = s.tick(1);
+        assert_eq!(s.c.state, State::Fault(Fault::ClutchOpen));
+        assert_eq!(s.c.state.name(), "CLUTCH OPEN");
         assert!(!o.driver_enable && o.clutch == ClutchCmd::Off);
     }
 }

@@ -172,6 +172,7 @@ impl Settings {
             && self.accel_mm_s2 > 0.0
             && self.run_current_ma <= 4200
             && self.hold_current_ma <= self.run_current_ma
+            && self.clutch_hold_ma >= 50
             && self.clutch_hold_ma <= 400
             && self.clutch_pull_in_ms <= 200
             && self.bus_min_mv < self.bus_max_mv

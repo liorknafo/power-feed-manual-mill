@@ -33,7 +33,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 |---|---|
 | Schematic | Done. KiCad ERC clean, netlist checked, independently reviewed |
 | PCB | Routed. DRC 0 errors / 0 warnings with schematic parity. Gerbers, BOM, CPL in `hardware/fab/` |
-| Firmware | Builds for the RP2040. Core state machine has 45 passing tests. Needs bench commissioning (`firmware/README.md`) |
+| Firmware | Builds for the RP2040. Core state machine has 47 passing tests. Needs bench commissioning (`firmware/README.md`) |
 | Clutch CAD | Ready to machine, after you measure the motor shaft length. Magnetic sizing must be bench-calibrated |
 | Feed unit CAD | **Concept.** Mill-side dimensions are placeholders until measured |
 | Enclosure + panel | Ready to print |
