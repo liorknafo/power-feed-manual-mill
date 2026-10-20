@@ -65,6 +65,7 @@ mechanical/.venv/bin/python mechanical/clutch/clutch.py   # clutch CAD (+ machin
 mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py
 mechanical/.venv/bin/python mechanical/tools/check_clutch.py      # interference, engaged + released
 mechanical/.venv/bin/python mechanical/tools/check_feed_unit.py   # interference, incl. bolt heads over the tension slot
+mechanical/.venv/bin/python mechanical/tools/check_machinable.py  # no sharp internal corners a cutter can't make
 ```
 
 Create the Python environment for the CAD scripts first:

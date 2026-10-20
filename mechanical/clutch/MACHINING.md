@@ -25,15 +25,15 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Shaft bore | **Ø10 H7**, depth = **measured shaft length − 2.2 ± 0.03** (model: 18.8) | round; Loctite 641 on the D-shaft. The depth sets the 0.3 face gap |
 | Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 3.2 from the front | M3×8 SHCS (3.0 head, sits 0.2 below the pole face) into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |
 | Face disc | **Ø76.0** × 5.6 thick | back face sits 0.3 from the housing front; front face = pole face |
-| Banana slots | 3 × 112° arcs, r 19.0 … 22.0, through (8° bridges) | CNC, Ø3 end mill |
-| Tooth ring | r 32.0 … 38.0, 30 teeth (12.0° pitch), flank 30° from axis | roots 0.5 below the pole face; tips 0.80 above the roots (0.9 profile, tips truncated 0.1); see teeth notes |
+| Banana slots | 3 × 112° arcs, r 19.0 … 22.0, through (8° bridges), full-round ends | CNC, Ø3 end mill on the r 20.5 arc (slot = tool width) |
+| Tooth ring | r 32.0 … 38.0, 30 teeth (12.0° pitch), flank 30° from axis | flanks meet 0.5 below the pole face; root floor 0.5 deeper (1.0 below the pole face, from r 31.5 out to the OD); tips 0.80 above where the flanks meet; see Teeth |
 
 ## Armature (steel) — `armature.step`
 | Feature | Dimension | Tolerance / note |
 |---|---|---|
 | OD × thickness | **Ø76.0 × 6.0** | faces parallel within 0.02 |
 | Bore | Ø11.5 | clearance over the M3 head |
-| Tooth ring | as the rotor, rotated half a pitch (6.0°) | roots 0.25 behind the pole face, tips truncated 0.1 |
+| Tooth ring | as the rotor, rotated half a pitch (6.0°) | flanks meet 0.25 behind the pole face, root floor 0.75 behind it (from r 31.5 out), tips truncated 0.1 |
 | Spring holes | 3× M3 blind at r=30.0, 90°/210°/330°, front face | drill Ø2.5 × 4.5, thread 4 |
 | Screw-head pockets | 3× Ø8 × 1.5 deep at r=30.0, 55° after each spring hole, front face | clear the hub-end low-head screws |
 
@@ -76,9 +76,31 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 ## Teeth
 - 30 radial teeth, true angular profile: equal tip and root lands, flanks 30° from the axis at the mean radius.
 - Engaged pole gap 0.15, stroke 1.1 -> released gap 1.25.
-- Tips truncated 0.1 mm on both rings: the flanks carry the load and the 0.1 tip/root clearance means a tip can never bottom out.
-- Machine both rings with the same CAM program and tool, in the same setup orientation, then lap them together.
-- Radial teeth have a constant angle, so the flank twists slightly with radius: rough with an end mill, finish the flanks with a ball end mill.
-- Flanks: 3D finishing with a small ball end mill (Ø1–2) or a chamfer mill whose half-angle equals the flank angle
-  (30° flank -> 60° chamfer mill / V-bit; set `flank_deg = 45` for a standard 90° chamfer mill — the cam-out force
-  then rises ~1.8x, so expect ~1.3x more hold current; re-calibrate per design.md §7.4).
+- Tips truncated 0.1 mm; roots relieved 0.5 mm below where the flanks meet. So a mating tip sits 0.6 mm above the root floor:
+  the flanks carry all the load and the root corners never touch anything.
+- **Cutting them (CNC, 3-axis):**
+  1. Lathe first: face the pole face, then turn the tooth band (r 31.5 to the OD) down to the root-floor depth. The
+     extra 0.5 mm inside r 32 is run-out for the cutter, so no milled end wall sits at the inner end of the teeth.
+  2. Rough the tooth gaps with a Ø2 flat end mill (radial passes, from r 31.5 out past the OD).
+  3. Finish the flanks with a **Ø2 ball end mill** (or smaller), 3D finishing along the radial direction. The ball's
+     root fillet (R1) is tangent to the flank only 0.5 mm above the root floor, below the mating tip at 0.6 mm.
+     A bigger ball does NOT fit: Ø3 -> tangent at 0.75 mm, into the working flank.
+  4. Or, faster: a 60° chamfer mill (30° half-angle = the flank angle) for the flanks. The radial teeth's flank angle
+     varies 28–32° from inner to outer radius, so finish the last 0.05 with the ball after it.
+- Machine both rings with the same CAM program and tool, in the same orientation, then lap them together.
+- Break the tooth tips' edges lightly (0.1 × 45°, a stone is enough).
+- `flank_deg = 45` suits a standard 90° chamfer mill exactly at the mean radius, but the cam-out force then rises ~1.8x,
+  so expect ~1.3x more hold current; re-calibrate per design.md §7.4.
+
+## Corners (what the tools leave, and why it doesn't matter)
+- Every internal corner along a cutter's axis is modelled round (slot ends, pockets) or is a drilled/counterbored hole.
+  `mechanical/tools/check_machinable.py` checks this on every machined part.
+- Turned internal corners get the tool's nose radius. Keep it **≤ 0.3** where a part seats in the corner:
+  - cover: spigot bore → Ø78 shoulder (the housing's front OD edge is chamfered 0.5 × 45° to clear it);
+  - field housing: coil cavity floor corners (the bobbin has 0.3 clearance; chamfer its corners) and the motor-pilot recess
+    floor (the motor's pilot edge is chamfered);
+  - rotor: hub → face-disc corner (the housing bore's front edge is chamfered 0.5 × 45° to clear it).
+- Rotor shaft bore: the motor shaft's end seats on its bottom, so the bottom must be **flat**: drill under size, then
+  finish with a boring bar or a Ø10 flat end mill to depth, then ream/bore to H7. A drill point there sets the rotor
+  wrong by ~3 mm.
+
