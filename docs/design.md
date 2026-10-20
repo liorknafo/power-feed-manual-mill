@@ -136,7 +136,7 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | Sense resistors | 2× 0.050 Ω, low-inductance (≈ 4.7 A RMS full scale, trimmed down with GLOBALSCALER) | to pick |
 | 5 V buck | TI LM5164DDAR (6–100 V in, 1 A), LCSC C477928. Fallback: LMR51610XDBVR (4–65 V), C20539658 | to buy |
 | Clutch driver | 60 V P-FET (high side) + 60 V logic-level N-FET (low side), 2× SS210 diodes, 0.1 Ω shunt + TLV9061, ≥60 V PTC (see §7.6) | to pick |
-| Controller | RP2040 + W25Q16JV flash + 12 MHz crystal, on the PCB (a Pico is still handy for breadboard bring-up) | on the BOM |
+| Controller | RP2040 + W25Q128JV flash + 12 MHz crystal, on the PCB (a Pico is still handy for breadboard bring-up) | on the BOM |
 | Dial | rotary encoder with push button (Cylewet CYT1100) | owned |
 | Display | 1.3" 128×64 I²C OLED — confirm SH1106 vs SSD1306 with the seller. Power it from **3.3 V**, because its on-board I²C pull-ups go to its supply | to buy |
 | Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
@@ -285,7 +285,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
   - FAULT stays latched until the mode switch returns to centre (§3).
   - A hardware latch with a reset button is a possible future addition.
 - **Clutch PTC:** its hold current derates with temperature, so keep the clutch hold current ≤0.3 A. When confirming the 2920L050/60 part, check its derating curve against the enclosure temperature.
-- **Debugging:** SWD on the 3-pin JST-SH connector (Raspberry Pi Debug Probe pinout: SWCLK, GND, SWDIO).
+- **Debugging:** SWD on a 1×3 0.1" header (SWCLK, GND, SWDIO; the Debug Probe's JST-to-0.1" cable plugs on).
 - **Blank board:** hold BOOTSEL, tap RESET, and the RP2040 shows up as the `RPI-RP2` USB drive (USB-C on the connector edge).
 
 ## 9. Open questions

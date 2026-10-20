@@ -38,7 +38,7 @@ QFN56 = "Package_DFN_QFN:QFN-56-1EP_7x7mm_P0.4mm_EP3.2x3.2mm_ThermalVias"
 SOIC8_208 = "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
 XTAL3225 = "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm"
 USB_C = "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12"
-SH3 = "Connector_JST:JST_SH_SM03B-SRSS-TB_1x03-1MP_P1.00mm_Horizontal"
+HDR3 = "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
 TB2 = "Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_2-G-5,08_1x02_P5.08mm_Horizontal"
 TB4 = "Connector_Phoenix_MSTB:PhoenixContact_MSTBA_2,5_4-G-5,08_1x04_P5.08mm_Horizontal"
 XH = "Connector_JST:JST_XH_B%dB-XH-A_1x0%d_P2.50mm_Vertical"
@@ -289,10 +289,10 @@ def build():
            "E-stop: NC contact between ESTOP_SRC (+3V3 via 330R) and ESTOP_RET. Open or broken wire -> E_OK low.\n"
            "The MCU only reads E_OK through 100k (E_OK_SENSE), so firmware can never hold the interlock enabled.\n"
            "The E-stop removes driver enable and clutch drive; it does not disconnect the 36 V bus.\n"
-           "RP2040 per Raspberry Pi's minimal design: 12 MHz crystal (1k series), W25Q16JV 2 MB QSPI flash, internal\n"
+           "RP2040 per Raspberry Pi's minimal design: 12 MHz crystal (1k series), W25Q128JV QSPI flash (firmware uses 2 MB), internal\n"
            "1.1 V core regulator. GPIO numbers are the ones the old Pico module used, so the firmware is unchanged.\n"
            "+3V3: AP2112K from VSYS = +5V or USB VBUS through Schottkys (USB alone powers the logic for flashing).\n"
-           "Flash a blank board: hold BOOTSEL, tap RESET, copy the UF2. SWD on J_SWD (Raspberry Pi Debug Probe pinout).")
+           "Flash a blank board: hold BOOTSEL, tap RESET, copy the UF2. SWD on a 1x3 0.1in header: SWCLK, GND, SWDIO (Debug Probe pinout).")
     mcu = {str(i): None for i in range(1, 58)}
     mcu.update({
         "1": V3, "10": V3, "22": V3, "33": V3, "42": V3, "49": V3,              # IOVDD
@@ -313,23 +313,23 @@ def build():
     s.row(*[C("100nF", V3, GND) for _ in range(6)], C("100nF", V3, GND), C("100nF", V3, GND),   # IOVDD x6, AVDD, USB_VDD
           C("1uF", V3, GND), C("1uF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND))
     s.row(
-        Part("U", "Memory_Flash:W25Q16JVSS", "W25Q16JVSS", SOIC8_208,
+        Part("U", "Memory_Flash:W25Q128JVS", "W25Q128JVS", SOIC8_208,
              {"1": "QSPI_SS", "2": "QSPI_SD1", "3": "QSPI_SD2", "4": GND, "5": "QSPI_SD0", "6": "QSPI_SCLK",
-              "7": "QSPI_SD3", "8": V3}, props=P("Winbond W25Q16JVSSIQ", "")),
+              "7": "QSPI_SD3", "8": V3}, props=P("Winbond W25Q128JVSIQ (W25Q16 is out of stock; firmware uses the first 2 MB)", "C113767")),
         C("100nF", V3, GND),
         R("10k", "QSPI_SS", V3),
         R("1k", "QSPI_SS", "BOOTSEL_SW"),
         Part("SW", "Switch:SW_Push", "BOOTSEL", BUTTON, {"1": "BOOTSEL_SW", "2": GND}, props=P("Omron B3S-1000", "C2733655")),
         Part("Y", "Device:Crystal_GND24", "12MHz", XTAL3225, {"1": "XIN", "2": GND, "3": "XTAL_OUT", "4": GND},
-             props=P("Abracon ABM8-272-T3 (12 MHz, CL 10 pF)", "")),
+             props=P("Abracon ABM8-272-T3 (12 MHz, CL 10 pF, ESR 50R; RPi-approved)", "C20625731")),
         R("1k", "XOUT", "XTAL_OUT"),
         C("15pF", "XIN", GND), C("15pF", "XTAL_OUT", GND),
     )
     s.row(
         Part("SW", "Switch:SW_Push", "RESET", BUTTON, {"1": "RUN", "2": GND}, props=P("Omron B3S-1000", "C2733655")),
         R("10k", "RUN", V3),
-        Part("J", "Connector_Generic:Conn_01x03", "SWD", SH3, {"1": "SWCLK", "2": GND, "3": "SWDIO"},
-             props=P("JST SM03B-SRSS-TB(LF)(SN)", "C160403")),
+        Part("J", "Connector_Generic:Conn_01x03", "SWD", HDR3, {"1": "SWCLK", "2": GND, "3": "SWDIO"},
+             props=P("2.54 mm 1x3 male header, hand-solder (Debug Probe's JST-to-0.1in cable)", "")),
         R("1k", "LED_STAT", "LED_STAT_A"),
         D("Device:LED", "green", GND, "LED_STAT_A", LED0603, props=P("KENTO KT-0603G", "C12624")),
     )

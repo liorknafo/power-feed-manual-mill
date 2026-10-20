@@ -24,7 +24,7 @@ python3 ../tools/elf2uf2.py target/thumbv6m-none-eabi/release/feed-app ../power-
 
 **Flashing options:**
 - **UF2:** connect USB-C, hold the board's BOOTSEL button and tap RESET, then copy `power-feed.uf2` onto the `RPI-RP2` drive. A blank board always comes up this way.
-- **probe-rs:** with a Raspberry Pi Debug Probe on the 3-pin JST-SH SWD connector, run `cargo run --release` (uses probe-rs, gives live `defmt` logs).
+- **probe-rs:** with a Raspberry Pi Debug Probe on the 3-pin 0.1" SWD header, run `cargo run --release` (uses probe-rs, gives live `defmt` logs).
 
 ## Structure
 

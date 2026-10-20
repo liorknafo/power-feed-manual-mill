@@ -3295,7 +3295,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Memory_Flash:W25Q16JVSS"
+		(symbol "Memory_Flash:W25Q128JVS"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
@@ -3307,7 +3307,7 @@
 					)
 				)
 			)
-			(property "Value" "W25Q16JVSS"
+			(property "Value" "W25Q128JVS"
 				(at 7.62 11.43 0)
 				(effects
 					(font
@@ -3316,7 +3316,7 @@
 				)
 			)
 			(property "Footprint" "Package_SO:SOIC-8_5.3x5.3mm_P1.27mm"
-				(at 0 0 0)
+				(at 0 22.86 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -3324,8 +3324,8 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "https://www.winbond.com/hq/support/documentation/levelOne.jsp?__locale=en&DocNo=DA00-W25Q16JV.1"
-				(at 0 0 0)
+			(property "Datasheet" "https://www.winbond.com/resource-files/w25q128jv_dtr%20revc%2003272018%20plus.pdf"
+				(at 0 25.4 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -3333,8 +3333,8 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "16Mbit / 2MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8 (208 mil)"
-				(at 0 0 0)
+			(property "Description" "128Mbit / 16MiB Serial Flash Memory, Standard/Dual/Quad SPI, 2.7-3.6V, SOIC-8"
+				(at 0 27.94 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -3342,7 +3342,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "flash memory SPI"
+			(property "ki_keywords" "flash memory SPI QPI DTR"
 				(at 0 0 0)
 				(effects
 					(font
@@ -3360,7 +3360,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "W25Q16JVSS_0_1"
+			(symbol "W25Q128JVS_0_1"
 				(rectangle
 					(start -7.62 10.16)
 					(end 10.16 -10.16)
@@ -3373,7 +3373,7 @@
 					)
 				)
 			)
-			(symbol "W25Q16JVSS_1_1"
+			(symbol "W25Q128JVS_1_1"
 				(pin input line
 					(at -10.16 7.62 0)
 					(length 2.54)
@@ -4320,7 +4320,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Interlock (hardware, independent of firmware):\n  TMC_DRV_ENN = NAND(DRV_EN, E_OK)      -> driver off unless the MCU enables it AND E-stop loop closed\n  CLUTCH_*    = AND(MCU request, E_OK)  -> clutch off on E-stop\nMCU outputs have pull-downs so everything is off while the RP2040 is in reset.\nE-stop: NC contact between ESTOP_SRC (+3V3 via 330R) and ESTOP_RET. Open or broken wire -> E_OK low.\nThe MCU only reads E_OK through 100k (E_OK_SENSE), so firmware can never hold the interlock enabled.\nThe E-stop removes driver enable and clutch drive; it does not disconnect the 36 V bus.\nRP2040 per Raspberry Pi's minimal design: 12 MHz crystal (1k series), W25Q16JV 2 MB QSPI flash, internal\n1.1 V core regulator. GPIO numbers are the ones the old Pico module used, so the firmware is unchanged.\n+3V3: AP2112K from VSYS = +5V or USB VBUS through Schottkys (USB alone powers the logic for flashing).\nFlash a blank board: hold BOOTSEL, tap RESET, copy the UF2. SWD on J_SWD (Raspberry Pi Debug Probe pinout)."
+	(text "Interlock (hardware, independent of firmware):\n  TMC_DRV_ENN = NAND(DRV_EN, E_OK)      -> driver off unless the MCU enables it AND E-stop loop closed\n  CLUTCH_*    = AND(MCU request, E_OK)  -> clutch off on E-stop\nMCU outputs have pull-downs so everything is off while the RP2040 is in reset.\nE-stop: NC contact between ESTOP_SRC (+3V3 via 330R) and ESTOP_RET. Open or broken wire -> E_OK low.\nThe MCU only reads E_OK through 100k (E_OK_SENSE), so firmware can never hold the interlock enabled.\nThe E-stop removes driver enable and clutch drive; it does not disconnect the 36 V bus.\nRP2040 per Raspberry Pi's minimal design: 12 MHz crystal (1k series), W25Q128JV QSPI flash (firmware uses 2 MB), internal\n1.1 V core regulator. GPIO numbers are the ones the old Pico module used, so the firmware is unchanged.\n+3V3: AP2112K from VSYS = +5V or USB VBUS through Schottkys (USB alone powers the logic for flashing).\nFlash a blank board: hold BOOTSEL, tap RESET, copy the UF2. SWD on a 1x3 0.1in header: SWCLK, GND, SWDIO (Debug Probe pinout)."
 		(exclude_from_sim no)
 		(at 20.32 30.48 0)
 		(effects
@@ -4329,7 +4329,7 @@
 			)
 			(justify left top)
 		)
-		(uuid "ec946d87-3c30-52cf-8c24-b5818a25f732")
+		(uuid "627108dc-63f6-5479-9386-d944c5a1cd36")
 	)
 	(symbol
 		(lib_id "MCU_RaspberryPi:RP2040")
@@ -8231,7 +8231,7 @@
 		(uuid "747df7a4-6e83-58fc-afac-e53a21a89d2a")
 	)
 	(symbol
-		(lib_id "Memory_Flash:W25Q16JVSS")
+		(lib_id "Memory_Flash:W25Q128JVS")
 		(at 45.72 233.68 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -8247,7 +8247,7 @@
 				)
 			)
 		)
-		(property "Value" "W25Q16JVSS"
+		(property "Value" "W25Q128JVS"
 			(at 46.355 236.22 0)
 			(effects
 				(font
@@ -8273,7 +8273,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "Winbond W25Q16JVSSIQ"
+		(property "MPN" "Winbond W25Q128JVSIQ (W25Q16 is out of stock; firmware uses the first 2 MB)"
 			(at 45.72 233.68 0)
 			(effects
 				(font
@@ -8282,7 +8282,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C113767"
 			(at 45.72 233.68 0)
 			(effects
 				(font
@@ -9293,7 +9293,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "Abracon ABM8-272-T3 (12 MHz, CL 10 pF)"
+		(property "MPN" "Abracon ABM8-272-T3 (12 MHz, CL 10 pF, ESR 50R; RPi-approved)"
 			(at 187.96 233.68 0)
 			(effects
 				(font
@@ -9302,7 +9302,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C20625731"
 			(at 187.96 233.68 0)
 			(effects
 				(font
@@ -10248,7 +10248,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_SH_SM03B-SRSS-TB_1x03-1MP_P1.00mm_Horizontal"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
 			(at 88.9 271.78 0)
 			(effects
 				(font
@@ -10266,7 +10266,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "JST SM03B-SRSS-TB(LF)(SN)"
+		(property "MPN" "2.54 mm 1x3 male header, hand-solder (Debug Probe's JST-to-0.1in cable)"
 			(at 88.9 271.78 0)
 			(effects
 				(font
@@ -10275,7 +10275,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C160403"
+		(property "LCSC" ""
 			(at 88.9 271.78 0)
 			(effects
 				(font

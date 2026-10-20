@@ -1,4 +1,4 @@
-//! Settings in the last 4 KB sector of the board's 2 MB W25Q16 flash (excluded from the program in memory.x).
+//! Settings in the last 4 KB sector of the first 2 MB of the board's QSPI flash (excluded from the program in memory.x).
 
 use embassy_rp::flash::{Blocking, Flash, ERASE_SIZE};
 use embassy_rp::peripherals::FLASH;
