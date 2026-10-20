@@ -34,9 +34,9 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | Schematic | Done. KiCad ERC clean, netlist checked, independently reviewed |
 | PCB | Routed. DRC 0 errors / 0 warnings with schematic parity. Gerbers, BOM, CPL in `hardware/fab/` |
 | Firmware | Builds for the RP2040. Core state machine has 47 passing tests. Needs bench commissioning (`firmware/README.md`) |
-| Clutch CAD | Ready to machine, after you measure the motor shaft length. Magnetic sizing must be bench-calibrated |
-| Feed unit CAD | **Concept.** Mill-side dimensions are placeholders until measured |
-| Enclosure + panel | Ready to print |
+| Clutch CAD | Ready to machine, after you measure the motor shaft length. Independently reviewed (interference checked engaged and released). Magnetic sizing must be bench-calibrated |
+| Feed unit CAD | Structure reviewed: Oldham drive, circlip bearing stack, encoder adapter, guard, drawbolt tensioner. **Mill-side dimensions are placeholders until measured** |
+| Enclosure + panel | Ready to print. Reviewed (PCB insertion sweep, press-fit holes) |
 
 ## What you need to do
 
@@ -63,6 +63,8 @@ python3 hardware/tools/check_pcb.py                       # PCB: DRC + schematic
 (cd firmware/feed-app && cargo build --release)           # firmware
 mechanical/.venv/bin/python mechanical/clutch/clutch.py   # clutch CAD (+ machining sheet)
 mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py
+mechanical/.venv/bin/python mechanical/tools/check_clutch.py      # interference, engaged + released
+mechanical/.venv/bin/python mechanical/tools/check_feed_unit.py   # interference, incl. bolt heads over the tension slot
 ```
 
 Create the Python environment for the CAD scripts first:
