@@ -9,7 +9,8 @@ pub struct Settings {
     pub belt_ratio: f32,
     /// Full steps per motor revolution.
     pub motor_steps: u32,
-    /// Output-side encoder counts per clutch-output revolution (600 PPR x4).
+    /// Output encoder counts per LEADSCREW revolution (600 PPR x4). The encoder sits on the leadscrew
+    /// stub, after the belt, so it also catches a slipping or broken belt.
     pub encoder_counts: u32,
 
     /// Feed range and default, mm/min.

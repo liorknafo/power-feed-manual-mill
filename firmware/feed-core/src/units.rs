@@ -30,10 +30,15 @@ pub fn accel_to_usteps_s2(s: &Settings, mm_s2: f32) -> f32 {
     mm_s2 * usteps_per_mm(s)
 }
 
-/// Output-encoder counts -> motor microsteps (the encoder is on the clutch output, i.e. motor side
-/// of the belt, so one encoder revolution = one motor revolution when engaged).
+/// Motor microsteps per output-encoder count. The encoder is on the leadscrew, after the belt:
+/// one encoder revolution = `belt_ratio` motor revolutions.
+pub fn usteps_per_count(s: &Settings) -> f32 {
+    (s.motor_steps * MICROSTEPS) as f32 * s.belt_ratio / s.encoder_counts as f32
+}
+
+/// Output-encoder counts -> motor microsteps.
 pub fn encoder_counts_to_usteps(s: &Settings, counts: i32) -> i32 {
-    ((counts as i64 * (s.motor_steps * MICROSTEPS) as i64) / s.encoder_counts as i64) as i32
+    (counts as f32 * usteps_per_count(s)) as i32
 }
 
 /// Dial step size: finer at low feeds so the whole range is reachable but precise.
@@ -84,9 +89,10 @@ mod tests {
 
     #[test]
     fn encoder_scaling() {
-        // 2400 counts = one motor revolution = 51200 usteps
-        assert_eq!(encoder_counts_to_usteps(&s(), 2400), 51_200);
-        assert_eq!(encoder_counts_to_usteps(&s(), -1200), -25_600);
+        // 2400 counts = one leadscrew revolution = two motor revolutions (2:1 belt) = 102400 usteps
+        assert_eq!(encoder_counts_to_usteps(&s(), 2400), 102_400);
+        assert_eq!(encoder_counts_to_usteps(&s(), -1200), -51_200);
+        assert!((usteps_per_count(&s()) - 42.6667).abs() < 1e-3);
     }
 
     #[test]

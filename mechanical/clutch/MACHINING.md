@@ -51,9 +51,10 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Bearing bores | **Ø28 K6** × 8, two seats 8 apart in a 28 long boss | 6001-2RS (12×28×8) |
 | Shaft hole | Ø14 | |
 | Radial screws | 3× Ø4.5 at 120°, 14 from the open end | M4 into the housing |
+| Front wall | 8 thick, 4× M5 tapped on r=36 at 45° | bolts the module to the feed-unit plate |
 
 ## Other parts
-- Output shaft: Ø12 h6 ground rod × 70, 0.6 deep flat × 22 at the pulley end.
+- Output shaft: Ø12 h6 ground rod × 78, 0.6 deep flat × 22 at the pulley end.
 - Leaf springs: 3× 0.3 mm blue spring-steel shim, 8 wide, holes Ø3.3 at 21.2 centres.
 - Spacers: 3× Ø7 × 3.5, Ø3.3 hole (steel or brass).
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.

@@ -74,13 +74,15 @@ class P:
     hub_boss_od: float = 24.0
     hub_boss_len: float = 10.0
     out_shaft_d: float = 12.0
-    out_shaft_len: float = 70.0
+    out_shaft_len: float = 78.0
     # cover
     cover_wall: float = 4.0
     cover_clear: float = 2.5         # radial clearance to the rotating parts
     bearing_od: float = 28.0         # 6001-2RS: 12 x 28 x 8
     bearing_w: float = 8.0
     bearing_gap: float = 8.0
+    cover_front_t: float = 8.0       # front wall carries 4x M5 for bolting the module to the feed-unit plate
+    cover_bolt_r: float = 36.0
 
 
 p = P()
@@ -234,20 +236,23 @@ def cover():
     z_front = Z_HUB + p.hub_flange_t + p.hub_boss_len + 3.0
     s = ring(r_out, p.housing_od / 2 + 0.05, p.housing_len - z_spigot, z_spigot)    # spigot over the housing OD
     s = s + ring(r_out, r_in, z_front - p.housing_len, p.housing_len)
-    s = s + ring(r_out, 0, 4.0, z_front)                                            # front wall
+    s = s + ring(r_out, 0, p.cover_front_t, z_front)                                # front wall
     boss_len = 2 * p.bearing_w + p.bearing_gap + 4
-    s = s + ring(p.bearing_od / 2 + 5, 0, boss_len, z_front + 4)                    # bearing boss
+    s = s + ring(p.bearing_od / 2 + 5, 0, boss_len, z_front + p.cover_front_t)      # bearing boss
     s = s - Cylinder(p.out_shaft_d / 2 + 1.0, 500, align=MIN)
-    s = s - Pos(0, 0, z_front + 4 + boss_len - p.bearing_w) * Cylinder(p.bearing_od / 2, p.bearing_w + 1, align=MIN)
+    s = s - Pos(0, 0, z_front + p.cover_front_t + boss_len - p.bearing_w) * Cylinder(p.bearing_od / 2, p.bearing_w + 1, align=MIN)
     s = s - Pos(0, 0, z_front + 2) * Cylinder(p.bearing_od / 2, p.bearing_w + 2, align=MIN)
     for k in range(3):
         s = s - Rot(0, 0, 120 * k) * Pos(r_out - 1, 0, 14) * Rot(0, 90, 0) * Cylinder(2.25, 10)
+    for k in range(4):  # M5 tapped (Ø4.2) into the front wall, for the feed-unit plate
+        a = math.radians(45 + 90 * k)
+        s = s - Pos(p.cover_bolt_r * math.cos(a), p.cover_bolt_r * math.sin(a), z_front) * Cylinder(2.1, p.cover_front_t, align=MIN)
     return s, z_front
 
 
 def bearings(z_front):
     boss_len = 2 * p.bearing_w + p.bearing_gap + 4
-    zs = [z_front + 2 + 1, z_front + 4 + boss_len - p.bearing_w]
+    zs = [z_front + 2 + 1, z_front + p.cover_front_t + boss_len - p.bearing_w]
     return [ring(p.bearing_od / 2, p.out_shaft_d / 2, p.bearing_w, z) for z in zs]
 
 
@@ -363,7 +368,8 @@ def dimension_sheet(z_front):
     w("| Inner cavity | Ø%.1f | clears the Ø%.0f rotor / armature |" % (2 * r_cover_in, p.rotor_od))
     w("| Bearing bores | **Ø%.0f K6** × %.0f, two seats %.0f apart in a %.0f long boss | 6001-2RS (12×28×8) |" % (p.bearing_od, p.bearing_w, p.bearing_gap, boss_len))
     w("| Shaft hole | Ø%.0f | |" % (p.out_shaft_d + 2))
-    w("| Radial screws | 3× Ø4.5 at 120°, 14 from the open end | M4 into the housing |\n")
+    w("| Radial screws | 3× Ø4.5 at 120°, 14 from the open end | M4 into the housing |")
+    w("| Front wall | %.0f thick, 4× M5 tapped on r=%.0f at 45° | bolts the module to the feed-unit plate |\n" % (p.cover_front_t, p.cover_bolt_r))
     w("## Other parts")
     w("- Output shaft: Ø%.0f h6 ground rod × %.0f, 0.6 deep flat × 22 at the pulley end." % (p.out_shaft_d, p.out_shaft_len))
     w("- Leaf springs: 3× 0.3 mm blue spring-steel shim, %.0f wide, holes Ø3.3 at %.1f centres." % (p.spring_w, 2 * p.spring_r * math.sin(math.radians(p.spring_twist_deg / 2))))

@@ -100,3 +100,31 @@ board), 4 x Ø12x3 N35 magnets, 2 zip ties, 14-way ribbon with IDC plug, small a
 - OLED post height 2.5 mm assumes the glass stands about 1.5-2 mm proud of the module PCB: check your module.
 - E-stop plate/legend ring (typically Ø60 yellow) is not modelled; it would still fit in the right column.
 - Panel strain relief clamps by friction (zip tie around the ribbon); it is not a mechanical stop.
+
+
+## Clutch (`mechanical/clutch/clutch.py`)
+
+The DIY electromagnetic tooth clutch, modelled engaged (docs/design.md §7).
+- **Run:** `mechanical/.venv/bin/python mechanical/clutch/clutch.py`.
+- **Output:** STEP/STL for each part, renders, and `MACHINING.md`, the dimension and fit tables for the lathe and CNC, generated from the same parameters.
+- **Measure first:** set `shaft_len` to your motor's actual shaft length, and check the pilot diameter.
+
+## X feed unit (`mechanical/feed_unit/feed_unit.py`)
+
+The mount for the left table end of the SIEG X3.5D:
+- standoffs from the table end;
+- a belt chamber with a printed guard;
+- a 20 mm aluminium plate holding a leadscrew stub on 2× 6002 bearings;
+- HTD-5M 20T/40T pulleys with a 295 mm belt (2:1, centre distance 70.71 mm);
+- the clutch module bolted to the plate through its cover's front wall, slotted for belt tension;
+- the output encoder on the stub's outer end.
+
+**Run:** `mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py`. It writes STEP/STL, renders and `FEED_UNIT.md`.
+
+**The mill-side dimensions are PLACEHOLDERS:** the leadscrew-end slot, the standoff positions on the table end, and the motor angle. See `FEED_UNIT.md` and docs/mill.md.
+
+## Renders
+`mechanical/tools/render.py`: VTK off-screen shaded renders of STL files. Options:
+- `--cut` with `--cut-normal x,y,z` for half sections;
+- `--up` to set the camera's up vector;
+- `part.stl:color:dz` for exploded views.

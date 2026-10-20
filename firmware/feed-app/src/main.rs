@@ -141,7 +141,7 @@ fn read_mode(hw: &ControlHw) -> Mode {
 }
 
 fn configure_tmc(hw: &mut ControlHw, s: &Settings) -> bool {
-    let usteps_per_count = (s.motor_steps * units::MICROSTEPS) as f32 / s.encoder_counts as f32;
+    let usteps_per_count = units::usteps_per_count(s);
     let amax = feed_core::tmc::amax_from_usteps_s2(units::accel_to_usteps_s2(s, s.accel_mm_s2));
     hw.tmc.init(s.run_current_ma, s.hold_current_ma, usteps_per_count, amax)
 }
@@ -219,7 +219,7 @@ async fn control(mut hw: ControlHw) {
         let motor_usteps = hw.tmc.xactual();
         let enc_usteps = hw.tmc.x_enc();
         let deviation = deviation_armed && hw.tmc.deviation();
-        let usteps_per_count = (ctrl.settings.motor_steps * units::MICROSTEPS) as i32 / ctrl.settings.encoder_counts as i32;
+        let usteps_per_count = units::usteps_per_count(&ctrl.settings);
 
         let inputs = Inputs {
             now_ms: now,
@@ -232,7 +232,7 @@ async fn control(mut hw: ControlHw) {
             deviation,
             standstill: hw.tmc.standstill(),
             motor_usteps,
-            output_counts: enc_usteps / usteps_per_count.max(1),
+            output_counts: (enc_usteps as f32 / usteps_per_count) as i32,
             bus_mv,
             dial_detents: if fine { dial_to_feed } else { dial_to_feed * 2 },
             dial_fast: fast,

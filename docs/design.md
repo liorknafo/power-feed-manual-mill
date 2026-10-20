@@ -152,7 +152,7 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 2. Firmware bring-up on a breadboard: Pico + DM556 + OLED + dial + switch. This proves the UI and state machine before the PCB exists.
 3. KiCad schematic → review → 4-layer layout → order bare PCBs + stencil. The user reflows the boards.
 4. Port the firmware from the DM556 (step/dir) to the TMC5160 (SPI velocity mode), then tune the current cap and stall detection.
-5. Mechanical design once the mill is identified: motor mount, clutch, encoder mount, leadscrew coupling.
+5. Mechanical design: the mill is a SIEG X3.5D (docs/mill.md). The feed unit (`mechanical/feed_unit`) mounts on the left table end: mount plate, 2:1 HTD-5M belt, leadscrew stub and encoder. Its mill-side dimensions are placeholders until measured.
 
 ## 7. Clutch — DIY electromagnetic tooth (face-gear) clutch
 
@@ -192,7 +192,7 @@ The user builds the clutch in their own shop (CNC, manual lathe, manual mill), s
 - **Pole gap when engaged:** the flat pole faces keep a designed gap of about 0.15 mm, so they never touch. All axial load goes through the tooth flanks, which keeps the cam-out torque well defined.
 
 ### 7.2 Placement
-The clutch goes **on the motor side, before the belt reduction**, so it only has to carry motor torque (~3 N·m max). The output encoder sits after the clutch, so it sees motor stall, cam-out and table jams alike, and it also confirms engagement (§7.5).
+The clutch goes **on the motor side, before the belt reduction**, so it only has to carry motor torque (~3 N·m max). The output encoder sits on the **leadscrew stub, after the belt** (`mechanical/feed_unit`). It sees motor stall, cam-out, belt slip and table jams alike, and it also confirms engagement (§7.5). Firmware scales its counts by the belt ratio.
 
 ### 7.3 Tooth geometry (first pass)
 
