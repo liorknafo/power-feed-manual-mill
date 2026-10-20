@@ -29,7 +29,7 @@
   <label><input type="checkbox" data-group="mill" checked> Power feed on the mill (drive + PCB + controls, one box)</label>
   <label><input type="checkbox" data-group="clutch" checked> Clutch, exploded</label>
   <div class="sep"></div>
-  <label><input type="checkbox" id="shell" checked> Housing panels</label>
+  <label><input type="checkbox" id="shell" checked> Printed housing shell</label>
   <label><input type="checkbox" id="front" checked> Front (control) panel</label>
   <label><input type="checkbox" id="xray"> X-ray (see inside)</label>
   <label><input type="checkbox" id="millref" checked> Mill table-end stand-in</label>
@@ -126,14 +126,9 @@ const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], 
 for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 0.6, housing: n === "cover" });
 
 // --- housing, PCB and controls (all in the feed_unit.py frame)
-for (const n of ["panel_top", "panel_bottom", "panel_back", "panel_end"])
-  part("mill", F + n + ".stl", 0xc5ccd3, { metal: 0.5, rough: 0.45, housing: true, tag: "shell" });
-part("mill", F + "panel_front.stl", 0xd6dbe0, { metal: 0.5, rough: 0.45, housing: true, tag: "front" });
+part("mill", F + "shell.stl", 0xe8e4da, { metal: 0.0, rough: 0.7, housing: true, tag: "shell" });   // printed PETG
+part("mill", F + "panel_front.stl", 0xf0ece2, { metal: 0.0, rough: 0.7, housing: true, tag: "front" });
 part("mill", F + "controls.stl", 0xc0392b, { metal: 0.1, rough: 0.6, tag: "front" });
-part("mill", F + "partition.stl", 0xaeb6bf, { metal: 0.5, housing: true });
-for (const n of ["top_back", "top_front", "bot_back", "bot_front", "end_top", "end_bot", "end_back", "end_front", "part_top", "part_bot"])
-  part("mill", F + "bar_" + n + ".stl", 0x8f979f, { metal: 0.5 });
-part("mill", F + "pcb_standoffs.stl", 0xd4b24c, { metal: 0.8 });
 pending++; tick();
 new GLTFLoader().load(M + "viewer/out/pcb.glb", gltf => {
   // kicad-cli GLB: metres, (x, up, y_pcb). Feed-unit frame: x = 59 + h, y = 28 - y_pcb, W = 180 - x_pcb

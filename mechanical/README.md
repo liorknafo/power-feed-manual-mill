@@ -29,8 +29,8 @@ The mount for the left table end of the SIEG X3.5D:
 - HTD-5M 20T/40T pulleys with a 295 mm belt (2:1, centre distance 70.71 mm);
 - the clutch module bolted to the plate through its cover's front wall, slotted for belt tension, with a drawbolt tension block;
 - the output encoder on an adapter disc and three posts, coupled to the stub's outer end;
-- **the housing around all of it:** 3 mm aluminium panels on the plate and 10×10 bars, a partition, and an
-  electronics bay on the operator side with the PCB on standoffs and the control panel (E-stop, LEFT/STOP/RIGHT,
+- **the housing around all of it, 3D printed (PETG, fits a Prusa MK3S):** one shell print (walls + partition +
+  PCB bosses, heat-set inserts) screwed onto the plate edges, and a printed control panel (E-stop, LEFT/STOP/RIGHT,
   RAPID, OLED, SPEED dial) as its removable front. Details in `FEED_UNIT.md` → "Housing".
 
 `feed_unit.py` re-uses the clutch model, so the module always matches `clutch.py`. Interference checks:

@@ -52,7 +52,7 @@ for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
         print("  heads t=%+.0f vs %-12s overlap %.3f mm3, min dist %.2f" % (t, name, v, d))
 print("bad pairs incl. bolt heads", bad)
 # housing clearances: the clutch module moves +-tension_slot along the belt centre line, the housing does not
-housing_names = [n for n in parts if n.startswith(("panel_", "bar_", "partition"))]
+housing_names = [n for n in parts if n.startswith(("panel_", "shell"))]
 ux, uy = FU.math.cos(FU.ANG), FU.math.sin(FU.ANG)
 moving = ("motor", "clutch_cover", "clutch_field_housing", "pulley_20T")
 worst = {}
@@ -67,8 +67,15 @@ for m, (d, where) in worst.items():
     print("  housing clearance %-22s %.2f mm (%s)" % (m, d, where))
     if d < 2.0:
         bad += 1
-for a, b in (("pcb_placeholder", "controls"), ("pcb_placeholder", "partition"), ("controls", "partition"),
-             ("encoder", "partition"), ("encoder", "panel_top"), ("tension_block", "panel_bottom"),
-             ("pcb_placeholder", "bar_part_top"), ("controls", "bar_top_front"), ("controls", "bar_end_front")):
+for a, b in (("pcb_placeholder", "controls"), ("controls", "shell"), ("encoder", "shell"), ("tension_block", "shell"),
+             ("clutch_cover", "shell"), ("motor", "shell"), ("encoder_disc", "shell")):
     print("  clearance %-16s <-> %-14s %.2f mm" % (a, b, parts[a].distance_to(parts[b])))
+# the PCB sits ON its printed bosses: check it touches them and nothing else of the shell
+print("  pcb on bosses: overlap %.3f mm3" % (parts["pcb_placeholder"] & parts["shell"]).volume)
+# print-bed fit (Prusa MK3S 250 x 210 x 210): shell standing on its end wall, front panel flat
+bb = parts["shell"].bounding_box(); fb = parts["panel_front"].bounding_box()
+fits = sorted([bb.size.X, bb.size.Y]) <= [210, 250] and bb.size.Z <= 210 and sorted([fb.size.Y, fb.size.Z]) <= [210, 250]
+print("  print fit: shell %.0f x %.0f x %.0f tall, front panel %.0f x %.0f -> %s" % (bb.size.X, bb.size.Y, bb.size.Z, fb.size.Y, fb.size.Z, "OK" if fits else "TOO BIG"))
+if not fits:
+    bad += 1
 print("bad incl. housing clearances", bad)

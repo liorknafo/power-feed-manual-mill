@@ -52,38 +52,38 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
   table end is optional if the mill vibrates a lot.
 - The chamber (35 mm) is set by the Oldham disc plus the belt plane: the 40T pulley's inner flange clears the stub tongue.
 
-## Housing: the whole power feed in one box
+## Housing: the whole power feed in one box (3D printed)
 The drive, the controller PCB and the controls share one housing on the table end. Outside it there is only the
-belt chamber (closed by the guard cup), the 36 V supply and the limit switches.
+belt chamber (closed by the guard cup), the 36 V supply and the limit switches. The housing carries no load (the
+aluminium plate carries the bearings, the module and the belt), so it is printed.
 
 | | |
 |---|---|
-| Outer size | 175 (front-back) × 190 (high) × 214 mm (along the table), plus the 35 mm belt chamber and the controls proud of the front |
-| Back wall | the plate, widened to x = 114 on the operator side; the bay part pocketed to 6 mm from the table side |
-| Motor bay | clutch module, motor, encoder; 6 mm from the motor tail to the end panel |
-| Partition | x 50…53; the PCB stands on 4× M3 × 6 hex standoffs on its bay face, components toward the operator, connector edge down; Ø20 grommet below the PCB for the motor, clutch and encoder wires |
+| Outer size | 176 (front-back) × 190 (high) × 199 mm (along the table), plus the 35 mm belt chamber and the controls proud of the front |
+| `shell` (one print) | back, top, bottom and end walls (3 mm), the partition, the front corner rails and the PCB bosses. **Print standing on the end wall** (open rim up): 176 × 190 on the bed, 199 mm tall, fits a Prusa MK3S (250 × 210 × 210), no supports. PETG, 4 perimeters, 20 % gyroid; ASA if the motor runs hot (see Heat) |
+| `panel_front` (one print) | the control panel, 4 mm, **printed face down** (184 × 196); labels engraved 0.6 mm (on the bed side, so they come out crisp); thinned to 3 mm round the dial so the EC11 bushing takes its nut |
+| Back wall | the aluminium plate, widened to x = 114 on the operator side; the bay part pocketed to 6 mm from the table side |
+| Fixing | the shell overlaps the plate edges by 13 mm: 11× M3×8 countersunk into tapped holes in the plate's top, bottom and back edges. Front panel: 3× M3×10 into the plate's front edge, 7× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the printed rails |
+| PCB | 4 printed bosses on the partition (heat-set inserts, M3×6 screws), components toward the operator, connector edge down; Ø20 grommet below the PCB for the motor, clutch and encoder wires |
 | Electronics bay | 61 deep (E-stop body 50 + spare); the controls hang from the front panel, the E-stop column beside the PCB |
-| Front panel = control panel | E-stop, LEFT/STOP/RIGHT toggle and RAPID in a column at the outer end; OLED and SPEED dial over the PCB; labels engraved 0.4 deep; adapter board (2×7 IDC) on M3 posts, 150 mm ribbon to J4 so the panel can come off and hang beside the unit |
+| Front panel = control panel | E-stop, LEFT/STOP/RIGHT toggle and RAPID in a column at the outer end; OLED and SPEED dial over the PCB; adapter board (2×7 IDC) on M3 inserts, 150 mm ribbon to J4 so the panel can come off and hang beside the unit |
 | Bottom | Ø12 access to the drawbolt; 2× M16 cable glands under J1 (36 V) and J5 (limit switches); vent slots under the motor and under the driver |
-| End panel | vent slots high up (air in at the bottom, out at the top of the end face, away from falling chips) |
-| Construction | 3 mm 6061 panels, CNC-cut flat; 10 × 10 6061 bars along the far edges and the partition; M3 countersunk screws, tapped 8 deep into the plate edges and the bars (70 screws) |
+| End wall | vent slots high up (air in at the bottom, out at the top of the end face, away from falling chips) |
 
-Panels: top and bottom 175 × 214; back and front 184 × 214; end 169 × 184;
-partition 184 × 183 (notched for the end bars). Bars: 4× 173 long-edge, 2× 173 partition,
-2× 149 and 2× 164 at the end.
-
-- **USB / fuse:** take the front panel off (the ribbon stays plugged in). The Pico's USB faces the plate with ≈26 mm free.
-- **Heat:** the motor is inside. Default run current is 3 A (~16 W in the coils), held 1 A at standstill. On the bench,
-  run it closed for 30 min: if the motor case passes ~70 °C, lower `MOTOR mA` in the menu (light feeds need far less)
-  or fit a 40 mm fan on the end panel's vents.
-- **Order:** plate (bearings, stub, module, encoder) → partition + bars → PCB → back, top, bottom, end panels →
-  wire through the grommet → front panel with its controls last.
+- **USB / fuse / BOOTSEL:** take the front panel off (the ribbon stays plugged in). The USB-C is on the PCB's
+  connector edge, which faces down into the empty space above the glands.
+- **Heat:** the motor is inside. Default run current is 3 A (~16 W in the coils), 1 A at standstill. PETG softens
+  around 75–80 °C; the motor is 6 mm from the end wall and never touches the shell. On the bench, run it closed for
+  30 min: if the motor case passes ~65 °C, lower `MOTOR mA` in the menu (light feeds need far less), reprint the
+  shell in ASA, or fit a 40 mm fan on the end wall's vents.
+- **Order:** plate (bearings, stub, module, encoder) → PCB into the shell's bosses → slide the shell over the
+  module onto the plate edges and screw it on → wire through the grommet → front panel with its controls last.
 
 ## PLACEHOLDERS (measure, then edit `F`)
 - `screw_d`, `screw_end_slot_w`, `screw_end_slot_d`, `screw_end_z`: the left leadscrew end and its drive slot.
   - If there is no slot, use a pinned sleeve coupling instead of the tongue.
 - `standoffs`: where M6 can go into the table end or the left bracket.
 - `motor_angle_deg`: rotate the module if it hits the saddle, the base or the DRO cable at full travel.
-- The housing reaches 53 mm in front of the table's front edge (E-stop head included) and 143 mm below the
+- The housing reaches 54 mm in front of the table's front edge (E-stop head included) and 143 mm below the
   leadscrew: check both against the saddle, the DRO reader and the base at full right travel.
 - `chamber`: the minimum is set by the clutch output shaft; the script asserts it fits.
