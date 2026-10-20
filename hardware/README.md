@@ -36,9 +36,17 @@ Sheets: power input and 5 V buck · TMC5160 driver · Pico and E-stop interlock 
 KPY=/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3
 $KPY hardware/tools/build_pcb.py --route   # place, planes, Freerouting, power pours, GND stitching
 $KPY hardware/tools/fix_planes.py          # vias to planes for anything the router left
+$KPY hardware/tools/finish_pcb.py          # bridge pours for the last same-net gaps
+$KPY hardware/tools/manual_fixes.py        # hand re-routes of the spots the scripts could not close (documented inside)
+$KPY hardware/tools/silk_cleanup.py        # passives' refs to F.Fab, relocate the rest, connector labels + title
 python3 hardware/tools/check_pcb.py        # KiCad DRC + schematic parity
+python3 hardware/tools/export_fab.py       # Gerbers, drills, BOM, CPL, zip -> hardware/fab/
 hardware/tools/render_pcb.sh               # 2D layer PNGs; 3D: kicad-cli pcb render
 ```
+
+The saved `kicad/power-feed.kicad_pcb` is the master now: `build_pcb.py` rebuilds from scratch and throws away
+the routing, so do not rerun it unless the schematic changes. `manual_fixes.py` and `silk_cleanup.py` are
+idempotent and only touch the items they describe.
 
 - **Board:** 100×100 mm, 4 layers: F.Cu signals + GND pour, In1 GND plane, In2 split +36V (power area) / +3V3, B.Cu signals + GND pour.
 - **Autorouter:** Freerouting 2.4.1, run on Java 25. Set `FREEROUTING_JAR` to point at your copy.
