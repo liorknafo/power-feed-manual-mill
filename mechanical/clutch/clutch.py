@@ -435,7 +435,7 @@ def dimension_sheet(z_front):
     w("  1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.")
     w("  3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,")
     w("     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).")
-    w("  4. DIN 471-12 down the bore into its groove (~%.0f deep) with a cone on the shaft end and a push tube." % (zb[0] + p.bearing_w + 0.1 - Z_FRONT))
+    w("  4. DIN 471-12 down the bore into its groove (~%.0f deep from the outer end) with a cone on the shaft end and a push tube." % (Z_FRONT + p.cover_front_t + BOSS_LEN - (zb[0] + p.bearing_w + 0.1)))
     w("  5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
     w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate)." % p.cover_screws)

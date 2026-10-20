@@ -66,7 +66,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
   1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.
   3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,
      supporting the inner race with a tube from the outer end (Loctite 641 on that seat).
-  4. DIN 471-12 down the bore into its groove (~12 deep) with a cone on the shaft end and a push tube.
+  4. DIN 471-12 down the bore into its groove (~24 deep from the outer end) with a cone on the shaft end and a push tube.
   5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
 - Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate).
