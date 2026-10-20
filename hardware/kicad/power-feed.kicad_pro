@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "filename": "power-feed.kicad_pro",
+    "version": 3
+  },
+  "sheets": [
+    [
+      "8e300617-3fca-5828-bedd-07eaa661f340",
+      "Root"
+    ],
+    [
+      "6c10ba42-4c09-57ac-bd2e-256a03acafe0",
+      "Power input, protection, 5 V buck"
+    ],
+    [
+      "771fc747-7f3d-5aaa-b831-808f96703d9f",
+      "TMC5160 stepper driver"
+    ],
+    [
+      "3c72cfd4-92c3-582a-b64e-caafbb679003",
+      "Pico, SPI, E-stop interlock"
+    ],
+    [
+      "fee9f53f-ca95-5009-a118-475b15ee829d",
+      "Clutch coil driver"
+    ],
+    [
+      "302f738b-0c7f-5b37-9d65-0eee6b5d5df7",
+      "Panel and sensor I/O"
+    ]
+  ],
+  "boards": [],
+  "text_variables": {}
+}

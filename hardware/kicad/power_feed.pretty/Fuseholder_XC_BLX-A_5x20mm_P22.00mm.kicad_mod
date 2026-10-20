@@ -1,0 +1,74 @@
+(footprint "Fuseholder_XC_BLX-A_5x20mm_P22.00mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "XC Electronics BLX-A 5x20 mm PCB fuse holder with hinged cover (LCSC C3131). 2 blade pins 1.5x0.35 mm, 22.0 mm pitch, body 9.5 mm wide. Drawing: XCRD-C Ver.1.1 page 2.")
+	(tags "fuse holder 5x20 BLX-A")
+	(property "Reference" "REF**"
+		(at 11 -6 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "BLX-A"
+		(at 11 6 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_rect
+		(start -2.5 -4.85)
+		(end 24.5 4.85)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+	)
+	(fp_rect
+		(start -2.4 -4.75)
+		(end 24.4 4.75)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+	)
+	(fp_rect
+		(start -3 -5.25)
+		(end 25 5.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+	)
+	(pad "1" thru_hole oval
+		(at 0 0)
+		(size 2.2 3.4)
+		(drill oval 0.9 2.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+	)
+	(pad "2" thru_hole oval
+		(at 22 0)
+		(size 2.2 3.4)
+		(drill oval 0.9 2.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+	)
+	(embedded_fonts no)
+)
