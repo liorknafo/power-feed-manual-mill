@@ -16,13 +16,14 @@ Layout (docs/mill.md: the feed goes on the LEFT table end, where SIEG's own SX3.
 Every value marked PLACEHOLDER must be checked on the machine before cutting metal.
 """
 
+import json
 import math
 import os
 import sys
 from dataclasses import dataclass
 
-from build123d import (Align, Box, Compound, Cylinder, Plane, Polyline, Pos, Rot, Solid, Text, export_step, export_stl,
-                       extrude, make_face)
+from build123d import (Align, Axis, Box, Compound, Cylinder, Plane, Polyline, Pos, Rot, Solid, Text, export_step,
+                       export_stl, extrude, fillet, make_face)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "clutch"))
@@ -76,21 +77,19 @@ class F:
     enc_disc_d: float = 50.0
     enc_disc_t: float = 5.0
     enc_disc_flat: float = 20.0      # flat toward the clutch module (its cover top is ~27 below the stub)
-    # --- housing: ONE box for the drive, the electronics and the controls (see housing section below)
-    panel_t: float = 3.0             # printed shell wall (PETG; ASA if the motor runs hot)
-    front_t: float = 4.0             # printed front (control) panel
-    rail: float = 10.0               # printed corner rails / bosses carrying M3 heat-set inserts
-    lap: float = 13.0                # the shell overlaps the plate edges by this much (screws into the edges);
-                                     # keeps the print height under the Prusa MK3S's 210 mm
-    x_back: float = -55.0            # back edge of the plate = inside of the back wall
-    x_part: float = 50.0             # partition, motor-bay face (clutch cover OD is at 44)
-    bay: float = 61.0                # electronics bay depth, partition -> front panel (E-stop body 50 + spare)
-    tail_clear: float = 6.0          # motor tail -> end panel
-    pcb_standoff: float = 6.0        # printed bosses on the partition, M3 heat-set inserts
-    pcb_w0: float = 180.0            # W of the PCB's x=0 edge; PCB x runs toward the plate (-W)
-    pcb_y0: float = 28.0             # world y of the PCB's y=0 edge; the connector edge (y=100) is at the bottom
-    col_w: float = 211.0             # control column centre (W): E-stop, toggle, rapid
-    disp_w: float = 135.0            # OLED + dial column centre (W), over the PCB
+    # --- housing: ONE compact printed housing for the drive, the electronics and the controls (see below)
+    panel_t: float = 3.0             # printed wall (PETG; ASA if the motor runs hot)
+    rail: float = 10.0               # printed rails carrying M3 heat-set inserts
+    lap: float = 13.0                # the housing overlaps the plate edges by this much (screws into the edges);
+                                     # keeps the shell print under the Prusa MK3S's 210 mm
+    x_half: float = 55.0             # plate / housing inner half-width (x = -55 back ... +55 front)
+    r_long: float = 12.0             # outer radius of the long (along-the-table) edges; inside = r_long - wall
+    r_end: float = 8.0               # outer radius of the end-wall edges
+    tail_clear: float = 9.0          # motor tail -> end wall: room for the PCB connector plugs above the motor
+    band_y: float = -26.0            # bottom of the hood's control strip (the strip runs up to the top)
+    pcb_y: float = -33.0             # underside of the PCB, lying flat above the motor (clears it at tension -3)
+    pcb_x0: float = -50.0            # world x of the PCB's x=0 edge
+    pcb_w0: float = 129.0            # world W of the PCB's y=0 edge; the connector edge (y=100) faces the end wall
 
 
 f = F()
@@ -197,17 +196,13 @@ def bolt_heads(t=0.0):
 
 
 PLATE_TOP = max(max(y for _, y in f.standoffs) + 14, GUARD_R1 + 2.0 + 4.0)   # covers the guard's open face
-X_PART = f.x_part + f.panel_t                       # partition, electronics-bay face
-X_FRONT = X_PART + f.bay                            # front edge of the plate = inside of the front (control) panel
 
 
 def plate():
-    """Back wall of the whole unit: carries the stub bearings and the clutch module, and is widened to the operator
-    side (+X) to close the electronics bay. The bay part is pocketed from the table side down to 6 mm."""
-    s = Pos((f.x_back + X_FRONT) / 2, (PLATE_TOP + PLATE_BOT) / 2, Z_PLATE_IN) * Box(
-        X_FRONT - f.x_back, PLATE_TOP - PLATE_BOT, f.plate_t, align=MIN)
-    s = s - Pos((X_PART + 7 + X_FRONT - 8) / 2, (PLATE_TOP + PLATE_BOT) / 2, Z_PLATE_IN) * Box(
-        X_FRONT - 8 - X_PART - 7, PLATE_TOP - PLATE_BOT - 16, f.plate_t - 6, align=MIN)
+    """Back wall of the whole unit: carries the stub bearings and the clutch module. Its four corners are rounded to
+    the housing's inside radius so the housing can overlap its edges."""
+    s = Pos(0, (PLATE_TOP + PLATE_BOT) / 2, Z_PLATE_IN) * Box(2 * f.x_half, PLATE_TOP - PLATE_BOT, f.plate_t, align=MIN)
+    s = fillet(s.edges().filter_by(Axis.Z), f.r_long - f.panel_t)
     # stub bearings: straight-through Ø32 H7 bore (one setup), DIN 472-32 grooves at both faces
     s = s - Pos(0, 0, Z_PLATE_IN) * Cylinder(f.bearing_od / 2, f.plate_t, align=MIN)
     for zg in (Z_PLATE_IN + f.circlip_land, Z_PLATE_OUT - f.circlip_land - f.circlip_groove):
@@ -333,25 +328,24 @@ def mill_reference():
     return bracket + table + screw
 
 
-# ------------------------------------------------------------------ housing: everything in one box
+# ------------------------------------------------------------------ housing: everything in one compact box
 # +X points at the operator: at the LEFT table end, Y (up) x Z (out of the table, i.e. to the operator's left) = toward
-# the front of the mill. So the electronics bay and the control panel are on +X, and as the operator sees the front
-# panel, W increases to the LEFT.
-#   motor bay        x_back .. x_part      clutch module, motor, encoder
-#   partition        x_part .. X_PART      PCB on standoffs on its bay face, grommet for the motor/clutch/encoder wires
-#   electronics bay  X_PART .. X_FRONT     PCB, E-stop/toggle/rapid column, OLED + dial over the PCB
-# The housing is PRINTED (it carries no load; the aluminium plate carries the bearings, the module and the belt):
-#   shell        back + top + bottom + end walls + partition in ONE print, standing on its end wall (no supports),
-#                overlapping the plate edges by `lap` and screwed into them; printed rails/bosses take M3 heat-set inserts
-#   front panel  the control panel, printed face down, screwed to the shell rails and the plate's front edge
-# The 36 V PSU stays outside (mains on a moving table, and its size): 36 V and the limit switches come in through
-# two cable glands in the bottom of the bay.
+# the front of the mill. As the operator sees the front, W increases to the LEFT.
+# Packing: the clutch module and the motor hang below the leadscrew; the encoder sits on the leadscrew axis next to
+# the plate; the PCB lies FLAT above the motor (components up, connector edge toward the end wall); the controls sit
+# in a strip along the upper front, their bodies reaching back over the PCB. Two prints (PETG, Prusa MK3S):
+#   shell  back + bottom + end + lower front walls, PCB rails, insert rails; prints standing on its end wall
+#   hood   top + control strip, one L-shaped piece; lift it off and the whole PCB is exposed from above
+# All long edges are rounded (r_long), the end-wall edges too (r_end); the plate corners match the inside radius.
+# The 36 V PSU stays outside (mains on a moving table, and its size): 36 V and the limit switches come in through two
+# cable glands in the end wall, next to the PCB's connector edge; the USB-C is reachable through the end wall.
 T = f.panel_t
 Y0, Y1 = PLATE_BOT, PLATE_TOP
+XB, XF = -f.x_half, f.x_half                        # inside faces of the back and front walls
+X_FRONT, X_FP = XF, XF + T                          # control strip: inner and outer face
 W_TAIL = W0 + 114.0                                 # motor tail (motor_stub flange + 104 body)
 W_END = W_TAIL + f.tail_clear + T                   # outer face of the end wall
-W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim of the shell, on the plate edges
-XB = f.x_back
+W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim, on the plate edges
 RAIL = f.rail
 INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5.7 heat-set insert hole
 
@@ -360,9 +354,22 @@ def bx(x0, x1, y0, y1, w0, w1):
     return Pos(x0, y0, w0) * Box(x1 - x0, y1 - y0, w1 - w0, align=(Align.MIN, Align.MIN, Align.MIN))
 
 
+def xcyl(r, x0, x1, y, w):
+    return Pos(x0, y, w) * Rot(0, 90, 0) * Cylinder(r, x1 - x0, align=MIN)
+
+
+def ycyl(r, y0, y1, x, w):
+    return Pos(x, y0, w) * Rot(-90, 0, 0) * Cylinder(r, y1 - y0, align=MIN)
+
+
+def wcyl(r, w0, w1, x, y):
+    return Pos(x, y, w0) * Cylinder(r, w1 - w0, align=MIN)
+
+
 def pcb_to_world(px, py, h):
-    """PCB coordinates (x right, y down, h up from the board's underside) -> feed-unit world, PCB facing the operator."""
-    return (X_PART + f.pcb_standoff + h, f.pcb_y0 - py, f.pcb_w0 - px)
+    """PCB coordinates (x right, y down, h up from the board's underside) -> feed-unit world. The board lies flat,
+    components up; seen from above, PCB x runs toward the operator (+X) and PCB y toward the end wall (+W)."""
+    return (f.pcb_x0 + px, f.pcb_y + h, f.pcb_w0 + py)
 
 
 def pcb_box(px0, px1, py0, py1, h0, h1):
@@ -370,7 +377,8 @@ def pcb_box(px0, px1, py0, py1, h0, h1):
     return bx(min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1]), min(a[2], b[2]), max(a[2], b[2]))
 
 
-# PCB bodies from the KiCad layout (the same numbers the old enclosure used); heights are assumptions
+# PCB bodies from the KiCad layout; heights are assumptions. The MCU group is the bare RP2040 (QFN + flash + crystal)
+# where the Pico module used to be; the USB-C sits on the connector edge at PCB x 84..100.
 PCB_HOLES = ((4, 4), (96, 4), (4, 96), (96, 96))
 
 
@@ -378,81 +386,83 @@ def pcb_placeholder():
     parts = [pcb_box(0, 100, 0, 100, 0, 1.6)]
     for cx, cy in ((15.5, 37.0), (19.0, 74.0)):                                   # 12.5 x 25 bulk caps
         x, y, w = pcb_to_world(cx, cy, 1.6)
-        parts.append(Pos(x, y, w) * Rot(0, 90, 0) * Cylinder(6.25, 25.0, align=MIN))
-    parts.append(pcb_box(37, 91, 3, 27, 1.6, 5.6))                                # Pico
+        parts.append(ycyl(6.25, y, y + 25.0, x, w))
+    parts.append(pcb_box(50, 75, 5, 25, 1.6, 3.0))                                # RP2040 + flash + crystal
+    parts.append(pcb_box(86.5, 95.5, 92.5, 100.0, 1.6, 4.9))                      # USB-C
     for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1..J3
         parts.append(pcb_box(x0, x1, 89, 100, 1.6, 13.6))
     parts.append(pcb_box(65.6, 72.4, 77, 98, 1.6, 10.1))                          # J5
     parts.append(pcb_box(73.0, 83.9, 66.4, 92.9, 1.6, 11.6))                      # J4
     parts.append(pcb_box(0.0, 11.0, 59, 87, 1.6, 14.6))                           # fuse holder
+    for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1..J3 plugs + wire bend
+        parts.append(pcb_box(x0, x1, 100, 112, 1.6, 13.6))
     return parts
 
 
-def pcb_bosses():
-    """Printed bosses on the partition's bay face for the PCB (M3 heat-set inserts). Each has a 45-degree gusset on its
-    +W side, which is 'down' while the shell prints standing on its end wall."""
-    out = []
-    for px, py in PCB_HOLES:
-        _, y, w = pcb_to_world(px, py, 0)
-        boss = bx(X_PART, X_PART + f.pcb_standoff, y - 4, y + 4, w - 4, w + 4)
-        gusset = extrude(make_face(Polyline((X_PART, y - 4, w + 4), (X_PART + f.pcb_standoff, y - 4, w + 4),
-                                            (X_PART, y - 4, w + 4 + f.pcb_standoff), close=True)), amount=8)
-        boss = boss + gusset - xcyl(INSERT_D / 2, X_PART + f.pcb_standoff - INSERT_L, X_PART + f.pcb_standoff + 1, y, w)
-        out.append(boss)
-    return out
-
-
-# front (control) panel layout, in (W, y) on the panel; X_FP = outer face
-X_FP = X_FRONT + f.front_t
+# control strip layout, (W, y) on the strip's outer face; as the operator sees it, W increases to the LEFT
 CTRL = {
-    "estop": (f.col_w, 0.0), "toggle": (f.col_w, -55.0), "rapid": (f.col_w, -95.0),
-    "oled": (f.disp_w, 8.0), "dial": (f.disp_w, -35.0), "adapter": (105.0, -100.0),
+    "estop": (214.0, 12.0), "toggle": (160.0, 22.0), "rapid": (160.0, -6.0),
+    "oled": (85.0, 26.0), "dial": (88.0, -6.0), "adapter": (128.0, 22.0),
 }
-LABELS = (("SPEED", f.disp_w, -58.0), ("LEFT", f.col_w + 16, -41.0), ("STOP", f.col_w, -41.0),
-          ("RIGHT", f.col_w - 17, -41.0), ("RAPID", f.col_w, -113.0))
+LABELS = (("LEFT", 174.0, 35.0), ("STOP", 160.0, 35.0), ("RIGHT", 146.0, 35.0),
+          ("RAPID", 140.0, -6.0), ("SPEED", 113.0, -6.0))
 
 
-def xcyl(r, x0, x1, y, w):
-    return Pos(x0, y, w) * Rot(0, 90, 0) * Cylinder(r, x1 - x0, align=MIN)
+def outer_body():
+    """The whole closed, rounded outer volume of the housing (before it is split into shell and hood)."""
+    out = bx(XB - T, X_FP, Y0 - T, Y1 + T, W_SHELL0, W_END)
+    out = fillet(out.edges().filter_by(Axis.Z), f.r_long)
+    out = fillet(out.edges().group_by(Axis.Z)[-1], f.r_end)
+    cav = bx(XB, XF, Y0, Y1, W_SHELL0 - 1, W_END - T)
+    cav = fillet(cav.edges().filter_by(Axis.Z), f.r_long - T)
+    cav = fillet(cav.edges().group_by(Axis.Z)[-1], max(f.r_end - T, 1.0))
+    return out - cav
+
+
+def hood_region():
+    """Top slab + control strip, plus the whole rounded top-front corner (else a sliver of it stays on the shell)."""
+    r_in = f.r_long - T
+    return bx(XB - T - 1, X_FP + 1, Y1, Y1 + T + 1, W_SHELL0 - 1, W_END + 1) + \
+        bx(XF, X_FP + 1, f.band_y, Y1 + T + 1, W_SHELL0 - 1, W_END - T) + \
+        bx(XF - r_in, XF, Y1 - r_in, Y1, W_SHELL0 - 1, W_END - T)
 
 
 def shell():
-    """One print: back, top, bottom and end walls, the partition, the front corner rails and the PCB bosses."""
-    x0, x1 = XB - T, X_FP                              # outer x extent (the front panel sits between top and bottom)
-    w = (W_SHELL0, W_END)
-    top = bx(x0, x1, Y1, Y1 + T, *w)
-    bot = bx(x0, x1, Y0 - T, Y0, *w)
-    back = bx(x0, XB, Y0 - T, Y1 + T, *w)
-    end = bx(x0, x1, Y0 - T, Y1 + T, W_END - T, W_END)
-    part = bx(f.x_part, X_PART, Y0, Y1, Z_PLATE_OUT, W_END - T)
-    rails = [bx(X_FRONT - RAIL, X_FRONT, Y1 - RAIL, Y1, Z_PLATE_OUT, W_END - T),       # top-front
-             bx(X_FRONT - RAIL, X_FRONT, Y0, Y0 + RAIL, Z_PLATE_OUT, W_END - T),       # bottom-front
-             bx(X_FRONT - RAIL, X_FRONT, Y0, Y1, W_END - T - RAIL, W_END - T)]         # end-front
-    s = top
-    for p_ in [bot, back, end, part] + rails + pcb_bosses():
-        s = s + p_
-    # bottom: drawbolt access under the tension block, 2x M16 cable glands (36 V, limit switches) under J1 / J5,
-    # vent slots under the motor and under the driver; end wall: vent slots high up (chimney flow, out of the chips)
-    s = s - Pos(MX, Y0 - T - 1, Z_PLATE_OUT + 4) * Rot(-90, 0, 0) * Cylinder(6.0, T + 2, align=MIN)
-    for wg in (110.0, 160.0):
-        s = s - Pos(84.0, Y0 - T - 1, wg) * Rot(-90, 0, 0) * Cylinder(8.1, T + 2, align=MIN)
-    for i in range(11):
-        s = s - bx(-35 + 7 * i - 1.5, -35 + 7 * i + 1.5, Y0 - T - 1, Y0 + 1, 150, 215)
+    """Back, bottom, end and lower-front walls, the PCB rails and the insert rails: one print standing on the end wall."""
+    s = outer_body() - hood_region()
+    rails = [bx(XB, XB + RAIL, Y1 - RAIL, Y1, Z_PLATE_OUT, W_END - T),                      # back-top (hood screws)
+             bx(XF - RAIL, XF, f.band_y, f.band_y + RAIL, Z_PLATE_OUT, W_END - T),           # front, behind the strip edge
+             bx(XF - RAIL, XF, f.band_y, Y1, W_END - T - RAIL, W_END - T),                   # end-front (strip screws)
+             bx(XB + RAIL, XF - RAIL, Y1 - RAIL, Y1, W_END - T - RAIL, W_END - T)]           # end-top (hood screws)
+    _, yb, _ = pcb_to_world(0, 0, 0)
+    for xa, xb_ in ((XB, f.pcb_x0 + 8), (f.pcb_x0 + 92, XF)):                            # PCB rails, under its edges
+        rails.append(bx(xa, xb_, yb - 8, yb, pcb_to_world(0, 0, 0)[2], W_END - T))
+    for r in rails:
+        s = s + r
+    s = s - hood_region()                               # rails stop where the hood's rounded corner starts
+    for px, py in PCB_HOLES:                                                              # PCB inserts
+        x, y, w = pcb_to_world(px, py, 0)
+        s = s - ycyl(INSERT_D / 2, y - INSERT_L, y + 0.1, x, w)
+    # bottom: drawbolt access under the tension block, intake vents under the motor
+    s = s - ycyl(6.0, Y0 - T - 1, Y0 + 1, MX, Z_PLATE_OUT + 4)
+    for i in range(9):
+        s = s - bx(-28 + 7 * i - 1.5, -28 + 7 * i + 1.5, Y0 - T - 1, Y0 + 1, 150, 215)
+    # back wall: exhaust vents high up, above the PCB (chimney flow; vertical face, so chips don't fall in)
     for i in range(4):
-        s = s - bx(68 + 8 * i - 1.5, 68 + 8 * i + 1.5, Y0 - T - 1, Y0 + 1, 122, 148)
-    for xa, xb_ in ((-38, 38), (66, 100)):
-        for i in range(4):
-            s = s - bx(xa, xb_, 2 + 7 * i, 5 + 7 * i, W_END - T - 1, W_END + 1)
-    # partition: grommet for the motor, clutch and encoder wires (below the PCB)
-    s = s - xcyl(10.0, f.x_part - 1, X_PART + 1, -100.0, 120.0)
+        s = s - bx(XB - T - 1, XB + 1, 4 + 7 * i, 7 + 7 * i, 140, 230)
+    # end wall: 2x M16 cable glands (36 V next to J1, limit switches next to J5) and the USB-C access slot
+    for xg in (pcb_to_world(18.6, 0, 0)[0], pcb_to_world(69.0, 0, 0)[0]):
+        s = s - wcyl(8.1, W_END - T - 1, W_END + 1, xg, 10.0)
+    ux, uy, _ = pcb_to_world(91.0, 100, 1.6 + 1.6)
+    s = s - bx(ux - 7.5, ux + 7.5, uy - 4.5, uy + 4.5, W_END - T - 1, W_END + 1)
     return s
 
 
-def front_panel():
-    fp = bx(X_FRONT, X_FP, Y0, Y1, W_SHELL0, W_END - T)
-    w, y = CTRL["dial"]                     # thin the panel to 3 mm round the EC11 so its bushing takes the nut
-    fp = fp - xcyl(6.5, X_FRONT - 1, X_FRONT + f.front_t - 3.0, y, w)
-    return control_cutouts(fp)
+def hood():
+    """Top + control strip, one print (the strip face down on the bed, the top standing up)."""
+    hd = outer_body() & hood_region()
+    w, y = CTRL["dial"]  # nothing to thin: a 3 mm strip + the EC11's 2 mm nut fit its 6 mm bushing
+    return control_cutouts(hd)
 
 
 def control_cutouts(fp):
@@ -461,11 +471,11 @@ def control_cutouts(fp):
     w, y = CTRL["rapid"]; fp = fp - xcyl(8.15, X_FRONT - 1, X_FP + 1, y, w)
     w, y = CTRL["dial"]; fp = fp - xcyl(3.7, X_FRONT - 1, X_FP + 1, y, w) - xcyl(1.6, X_FRONT - 1, X_FRONT + 1.0, y + 7.8, w)
     w, y = CTRL["oled"]; fp = fp - bx(X_FRONT - 1, X_FP + 1, y - 8, y + 8, w - 15, w + 15)
-    for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):   # OLED M2 tapped
-        fp = fp - xcyl(0.8, X_FRONT - 1, X_FRONT + 2.0, y - 2 + dy, w + dw)
+    for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):   # OLED M2 posts
+        fp = fp + xcyl(2.5, X_FRONT - 2.5, X_FRONT, y - 2 + dy, w + dw) - xcyl(0.8, X_FRONT - 2.6, X_FRONT + 1.0, y - 2 + dy, w + dw)
     w, y = CTRL["adapter"]
-    for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):              # adapter board M3 tapped
-        fp = fp - xcyl(1.25, X_FRONT - 1, X_FRONT + 2.0, y + dy, w + dw)
+    for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):              # adapter board posts, M3 inserts
+        fp = fp + xcyl(3.5, X_FRONT - 5, X_FRONT, y + dy, w + dw) - xcyl(INSERT_D / 2, X_FRONT - 5.1, X_FRONT - 5 + INSERT_L, y + dy, w + dw)
     for txt, w, y in LABELS:                                                       # engraved 0.6 deep (3 layers)
         pl = Plane(origin=(X_FP, y, w), x_dir=(0, 0, -1), z_dir=(1, 0, 0))
         try:
@@ -476,7 +486,7 @@ def control_cutouts(fp):
 
 
 def controls():
-    """Placeholder bodies for the checks and renders (not machined)."""
+    """Placeholder bodies for the checks and renders (not machined). Same order as CONTROL_NAMES."""
     c = []
     w, y = CTRL["estop"]
     c += [xcyl(11.0, X_FRONT - 50, X_FRONT, y, w), xcyl(20.0, X_FP + 1, X_FP + 26, y, w), xcyl(30.0, X_FP, X_FP + 1, y, w)]
@@ -488,44 +498,48 @@ def controls():
     c += [bx(X_FRONT - 15, X_FRONT, y - 6, y + 6, w - 6, w + 6), xcyl(15.0, X_FP + 2, X_FP + 17, y, w)]
     w, y = CTRL["oled"]
     c += [bx(X_FRONT - 7.5, X_FRONT - 2.5, y - 2 - 17, y - 2 + 17, w - 18, w + 18)]
-    for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):
-        c.append(xcyl(1.25, X_FRONT - 2.5, X_FRONT, y - 2 + dy, w + dw))
     w, y = CTRL["adapter"]
     c += [bx(X_FRONT - 6.6, X_FRONT - 5, y - 14, y + 14, w - 22.5, w + 22.5), bx(X_FRONT - 15.6, X_FRONT - 6.6, y - 5, y + 5, w - 18, w + 18)]
-    for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):
-        c.append(xcyl(2.5, X_FRONT - 5, X_FRONT, y + dy, w + dw))
     return c
+
+
+CONTROL_NAMES = ["estop_body", "estop_head", "estop_ring", "toggle_body", "toggle_lever", "rapid_body", "rapid_cap",
+                 "dial_body", "dial_knob", "oled", "adapter_board", "adapter_header"]
 
 
 def screw_joints():
     """(part screwed, target, outer point, inward unit vector, kind). 'tap' = M3 tapped 8 deep in the aluminium plate,
-    'insert' = M3 heat-set insert in a printed rail. Countersunk M3 through the printed wall/panel."""
+    'insert' = M3 heat-set insert in a printed rail. Countersunk M3 through the printed wall."""
     j = []
     wl = (W_SHELL0 + Z_PLATE_OUT) / 2                 # mid-lap: into the plate edges
-    for x in (-35.0, 10.0, 60.0, 100.0):
-        j += [("shell", "plate", (x, Y1 + T, wl), (0, -1, 0), "tap"), ("shell", "plate", (x, Y0 - T, wl), (0, 1, 0), "tap")]
-    for y in (-110.0, -50.0, 10.0):
+    for x in (-30.0, 0.0, 30.0):
+        j += [("hood", "plate", (x, Y1 + T, wl), (0, -1, 0), "tap"), ("shell", "plate", (x, Y0 - T, wl), (0, 1, 0), "tap")]
+    for y in (-110.0, -60.0, -10.0, 25.0):
         j.append(("shell", "plate", (XB - T, y, wl), (1, 0, 0), "tap"))
-    for y in (-90.0, -40.0, 10.0):
-        j.append(("panel_front", "plate", (X_FP, y, wl), (-1, 0, 0), "tap"))
-    for w in (100.0, 160.0):
-        j += [("panel_front", "shell", (X_FP, Y1 - RAIL / 2, w), (-1, 0, 0), "insert"),
-              ("panel_front", "shell", (X_FP, Y0 + RAIL / 2, w), (-1, 0, 0), "insert")]
-    for y in (-120.0, -75.0, 25.0):     # end rail: clear of the E-stop legend ring and the toggle labels
-        j.append(("panel_front", "shell", (X_FP, y, W_END - T - RAIL / 2), (-1, 0, 0), "insert"))
+    for y in (-110.0, -60.0):
+        j.append(("shell", "plate", (X_FP, y, wl), (-1, 0, 0), "tap"))
+    for y in (0.0, 30.0):
+        j.append(("hood", "plate", (X_FP, y, wl), (-1, 0, 0), "tap"))
+    for w in (100.0, 170.0, 230.0):
+        j.append(("hood", "shell", (XB + RAIL / 2, Y1 + T, w), (0, -1, 0), "insert"))
+    for x in (-20.0, 25.0):
+        j.append(("hood", "shell", (x, Y1 + T, W_END - T - RAIL / 2), (0, -1, 0), "insert"))
+    for w in (110.0, 200.0):
+        j.append(("hood", "shell", (X_FP, f.band_y + RAIL / 2, w), (-1, 0, 0), "insert"))
+    for y in (-10.0, 30.0):
+        j.append(("hood", "shell", (X_FP, y, W_END - T - RAIL / 2), (-1, 0, 0), "insert"))
     return j
 
 
 def housing():
-    return {"shell": shell(), "panel_front": front_panel()}
+    return {"shell": shell(), "hood": hood()}
 
 
 def apply_screws(parts):
     for part_, target, p, d, kind in screw_joints():
-        th = T if part_ == "shell" else f.front_t
         pl = Plane(origin=p, z_dir=d)
-        parts[part_] = parts[part_] - Solid.make_cylinder(1.7, th + 0.01, pl) - Solid.make_cone(3.25, 1.7, 1.55, pl)
-        inner = Plane(origin=tuple(p[i] + d[i] * th for i in range(3)), z_dir=d)
+        parts[part_] = parts[part_] - Solid.make_cylinder(1.7, T + 0.01, pl) - Solid.make_cone(3.25, 1.7, 1.55, pl)
+        inner = Plane(origin=tuple(p[i] + d[i] * T for i in range(3)), z_dir=d)
         r, depth = (1.25, 8.0) if kind == "tap" else (INSERT_D / 2, INSERT_L)
         parts[target] = parts[target] - Solid.make_cylinder(r, depth, inner)
     return parts
@@ -573,9 +587,15 @@ def build():
     parts = apply_screws(parts)
     parts["pcb_placeholder"] = Compound(children=pcb_placeholder())
     parts["controls"] = Compound(children=controls())
+    groups = {"estop": (0, 3), "toggle": (3, 5), "rapid": (5, 7), "dial": (7, 9), "oled": (9, 10), "adapter": (10, 12)}
+    cs = controls()
+    for nm, (i0, i1) in groups.items():                       # one STL per control, so the viewer can name them
+        parts["control_" + nm] = Compound(children=cs[i0:i1])
+    with open(os.path.join(OUT, "viewer_layout.json"), "w") as fh:  # the 3D viewer places the KiCad PCB from this
+        json.dump({"pcb_x0": f.pcb_x0, "pcb_y": f.pcb_y, "pcb_w0": f.pcb_w0}, fh)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "controls")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -638,32 +658,34 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
   table end is optional if the mill vibrates a lot.
 - The chamber ({f.chamber:.0f} mm) is set by the Oldham disc plus the belt plane: the 40T pulley's inner flange clears the stub tongue.
 
-## Housing: the whole power feed in one box (3D printed)
-The drive, the controller PCB and the controls share one housing on the table end. Outside it there is only the
-belt chamber (closed by the guard cup), the 36 V supply and the limit switches. The housing carries no load (the
-aluminium plate carries the bearings, the module and the belt), so it is printed.
+## Housing: the whole power feed in one compact box (3D printed)
+The drive, the controller PCB and the controls share one rounded housing on the table end. Outside it there is
+only the belt chamber (closed by the guard cup), the 36 V supply and the limit switches. The housing carries no load
+(the aluminium plate carries the bearings, the module and the belt), so it is printed.
+
+Packing: the clutch and motor hang below the leadscrew, the encoder sits on the leadscrew next to the plate, the
+**PCB lies flat above the motor** (components up, connector edge toward the end wall), and the controls sit in a
+strip along the upper front with their bodies reaching back over the PCB.
 
 | | |
 |---|---|
-| Outer size | {X_FP - (XB - T):.0f} (front-back) × {Y1 - Y0 + 2 * T:.0f} (high) × {W_END - W_SHELL0:.0f} mm (along the table), plus the {f.chamber:.0f} mm belt chamber and the controls proud of the front |
-| `shell` (one print) | back, top, bottom and end walls ({T:.0f} mm), the partition, the front corner rails and the PCB bosses. **Print standing on the end wall** (open rim up): {X_FP - (XB - T):.0f} × {Y1 - Y0 + 2 * T:.0f} on the bed, {W_END - W_SHELL0:.0f} mm tall, fits a Prusa MK3S (250 × 210 × 210), no supports. PETG, 4 perimeters, 20 % gyroid; ASA if the motor runs hot (see Heat) |
-| `panel_front` (one print) | the control panel, {f.front_t:.0f} mm, **printed face down** ({Y1 - Y0:.0f} × {W_END - T - W_SHELL0:.0f}); labels engraved 0.6 mm (on the bed side, so they come out crisp); thinned to 3 mm round the dial so the EC11 bushing takes its nut |
-| Back wall | the aluminium plate, widened to x = {X_FRONT:.0f} on the operator side; the bay part pocketed to 6 mm from the table side |
-| Fixing | the shell overlaps the plate edges by {f.lap:.0f} mm: {sum(1 for j in screw_joints() if j[0] == "shell")}× M3×8 countersunk into tapped holes in the plate's top, bottom and back edges. Front panel: {sum(1 for j in screw_joints() if j[0] == "panel_front" and j[4] == "tap")}× M3×10 into the plate's front edge, {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the printed rails |
-| PCB | 4 printed bosses on the partition (heat-set inserts, M3×6 screws), components toward the operator, connector edge down; Ø20 grommet below the PCB for the motor, clutch and encoder wires |
-| Electronics bay | {f.bay:.0f} deep (E-stop body 50 + spare); the controls hang from the front panel, the E-stop column beside the PCB |
-| Front panel = control panel | E-stop, LEFT/STOP/RIGHT toggle and RAPID in a column at the outer end; OLED and SPEED dial over the PCB; adapter board (2×7 IDC) on M3 inserts, 150 mm ribbon to J4 so the panel can come off and hang beside the unit |
-| Bottom | Ø12 access to the drawbolt; 2× M16 cable glands under J1 (36 V) and J5 (limit switches); vent slots under the motor and under the driver |
-| End wall | vent slots high up (air in at the bottom, out at the top of the end face, away from falling chips) |
+| Outer size | {X_FP - (XB - T):.0f} (front-back) × {Y1 - Y0 + 2 * T:.0f} (high) × {W_END - W_SHELL0:.0f} mm (along the table), long edges rounded R{f.r_long:.0f}, end edges R{f.r_end:.0f}; plus the {f.chamber:.0f} mm belt chamber and the controls proud of the front |
+| `shell` (one print) | back, bottom, end and lower-front walls ({T:.0f} mm), the PCB rails and the insert rails. **Print standing on the end wall** (open side up), {W_END - W_SHELL0:.0f} mm tall: fits a Prusa MK3S, no supports. PETG, 4 perimeters, 20 % gyroid; ASA if the motor runs hot (see Heat) |
+| `hood` (one print) | the top and the control strip (y {f.band_y:.0f} … top) in one L-shaped piece. **Print with the strip face down** (the top stands up): labels engraved 0.6 mm come out crisp on the bed side. Lift it off and the whole PCB is exposed from above |
+| Plate | aluminium, {2 * f.x_half:.0f} wide, corners rounded R{f.r_long - T:.0f} to match the housing inside |
+| Fixing | both prints overlap the plate edges by {f.lap:.0f} mm and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
+| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside {f.pcb_y:.0f} mm below the leadscrew axis: ≥3 mm above the motor's THT-lead line even with the motor raised 3 mm by the belt tensioner |
+| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J4 so the hood can be lifted and set beside the unit |
+| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J5) and a 15 × 9 slot to the USB-C: plug in without opening the box |
+| Vents | intake slots in the bottom under the motor, exhaust slots high in the back wall above the PCB (vertical face, so chips don't fall in) |
 
-- **USB / fuse / BOOTSEL:** take the front panel off (the ribbon stays plugged in). The USB-C is on the PCB's
-  connector edge, which faces down into the empty space above the glands.
-- **Heat:** the motor is inside. Default run current is 3 A (~16 W in the coils), 1 A at standstill. PETG softens
-  around 75–80 °C; the motor is 6 mm from the end wall and never touches the shell. On the bench, run it closed for
-  30 min: if the motor case passes ~65 °C, lower `MOTOR mA` in the menu (light feeds need far less), reprint the
-  shell in ASA, or fit a 40 mm fan on the end wall's vents.
-- **Order:** plate (bearings, stub, module, encoder) → PCB into the shell's bosses → slide the shell over the
-  module onto the plate edges and screw it on → wire through the grommet → front panel with its controls last.
+- **BOOTSEL / RESET / fuse:** lift the hood. USB-C goes through the end-wall slot.
+- **Heat:** the motor is inside and the PCB sits above it, so this matters more than before. Default run current is
+  3 A (~16 W in the coils), 1 A at standstill. PETG softens around 75–80 °C. On the bench, run it closed for
+  30 min: if the motor case passes ~65 °C or the TMC5160 area gets hot, lower `MOTOR mA` in the menu (light feeds
+  need far less), reprint in ASA, or fit a 40 mm fan on the back-wall vents.
+- **Order:** plate (bearings, stub, module, encoder) → slide the shell over the module onto the plate edges, screw
+  it on → PCB onto its rails, wire the motor/clutch/encoder up beside it → glands → hood with its controls last.
 
 ## PLACEHOLDERS (measure, then edit `F`)
 - `screw_d`, `screw_end_slot_w`, `screw_end_slot_d`, `screw_end_z`: the left leadscrew end and its drive slot.

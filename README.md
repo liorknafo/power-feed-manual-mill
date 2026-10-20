@@ -36,7 +36,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | Firmware | Builds for the RP2040. Core state machine has 47 passing tests. Needs bench commissioning (`firmware/README.md`) |
 | Clutch CAD | Ready to machine, after you measure the motor shaft length. Independently reviewed (interference checked engaged and released). Magnetic sizing must be bench-calibrated |
 | Feed unit CAD | Structure reviewed: Oldham drive, circlip bearing stack, encoder adapter, guard, drawbolt tensioner. **Mill-side dimensions are placeholders until measured** |
-| Housing (one box: drive + PCB + controls) | 3D-printed PETG: one shell print + a control-panel print, both fit a Prusa MK3S; screwed to the aluminium plate. Interference-checked; see FEED_UNIT.md → "Housing" |
+| Housing (one box: drive + PCB + controls) | Compact, rounded, 3D-printed PETG (116 × 187 × 202 mm): a shell + a hood with the controls, both fit a Prusa MK3S; the PCB lies above the motor. Interference-checked; see FEED_UNIT.md → "Housing" |
 
 ## What you need to do
 

@@ -11,7 +11,7 @@
 | Centre distance | 70.71 mm, tension slot ±3 mm along the centre line |
 | Module position | 70.7 mm from the leadscrew at -90° (below) |
 | Belt plane | 23.0 mm out from the bracket face |
-| Overall | ≈249 mm out from the table end (housing end panel) |
+| Overall | ≈252 mm out from the table end (housing end panel) |
 
 Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the encoder is on the stub).
 
@@ -52,38 +52,40 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
   table end is optional if the mill vibrates a lot.
 - The chamber (35 mm) is set by the Oldham disc plus the belt plane: the 40T pulley's inner flange clears the stub tongue.
 
-## Housing: the whole power feed in one box (3D printed)
-The drive, the controller PCB and the controls share one housing on the table end. Outside it there is only the
-belt chamber (closed by the guard cup), the 36 V supply and the limit switches. The housing carries no load (the
-aluminium plate carries the bearings, the module and the belt), so it is printed.
+## Housing: the whole power feed in one compact box (3D printed)
+The drive, the controller PCB and the controls share one rounded housing on the table end. Outside it there is
+only the belt chamber (closed by the guard cup), the 36 V supply and the limit switches. The housing carries no load
+(the aluminium plate carries the bearings, the module and the belt), so it is printed.
+
+Packing: the clutch and motor hang below the leadscrew, the encoder sits on the leadscrew next to the plate, the
+**PCB lies flat above the motor** (components up, connector edge toward the end wall), and the controls sit in a
+strip along the upper front with their bodies reaching back over the PCB.
 
 | | |
 |---|---|
-| Outer size | 176 (front-back) × 190 (high) × 199 mm (along the table), plus the 35 mm belt chamber and the controls proud of the front |
-| `shell` (one print) | back, top, bottom and end walls (3 mm), the partition, the front corner rails and the PCB bosses. **Print standing on the end wall** (open rim up): 176 × 190 on the bed, 199 mm tall, fits a Prusa MK3S (250 × 210 × 210), no supports. PETG, 4 perimeters, 20 % gyroid; ASA if the motor runs hot (see Heat) |
-| `panel_front` (one print) | the control panel, 4 mm, **printed face down** (184 × 196); labels engraved 0.6 mm (on the bed side, so they come out crisp); thinned to 3 mm round the dial so the EC11 bushing takes its nut |
-| Back wall | the aluminium plate, widened to x = 114 on the operator side; the bay part pocketed to 6 mm from the table side |
-| Fixing | the shell overlaps the plate edges by 13 mm: 11× M3×8 countersunk into tapped holes in the plate's top, bottom and back edges. Front panel: 3× M3×10 into the plate's front edge, 7× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the printed rails |
-| PCB | 4 printed bosses on the partition (heat-set inserts, M3×6 screws), components toward the operator, connector edge down; Ø20 grommet below the PCB for the motor, clutch and encoder wires |
-| Electronics bay | 61 deep (E-stop body 50 + spare); the controls hang from the front panel, the E-stop column beside the PCB |
-| Front panel = control panel | E-stop, LEFT/STOP/RIGHT toggle and RAPID in a column at the outer end; OLED and SPEED dial over the PCB; adapter board (2×7 IDC) on M3 inserts, 150 mm ribbon to J4 so the panel can come off and hang beside the unit |
-| Bottom | Ø12 access to the drawbolt; 2× M16 cable glands under J1 (36 V) and J5 (limit switches); vent slots under the motor and under the driver |
-| End wall | vent slots high up (air in at the bottom, out at the top of the end face, away from falling chips) |
+| Outer size | 116 (front-back) × 190 (high) × 202 mm (along the table), long edges rounded R12, end edges R8; plus the 35 mm belt chamber and the controls proud of the front |
+| `shell` (one print) | back, bottom, end and lower-front walls (3 mm), the PCB rails and the insert rails. **Print standing on the end wall** (open side up), 202 mm tall: fits a Prusa MK3S, no supports. PETG, 4 perimeters, 20 % gyroid; ASA if the motor runs hot (see Heat) |
+| `hood` (one print) | the top and the control strip (y -26 … top) in one L-shaped piece. **Print with the strip face down** (the top stands up): labels engraved 0.6 mm come out crisp on the bed side. Lift it off and the whole PCB is exposed from above |
+| Plate | aluminium, 110 wide, corners rounded R9 to match the housing inside |
+| Fixing | both prints overlap the plate edges by 13 mm and screw into them (14× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
+| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside -33 mm below the leadscrew axis: ≥3 mm above the motor's THT-lead line even with the motor raised 3 mm by the belt tensioner |
+| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J4 so the hood can be lifted and set beside the unit |
+| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J5) and a 15 × 9 slot to the USB-C: plug in without opening the box |
+| Vents | intake slots in the bottom under the motor, exhaust slots high in the back wall above the PCB (vertical face, so chips don't fall in) |
 
-- **USB / fuse / BOOTSEL:** take the front panel off (the ribbon stays plugged in). The USB-C is on the PCB's
-  connector edge, which faces down into the empty space above the glands.
-- **Heat:** the motor is inside. Default run current is 3 A (~16 W in the coils), 1 A at standstill. PETG softens
-  around 75–80 °C; the motor is 6 mm from the end wall and never touches the shell. On the bench, run it closed for
-  30 min: if the motor case passes ~65 °C, lower `MOTOR mA` in the menu (light feeds need far less), reprint the
-  shell in ASA, or fit a 40 mm fan on the end wall's vents.
-- **Order:** plate (bearings, stub, module, encoder) → PCB into the shell's bosses → slide the shell over the
-  module onto the plate edges and screw it on → wire through the grommet → front panel with its controls last.
+- **BOOTSEL / RESET / fuse:** lift the hood. USB-C goes through the end-wall slot.
+- **Heat:** the motor is inside and the PCB sits above it, so this matters more than before. Default run current is
+  3 A (~16 W in the coils), 1 A at standstill. PETG softens around 75–80 °C. On the bench, run it closed for
+  30 min: if the motor case passes ~65 °C or the TMC5160 area gets hot, lower `MOTOR mA` in the menu (light feeds
+  need far less), reprint in ASA, or fit a 40 mm fan on the back-wall vents.
+- **Order:** plate (bearings, stub, module, encoder) → slide the shell over the module onto the plate edges, screw
+  it on → PCB onto its rails, wire the motor/clutch/encoder up beside it → glands → hood with its controls last.
 
 ## PLACEHOLDERS (measure, then edit `F`)
 - `screw_d`, `screw_end_slot_w`, `screw_end_slot_d`, `screw_end_z`: the left leadscrew end and its drive slot.
   - If there is no slot, use a pinned sleeve coupling instead of the tongue.
 - `standoffs`: where M6 can go into the table end or the left bracket.
 - `motor_angle_deg`: rotate the module if it hits the saddle, the base or the DRO cable at full travel.
-- The housing reaches 54 mm in front of the table's front edge (E-stop head included) and 143 mm below the
+- The housing reaches -6 mm in front of the table's front edge (E-stop head included) and 143 mm below the
   leadscrew: check both against the saddle, the DRO reader and the base at full right travel.
 - `chamber`: the minimum is set by the clutch output shaft; the script asserts it fits.

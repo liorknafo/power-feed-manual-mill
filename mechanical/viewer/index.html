@@ -5,14 +5,22 @@
 <title>Power feed — 3D view</title>
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #1d2026; color: #e6e8eb;
-               font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  #ui { position: absolute; top: 12px; left: 12px; background: rgba(20,22,27,.88); padding: 12px 14px;
-        border-radius: 10px; min-width: 210px; box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+               font: 13px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .card { position: absolute; background: rgba(20,22,27,.9); border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+  #ui { top: 12px; left: 12px; padding: 12px 14px; min-width: 220px; }
   #ui h1 { font-size: 14px; margin: 0 0 8px; }
   #ui label { display: block; margin: 3px 0; cursor: pointer; user-select: none; }
   #ui .sep { border-top: 1px solid #3a3f48; margin: 8px 0; }
   #ui button { margin: 2px 4px 2px 0; padding: 3px 8px; border-radius: 6px; border: 1px solid #4a505b;
                background: #2a2e36; color: #e6e8eb; cursor: pointer; }
+  #info { top: 12px; right: 12px; width: 320px; max-height: calc(100% - 60px); overflow: auto; padding: 14px 16px; }
+  #info h2 { font-size: 16px; margin: 0 0 2px; }
+  #info .sub { color: #9aa3ad; font-size: 12px; margin-bottom: 10px; }
+  #info p { margin: 6px 0; }
+  #info table { border-collapse: collapse; width: 100%; margin-top: 8px; font-size: 12px; }
+  #info td { padding: 2px 0; vertical-align: top; }
+  #info td:first-child { color: #9aa3ad; width: 84px; }
+  #info .hint { color: #9aa3ad; }
   #status { position: absolute; bottom: 10px; left: 12px; color: #9aa3ad; }
   #hint { position: absolute; bottom: 10px; right: 12px; color: #9aa3ad; }
 </style>
@@ -24,27 +32,76 @@
 </script>
 </head>
 <body>
-<div id="ui">
+<div id="ui" class="card">
   <h1>Power feed — what exists so far</h1>
-  <label><input type="checkbox" data-group="mill" checked> Power feed on the mill (drive + PCB + controls, one box)</label>
+  <label><input type="checkbox" data-group="mill" checked> Power feed on the mill (one box)</label>
   <label><input type="checkbox" data-group="clutch" checked> Clutch, exploded</label>
   <div class="sep"></div>
-  <label><input type="checkbox" id="shell" checked> Printed housing shell</label>
-  <label><input type="checkbox" id="front" checked> Front (control) panel</label>
+  <label><input type="checkbox" id="shell" checked> Housing shell</label>
+  <label><input type="checkbox" id="hood" checked> Hood (top + controls)</label>
   <label><input type="checkbox" id="xray"> X-ray (see inside)</label>
   <label><input type="checkbox" id="millref" checked> Mill table-end stand-in</label>
   <div class="sep"></div>
   <button data-view="all">All</button><button data-view="mill">Power feed</button><button data-view="clutch">Clutch</button>
 </div>
+<div id="info" class="card"><h2>Click any part</h2><p class="hint">Click a part to see what it is and what it does. On the
+  circuit board, click a component to identify it. Click empty space to clear.</p></div>
 <div id="status">loading…</div>
-<div id="hint">drag = rotate · right-drag = pan · scroll = zoom</div>
+<div id="hint">click = identify · drag = rotate · right-drag = pan · scroll = zoom</div>
 <script type="module">
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { STLLoader } from "three/addons/loaders/STLLoader.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-// Everything is in mm, Z up. Paths are relative to this file (serve the repo root over http).
+// ---------------------------------------------------------------- what every part is: [title, kind / material, description]
+const INFO = {
+  mill_reference: ["Mill table end (stand-in)", "Reference only", "A box standing in for the SIEG X3.5D's left table end, leadscrew bracket and leadscrew. Its numbers are placeholders until you measure the mill (docs/mill.md)."],
+  standoffs: ["Standoffs", "Steel or 6061, 4 pcs", "Hold the plate off the table end and form the belt chamber. M6 screws go through them into the table end (positions are placeholders until measured)."],
+  plate: ["Main plate", "6061 aluminium, 28 mm, CNC", "The backbone: carries the leadscrew stub bearings, the clutch/motor module (slotted for belt tension) and the encoder, and closes the back of the housing. Corners rounded to match the printed housing."],
+  stub_shaft: ["Leadscrew stub", "Steel Ø15, lathe", "Runs in the two 6002 bearings in the plate. Its tongue drives the leadscrew through the Oldham disc; the 40T pulley sits on it and the encoder on its outer end."],
+  oldham_disc: ["Oldham disc", "Steel 1045 or bronze, greased", "Couples the stub to the leadscrew's drive slot: a tongue on one face, a cross slot on the other, so the plate doesn't have to sit exactly on the leadscrew axis."],
+  pulley_40T: ["40T pulley", "HTD-5M for 15 mm belt (buy, re-bore Ø15)", "Big pulley on the leadscrew stub. With the 20T pulley it gives a 2:1 reduction: twice the torque at the leadscrew."],
+  pulley_20T: ["20T pulley", "HTD-5M for 15 mm belt (buy, re-bore Ø12)", "Small pulley on the clutch output shaft."],
+  belt: ["Timing belt", "HTD 295-5M-15 (buy)", "Connects the clutch output to the leadscrew stub, 2:1. Tensioned by the drawbolt below the module."],
+  belt_guard: ["Belt guard", "3D print (PETG)", "A cup closing the belt chamber between the table end and the plate, so chips and fingers stay out of the belt."],
+  bearings_6002: ["Stub bearings", "2× 6002-2RS, spacer tube, circlips", "Carry the leadscrew stub in the plate. The inner bearing locates the stub (shoulder + circlip); the outer one floats."],
+  encoder: ["Output encoder", "LPD3806-600BM (buy)", "Measures the leadscrew stub's real rotation (2400 counts per turn). The TMC5160 compares it with the motor to catch stalls, belt slip and whether the clutch really engaged."],
+  encoder_disc: ["Encoder adapter disc", "6061, 5 mm", "Holds the encoder on three posts, outside the bearing bore."],
+  encoder_posts: ["Encoder posts", "M3 hex standoffs", "Space the encoder disc off the plate."],
+  encoder_coupling: ["Flexible coupling", "6 × 8 mm (buy)", "Connects the stub's Ø8 end to the encoder's Ø6 shaft and absorbs small misalignment."],
+  tension_block: ["Belt-tension block", "Steel", "An M5 drawbolt through it pulls the clutch/motor module away from the leadscrew to tension the belt; then the four module bolts are locked. Reached through a hole in the housing bottom."],
+  module_bolt_heads: ["Module bolts", "4× M5×35 SHCS", "Hold the clutch/motor module to the plate through slotted holes (belt-tension adjustment)."],
+  clutch_field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body bolted to the motor flange. Holds the coil; its poles pull the armature."],
+  clutch_coil: ["Clutch coil", "~850 turns 0.32 mm Cu, ≈24 Ω", "The electromagnet: 1.5 A pull-in, then ≈0.25 A hold from the PCB's clutch driver. No power = clutch released (fail-safe)."],
+  clutch_rotor: ["Clutch rotor", "Low-carbon steel, lathe + CNC teeth", "Glued (Loctite 641) onto the motor shaft. Its face carries 30 radial teeth and the magnetic poles."],
+  clutch_armature: ["Clutch armature", "Low-carbon steel, lathe + CNC teeth", "Pulled 1.1 mm against the rotor when the coil is on, so its teeth mesh with the rotor's and the motor drives the leadscrew."],
+  clutch_hub: ["Clutch output hub", "Steel or 6061", "Carries the leaf springs that lift the armature off when the coil is off, and drives the output shaft."],
+  clutch_output_shaft: ["Clutch output shaft", "Ø12 h6 ground rod", "Runs in the cover's two 6001 bearings and carries the 20T pulley."],
+  clutch_cover: ["Clutch cover", "6061 (non-magnetic), lathe", "Closes the clutch, carries the output bearings and bolts the whole module to the plate."],
+  motor: ["Stepper motor", "NEMA 23, 3 N·m, 4.2 A (yours)", "Drives the feed through the clutch and the 2:1 belt; the TMC5160 on the PCB drives it."],
+  shell: ["Housing shell", "3D print (PETG), one piece", "Back, bottom, end and lower-front walls with the PCB rails. Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: cable glands (36 V, limit switches) and the USB-C slot. Vents in the bottom and high on the back."],
+  hood: ["Hood", "3D print (PETG), one piece", "Top + control strip in one L-shaped print with engraved labels. Lift it off and the whole PCB is exposed from above."],
+  control_estop: ["E-stop", "22 mm mushroom, NC contact (buy)", "Hardware emergency stop: opening its loop cuts the motor-driver enable and the clutch drive in hardware, whatever the firmware does. Latches until released and the switch is centred."],
+  control_toggle: ["Direction switch", "ON-OFF-ON toggle (buy)", "LEFT / STOP / RIGHT. Centre: motor stopped and clutch released, so the handwheel turns freely. Left/right: the clutch engages and the table feeds that way."],
+  control_rapid: ["Rapid button", "16 mm momentary (buy)", "Hold for rapid traverse in the selected direction."],
+  control_dial: ["Speed dial", "EC11 encoder with push (buy)", "Turn to set the feed in mm/min; press to switch fine/coarse steps; long-press while stopped for the settings menu."],
+  control_oled: ["Display", "1.3\" SH1106 OLED (buy)", "Shows the feed rate, the state (READY, RUNNING, faults), RAPID / LIMIT and the 36 V bus voltage."],
+  control_adapter: ["Panel adapter board", "Small PCB with a 2×7 IDC header", "Collects the switches, dial and display onto one ribbon cable down to J4 on the main PCB."],
+  field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body with the coil cavity (exploded view)."],
+  coil_bobbin: ["Clutch coil", "~850 turns 0.32 mm Cu", "The electromagnet (exploded view)."],
+  rotor: ["Clutch rotor", "Low-carbon steel", "On the motor shaft: toothed face and magnetic poles (exploded view)."],
+  armature: ["Clutch armature", "Low-carbon steel", "Moves 1.1 mm to mesh its teeth with the rotor (exploded view)."],
+  leaf_springs: ["Leaf springs", "0.3 mm spring steel, 3 pcs", "Flat when released; bend 1.1 mm when engaged and pull the armature back (≈25 N). Carry the torque with no backlash."],
+  spring_spacers: ["Spring spacers", "Steel or brass, 3 pcs", "Space the springs off the armature."],
+  output_hub: ["Clutch output hub", "Steel or 6061", "Spring carrier on the output shaft (exploded view)."],
+  output_shaft: ["Clutch output shaft", "Ø12 h6", "Exploded view."],
+  bearings: ["Clutch bearings", "2× 6001-2RS, spacers, circlips", "Carry the output shaft in the cover (exploded view)."],
+  cover: ["Clutch cover", "6061", "Exploded view."],
+  motor_reference: ["Motor flange (reference)", "NEMA 23", "Where the clutch bolts on (exploded view)."],
+};
+
+// ---------------------------------------------------------------- scene
 const M = "../";
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -64,12 +121,11 @@ scene.add(grid);
 
 const groups = {};
 for (const g of ["mill", "clutch"]) { groups[g] = new THREE.Group(); scene.add(groups[g]); }
-// layout: the power feed (feed_unit.py frame, Y up -> Z up), the exploded clutch beside it
-groups.mill.rotation.x = Math.PI / 2;
+groups.mill.rotation.x = Math.PI / 2;            // feed_unit.py frame (Y up) -> Z up
 groups.clutch.position.set(-300, 0, -60);
 
-const housings = [];   // made transparent in x-ray mode
-const tagged = { shell: [], front: [], millref: [] };
+const housings = [];
+const tagged = { shell: [], hood: [], millref: [] };
 const stl = new STLLoader();
 let pending = 0, loaded = 0;
 const status = document.getElementById("status");
@@ -77,24 +133,24 @@ function tick() { status.textContent = loaded < pending ? `loading ${loaded}/${p
 
 function part(group, path, color, opts = {}) {
   pending++; tick();
+  const key = path.split("/").pop().replace(".stl", "");
   stl.load(M + path, geo => {
     geo.computeVertexNormals();
-    const mat = new THREE.MeshStandardMaterial({ color, metalness: opts.metal ?? 0.35, roughness: opts.rough ?? 0.5,
-                                                 side: THREE.DoubleSide });
+    const mat = new THREE.MeshStandardMaterial({ color, metalness: opts.metal ?? 0.35, roughness: opts.rough ?? 0.5, side: THREE.DoubleSide });
     const mesh = new THREE.Mesh(geo, mat);
+    mesh.userData.key = key;
     if (opts.dz) mesh.position.z = opts.dz;
-    if (opts.housing) housings.push(mat);
+    if (opts.housing) housings.push(mesh);
     if (opts.tag) tagged[opts.tag].push(mesh);
     groups[group].add(mesh);
     loaded++; tick(); applyToggles();
   }, undefined, () => { loaded++; status.textContent = "missing: " + path; });
 }
 
-// --- feed unit on the mill (feed_unit.py world frame)
 const F = "feed_unit/out/";
 part("mill", F + "mill_reference.stl", 0x4a4f57, { metal: 0.1, rough: 0.9, tag: "millref" });
 part("mill", F + "standoffs.stl", 0x9aa3ad);
-part("mill", F + "plate.stl", 0xb8c2cc, { housing: true });
+part("mill", F + "plate.stl", 0xb8c2cc);
 part("mill", F + "stub_shaft.stl", 0xd9dde2, { metal: 0.8, rough: 0.3 });
 part("mill", F + "oldham_disc.stl", 0xb08d57, { metal: 0.7 });
 part("mill", F + "pulley_40T.stl", 0xc0c6cc, { metal: 0.7 });
@@ -116,8 +172,11 @@ part("mill", F + "clutch_hub.stl", 0x9aa7b5, { metal: 0.7 });
 part("mill", F + "clutch_output_shaft.stl", 0xcfd6dd, { metal: 0.8, rough: 0.3 });
 part("mill", F + "clutch_coil.stl", 0xc87533, { metal: 0.6 });
 part("mill", F + "motor.stl", 0x3d3f44, { housing: true });
+part("mill", F + "shell.stl", 0xe8e4da, { metal: 0, rough: 0.7, housing: true, tag: "shell" });
+part("mill", F + "hood.stl", 0xf0ece2, { metal: 0, rough: 0.7, housing: true, tag: "hood" });
+for (const c of ["estop", "toggle", "rapid", "dial", "oled", "adapter"])
+  part("mill", F + "control_" + c + ".stl", c === "oled" ? 0x203040 : c === "adapter" ? 0x2f7a3a : 0xc0392b, { metal: 0.1, rough: 0.6, tag: "hood" });
 
-// --- clutch, exploded along its axis (clutch.py frame: motor face at z=0)
 const C = "clutch/out/";
 const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], ["coil_bobbin", 0xc87533, -25],
             ["rotor", 0xa9b4c2, 25], ["armature", 0x7d8fa6, 55], ["spring_spacers", 0xd4b24c, 68],
@@ -125,28 +184,32 @@ const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], 
             ["bearings", 0xe0b050, 150], ["cover", 0xc9d1d9, 175]];
 for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 0.6, housing: n === "cover" });
 
-// --- housing, PCB and controls (all in the feed_unit.py frame)
-part("mill", F + "shell.stl", 0xe8e4da, { metal: 0.0, rough: 0.7, housing: true, tag: "shell" });   // printed PETG
-part("mill", F + "panel_front.stl", 0xf0ece2, { metal: 0.0, rough: 0.7, housing: true, tag: "front" });
-part("mill", F + "controls.stl", 0xc0392b, { metal: 0.1, rough: 0.6, tag: "front" });
+// ---------------------------------------------------------------- the KiCad PCB, placed from feed_unit.py's layout file
+let layout = { pcb_x0: -50, pcb_y: -33, pcb_w0: 129 }, pcbParts = [];
 pending++; tick();
-new GLTFLoader().load(M + "viewer/out/pcb.glb", gltf => {
-  // kicad-cli GLB: metres, (x, up, y_pcb). Feed-unit frame: x = 59 + h, y = 28 - y_pcb, W = 180 - x_pcb
-  // (feed_unit.py pcb_to_world: X_PART + standoff, pcb_y0, pcb_w0)
-  const pcb = gltf.scene;
-  pcb.matrixAutoUpdate = false;
-  pcb.matrix.set(0, 1000, 0, 59, 0, 0, -1000, 28, -1000, 0, 0, 180, 0, 0, 0, 1);
-  groups.mill.add(pcb);
-  loaded++; tick();
-}, undefined, () => { loaded++; status.textContent = "missing viewer/out/pcb.glb — run mechanical/viewer/build.sh"; });
+(async () => {
+  try { layout = await (await fetch(M + F + "viewer_layout.json")).json(); } catch (e) { /* keep the defaults */ }
+  try { pcbParts = await (await fetch("out/pcb_parts.json")).json(); } catch (e) { pcbParts = []; }
+  new GLTFLoader().load(M + "viewer/out/pcb.glb", gltf => {
+    // kicad-cli GLB: metres, (x, up, y_pcb). The board lies flat above the motor: x = x0 + px, y = y_board + h, W = w0 + py
+    const pcb = gltf.scene;
+    pcb.matrixAutoUpdate = false;
+    pcb.matrix.set(1000, 0, 0, layout.pcb_x0, 0, 1000, 0, layout.pcb_y, 0, 0, 1000, layout.pcb_w0, 0, 0, 0, 1);
+    pcb.traverse(o => { o.userData.key = "pcb"; });
+    groups.mill.add(pcb);
+    loaded++; tick();
+  }, undefined, () => { loaded++; status.textContent = "missing viewer/out/pcb.glb: run mechanical/viewer/build.sh"; });
+})();
 
-// --- UI
-const ids = ["xray", "shell", "front", "millref"].map(i => document.getElementById(i));
-const [xray, shell, front, millref] = ids;
+// ---------------------------------------------------------------- toggles, framing
+const ids = ["xray", "shell", "hood", "millref"].map(i => document.getElementById(i));
+const [xray, shellCb, hoodCb, millref] = ids;
 function applyToggles() {
-  for (const m of housings) { m.transparent = xray.checked; m.opacity = xray.checked ? 0.18 : 1; m.depthWrite = !xray.checked; }
-  for (const o of tagged.shell) o.visible = shell.checked;
-  for (const o of tagged.front) o.visible = front.checked;
+  for (const m of housings) {
+    m.material.transparent = xray.checked; m.material.opacity = xray.checked ? 0.18 : 1; m.material.depthWrite = !xray.checked;
+  }
+  for (const o of tagged.shell) o.visible = shellCb.checked;
+  for (const o of tagged.hood) o.visible = hoodCb.checked;
   for (const o of tagged.millref) o.visible = millref.checked;
 }
 for (const el of ids) el.addEventListener("change", applyToggles);
@@ -166,6 +229,66 @@ for (const b of document.querySelectorAll("[data-view]"))
 camera.position.set(200, -1200, 700); controls.target.set(100, 0, 0);
 const iv = setInterval(() => { if (loaded >= pending && pending > 0) { clearInterval(iv); frame(Object.values(groups)); } }, 200);
 addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+
+// ---------------------------------------------------------------- click to identify
+const info = document.getElementById("info");
+const ray = new THREE.Raycaster();
+let picked = null, marker = null, downAt = null;
+const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+function clearPick() {
+  if (picked) { picked.material.emissive.setHex(picked.userData.emis); picked = null; }
+  if (marker) { marker.parent.remove(marker); marker = null; }
+}
+function highlight(mesh) {
+  if (!mesh.material.emissive) return;
+  if (!mesh.userData.ownMat) { mesh.material = mesh.material.clone(); mesh.userData.ownMat = true; }   // GLB meshes share materials
+  mesh.userData.emis = mesh.material.emissive.getHex();
+  mesh.material.emissive.setHex(0x2a5a88);
+  picked = mesh;
+}
+function showPart(key) {
+  const [title, kind, text] = INFO[key] || [key, "", ""];
+  info.innerHTML = `<h2>${esc(title)}</h2><div class="sub">${esc(kind)}</div><p>${esc(text)}</p>`;
+}
+function showPcbAt(local) {
+  // local = point in the feed-unit frame -> PCB mm (x right, y down)
+  const px = local.x - layout.pcb_x0, py = local.z - layout.pcb_w0;
+  let best = null;
+  for (const p of pcbParts)
+    if (px >= p.x - 0.3 && px <= p.x + p.w + 0.3 && py >= p.y - 0.3 && py <= p.y + p.h + 0.3 && (!best || p.w * p.h < best.w * best.h))
+      best = p;
+  if (!best) {
+    info.innerHTML = `<h2>Controller PCB</h2><div class="sub">4-layer, 100 × 100 mm · clicked at PCB (${px.toFixed(1)}, ${py.toFixed(1)}) mm</div>
+      <p>Bare board here. Click a component to identify it.</p>
+      <p class="hint">On the board: 36 V input and 5 V buck, the TMC5160 motor driver and its MOSFET bridges, the RP2040 with its
+      flash and USB-C, the clutch coil driver, the hardware E-stop interlock, and the panel / encoder connectors.</p>`;
+    return;
+  }
+  const rows = [["Part", best.value], ["Circuit", best.sheet], ["MPN", best.mpn], ["LCSC", best.lcsc], ["Footprint", best.footprint],
+                ["Position", `PCB (${(best.x + best.w / 2).toFixed(1)}, ${(best.y + best.h / 2).toFixed(1)}) mm`]]
+    .filter(r => r[1]).map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join("");
+  info.innerHTML = `<h2>${esc(best.ref)} · ${esc(best.value)}</h2><div class="sub">Controller PCB component</div>
+    <p>${esc(best.role)}</p><table>${rows}</table>`;
+  marker = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(best.w, 8, best.h)),
+                                  new THREE.LineBasicMaterial({ color: 0x5fd0ff }));
+  marker.position.set(layout.pcb_x0 + best.x + best.w / 2, layout.pcb_y + 5, layout.pcb_w0 + best.y + best.h / 2);
+  groups.mill.add(marker);
+}
+function visible(o) { for (; o; o = o.parent) if (!o.visible) return false; return true; }
+renderer.domElement.addEventListener("pointerdown", e => { downAt = [e.clientX, e.clientY]; });
+renderer.domElement.addEventListener("pointerup", e => {
+  if (!downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 4) return;   // that was a drag
+  const r = renderer.domElement.getBoundingClientRect();
+  ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1), camera);
+  const hit = ray.intersectObjects(Object.values(groups), true).find(h =>
+    h.object.isMesh && h.object.userData.key && visible(h.object) && !(h.object.material.transparent && h.object.material.opacity < 0.5));
+  clearPick();
+  if (!hit) { info.innerHTML = `<h2>Click any part</h2><p class="hint">Nothing there. Click a part to identify it.</p>`; return; }
+  highlight(hit.object);
+  if (hit.object.userData.key === "pcb") showPcbAt(groups.mill.worldToLocal(hit.point.clone()));
+  else showPart(hit.object.userData.key);
+});
+
 renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
 window.__viewer = { scene, camera, controls, groups, get loaded() { return loaded; }, get pending() { return pending; } };
 </script>

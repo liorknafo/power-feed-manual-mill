@@ -29,9 +29,10 @@ The mount for the left table end of the SIEG X3.5D:
 - HTD-5M 20T/40T pulleys with a 295 mm belt (2:1, centre distance 70.71 mm);
 - the clutch module bolted to the plate through its cover's front wall, slotted for belt tension, with a drawbolt tension block;
 - the output encoder on an adapter disc and three posts, coupled to the stub's outer end;
-- **the housing around all of it, 3D printed (PETG, fits a Prusa MK3S):** one shell print (walls + partition +
-  PCB bosses, heat-set inserts) screwed onto the plate edges, and a printed control panel (E-stop, LEFT/STOP/RIGHT,
-  RAPID, OLED, SPEED dial) as its removable front. Details in `FEED_UNIT.md` → "Housing".
+- **the housing around all of it, compact and rounded, 3D printed (PETG, fits a Prusa MK3S):** the PCB lies flat
+  above the motor; a shell print (walls + PCB rails, heat-set inserts) screws onto the plate edges, and a hood print
+  (top + control strip: E-stop, LEFT/STOP/RIGHT, RAPID, OLED, SPEED dial) lifts off to expose the PCB.
+  USB-C and the cable glands are in the end wall. Details in `FEED_UNIT.md` → "Housing".
 
 `feed_unit.py` re-uses the clutch model, so the module always matches `clutch.py`. Interference checks:
 `mechanical/tools/check_clutch.py` (engaged and released) and `mechanical/tools/check_feed_unit.py`; re-run them after
@@ -43,8 +44,10 @@ changing `P` or `F`.
 
 ## Interactive 3D view
 `sh mechanical/viewer/build.sh` exports the PCB to `mechanical/viewer/out/pcb.glb` and serves the repo; open
-http://localhost:8765/mechanical/viewer/ to orbit the feed unit on the mill, the exploded clutch, the controller box
-with the routed PCB inside, and the panel. Run the CAD scripts first (it loads their `out/*.stl`).
+http://localhost:8765/mechanical/viewer/ to orbit the power feed on the mill (with the routed PCB inside) and the
+exploded clutch. **Click any part** to see what it is, what it's made of and what it does; on the PCB, click a
+component to get its reference, value, circuit, MPN and LCSC number (`pcb_parts.py` builds that list from the board
+and the schematic). Run the CAD scripts first (it loads their `out/*.stl`).
 
 ## Renders
 `mechanical/tools/render.py`: VTK off-screen shaded renders of STL files. Options:
