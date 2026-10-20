@@ -15,7 +15,9 @@ ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pu
       ("pulley_20T","clutch_output_shaft"),("belt","pulley_40T"),("belt","pulley_20T"),("plate","tension_block"),
       ("plate","clutch_cover"),("clutch_field_housing","clutch_cover"),("clutch_field_housing","clutch_coil"),
       ("clutch_rotor","motor"),("clutch_field_housing","motor"),("clutch_hub","clutch_output_shaft"),
-      ("clutch_cover","clutch_output_shaft"),("belt_guard","mill_reference"),("belt_guard","plate")}
+      ("clutch_cover","clutch_output_shaft"),("belt_guard","mill_reference"),("belt_guard","plate"),
+      ("plate","module_bolt_heads"),
+      ("clutch_rotor","clutch_armature")}  # engaged tooth-flank contact (tessellation-level volume)
 names = list(parts)
 bad = 0
 for a, b in itertools.combinations(names, 2):
@@ -39,3 +41,13 @@ print("guard <-> belt", parts["belt_guard"].distance_to(parts["belt"]))
 print("guard <-> pulley_40T", parts["belt_guard"].distance_to(parts["pulley_40T"]))
 print("plate top / guard top", parts["plate"].bounding_box().max.Y, parts["belt_guard"].bounding_box().max.Y)
 print("bad pairs", bad)
+# module bolt heads across the whole tension slot (they move with the module)
+for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
+    heads = FU.bolt_heads(t)
+    for name in ("belt_guard", "pulley_40T", "belt", "standoffs", "stub_shaft", "tension_block", "encoder_disc"):
+        v = sum((h & parts[name]).volume for h in heads)
+        d = min(h.distance_to(parts[name]) for h in heads)
+        if v > 1e-3:
+            bad += 1
+        print("  heads t=%+.0f vs %-12s overlap %.3f mm3, min dist %.2f" % (t, name, v, d))
+print("bad pairs incl. bolt heads", bad)

@@ -43,7 +43,7 @@ class F:
     bracket_h: float = 60.0
     # where the standoffs land on the table end (x, y) relative to the leadscrew axis; PLACEHOLDER:
     # drill and tap M6 there, or use the bracket's own screws if they line up
-    standoffs: tuple = ((-46.0, 12.0), (46.0, 12.0), (-46.0, -60.0), (46.0, -60.0))
+    standoffs: tuple = ((-46.0, 12.0), (46.0, 12.0), (-46.0, -78.0), (46.0, -78.0))  # lower pair clear of the module bolt heads
     # --- drive
     pitch_belt: float = 5.0          # HTD 5M
     teeth_small: int = 20
@@ -53,8 +53,8 @@ class F:
     pulley_w: float = 21.0
     motor_angle_deg: float = -90.0   # module below the leadscrew; rotate if it hits the saddle or base
     # --- structure
-    plate_t: float = 25.0             # 2x 6002 (9) + circlip insets + 3.6 spacer tube
-    chamber: float = 38.0            # bracket face -> plate: Oldham disc, then the belt plane
+    plate_t: float = 28.0            # 2x 6002 (9) + 2x (land + groove) + 2.0 spacer tube
+    chamber: float = 35.0            # bracket face -> plate: Oldham disc, then the belt plane
     standoff_d: float = 14.0
     stub_d: float = 15.0             # at the 6002 bearings (15x32x9)
     stub_shoulder_d: float = 18.0    # locates the stub on the inner bearing's inner race
@@ -62,12 +62,14 @@ class F:
     bearing_od: float = 32.0
     bearing_w: float = 9.0
     circlip_groove: float = 1.3      # DIN 472-32 in the plate, DIN 471-15 on the stub
+    circlip_land: float = 2.5        # material outside each plate groove (DIN 472-32 edge margin)
     tension_slot: float = 3.0        # +- adjustment of the module along the centre line
-    # --- Oldham coupling (acetal disc): tongue into the leadscrew slot, cross slot for the stub tongue
-    oldham_t: float = 8.0
+    # --- Oldham coupling (steel/bronze disc): tongue into the leadscrew slot, cross slot for the stub tongue
+    oldham_d: float = 24.0           # outside the bracket, so not tied to the leadscrew diameter
+    oldham_t: float = 9.0
     oldham_gap: float = 0.5          # each side: leadscrew end -> disc, disc -> stub end
     stub_tongue_w: float = 4.8
-    stub_tongue_h: float = 3.0
+    stub_tongue_h: float = 4.0       # 14 x 4 bearing faces: ~45 MPa at 9 N·m cam-out -> steel or bronze disc
     # --- encoder (LPD3806: 3x M3 on r=15 in its front face) on an adapter disc
     enc_post_r: float = 23.0         # outside the Ø32 bearing bore
     enc_post_len: float = 21.0
@@ -163,8 +165,20 @@ PLATE_BOT = MY - (CP.housing_od / 2 + CP.cover_wall) - f.tension_slot - 22   # r
 
 def bearing_zs():
     """6002 seats in the plate's straight-through Ø32 bore, inset past the circlip grooves."""
-    inset = f.circlip_groove + 0.4
+    inset = f.circlip_land + f.circlip_groove + 0.2
     return Z_PLATE_IN + inset, Z_PLATE_OUT - inset - f.bearing_w
+
+
+def module_bolts(t=0.0):
+    """World XY of the 4 module bolts (clutch-local angles, Y flipped by place_module), at tension offset t."""
+    ux, uy = math.cos(ANG), math.sin(ANG)
+    return [(MX + CP.cover_bolt_r * math.cos(math.radians(a)) + ux * t,
+             MY - CP.cover_bolt_r * math.sin(math.radians(a)) + uy * t) for a in CP.cover_bolt_deg]
+
+
+def bolt_heads(t=0.0):
+    """M5 SHCS heads (Ø8.5 x 5) on the plate's chamber face; for the interference check and renders."""
+    return [Pos(x, y, Z_PLATE_IN - 5.0) * Cylinder(4.25, 5.0, align=MIN) for x, y in module_bolts(t)]
 
 
 def plate():
@@ -173,17 +187,14 @@ def plate():
     s = Pos(0, (top + PLATE_BOT) / 2, Z_PLATE_IN) * Box(2 * w_side, top - PLATE_BOT, f.plate_t, align=MIN)
     # stub bearings: straight-through Ø32 H7 bore (one setup), DIN 472-32 grooves at both faces
     s = s - Pos(0, 0, Z_PLATE_IN) * Cylinder(f.bearing_od / 2, f.plate_t, align=MIN)
-    for zg in (Z_PLATE_IN + 0.2, Z_PLATE_OUT - 0.2 - f.circlip_groove):
+    for zg in (Z_PLATE_IN + f.circlip_land, Z_PLATE_OUT - f.circlip_land - f.circlip_groove):
         s = s - Pos(0, 0, zg) * Cylinder(33.7 / 2, f.circlip_groove, align=MIN)
     # clutch boss: slot along the centre line for belt tension
     ux, uy = math.cos(ANG), math.sin(ANG)
     boss_r = CP.bearing_od / 2 + 5 + 1.0
     for t in [i * 0.5 for i in range(int(-2 * f.tension_slot), int(2 * f.tension_slot) + 1)]:
         s = s - Pos(MX + ux * t, MY + uy * t, Z_PLATE_IN) * Cylinder(boss_r, f.plate_t, align=MIN)
-        for k in range(4):
-            a = math.radians(45 + 90 * k)
-            x = MX + CP.cover_bolt_r * math.cos(a) + ux * t
-            y = MY + CP.cover_bolt_r * math.sin(a) + uy * t
+        for x, y in module_bolts(t):
             s = s - Pos(x, y, Z_PLATE_IN) * Cylinder(2.75, f.plate_t, align=MIN)
     for x, y in f.standoffs:
         s = s - Pos(x, y, Z_PLATE_IN) * Cylinder(3.3, f.plate_t, align=MIN)
@@ -217,11 +228,11 @@ Z_STUB = Z_OLDHAM + f.oldham_t + f.oldham_gap               # stub end face (ton
 
 
 def oldham():
-    """Acetal disc: a tongue (along X) into the leadscrew slot, a cross slot (along Y) for the stub tongue."""
-    d = Pos(0, 0, Z_OLDHAM) * Cylinder(f.screw_d / 2, f.oldham_t, align=MIN)
+    """Steel or bronze disc: a tongue (along X) into the leadscrew slot, a cross slot (along Y) for the stub tongue."""
+    d = Pos(0, 0, Z_OLDHAM) * Cylinder(f.oldham_d / 2, f.oldham_t, align=MIN)
     z_t = f.screw_end_z - f.screw_end_slot_d + 0.5                     # tongue tip, 0.5 off the slot bottom
     d = d + Pos(0, 0, z_t) * Box(f.screw_d - 2, f.screw_end_slot_w - 0.2, Z_OLDHAM - z_t + 0.01, align=MIN)
-    d = d - Pos(0, 0, Z_OLDHAM + f.oldham_t - f.stub_tongue_h - 0.5) * Box(f.stub_tongue_w + 0.2, f.screw_d + 1, 10, align=MIN)
+    d = d - Pos(0, 0, Z_OLDHAM + f.oldham_t - f.stub_tongue_h - 0.5) * Box(f.stub_tongue_w + 0.2, f.oldham_d + 1, 10, align=MIN)
     return d
 
 
@@ -231,7 +242,7 @@ def stub_shaft():
     a, b = bearing_zs()
     body = Pos(0, 0, Z_STUB) * Cylinder(f.stub_d / 2, Z_PLATE_OUT + 1.0 - Z_STUB, align=MIN)
     body = body + Pos(0, 0, a - 2.0) * Cylinder(f.stub_shoulder_d / 2, 2.0, align=MIN)      # shoulder on the inner race
-    zg = b + f.bearing_w + 0.1                                                           # DIN 471-15 groove
+    zg = a + f.bearing_w + 0.1                     # DIN 471-15 groove: outboard of the inner (locating) bearing
     body = body - Pos(0, 0, zg) * (Cylinder(f.stub_d / 2 + 1, 1.1, align=MIN) - Cylinder(14.3 / 2, 1.1, align=MIN))
     flat = (Align.CENTER, Align.CENTER, Align.MIN)
     body = body - Pos(f.stub_d / 2 - 0.6 + 5, 0, Z_STUB) * Box(10, 20, a - 2.0 - Z_STUB, align=flat)  # pulley set-screw flat
@@ -266,7 +277,7 @@ def guard():
     outer = stadium(r1 + 2.0, r2 + 2.0, 0.5, f.chamber - 1.0)
     inner = stadium(r1, r2, 0.5 + back, f.chamber)
     g = outer - inner
-    g = g - Pos(0, 0, -1) * Cylinder(f.screw_d / 2 + 4, back + 3, align=MIN)          # leadscrew end + Oldham
+    g = g - Pos(0, 0, -1) * Cylinder(f.oldham_d / 2 + 2, back + 3, align=MIN)         # leadscrew end + Oldham
     return g
 
 
@@ -322,6 +333,7 @@ def build():
         "stub_shaft": stub_shaft(),
         "oldham_disc": oldham(),
         "tension_block": tension_block(),
+        "module_bolt_heads": Compound(children=bolt_heads()),
         "encoder_disc": disc,
         "pulley_40T": big,
         "pulley_20T": small,
@@ -338,7 +350,7 @@ def build():
     parts.update(module)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -367,23 +379,25 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
 ## Parts to make
 | Part | Material | Notes |
 |---|---|---|
-| Plate | 6061, {f.plate_t:.0f} mm | **Ø{f.bearing_od:.0f} H7 straight through** (one setup) with DIN 472-32 grooves (Ø33.7 × {f.circlip_groove}) 0.2 in from each face; slotted Ø{2 * (CP.bearing_od / 2 + 6):.0f} hole + 4× Ø5.5 slots (±{f.tension_slot:.0f}) for the clutch module; {len(f.standoffs)}× Ø6.6 for the standoffs; 3× M3 × 8 deep on r={f.enc_post_r:.0f} (encoder posts, outer face); 2× M5 × 12 for the tension block. Top edge {max(max(y for _, y in f.standoffs) + 14, GUARD_R1 + 6):.0f} above the leadscrew so it covers the guard |
+| Plate | 6061, {f.plate_t:.0f} mm | **Ø{f.bearing_od:.0f} H7 straight through** (one setup) with DIN 472-32 grooves (Ø33.7 × {f.circlip_groove}) leaving a **{f.circlip_land} land** at each face (keep the entry chamfer smaller); slotted Ø{2 * (CP.bearing_od / 2 + 6):.0f} hole + 4× Ø5.5 slots (±{f.tension_slot:.0f}) for the clutch module; {len(f.standoffs)}× Ø6.6 for the standoffs; 3× M3 × 8 deep on r={f.enc_post_r:.0f} (encoder posts, outer face); 2× M5 × 12 for the tension block. Top edge {max(max(y for _, y in f.standoffs) + 14, GUARD_R1 + 6):.0f} above the leadscrew so it covers the guard |
 | Standoffs | steel or 6061 | {len(f.standoffs)}× Ø{f.standoff_d:.0f} × {f.chamber:.0f}, Ø6.6 thru (M6 screws into the table end) |
-| Leadscrew stub | steel, Ø{f.stub_d:.0f} ground | from the table side: tongue {f.stub_tongue_w} × {f.screw_d - 2:.0f} × {f.stub_tongue_h:.0f} (across the Oldham slot), Ø{f.stub_d:.0f} with a 0.6 flat for the 40T set screws, **Ø{f.stub_shoulder_d:.0f} × 2 shoulder** on the inner bearing's inner race, Ø{f.stub_d:.0f} k6 at the bearings, DIN 471-15 groove (Ø14.3 × 1.1) outboard of the outer bearing, Ø{f.stub_enc_d:.0f} × 10 encoder end |
-| Bearing spacer tube | steel or 6061 | Ø{f.bearing_od - 0.05:.2f} / Ø28 × {bearing_zs()[1] - bearing_zs()[0] - f.bearing_w:.1f}, between the outer races. With the two circlips it takes the axial load both ways |
-| Oldham disc | acetal (POM) | Ø{f.screw_d:.0f} × {f.oldham_t:.0f}: tongue {f.screw_d - 2:.0f} × {f.screw_end_slot_w - 0.2:.1f} on one face (into the leadscrew slot), cross slot {f.stub_tongue_w + 0.2:.1f} wide × {f.stub_tongue_h + 0.5:.1f} deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
+| Leadscrew stub | steel, Ø{f.stub_d:.0f} ground | from the table side: tongue {f.stub_tongue_w} × {f.screw_d - 2:.0f} × {f.stub_tongue_h:.0f} (across the Oldham slot), Ø{f.stub_d:.0f} with a 0.6 flat for the 40T set screws, **Ø{f.stub_shoulder_d:.0f} × 2 shoulder** on the inner bearing's inner race, Ø{f.stub_d:.0f} k6 at the bearings, DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø{f.stub_enc_d:.0f} × 10 encoder end |
+| Bearing spacer tube | steel or 6061 | Ø{f.bearing_od - 0.05:.2f} / Ø28 × {bearing_zs()[1] - bearing_zs()[0] - f.bearing_w:.1f}, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
+| Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø{f.oldham_d:.0f} × {f.oldham_t:.0f}: tongue {f.screw_d - 2:.0f} × {f.screw_end_slot_w - 0.2:.1f} on one face (into the leadscrew slot), cross slot {f.stub_tongue_w + 0.2:.1f} wide × {f.stub_tongue_h + 0.5:.1f} deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, {f.enc_disc_t:.0f} mm | Ø{f.enc_disc_d:.0f} with a flat {f.enc_disc_flat:.0f} from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r={f.enc_post_r:.0f} (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
 | Encoder posts | 3× M3 hex standoffs F-F, {f.enc_post_len:.0f} mm | |
 | Tension block | steel | 44 × 14 × 12 on the plate's outer face below the module, 2× M5 to the plate; M5 drawbolt through it into a radial M5 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
-| Belt guard | PETG print | a cup: closed back against the table end (Ø{f.screw_d + 8:.0f} pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
+| Belt guard | PETG print | a cup: closed back against the table end (Ø{f.oldham_d + 4:.0f} pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
 ## Assembly
-1. Plate: inner circlip, inner 6002, spacer tube, outer 6002, outer circlip.
-2. Stub in from the chamber side until the shoulder stops on the inner bearing; DIN 471-15 on the outside.
+1. Plate: outer circlip, outer 6002 (pressed in from the chamber side), spacer tube.
+2. Stub: inner 6002 against the shoulder, DIN 471-15 behind it. Push the stub through the outer bearing from the
+   chamber side (support the outer bearing's inner race) until the inner bearing seats, then the inner circlip.
 3. Encoder to its disc, coupling on the encoder shaft, disc onto the posts, coupling onto the stub end.
 4. 40T pulley on the stub (set screws on the flat), Oldham disc on the stub tongue, guard into the chamber, then
    the plate onto the standoffs: the Oldham tongue goes into the leadscrew slot.
 5. Clutch module through the plate's slotted hole, 20T pulley and belt, 4 module bolts finger-tight, drawbolt to tension, lock.
+   The bolt heads are on the chamber side, outside the guard outline: reach them from the side with a ball-end key.
 
 ## Buy
 - HTD 5M pulleys {f.teeth_small} T and {f.teeth_big} T for {f.belt_w:.0f} mm belt (re-bore to Ø{CP.out_shaft_d:.0f} / Ø{f.stub_d:.0f} H7).

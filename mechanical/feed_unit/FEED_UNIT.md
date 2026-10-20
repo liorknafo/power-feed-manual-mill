@@ -10,31 +10,33 @@
 | Pulleys | 20 T (PD 31.83) on the clutch output Ø12; 40 T (PD 63.66) on the Ø15 stub → 2.0:1 |
 | Centre distance | 70.71 mm, tension slot ±3 mm along the centre line |
 | Module position | 70.7 mm from the leadscrew at -90° (below) |
-| Belt plane | 27.0 mm out from the bracket face |
-| Overall | ≈244 mm out from the table end (motor tail) |
+| Belt plane | 23.0 mm out from the bracket face |
+| Overall | ≈240 mm out from the table end (motor tail) |
 
 Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the encoder is on the stub).
 
 ## Parts to make
 | Part | Material | Notes |
 |---|---|---|
-| Plate | 6061, 25 mm | **Ø32 H7 straight through** (one setup) with DIN 472-32 grooves (Ø33.7 × 1.3) 0.2 in from each face; slotted Ø40 hole + 4× Ø5.5 slots (±3) for the clutch module; 4× Ø6.6 for the standoffs; 3× M3 × 8 deep on r=23 (encoder posts, outer face); 2× M5 × 12 for the tension block. Top edge 44 above the leadscrew so it covers the guard |
-| Standoffs | steel or 6061 | 4× Ø14 × 42, Ø6.6 thru (M6 screws into the table end) |
-| Leadscrew stub | steel, Ø15 ground | from the table side: tongue 4.8 × 14 × 3 (across the Oldham slot), Ø15 with a 0.6 flat for the 40T set screws, **Ø18 × 2 shoulder** on the inner bearing's inner race, Ø15 k6 at the bearings, DIN 471-15 groove (Ø14.3 × 1.1) outboard of the outer bearing, Ø8 × 14 encoder end |
-| Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 3.6, between the outer races. With the two circlips it takes the axial load both ways |
-| Oldham disc | acetal (POM) | Ø16 × 8: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 3.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
+| Plate | 6061, 28 mm | **Ø32 H7 straight through** (one setup) with DIN 472-32 grooves (Ø33.7 × 1.3) leaving a **2.5 land** at each face (keep the entry chamfer smaller); slotted Ø40 hole + 4× Ø5.5 slots (±3) for the clutch module; 4× Ø6.6 for the standoffs; 3× M3 × 8 deep on r=23 (encoder posts, outer face); 2× M5 × 12 for the tension block. Top edge 44 above the leadscrew so it covers the guard |
+| Standoffs | steel or 6061 | 4× Ø14 × 35, Ø6.6 thru (M6 screws into the table end) |
+| Leadscrew stub | steel, Ø15 ground | from the table side: tongue 4.8 × 14 × 4 (across the Oldham slot), Ø15 with a 0.6 flat for the 40T set screws, **Ø18 × 2 shoulder** on the inner bearing's inner race, Ø15 k6 at the bearings, DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø8 × 10 encoder end |
+| Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 2.0, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
+| Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø24 × 9: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 4.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, 5 mm | Ø50 with a flat 20 from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r=23 (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
 | Encoder posts | 3× M3 hex standoffs F-F, 21 mm | |
 | Tension block | steel | 44 × 14 × 12 on the plate's outer face below the module, 2× M5 to the plate; M5 drawbolt through it into a radial M5 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
-| Belt guard | PETG print | a cup: closed back against the table end (Ø24 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
+| Belt guard | PETG print | a cup: closed back against the table end (Ø28 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
 ## Assembly
-1. Plate: inner circlip, inner 6002, spacer tube, outer 6002, outer circlip.
-2. Stub in from the chamber side until the shoulder stops on the inner bearing; DIN 471-15 on the outside.
+1. Plate: outer circlip, outer 6002 (pressed in from the chamber side), spacer tube.
+2. Stub: inner 6002 against the shoulder, DIN 471-15 behind it. Push the stub through the outer bearing from the
+   chamber side (support the outer bearing's inner race) until the inner bearing seats, then the inner circlip.
 3. Encoder to its disc, coupling on the encoder shaft, disc onto the posts, coupling onto the stub end.
 4. 40T pulley on the stub (set screws on the flat), Oldham disc on the stub tongue, guard into the chamber, then
    the plate onto the standoffs: the Oldham tongue goes into the leadscrew slot.
 5. Clutch module through the plate's slotted hole, 20T pulley and belt, 4 module bolts finger-tight, drawbolt to tension, lock.
+   The bolt heads are on the chamber side, outside the guard outline: reach them from the side with a ball-end key.
 
 ## Buy
 - HTD 5M pulleys 20 T and 40 T for 15 mm belt (re-bore to Ø12 / Ø15 H7).
@@ -42,13 +44,13 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 - 2× 6002-2RS, 2× DIN 472-32, 1× DIN 471-15.
 - Flexible coupling 6 × 8 mm (encoder).
 - LPD3806-600BM-G5-24C encoder.
-- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module (25 plate + 8 wall: the tips stop clear of the hub); 2× M5×20 + 1× M5×30 (tension block, drawbolt); 3× M3 hex standoffs 21 mm and 6× M3×8.
+- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module (28 plate + 8 wall: the tips stop clear of the hub); 2× M5×20 + 1× M5×30 (tension block, drawbolt); 3× M3 hex standoffs 21 mm and 6× M3×8.
 
 ## Notes
 - The module hangs ≈177 mm off the plate on 4 M5 into the cover. The cover's spigot over the clutch housing is
   18 mm long with 6 radial M4, so the motor is held stiffly. A strap from the motor's tail to the
   table end is optional if the mill vibrates a lot.
-- The chamber (42 mm) is set by the Oldham disc plus the belt plane: the 40T pulley's inner flange clears the stub tongue.
+- The chamber (35 mm) is set by the Oldham disc plus the belt plane: the 40T pulley's inner flange clears the stub tongue.
 
 ## PLACEHOLDERS (measure, then edit `F`)
 - `screw_d`, `screw_end_slot_w`, `screw_end_slot_d`, `screw_end_z`: the left leadscrew end and its drive slot.
