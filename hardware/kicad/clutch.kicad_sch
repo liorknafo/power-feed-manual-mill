@@ -2341,7 +2341,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "Littelfuse 2920L050/60MR (verify 60 V rating + LCSC)"
+		(property "MPN" "Littelfuse 2920L050DR (0.5 A hold, 1 A trip, 60 V)"
 			(at 30.48 68.58 0)
 			(effects
 				(font
@@ -2350,7 +2350,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C207082"
 			(at 30.48 68.58 0)
 			(effects
 				(font
@@ -2498,6 +2498,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 53.34 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "Murata GRM32ER72A225KA35L"
+			(at 53.34 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C86054"
 			(at 53.34 68.58 0)
 			(effects
 				(font
@@ -2798,6 +2816,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF2201T5E"
+			(at 109.22 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C4190"
+			(at 109.22 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "49444f76-0900-53b4-835d-736a9d3cdd64")
 		)
@@ -2900,7 +2936,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "MMSZ5242B"
+		(property "MPN" "onsemi MMSZ5242BT1G"
 			(at 142.24 68.58 0)
 			(effects
 				(font
@@ -2909,7 +2945,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C82050"
 			(at 142.24 68.58 0)
 			(effects
 				(font
@@ -3012,6 +3048,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 175.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "UNI-ROYAL 1206W4F4701T5E"
+			(at 175.26 68.58 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C17936"
 			(at 175.26 68.58 0)
 			(effects
 				(font
@@ -3718,6 +3772,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF1000T5E"
+			(at 137.16 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C22775"
+			(at 137.16 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6ad25478-7001-5044-99ba-f36f372ea05f")
 		)
@@ -3813,6 +3885,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 160.02 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "UNI-ROYAL 0603WAF1003T5E"
+			(at 160.02 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25803"
 			(at 160.02 99.06 0)
 			(effects
 				(font
@@ -4278,6 +4368,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF2202T5E"
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C31850"
+			(at 238.76 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "fd288759-65fa-574e-8806-9db9dc9ee4a4")
 		)
@@ -4372,6 +4480,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 266.7 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "XINGLIGHT XL-1608UYC-06"
+			(at 266.7 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C965802"
 			(at 266.7 99.06 0)
 			(effects
 				(font
@@ -4527,6 +4653,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF1001T5E"
+			(at 30.48 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C21190"
+			(at 30.48 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "11d3a344-d85a-54a6-8a62-3fdd8ca6f891")
 		)
@@ -4621,6 +4765,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 53.34 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "Samsung CL10B102KB8NNNC"
+			(at 53.34 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C1588"
 			(at 53.34 132.08 0)
 			(effects
 				(font
@@ -5061,6 +5223,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "Yageo CC0603KRX7R9BB104"
+			(at 114.3 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C14663"
+			(at 114.3 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "7d341ab3-3415-51ac-96f3-b2c199492bca")
 		)
@@ -5253,6 +5433,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF2003T5E"
+			(at 137.16 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25811"
+			(at 137.16 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "def5d5af-a761-58f1-82cb-8e94ef071f93")
 		)
@@ -5347,6 +5545,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 160.02 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "UNI-ROYAL 0603WAF1002T5E"
+			(at 160.02 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25804"
 			(at 160.02 132.08 0)
 			(effects
 				(font
@@ -5502,6 +5718,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF1001T5E"
+			(at 182.88 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C21190"
+			(at 182.88 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "3f96d2d3-33da-58db-9f73-25e5fe787138")
 		)
@@ -5597,6 +5831,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 205.74 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "FH 0603B103K500NT"
+			(at 205.74 132.08 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C57112"
 			(at 205.74 132.08 0)
 			(effects
 				(font

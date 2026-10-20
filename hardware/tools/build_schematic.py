@@ -51,14 +51,67 @@ def P(mpn, lcsc=""):
     """Ordering properties. An empty LCSC number means 'not yet verified at LCSC'."""
     return {"MPN": mpn, "LCSC": lcsc}
 
+
+# Generic passives: (value, footprint) -> (MPN, LCSC). R() / C() look the part up here unless the call passes its
+# own props=. Every entry was checked against the JLCPCB parts library (spec, stock) on 2026-10-20;
+# "B" = JLCPCB Basic part (no extra feeder fee), "E" = Extended. All resistors are 1 % thick film; all capacitors
+# are X7R/X5R (C0G for 100 pF) with a voltage rating at or above the value's marking.
+RES_PARTS = {
+    ("10k", R0603): ("UNI-ROYAL 0603WAF1002T5E", "C25804"),      # B
+    ("1k", R0603): ("UNI-ROYAL 0603WAF1001T5E", "C21190"),       # B
+    ("100k", R0603): ("UNI-ROYAL 0603WAF1003T5E", "C25803"),     # B
+    ("2.2k", R0603): ("UNI-ROYAL 0603WAF2201T5E", "C4190"),      # B
+    ("4.7k", R0603): ("UNI-ROYAL 0603WAF4701T5E", "C23162"),     # B
+    ("22k", R0603): ("UNI-ROYAL 0603WAF2202T5E", "C31850"),      # B
+    ("33", R0603): ("UNI-ROYAL 0603WAF330JT5E", "C23140"),       # B
+    ("47", R0603): ("UNI-ROYAL 0603WAF470JT5E", "C23182"),       # B
+    ("100", R0603): ("UNI-ROYAL 0603WAF1000T5E", "C22775"),      # B
+    ("330", R0603): ("UNI-ROYAL 0603WAF3300T5E", "C23138"),      # B
+    ("2.2", R0603): ("UNI-ROYAL 0603WAF220KT5E", "C22939"),      # B
+    ("7.5k", R0603): ("UNI-ROYAL 0603WAF7501T5E", "C23234"),     # B
+    ("200k", R0603): ("UNI-ROYAL 0603WAF2003T5E", "C25811"),     # B
+    ("41.2k", R0603): ("FOJAN FRC0603F4122TS", "C2930101"),      # E (no Basic E96 value)
+    ("31.6k", R0603): ("UNI-ROYAL 0603WAF3162T5E", "C25967"),    # E (no Basic E96 value)
+    ("4.7", R0402): ("UNI-ROYAL 0402WGF470KTCE", "C25121"),      # E (no Basic 0402 value)
+    ("4.7k", R1206): ("UNI-ROYAL 1206W4F4701T5E", "C17936"),     # B, 250 mW
+}
+CAP_PARTS = {
+    ("2.2nF 50V", C0603): ("FH 0603B222K500NT", "C1604"),                    # B, 50 V X7R
+    ("3.3nF", C0603): ("Samsung CL10B332KB8NNNC", "C1613"),                  # B, 50 V X7R
+    ("22nF 100V", C0805): ("Yageo CC0805KRX7R0BB223", "C107137"),            # E, 100 V X7R
+    ("4.7uF 10V", C0805): ("Samsung CL21A475KAQNNNE", "C1779"),              # B, 25 V X5R
+    ("470nF", C0603): ("Samsung CL10B474KA8NNNC", "C1623"),                  # B, 25 V X7R
+    ("10uF 25V", C1206): ("Samsung CL31A106KBHNNNE", "C13585"),              # B, 50 V X5R
+    ("1nF", C0603): ("Samsung CL10B102KB8NNNC", "C1588"),                    # B, 50 V X7R
+    ("10nF", C0603): ("FH 0603B103K500NT", "C57112"),                        # B, 50 V X7R
+    ("100nF 100V", C0805): ("Samsung CL21B104KCFNNNE", "C28233"),            # B, 100 V X7R
+    ("100nF", C0603): ("Yageo CC0603KRX7R9BB104", "C14663"),                 # B, 50 V X7R
+    ("220nF 50V", C0603): ("Samsung CL10B224KB8NNNC", "C64705"),             # E, 50 V X7R
+    ("2.2uF 100V", C1210): ("Murata GRM32ER72A225KA35L", "C86054"),          # E, 100 V X7R
+    ("100pF", C0603): ("Samsung CL10C101JB8NNNC", "C14858"),                 # B, 50 V C0G
+    ("22uF 10V", C1206): ("Samsung CL31A226KAHNNNE", "C12891"),              # B, 25 V X5R
+}
+
 GND, V3, V5, VM = "GND", "+3V3", "+5V", "+36V"
 
 
+def _stock_props(table, kind, val, fp):
+    """Ordering properties for a generic passive; fails loudly so no part silently ends up without an LCSC number."""
+    try:
+        return P(*table[(val, fp)])
+    except KeyError:
+        raise KeyError("no LCSC part for %s %r in %s: add it to the parts table or pass props=" % (kind, val, fp)) from None
+
+
 def R(val, a, b, fp=R0603, **kw):
+    if "props" not in kw:
+        kw["props"] = _stock_props(RES_PARTS, "resistor", val, fp)
     return Part("R", "Device:R", val, fp, {"1": a, "2": b}, **kw)
 
 
 def C(val, a, b, fp=C0603, **kw):
+    if "props" not in kw:
+        kw["props"] = _stock_props(CAP_PARTS, "capacitor", val, fp)
     return Part("C", "Device:C", val, fp, {"1": a, "2": b}, **kw)
 
 
@@ -70,7 +123,7 @@ def D(lib_id, val, k, a, fp, **kw):
     return Part("D", lib_id, val, fp, {"1": k, "2": a}, **kw)
 
 
-XH_LCSC = {3: "C144394", 4: "C144395", 5: "C157991"}
+XH_LCSC = {3: "C144394", 4: "C144395", 5: "C157991", 7: "C144398"}
 
 
 def XH_CONN(n, nets, props=None, **kw):
@@ -126,7 +179,7 @@ def build():
         Part("Q", "Transistor_FET:Q_PMOS_GDS", "SQD50P06-15L", DPAK, {"1": "Q1_G", "2": "VIN_F", "3": VM},
              props=P("SQD50P06-15L_GE3", "C3281500")),
         R("22k", "Q1_G", GND),
-        D("Device:D_Zener", "15V", VM, "Q1_G", SOD123, props=P("MMSZ5245B")),
+        D("Device:D_Zener", "15V", VM, "Q1_G", SOD123, props=P("onsemi MMSZ5245BT1G", "C129730")),
         D("Device:D_Zener", "SMBJ36A (TVS)", VM, GND, SMB, props=P("SMBJ36A", "C114001")),
         CP("470uF 63V", VM, GND, props=P("Panasonic EEUFR1J471", "C407954")),
         C("2.2uF 100V", VM, GND, C1210),
@@ -149,7 +202,7 @@ def build():
     )
     s.row(
         R("4.7k", V5, "LED_PWR"),
-        D("Device:LED", "green", GND, "LED_PWR", LED0603),
+        D("Device:LED", "green", GND, "LED_PWR", LED0603, props=P("KENTO KT-0603G", "C12624")),
         R("100k", VM, "VM_SENSE"),
         R("7.5k", "VM_SENSE", GND),
         C("10nF", "VM_SENSE", GND),
@@ -237,11 +290,12 @@ def build():
                  "21": "SPI_MISO", "22": "SPI_CS", "24": "SPI_SCK", "25": "SPI_MOSI", "26": "DRV_EN",
                  "27": "TMC_DIAG0", "29": "TMC_DIAG1", "30": "RUN", "31": "VM_SENSE", "32": "CLUTCH_ISENSE",
                  "36": V3, "39": "VSYS"})
-    s.row(Part("A", "MCU_Module:RaspberryPi_Pico", "Raspberry Pi Pico", PICO, pico))
+    s.row(Part("A", "MCU_Module:RaspberryPi_Pico", "Raspberry Pi Pico", PICO, pico,
+               props=P("user-supplied, hand-solder")))  # not a JLCPCB part: no LCSC number on purpose
     pr.pwr_flags += [("mcu", "VSYS")]
     s.row(
-        D("Device:D_Schottky", "B5819W", "VSYS", V5, SOD123, props=P("B5819W")),
-        Part("SW", "Switch:SW_Push", "RESET", BUTTON, {"1": "RUN", "2": GND}),
+        D("Device:D_Schottky", "B5819W", "VSYS", V5, SOD123, props=P("Changjing B5819W SL", "C8598")),
+        Part("SW", "Switch:SW_Push", "RESET", BUTTON, {"1": "RUN", "2": GND}, props=P("Omron B3S-1000", "C2733655")),
         R("33", "SPI_SCK", "TMC_SCK"),
         R("33", "SPI_MOSI", "TMC_SDI"),
         R("33", "SPI_CS", "TMC_CSN"),
@@ -251,15 +305,15 @@ def build():
         R("10k", "TMC_DIAG1", V3),
     )
     s.row(
-        Part("U", "74xGxx:74LVC1G00", "74LVC1G00", SOT23_5, props=P("SN74LVC1G00DBVR"), conns=
+        Part("U", "74xGxx:74LVC1G00", "74LVC1G00", SOT23_5, props=P("SN74LVC1G00DBVR", "C7826"), conns=
              {"1": "DRV_EN", "2": "E_OK", "3": GND, "4": "TMC_DRV_ENN", "5": V3}),
         C("100nF", V3, GND),
         R("100k", "DRV_EN", GND),
-        Part("U", "74xGxx:74AHCT1G08", "74AHCT1G08", SOT23_5, props=P("SN74AHCT1G08DBVR"), conns=
+        Part("U", "74xGxx:74AHCT1G08", "74AHCT1G08", SOT23_5, props=P("SN74AHCT1G08DBVR", "C113521"), conns=
              {"1": "CLUTCH_LS_EN", "2": "E_OK", "3": GND, "4": "CLUTCH_LS_GATE", "5": V5}),
         C("100nF", V5, GND),
         R("100k", "CLUTCH_LS_EN", GND),
-        Part("U", "74xGxx:74AHCT1G08", "74AHCT1G08", SOT23_5, props=P("SN74AHCT1G08DBVR"), conns=
+        Part("U", "74xGxx:74AHCT1G08", "74AHCT1G08", SOT23_5, props=P("SN74AHCT1G08DBVR", "C113521"), conns=
              {"1": "CLUTCH_HS_PWM", "2": "E_OK", "3": GND, "4": "CLUTCH_HS_DRV", "5": V5}),
         C("100nF", V5, GND),
         R("100k", "CLUTCH_HS_PWM", GND),
@@ -282,12 +336,12 @@ def build():
            "PTC limits the damage if firmware ever leaves the coil fully on.")
     s.row(
         Part("F", "Device:Polyfuse", "PTC 0.5A/60V", PTC, {"1": VM, "2": "CLUTCH_VIN"},
-             props=P("Littelfuse 2920L050/60MR (verify 60 V rating + LCSC)")),
+             props=P("Littelfuse 2920L050DR (0.5 A hold, 1 A trip, 60 V)", "C207082")),
         C("2.2uF 100V", "CLUTCH_VIN", GND, C1210),
         Part("Q", "Transistor_FET:Q_PMOS_GDS", "AGM60P20R", SOT223, {"1": "HS_GATE", "2": "COIL_P", "3": "CLUTCH_VIN"},
              props=P("AGM60P20R", "C6719402")),
         R("2.2k", "HS_GATE", "CLUTCH_VIN"),
-        D("Device:D_Zener", "12V", "CLUTCH_VIN", "HS_GATE", SOD123, props=P("MMSZ5242B")),
+        D("Device:D_Zener", "12V", "CLUTCH_VIN", "HS_GATE", SOD123, props=P("onsemi MMSZ5242BT1G", "C82050")),
         R("4.7k", "HS_GATE", "HS_PULL", R1206),  # ~0.13 W while on
         Part("Q", "Transistor_FET:Q_NMOS_GSD", "2N7002", SOT23, {"1": "CLUTCH_HS_DRV", "2": GND, "3": "HS_PULL"},
              props=P("2N7002", "C8545")),
@@ -303,7 +357,7 @@ def build():
              props=P("UMW SI2308A", "C347491")),
         R("0.1 1% 1W", "CLUTCH_SHUNT", GND, R1206, props=P("FOJAN FRM121WFR100TM", "C7467250")),
         R("22k", "COIL_P", "LED_CLU"),
-        D("Device:LED", "yellow", GND, "LED_CLU", LED0603),
+        D("Device:LED", "yellow", GND, "LED_CLU", LED0603, props=P("XINGLIGHT XL-1608UYC-06", "C965802")),
     )
     s.row(
         R("1k", "CLUTCH_SHUNT", "OA_IN"),
@@ -328,7 +382,7 @@ def build():
              {"1": GND, "2": V3, "3": "OLED_SCL", "4": "OLED_SDA", "5": GND, "6": "ESTOP_SRC", "7": "ESTOP_RET",
               "8": "MODE_L_RAW", "9": "MODE_R_RAW", "10": "RAPID_RAW", "11": "DIAL_A_RAW", "12": "DIAL_B_RAW",
               "13": "DIAL_SW_RAW", "14": GND},
-             props={"MPN": "2x7 2.54 mm shrouded box header", "LCSC": "",
+             props={"MPN": "ZHOURI DC3-2.54-14PAS (2x7 shrouded box header)", "LCSC": "C2977595",
                     "Description": "front panel ribbon; E-stop NC loop on pins 6-7, so an unplugged ribbon = E-stop"}),
         # one cable from the feed unit: output encoder + both limit switches
         XH_CONN(7, [V5, GND, "ENC_A_RAW", "ENC_B_RAW", "ENC_N_RAW", "LIM_L_RAW", "LIM_R_RAW"],

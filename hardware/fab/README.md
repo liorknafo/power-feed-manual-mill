@@ -33,52 +33,10 @@ schematic parity clean).
 
 ## Parts without an LCSC number
 
-The schematic carries an `LCSC` field for 28 of 155 parts (20 of 63 BOM lines).
+The schematic carries an `LCSC` field for 154 of 155 parts (62 of 63 BOM lines).
 These BOM lines have no LCSC number yet and must be matched to a JLC basic/extended part (or sourced
 separately) before ordering assembly:
 
 | Comment | Footprint | Designators |
 |---|---|---|
 | Raspberry Pi Pico | RaspberryPi_Pico_SMD | A1 |
-| 2.2nF 50V | C_0603_1608Metric | C5 |
-| 3.3nF | C_0603_1608Metric | C6 |
-| 22nF 100V | C_0805_2012Metric | C13 |
-| 4.7uF 10V | C_0805_2012Metric | C15 |
-| 470nF | C_0603_1608Metric | C16 |
-| 10uF 25V | C_1206_3216Metric | C17 |
-| 1nF | C_0603_1608Metric | C33 |
-| 10nF | C_0603_1608Metric | C10,C35,C39,C40,C41,C42 |
-| 100nF 100V | C_0805_2012Metric | C11,C12,C14 |
-| 100nF | C_0603_1608Metric | C18,C28,C29,C30,C31,C34,C36,C37,C38,C43 |
-| 220nF 50V | C_0603_1608Metric | C19,C21,C23,C25 |
-| 2.2uF 100V | C_1210_3225Metric | C2,C3,C4,C20,C22,C24,C26,C32 |
-| 100pF | C_0603_1608Metric | C7,C44,C45,C46 |
-| 22uF 10V | C_1206_3216Metric | C8,C9 |
-| 15V | D_SOD-123 | D1 |
-| green | LED_0603_1608Metric | D3 |
-| B5819W | D_SOD-123 | D4 |
-| 12V | D_SOD-123 | D5 |
-| yellow | LED_0603_1608Metric | D8 |
-| PTC 0.5A/60V | Fuse_2920_7451Metric | F2 |
-| PANEL 2x7 IDC | IDC-Header_2x07_P2.54mm_Vertical | J4 |
-| JST-XH 7p | JST_XH_B7B-XH-A_1x07_P2.50mm_Vertical | J5 |
-| 41.2k | R_0603_1608Metric | R2 |
-| 31.6k | R_0603_1608Metric | R4 |
-| 4.7k | R_0603_1608Metric | R6 |
-| 7.5k | R_0603_1608Metric | R8 |
-| 2.2 | R_0603_1608Metric | R9 |
-| 330 | R_0603_1608Metric | R34 |
-| 4.7k | R_1206_3216Metric | R39 |
-| 22k | R_0603_1608Metric | R1,R43 |
-| 4.7 | R_0402_1005Metric | R10,R11,R12,R13,R14,R15,R16,R17 |
-| 47 | R_0603_1608Metric | R19,R20,R22,R23 |
-| 33 | R_0603_1608Metric | R24,R25,R26,R27 |
-| 10k | R_0603_1608Metric | R28,R29,R30,R36,R46,R48,R50,R52,R54,R56,R58,R60,R62,R70,R71 |
-| 100k | R_0603_1608Metric | R3,R7,R31,R32,R33,R37,R41 |
-| 1k | R_0603_1608Metric | R35,R44,R47,R49,R51,R53,R55,R57,R59,R61,R63 |
-| 2.2k | R_0603_1608Metric | R38,R64,R66,R68 |
-| 100 | R_0603_1608Metric | R40,R65,R67,R69,R72,R73 |
-| 200k | R_0603_1608Metric | R5,R45 |
-| RESET | SW_SPST_B3S-1000 | SW1 |
-| 74LVC1G00 | SOT-23-5 | U3 |
-| 74AHCT1G08 | SOT-23-5 | U4,U5 |

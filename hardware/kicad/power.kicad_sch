@@ -2827,6 +2827,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF2202T5E"
+			(at 111.76 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C31850"
+			(at 111.76 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "6431650b-d4da-52d1-838c-6190475290fd")
 		)
@@ -2974,7 +2992,7 @@
 				(hide yes)
 			)
 		)
-		(property "MPN" "MMSZ5245B"
+		(property "MPN" "onsemi MMSZ5245BT1G"
 			(at 137.16 63.5 0)
 			(effects
 				(font
@@ -2983,7 +3001,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" ""
+		(property "LCSC" "C129730"
 			(at 137.16 63.5 0)
 			(effects
 				(font
@@ -3551,6 +3569,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 215.9 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "Murata GRM32ER72A225KA35L"
+			(at 215.9 63.5 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C86054"
 			(at 215.9 63.5 0)
 			(effects
 				(font
@@ -4208,6 +4244,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "Murata GRM32ER72A225KA35L"
+			(at 86.36 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C86054"
+			(at 86.36 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "51a3cb8a-9818-58de-80d9-01b6b14573cb")
 		)
@@ -4392,6 +4446,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 109.22 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "Murata GRM32ER72A225KA35L"
+			(at 109.22 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C86054"
 			(at 109.22 96.52 0)
 			(effects
 				(font
@@ -4592,6 +4664,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "FOJAN FRC0603F4122TS"
+			(at 132.08 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C2930101"
+			(at 132.08 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8e94746f-f681-5e5f-b9ff-8b83949454c8")
 		)
@@ -4731,6 +4821,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 154.94 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "FH 0603B222K500NT"
+			(at 154.94 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C1604"
 			(at 154.94 96.52 0)
 			(effects
 				(font
@@ -5006,6 +5114,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF1003T5E"
+			(at 200.66 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25803"
+			(at 200.66 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "e4ad7184-87e1-5661-8799-d9273a39aa7b")
 		)
@@ -5145,6 +5271,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 223.52 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "UNI-ROYAL 0603WAF3162T5E"
+			(at 223.52 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25967"
 			(at 223.52 96.52 0)
 			(effects
 				(font
@@ -5300,6 +5444,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF2003T5E"
+			(at 246.38 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25811"
+			(at 246.38 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "677661af-4d29-540c-85bd-00ffa0953d85")
 		)
@@ -5394,6 +5556,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 269.24 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "Samsung CL10B332KB8NNNC"
+			(at 269.24 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C1613"
 			(at 269.24 96.52 0)
 			(effects
 				(font
@@ -5549,6 +5729,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "Samsung CL10C101JB8NNNC"
+			(at 292.1 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C14858"
+			(at 292.1 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8d17bae5-53e0-565a-a93d-7dcf1d2d015d")
 		)
@@ -5643,6 +5841,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 314.96 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "Samsung CL31A226KAHNNNE"
+			(at 314.96 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C12891"
 			(at 314.96 96.52 0)
 			(effects
 				(font
@@ -5843,6 +6059,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "Samsung CL31A226KAHNNNE"
+			(at 337.82 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C12891"
+			(at 337.82 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c66a90e3-2f49-57bb-8fb2-383059c2c1aa")
 		)
@@ -6035,6 +6269,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF4701T5E"
+			(at 30.48 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C23162"
+			(at 30.48 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "0f32e1fd-ec6a-5dd0-9a60-94a7408cd426")
 		)
@@ -6182,6 +6434,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "KENTO KT-0603G"
+			(at 58.42 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C12624"
+			(at 58.42 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "8b1b757a-c7d9-59f4-8921-9a235495e78a")
 		)
@@ -6321,6 +6591,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 86.36 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "UNI-ROYAL 0603WAF1003T5E"
+			(at 86.36 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C25803"
 			(at 86.36 134.62 0)
 			(effects
 				(font
@@ -6477,6 +6765,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "UNI-ROYAL 0603WAF7501T5E"
+			(at 109.22 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C23234"
+			(at 109.22 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "9cd9d30b-a91a-505a-89ff-c94b676e4815")
 		)
@@ -6617,6 +6923,24 @@
 			)
 		)
 		(property "Datasheet" "~"
+			(at 132.08 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "MPN" "FH 0603B103K500NT"
+			(at 132.08 134.62 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "LCSC" "C57112"
 			(at 132.08 134.62 0)
 			(effects
 				(font
