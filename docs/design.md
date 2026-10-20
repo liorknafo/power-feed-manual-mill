@@ -173,7 +173,7 @@ The user builds the clutch in their own shop (CNC, manual lathe, manual mill), s
              └─┐            ┌─┘   ← ~0.3 mm radial air gaps to the rotor
  motor  ═══════╡   ROTOR    ╞═══  inner pole │ non-magnetic ring │ outer pole │ tooth ring
  shaft         └────────────┘                                                  /\/\/\/\
-                 ↕ 1.3 mm stroke: teeth fully out when the coil is off
+                 ↕ 1.1 mm stroke: teeth fully out when the coil is off
                ┌────────────┐
                │  ARMATURE  │   ← low-carbon steel, flat pole faces + mating tooth ring \/\/\/\/
                └─────┬──────┘
@@ -201,8 +201,9 @@ The clutch goes **on the motor side, before the belt reduction**, so it only has
 | Tooth form | trapezoidal face teeth, flank angle α = 30° from the shaft axis | gives self-release (tan α ≫ μ) and a cam-out torque that is not very sensitive to oil |
 | Tooth ring | mean radius ≈ 35 mm, outside the outer pole (ring ≈ 64–76 mm Ø) | larger radius → less force per N·m |
 | Number of teeth | 30, pitch ≈ 7.3 mm | engagement jog ≤ 1 pitch = 12° at the motor ≈ 7 full steps |
-| Tooth depth | 1.0 mm, with tip/root clearance so tips never bottom out | |
-| Stroke | 1.3 mm (1.0 tooth depth + 0.3 clearance) | |
+| Tooth depth | 0.9 mm flank-to-flank, tips truncated 0.1 mm on both rings, so 0.8 mm working height | 0.1 mm tip/root clearance: the flanks carry the load and the tips never bottom out |
+| Pole gap | 0.15 mm engaged | the armature's tooth roots sit 0.25 mm behind its pole face |
+| Stroke | 1.1 mm (0.8 working height + 0.3 tip clearance when released) | released pole gap 1.25 mm |
 | Material | same low-carbon steel as the armature/rotor; case-harden the tooth rings if wear shows up | |
 
 ### 7.4 First-pass sizing (estimate — verify on the bench)
@@ -212,11 +213,11 @@ The clutch goes **on the motor side, before the belt reduction**, so it only has
 | Target cam-out torque | ≈ 4.5 N·m | 1.5× the motor's 3 N·m holding torque. It only trips on inertial shocks or faults |
 | Tangential tooth force at cam-out | 4.5 / 0.035 ≈ 130 N | |
 | Axial push-apart force | F_t·(tan α − μ)/(1 + μ·tan α) ≈ 55 N | μ ≈ 0.1–0.15 steel on steel, so ±10% spread |
-| Spring preload | ≈ 25 N | lifts the armature and overcomes remanence |
+| Spring force | 0 N released → ≈ 25 N engaged (≈ 23 N/mm) | 3 straps 0.3 × 14 mm, ≈ 21 mm free, **flat when released**. ≈ 430 MPa bending stress. At tooth clearance (0.8 mm into the release) ≈ 7 N remains to beat remanence |
 | Hold force needed | ≈ 80 N | 55 + 25 |
 | Pole-face area | 2 × 5 cm² (inner ring Ø16–30 mm, outer ring Ø54–60 mm) | |
 | Hold MMF (0.15 mm engaged gap, ×2) | ≈ 160 A·turns → ≈ 0.2 A | **the hold current sets the cam-out torque**, so it is tunable in firmware |
-| Pull-in MMF (1.45 mm released gap, ×2) | ≈ 1.3–1.4 kA·turns | must beat the spring force at full stroke; ×1.5 for leakage |
+| Pull-in MMF (1.25 mm released gap, ×2) | ≈ 1.1–1.2 kA·turns | the spring force is ~0 at the released gap and grows only as the gap closes, so pull-in has margin; ×1.5 for leakage |
 | Coil | ≈ 850 turns of 0.32 mm (AWG 28) enamelled copper, ≈ 24 Ω | winding window 10 mm radial × 12 mm axial, fill factor 0.6 |
 | Pull-in burst | 36 V full-on → ≈ 1.5 A, ≈ 54 W, for ~50 ms (≈ 3 J) | short, so thermally harmless |
 | Hold | ≈ 0.2–0.4 A, about 1–4 W | calibrated against the cam-out torque |
@@ -256,10 +257,10 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 - **Magnetic parts:** rotor, field housing and armature in low-carbon steel (1018/1020 or 12L14). Anneal them if possible. Avoid 300-series stainless, which is non-magnetic.
 - **Pole separation:** a non-magnetic ring between the inner and outer pole on the rotor (brass, bronze or aluminium, or machined slots). It forces the flux through the armature.
 - **Mating tooth rings:** cut them as a pair with the same setup (same cutter and indexing) so all 30 teeth bear evenly. A CNC with a V/chamfer cutter or the mill with an indexer both work.
-- **Leaf springs:** spring-steel shim, three tangential straps. They carry torque with no backlash and set the lift-off force.
-- **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 648 onto the motor's D-shaft. That holds >40 N·m against the motor's 3 N·m, and avoids broaching a D-bore. An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
+- **Leaf springs:** spring-steel shim, three tangential straps. They carry torque with no backlash and set the lift-off force. They are **flat when released** and bend 1.1 mm when engaged, so they never push the armature into the hub.
+- **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 641 onto the motor's D-shaft. That holds >10 N·m against the motor's 3 N·m, avoids broaching a D-bore, and comes off with moderate heat (648 would need the whole motor heated). An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
 - **Model and machining data:** `mechanical/clutch/clutch.py` holds the parametric model; `mechanical/clutch/MACHINING.md` has the dimension tables, fits and tooth-cutting notes, generated from the same parameters.
-- **Shimming:** set the 0.15 mm engaged pole gap and the 1.3 mm stroke with shims.
+- **Shimming:** the rotor's axial position comes from its bore depth (measured shaft length − 2.2 mm). The output side is set with a shim between the stepped spacer and the inner bearing, so the springs are flat when released.
 
 ## 8. Firmware
 

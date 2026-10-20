@@ -52,23 +52,26 @@ class P:
     slot_r_in: float = 19.0          # banana slots over the coil separate the inner/outer poles
     slot_r_out: float = 22.0
     slot_count: int = 3
-    slot_span_deg: float = 100.0
+    slot_span_deg: float = 112.0     # 8° bridges: thin enough to saturate quickly (little flux shorted)
     # teeth
     teeth: int = 30
     tooth_r_in: float = 32.0
     tooth_r_out: float = 38.0
-    tooth_h: float = 0.9             # tooth height (tip clearance 0.1 to the mating root)
+    tooth_h: float = 0.9             # full (un-truncated) tooth height; flanks meet at 0.9 root-to-root
+    tip_trunc: float = 0.1           # tips cut 0.1 lower -> real 0.1 tip/root clearance, flanks carry the load
     flank_deg: float = 30.0          # flank angle from the axis, at the mean radius
     engaged_gap: float = 0.15        # pole-face gap when meshed
     stroke: float = 1.1              # armature travel; released pole gap = engaged_gap + stroke
     # armature + springs + hub
     armature_t: float = 6.0
     armature_bore: float = 11.5
-    spring_r: float = 31.0
-    spring_twist_deg: float = 40.0
-    spring_w: float = 8.0
+    spring_r: float = 30.0           # clear of the tooth ring (r 32)
+    spring_twist_deg: float = 55.0
+    spring_w: float = 14.0           # 0.3 x 14, ~21 mm free between clamps: ~22 N lift-off at ~400 MPa (fatigue-safe)
     spring_t: float = 0.3
-    spacer_h: float = 3.5
+    spacer_h: float = 2.4            # springs are FLAT when released; engaged they bend 1.1 toward the rotor
+    arm_pocket: float = 1.5          # Ø8 pockets in the armature front under the hub-end low-head screws
+    hub_start: float = 2.2           # rotor hub starts above the motor pilot (1.6) with clearance
     hub_flange_od: float = 74.0
     hub_flange_t: float = 6.0
     hub_boss_od: float = 24.0
@@ -83,6 +86,10 @@ class P:
     bearing_gap: float = 8.0
     cover_front_t: float = 8.0       # front wall carries 4x M5 for bolting the module to the feed-unit plate
     cover_bolt_r: float = 36.0
+    cover_spigot_z: float = 2.0      # spigot over the housing OD from here to the housing front (18 mm)
+    cover_cavity_d: float = 78.0     # = shoulder on the housing rim; clears the Ø76 rotor/armature by 1 mm
+    cover_screws: int = 6
+    circlip_groove: float = 1.3      # DIN 472-28 groove width
 
 
 p = P()
@@ -113,11 +120,13 @@ def tooth_ring(z_root, direction, phase):
     flank = p.tooth_h * math.tan(math.radians(p.flank_deg)) / r_mean      # angular flank run
     land = (pitch - 2 * flank) / 2                                        # equal tip and root lands
     solids = []
-    z_tip = z_root + direction * p.tooth_h
+    h = p.tooth_h - p.tip_trunc
+    z_tip = z_root + direction * h
+    tip_half = land / 2 + flank * p.tip_trunc / p.tooth_h      # same flank planes, tip cut lower
     for k in range(p.teeth):
         c = phase + k * pitch
         base = sector_face(p.tooth_r_in, p.tooth_r_out, c - land / 2 - flank, c + land / 2 + flank, z_root, n=4)
-        tip = sector_face(p.tooth_r_in, p.tooth_r_out, c - land / 2, c + land / 2, z_tip, n=4)
+        tip = sector_face(p.tooth_r_in, p.tooth_r_out, c - tip_half, c + tip_half, z_tip, n=4)
         solids.append(loft([base, tip]))
     out = solids[0]
     for s in solids[1:]:
@@ -130,10 +139,13 @@ Z_FACE_BACK = p.housing_len + p.face_gap            # rotor face, motor side
 Z_POLE = Z_FACE_BACK + p.face_t                      # rotor pole face
 Z_ARM = Z_POLE + p.engaged_gap                       # armature pole face (engaged)
 Z_ROTOR_ROOT = Z_POLE - 0.5
-Z_ARM_ROOT = Z_ARM + 0.35
+Z_ARM_ROOT = Z_ROTOR_ROOT + p.tooth_h                # flanks meet when the roots are tooth_h apart
 Z_ARM_FRONT = Z_ARM + p.armature_t
-Z_SPRING = Z_ARM_FRONT + p.spacer_h
-Z_HUB = Z_SPRING + p.spring_t
+Z_SPRING = Z_ARM_FRONT + p.spacer_h                  # spring at the armature end, engaged
+Z_HUB = Z_ARM_FRONT + p.stroke + p.spacer_h + p.spring_t   # hub underside: spring flat when released
+
+
+Z_COVER_SCREW = (p.cover_spigot_z + p.housing_len) / 2 + 1.0
 
 
 # ------------------------------------------------------------------ parts
@@ -151,9 +163,9 @@ def field_housing():
     # coil lead exit: hole through the back plate + radial groove on the motor side
     s = s - Pos(20.5, 0, 0) * Cylinder(1.6, p.back_plate + 1, align=MIN)
     s = s - Pos(20.5 + 10, 0, 0.75) * Box(20, 3.2, 1.5)
-    # 3x radial M4 for the cover
-    for k in range(3):
-        s = s - Rot(0, 0, 120 * k) * Pos(p.housing_od / 2 - 4, 0, 14) * Rot(0, 90, 0) * Cylinder(1.65, 10)
+    # radial M4 for the cover spigot
+    for k in range(p.cover_screws):
+        s = s - Rot(0, 0, 360 / p.cover_screws * k + 30) * Pos(p.housing_od / 2 - 4, 0, Z_COVER_SCREW) * Rot(0, 90, 0) * Cylinder(1.65, 10)
     return s
 
 
@@ -163,7 +175,7 @@ def coil():
 
 
 def rotor():
-    s = ring(p.hub_od / 2, 0, Z_FACE_BACK - 1.0, 1.0)                       # hub inside the housing bore
+    s = ring(p.hub_od / 2, 0, Z_FACE_BACK - p.hub_start, p.hub_start)      # hub inside the housing bore
     s = s + ring(p.rotor_od / 2, 0, p.face_t, Z_FACE_BACK)                  # pole face disc
     # tooth ring: cut down to the root level, then add the teeth back
     s = s - ring(p.tooth_r_out + 1, p.tooth_r_in, Z_POLE - Z_ROTOR_ROOT + 1, Z_ROTOR_ROOT)
@@ -171,10 +183,11 @@ def rotor():
     for k in range(p.slot_count):                                           # banana slots
         a0 = math.radians(k * 360 / p.slot_count)
         s = s - sector_solid(p.slot_r_in, p.slot_r_out, a0, a0 + math.radians(p.slot_span_deg), Z_FACE_BACK - 0.1, Z_POLE + 0.1)
-    # bore: plain round Ø10 H7 to the shaft end (Loctite 648 on the motor's D-shaft carries the
-    # torque, >40 N·m vs 3 N·m), then M3 clearance + counterbore for the axial retaining screw
-    # that pulls the rotor's shoulder onto the shaft end (sets the axial position).
-    s = s - Pos(0, 0, 1.0) * Cylinder(p.shaft_d / 2 + 0.005, p.shaft_len - 1.0, align=MIN)
+    # bore: plain round Ø10 H7 to the shaft end (Loctite 641 on the motor's D-shaft: >10 N·m vs 3 N·m,
+    # and removable without heating the whole motor), then M3 clearance + counterbore for the axial
+    # screw that pulls the rotor's shoulder onto the shaft end. Bore depth = MEASURED shaft length -
+    # hub_start: that is what sets the 0.3 mm face gap.
+    s = s - Pos(0, 0, p.hub_start) * Cylinder(p.shaft_d / 2 + 0.005, p.shaft_len - p.hub_start, align=MIN)
     s = s - Cylinder(1.7, Z_POLE + 1, align=MIN)
     s = s - Pos(0, 0, Z_POLE - 3.2) * Cylinder(2.9, 4, align=MIN)
     return s
@@ -186,7 +199,9 @@ def armature():
     s = s + tooth_ring(Z_ARM_ROOT, -1, math.pi / p.teeth)                  # half a pitch out of phase
     for k in range(3):                                                     # M3 for the springs
         a = math.radians(90 + 120 * k)
-        s = s - Pos(p.spring_r * math.cos(a), p.spring_r * math.sin(a), Z_ARM_FRONT - 6) * Cylinder(1.25, 6.1, align=MIN)
+        s = s - Pos(p.spring_r * math.cos(a), p.spring_r * math.sin(a), Z_ARM_FRONT - 4.5) * Cylinder(1.25, 4.6, align=MIN)  # blind M3
+        (bx, by) = spring_points(k)[1]                                    # pocket under the hub-end screw head
+        s = s - Pos(bx, by, Z_ARM_FRONT - p.arm_pocket) * Cylinder(4.0, p.arm_pocket + 0.1, align=MIN)
     return s
 
 
@@ -196,16 +211,28 @@ def spring_points(k):
     return (p.spring_r * math.cos(a), p.spring_r * math.sin(a)), (p.spring_r * math.cos(b), p.spring_r * math.sin(b))
 
 
-def leaf_springs():
+def leaf_springs(released=False):
+    """Straps: armature end on its spacer, hub end under the hub. Flat when released; engaged, the
+    armature end sits `stroke` lower, so the strap is bent and pulls the armature back."""
     parts = []
+    za = Z_SPRING + (p.stroke if released else 0.0)           # armature-end strap underside
+    zb = Z_HUB - p.spring_t                                    # hub-end strap underside
     for k in range(3):
         (ax, ay), (bx, by) = spring_points(k)
-        length = math.hypot(bx - ax, by - ay) + p.spring_w
+        span = math.hypot(bx - ax, by - ay)
         ang = math.degrees(math.atan2(by - ay, bx - ax))
-        strap = Pos((ax + bx) / 2, (ay + by) / 2, Z_SPRING) * Rot(0, 0, ang) * Box(length, p.spring_w, p.spring_t, align=MIN)
-        for (x, y) in ((ax, ay), (bx, by)):
-            strap = strap - Pos(x, y, Z_SPRING - 1) * Cylinder(1.65, 3, align=MIN)
-        spacer = Pos(ax, ay, Z_ARM_FRONT) * ring(3.5, 1.65, p.spacer_h)
+        # stadium-shaped strap: flat clamped pads (Ø spring_w) at both screws, straight web between them
+        pad_a = Pos(-span / 2, 0, za) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN)
+        pad_b = Pos(span / 2, 0, zb) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN)
+        web_len = span - p.spring_w + 0.2
+        tilt = math.degrees(math.atan2(zb - za, web_len))
+        web = Pos(0, 0, (za + zb) / 2) * Rot(0, -tilt, 0) * Box(math.hypot(web_len, zb - za), p.spring_w, p.spring_t,
+                                                                align=(Align.CENTER, Align.CENTER, Align.MIN))
+        strap = pad_a + pad_b + web
+        for x, z in ((-span / 2, za), (span / 2, zb)):
+            strap = strap - Pos(x, 0, z - 1) * Cylinder(1.65, 3, align=MIN)
+        strap = Pos((ax + bx) / 2, (ay + by) / 2, 0) * Rot(0, 0, ang) * strap
+        spacer = Pos(ax, ay, Z_ARM_FRONT + (p.stroke if released else 0.0)) * ring(3.5, 1.65, p.spacer_h)
         parts += [strap, spacer]
     return parts
 
@@ -217,7 +244,9 @@ def output_hub():
         (ax, ay), (bx, by) = spring_points(k)
         s = s - Pos(ax, ay, Z_HUB) * Cylinder(5.0, p.hub_flange_t, align=MIN)   # clearance/access over the armature end
         s = s - Pos(bx, by, Z_HUB) * Cylinder(1.25, p.hub_flange_t, align=MIN)  # M3 tapped, spring hub end
-    s = s - Pos(0, 0, Z_HUB + p.hub_flange_t + p.hub_boss_len / 2) * Rot(0, 90, 0) * Cylinder(2.1, p.hub_boss_od)  # M5 set screw
+    zs = Z_HUB + p.hub_flange_t + p.hub_boss_len / 2
+    for a in (0, 90):  # 2x M5 set screws at 90°, onto the shaft flat (+ Loctite 243)
+        s = s - Pos(0, 0, zs) * Rot(0, 0, a) * Pos(p.hub_boss_od / 4, 0, 0) * Rot(0, 90, 0) * Cylinder(2.1, p.hub_boss_od / 2)
     return s
 
 
@@ -225,25 +254,39 @@ def output_shaft():
     z0 = Z_HUB + 1.0
     s = Pos(0, 0, z0) * Cylinder(p.out_shaft_d / 2, p.out_shaft_len, align=MIN)
     tip = z0 + p.out_shaft_len
-    s = s - Pos(p.out_shaft_d / 2 - 0.6 + 5, 0, tip - 22) * Box(10, 20, 22, align=(Align.CENTER, Align.CENTER, Align.MIN))  # pulley flat
+    flat = (Align.CENTER, Align.CENTER, Align.MIN)
+    s = s - Pos(p.out_shaft_d / 2 - 0.6 + 5, 0, tip - 22) * Box(10, 20, 22, align=flat)                 # pulley flat
+    s = s - Pos(p.out_shaft_d / 2 - 0.6 + 5, 0, Z_HUB + p.hub_flange_t) * Box(10, 20, p.hub_boss_len, align=flat)  # hub flat
+    zg = bearing_zs()[1] + p.bearing_w + 0.1                                                           # DIN 471-12 groove
+    s = s - Pos(0, 0, zg) * (Cylinder(p.out_shaft_d / 2 + 1, 1.1, align=MIN) - Cylinder(11.5 / 2, 1.1, align=MIN))
     return s
 
 
+Z_FRONT = Z_HUB + p.hub_flange_t + p.hub_boss_len + 3.0
+BOSS_LEN = 2 * p.bearing_w + p.bearing_gap + 4
+
+
+def bearing_zs():
+    """Bearing seats in the straight-through Ø28 bore: inner (locating via the stepped spacer) and outer."""
+    z_bore0 = Z_FRONT
+    z_bore1 = Z_FRONT + p.cover_front_t + BOSS_LEN
+    return [z_bore0 + p.circlip_groove + 0.2, z_bore1 - p.circlip_groove - 0.2 - p.bearing_w]
+
+
 def cover():
-    r_in = p.rotor_od / 2 + p.cover_clear
     r_out = p.housing_od / 2 + p.cover_wall
-    z_spigot = 10.0
-    z_front = Z_HUB + p.hub_flange_t + p.hub_boss_len + 3.0
-    s = ring(r_out, p.housing_od / 2 + 0.05, p.housing_len - z_spigot, z_spigot)    # spigot over the housing OD
-    s = s + ring(r_out, r_in, z_front - p.housing_len, p.housing_len)
-    s = s + ring(r_out, 0, p.cover_front_t, z_front)                                # front wall
-    boss_len = 2 * p.bearing_w + p.bearing_gap + 4
-    s = s + ring(p.bearing_od / 2 + 5, 0, boss_len, z_front + p.cover_front_t)      # bearing boss
-    s = s - Cylinder(p.out_shaft_d / 2 + 1.0, 500, align=MIN)
-    s = s - Pos(0, 0, z_front + p.cover_front_t + boss_len - p.bearing_w) * Cylinder(p.bearing_od / 2, p.bearing_w + 1, align=MIN)
-    s = s - Pos(0, 0, z_front + 2) * Cylinder(p.bearing_od / 2, p.bearing_w + 2, align=MIN)
-    for k in range(3):
-        s = s - Rot(0, 0, 120 * k) * Pos(r_out - 1, 0, 14) * Rot(0, 90, 0) * Cylinder(2.25, 10)
+    z_front = Z_FRONT
+    s = ring(r_out, p.housing_od / 2, p.housing_len - p.cover_spigot_z, p.cover_spigot_z)   # 18 mm spigot, slide fit
+    s = s + ring(r_out, p.cover_cavity_d / 2, z_front - p.housing_len, p.housing_len)   # shoulder sits on the housing rim
+    s = s + ring(r_out, 0, p.cover_front_t, z_front)                                       # front wall
+    s = s + ring(p.bearing_od / 2 + 5, 0, BOSS_LEN, z_front + p.cover_front_t)             # bearing boss
+    # straight-through Ø28 bore (one chucking with the spigot), DIN 472-28 circlip grooves at both ends
+    z_bore1 = z_front + p.cover_front_t + BOSS_LEN
+    s = s - Pos(0, 0, z_front) * Cylinder(p.bearing_od / 2, z_bore1 - z_front, align=MIN)
+    for zg in (z_front + 0.2, z_bore1 - 0.2 - p.circlip_groove):
+        s = s - Pos(0, 0, zg) * Cylinder(29.4 / 2, p.circlip_groove, align=MIN)
+    for k in range(p.cover_screws):
+        s = s - Rot(0, 0, 360 / p.cover_screws * k + 30) * Pos(r_out - 1, 0, Z_COVER_SCREW) * Rot(0, 90, 0) * Cylinder(2.25, 10)
     for k in range(4):  # M5 tapped (Ø4.2) into the front wall, for the feed-unit plate
         a = math.radians(45 + 90 * k)
         s = s - Pos(p.cover_bolt_r * math.cos(a), p.cover_bolt_r * math.sin(a), z_front) * Cylinder(2.1, p.cover_front_t, align=MIN)
@@ -251,9 +294,12 @@ def cover():
 
 
 def bearings(z_front):
-    boss_len = 2 * p.bearing_w + p.bearing_gap + 4
-    zs = [z_front + 2 + 1, z_front + p.cover_front_t + boss_len - p.bearing_w]
-    return [ring(p.bearing_od / 2, p.out_shaft_d / 2, p.bearing_w, z) for z in zs]
+    a, b = bearing_zs()
+    parts = [ring(p.bearing_od / 2, p.out_shaft_d / 2, p.bearing_w, z) for z in (a, b)]
+    parts.append(ring(p.bearing_od / 2 - 0.05, 12.5, b - (a + p.bearing_w), a + p.bearing_w))      # outer-race spacer tube
+    hub_top = Z_HUB + p.hub_flange_t + p.hub_boss_len
+    parts.append(ring(15.0 / 2, p.out_shaft_d / 2, a - hub_top, hub_top))                     # stepped inner-race spacer (shim here)
+    return parts
 
 
 def motor_stub():
@@ -280,13 +326,12 @@ def build():
         "output_hub": (output_hub(), "steel or 6061"),
         "output_shaft": (output_shaft(), "12 mm ground shaft"),
         "cover": (cov, "6061 aluminium (must be non-magnetic)"),
-        "bearings": (Compound(children=bearings(z_front)), "2x 6001-2RS (12x28x8), purchased"),
+        "bearings": (Compound(children=bearings(z_front)), "2x 6001-2RS + spacer tube + inner-race spacer, 2x DIN 472-28, 1x DIN 471-12"),
     }
     for name, (shape, _) in parts.items():
         shape.label = name
         export_step(shape, os.path.join(OUT, name + ".step"))
-        if name not in ("bearings",):
-            export_stl(shape, os.path.join(OUT, name + ".stl"))
+        export_stl(shape, os.path.join(OUT, name + ".stl"))
     motor = motor_stub()
     motor.label = "motor_reference"
     export_stl(motor, os.path.join(OUT, "motor_reference.stl"))
@@ -322,13 +367,14 @@ def preview(parts, motor):
 
 def dimension_sheet(z_front):
     """Machining data for the turned parts, generated from the same parameters as the model."""
-    r_cover_in = p.rotor_od / 2 + p.cover_clear
-    boss_len = 2 * p.bearing_w + p.bearing_gap + 4
     pitch_deg = 360 / p.teeth
+    zb = bearing_zs()
     L = []
     w = L.append
     w("# Clutch — machining sheet (generated by mechanical/clutch/clutch.py)\n")
     w("All dimensions mm. **Bold** = critical for concentricity or the magnetic gaps: turn these in ONE chucking.")
+    w("Concentricity budget: every bold diameter ≤ 0.03 TIR to its part's reference bore. After assembly, indicate the")
+    w("rotor OD and the output shaft: ≤ 0.05 TIR each, or the 0.3 mm hub gap and the tooth mesh suffer.")
     w("Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if possible. Never 300-series stainless.\n")
     w("## Field housing (steel) — `field_housing.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
@@ -340,46 +386,52 @@ def dimension_sheet(z_front):
     w("| Back plate | %.1f thick | |" % p.back_plate)
     w("| Motor screws | 4× Ø5.5 thru on %.2f square, c'bore Ø9 from front to z=6 | M5×30 SHCS + nuts behind the motor flange |" % p.bolt_square)
     w("| Coil leads | Ø3.2 thru at r=20.5 + 3.2×1.5 groove on the back face | |")
-    w("| Cover screws | 3× M4 radial at 120°, 14 from the back face | |\n")
+    w("| Cover screws | %d× M4 tapped radial, every %.0f°, %.1f from the back face (motor side) | |\n" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW))
     w("## Rotor (steel) — `rotor.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
-    w("| Hub OD | **Ø%.1f** × %.1f long | runs in the Ø%.1f bore: 0.3 radial gap, keep runout < 0.05 |" % (p.hub_od, Z_FACE_BACK - 1.0, p.bore_d))
-    w("| Shaft bore | **Ø%.0f H7** × %.1f deep | round; Loctite 648 on the D-shaft |" % (p.shaft_d, p.shaft_len - 1.0))
-    w("| Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 4 from the front | M3×8 SHCS into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |")
+    w("| Hub OD | **Ø%.1f** × %.1f long | runs in the Ø%.1f bore: 0.3 radial gap, keep runout < 0.05. Starts %.1f above the motor flange, clear of the %.1f pilot |" % (p.hub_od, Z_FACE_BACK - p.hub_start, p.bore_d, p.hub_start, p.pilot_h))
+    w("| Shaft bore | **Ø%.0f H7**, depth = **measured shaft length − %.1f ± 0.03** (model: %.1f) | round; Loctite 641 on the D-shaft. The depth sets the 0.3 face gap |" % (p.shaft_d, p.hub_start, p.shaft_len - p.hub_start))
+    w("| Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 3.2 from the front | M3×8 SHCS (3.0 head, sits 0.2 below the pole face) into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |")
     w("| Face disc | **Ø%.1f** × %.1f thick | back face sits %.1f from the housing front; front face = pole face |" % (p.rotor_od, p.face_t, p.face_gap))
-    w("| Banana slots | %d × %.0f° arcs, r %.1f … %.1f, through | CNC, Ø3 end mill |" % (p.slot_count, p.slot_span_deg, p.slot_r_in, p.slot_r_out))
-    w("| Tooth ring | r %.1f … %.1f, %d teeth (%.1f° pitch), %.2f high, flank %.0f° from axis | roots 0.5 below the pole face; see teeth notes |\n" % (p.tooth_r_in, p.tooth_r_out, p.teeth, pitch_deg, p.tooth_h, p.flank_deg))
+    w("| Banana slots | %d × %.0f° arcs, r %.1f … %.1f, through (%.0f° bridges) | CNC, Ø3 end mill |" % (p.slot_count, p.slot_span_deg, p.slot_r_in, p.slot_r_out, 360 / p.slot_count - p.slot_span_deg))
+    w("| Tooth ring | r %.1f … %.1f, %d teeth (%.1f° pitch), flank %.0f° from axis | roots 0.5 below the pole face; tips %.2f above the roots (%.1f profile, tips truncated %.1f); see teeth notes |\n" % (p.tooth_r_in, p.tooth_r_out, p.teeth, pitch_deg, p.flank_deg, p.tooth_h - p.tip_trunc, p.tooth_h, p.tip_trunc))
     w("## Armature (steel) — `armature.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
     w("| OD × thickness | **Ø%.1f × %.1f** | faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
     w("| Bore | Ø%.1f | clearance over the M3 head |" % p.armature_bore)
-    w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | roots 0.35 behind the pole face |" % (pitch_deg / 2))
-    w("| Spring holes | 3× M3 at r=%.1f, 90°/210°/330° | 6 deep |\n" % p.spring_r)
+    w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | roots %.2f behind the pole face, tips truncated %.1f |" % (pitch_deg / 2, Z_ARM_ROOT - Z_ARM, p.tip_trunc))
+    w("| Spring holes | 3× M3 blind at r=%.1f, 90°/210°/330°, front face | drill Ø2.5 × 4.5, thread 4 |" % p.spring_r)
+    w("| Screw-head pockets | 3× Ø8 × %.1f deep at r=%.1f, %.0f° after each spring hole, front face | clear the hub-end low-head screws |\n" % (p.arm_pocket, p.spring_r, p.spring_twist_deg))
     w("## Output hub (steel or 6061) — `output_hub.step`")
     w("| Feature | Dimension | Note |\n|---|---|---|")
     w("| Flange | Ø%.1f × %.1f | |" % (p.hub_flange_od, p.hub_flange_t))
-    w("| Boss | Ø%.1f × %.1f, bore **Ø%.0f H7** | M5 set screw at mid-boss onto the shaft flat |" % (p.hub_boss_od, p.hub_boss_len, p.out_shaft_d))
-    w("| Spring holes | 3× M3 at r=%.1f, %.0f° after each armature hole | |" % (p.spring_r, p.spring_twist_deg))
+    w("| Boss | Ø%.1f × %.1f, bore **Ø%.0f H7** | 2× M5 set screws at 90°, mid-boss: one on the shaft flat, one on the round (+ Loctite 243) |" % (p.hub_boss_od, p.hub_boss_len, p.out_shaft_d))
+    w("| Spring holes | 3× M3 tapped thru at r=%.1f, %.0f° after each armature hole | screws go in from the armature side |" % (p.spring_r, p.spring_twist_deg))
     w("| Access holes | 3× Ø10 at the armature spring points | screwdriver access, clearance for the armature-end screws |\n")
     w("## Cover (6061 — must be non-magnetic) — `cover.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
     w("| OD | Ø%.1f | |" % (p.housing_od + 2 * p.cover_wall))
-    w("| Spigot bore (over the housing) | **Ø%.1f** × %.1f | slide fit on the housing OD, same chucking as the bearing bores |" % (p.housing_od, p.housing_len - 10.0))
-    w("| Inner cavity | Ø%.1f | clears the Ø%.0f rotor / armature |" % (2 * r_cover_in, p.rotor_od))
-    w("| Bearing bores | **Ø%.0f K6** × %.0f, two seats %.0f apart in a %.0f long boss | 6001-2RS (12×28×8) |" % (p.bearing_od, p.bearing_w, p.bearing_gap, boss_len))
-    w("| Shaft hole | Ø%.0f | |" % (p.out_shaft_d + 2))
-    w("| Radial screws | 3× Ø4.5 at 120°, 14 from the open end | M4 into the housing |")
+    w("| Spigot bore (over the housing) | **Ø%.1f H7** × %.1f | slide fit on the housing OD, same chucking as the bearing bore |" % (p.housing_od, p.housing_len - p.cover_spigot_z))
+    w("| Shoulder / inner cavity | Ø%.1f | the step from the spigot sits on the housing rim and locates the cover axially; clears the Ø%.0f rotor / armature |" % (p.cover_cavity_d, p.rotor_od))
+    w("| Bearing bore | **Ø%.0f H7**, straight through the %.0f wall + %.0f boss | bored from the cavity side in the same chucking as the spigot |" % (p.bearing_od, p.cover_front_t, BOSS_LEN))
+    w("| Circlip grooves | 2× for DIN 472-28: Ø29.4 × %.1f, 0.2 in from each end of the bore | |" % p.circlip_groove)
+    w("| Radial screws | %d× Ø4.5 every %.0f°, %.1f from the open end | M4×8 into the housing |" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW - p.cover_spigot_z))
     w("| Front wall | %.0f thick, 4× M5 tapped on r=%.0f at 45° | bolts the module to the feed-unit plate |\n" % (p.cover_front_t, p.cover_bolt_r))
     w("## Other parts")
-    w("- Output shaft: Ø%.0f h6 ground rod × %.0f, 0.6 deep flat × 22 at the pulley end." % (p.out_shaft_d, p.out_shaft_len))
-    w("- Leaf springs: 3× 0.3 mm blue spring-steel shim, %.0f wide, holes Ø3.3 at %.1f centres." % (p.spring_w, 2 * p.spring_r * math.sin(math.radians(p.spring_twist_deg / 2))))
-    w("- Spacers: 3× Ø7 × %.1f, Ø3.3 hole (steel or brass)." % p.spacer_h)
+    w("- Output shaft: Ø%.0f h6 ground rod × %.0f. Flats 0.6 deep: × 22 at the pulley end, × %.0f under the hub boss. DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, outboard of the outer bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[1] + p.bearing_w + 0.1 - (Z_HUB + 1.0)))
+    w("- Leaf springs: 3× 0.3 mm blue spring-steel shim, %.0f wide with full-round ends, holes Ø3.3 at %.1f centres. **Flat when released**; engaged they bend %.1f mm (≈25 N total)." % (p.spring_w, 2 * p.spring_r * math.sin(math.radians(p.spring_twist_deg / 2)), p.stroke))
+    w("- Spacers: 3× Ø7 × %.2f, Ø3.3 hole (steel or brass), between the armature and the strap." % p.spacer_h)
+    w("- Bearing stack (front to back): circlip, outer 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), inner 6001, circlip. The inner bearing locates the shaft: a stepped spacer Ø15/Ø12 × %.1f between the hub boss and its inner race, the DIN 471-12 circlip outboard of the outer bearing. Grind or shim the stepped spacer so the springs are flat with the armature resting on them." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS. Screws: 4× M5×30 + nuts, 3× M4×8, 6× M3×6 low-head, 1× M3×8.\n")
+    w("- Bearings: 2× 6001-2RS (k6 shaft / H7 bore: tighter on the rotating inner ring). Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×20 (module to the feed-unit plate)." % p.cover_screws)
+    w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
+    w("- Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus %.1f deep.\n" % (p.housing_len - p.back_plate))
     w("## Teeth")
     w("- %d radial teeth, true angular profile: equal tip and root lands, flanks %.0f° from the axis at the mean radius." % (p.teeth, p.flank_deg))
     w("- Engaged pole gap %.2f, stroke %.1f -> released gap %.2f." % (p.engaged_gap, p.stroke, p.engaged_gap + p.stroke))
+    w("- Tips truncated %.1f mm on both rings: the flanks carry the load and the 0.1 tip/root clearance means a tip can never bottom out." % p.tip_trunc)
     w("- Machine both rings with the same CAM program and tool, in the same setup orientation, then lap them together.")
+    w("- Radial teeth have a constant angle, so the flank twists slightly with radius: rough with an end mill, finish the flanks with a ball end mill.")
     w("- Flanks: 3D finishing with a small ball end mill (Ø1–2) or a chamfer mill whose half-angle equals the flank angle")
     w("  (30° flank -> 60° chamfer mill / V-bit; set `flank_deg = 45` for a standard 90° chamfer mill — the cam-out force")
     w("  then rises ~1.8x, so expect ~1.3x more hold current; re-calibrate per design.md §7.4).")
