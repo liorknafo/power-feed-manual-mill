@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Power feed — 3D view</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1d2026; color: #e6e8eb;
+               font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  #ui { position: absolute; top: 12px; left: 12px; background: rgba(20,22,27,.88); padding: 12px 14px;
+        border-radius: 10px; min-width: 210px; box-shadow: 0 4px 18px rgba(0,0,0,.35); }
+  #ui h1 { font-size: 14px; margin: 0 0 8px; }
+  #ui label { display: block; margin: 3px 0; cursor: pointer; user-select: none; }
+  #ui .sep { border-top: 1px solid #3a3f48; margin: 8px 0; }
+  #ui button { margin: 2px 4px 2px 0; padding: 3px 8px; border-radius: 6px; border: 1px solid #4a505b;
+               background: #2a2e36; color: #e6e8eb; cursor: pointer; }
+  #status { position: absolute; bottom: 10px; left: 12px; color: #9aa3ad; }
+  #hint { position: absolute; bottom: 10px; right: 12px; color: #9aa3ad; }
+</style>
+<script type="importmap">
+{ "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="ui">
+  <h1>Power feed — what exists so far</h1>
+  <label><input type="checkbox" data-group="mill" checked> Feed unit on the mill (+ clutch, motor)</label>
+  <label><input type="checkbox" data-group="clutch" checked> Clutch, exploded</label>
+  <label><input type="checkbox" data-group="box" checked> Controller box + PCB</label>
+  <label><input type="checkbox" data-group="panel" checked> Front panel pendant</label>
+  <div class="sep"></div>
+  <label><input type="checkbox" id="xray"> X-ray housings (see inside)</label>
+  <label><input type="checkbox" id="lid" checked> Box lid</label>
+  <label><input type="checkbox" id="millref" checked> Mill table-end stand-in</label>
+  <div class="sep"></div>
+  <button data-view="all">All</button><button data-view="mill">Feed unit</button>
+  <button data-view="clutch">Clutch</button><button data-view="box">Box</button><button data-view="panel">Panel</button>
+</div>
+<div id="status">loading…</div>
+<div id="hint">drag = rotate · right-drag = pan · scroll = zoom</div>
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { STLLoader } from "three/addons/loaders/STLLoader.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+
+// Everything is in mm, Z up. Paths are relative to this file (serve the repo root over http).
+const M = "../";
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(innerWidth, innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1d2026);
+const camera = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 1, 20000);
+camera.up.set(0, 0, 1);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x404048, 1.6));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(400, -600, 900); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffffff, 0.6); fill.position.set(-600, 400, 300); scene.add(fill);
+const grid = new THREE.GridHelper(2000, 40, 0x3a3f48, 0x2a2e35); grid.rotation.x = Math.PI / 2; grid.position.z = -160;
+scene.add(grid);
+
+const groups = {};
+for (const g of ["mill", "clutch", "box", "panel"]) { groups[g] = new THREE.Group(); scene.add(groups[g]); }
+// layout: feed unit (Y-up CAD frame -> Z-up), clutch beside it, controller box and panel to the right
+groups.mill.rotation.x = Math.PI / 2;
+groups.clutch.position.set(-260, 0, -60);
+groups.box.position.set(260, 60, -40);
+groups.panel.position.set(470, 60, -40);
+
+const housings = [];   // made transparent in x-ray mode
+const tagged = { lid: [], millref: [] };
+const stl = new STLLoader();
+let pending = 0, loaded = 0;
+const status = document.getElementById("status");
+function tick() { status.textContent = loaded < pending ? `loading ${loaded}/${pending}…` : `${loaded} parts loaded`; }
+
+function part(group, path, color, opts = {}) {
+  pending++; tick();
+  stl.load(M + path, geo => {
+    geo.computeVertexNormals();
+    const mat = new THREE.MeshStandardMaterial({ color, metalness: opts.metal ?? 0.35, roughness: opts.rough ?? 0.5,
+                                                 side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geo, mat);
+    if (opts.dz) mesh.position.z = opts.dz;
+    if (opts.housing) housings.push(mat);
+    if (opts.tag) tagged[opts.tag].push(mesh);
+    groups[group].add(mesh);
+    loaded++; tick(); applyToggles();
+  }, undefined, () => { loaded++; status.textContent = "missing: " + path; });
+}
+
+// --- feed unit on the mill (feed_unit.py world frame)
+const F = "feed_unit/out/";
+part("mill", F + "mill_reference.stl", 0x4a4f57, { metal: 0.1, rough: 0.9, tag: "millref" });
+part("mill", F + "standoffs.stl", 0x9aa3ad);
+part("mill", F + "plate.stl", 0xb8c2cc, { housing: true });
+part("mill", F + "stub_shaft.stl", 0xd9dde2, { metal: 0.8, rough: 0.3 });
+part("mill", F + "oldham_disc.stl", 0xb08d57, { metal: 0.7 });
+part("mill", F + "pulley_40T.stl", 0xc0c6cc, { metal: 0.7 });
+part("mill", F + "pulley_20T.stl", 0xc0c6cc, { metal: 0.7 });
+part("mill", F + "belt.stl", 0x222222, { metal: 0, rough: 0.9 });
+part("mill", F + "belt_guard.stl", 0xe07b39, { metal: 0, rough: 0.7, housing: true });
+part("mill", F + "bearings_6002.stl", 0xe0b050, { metal: 0.8 });
+part("mill", F + "encoder.stl", 0x333333);
+part("mill", F + "encoder_disc.stl", 0x9fb4c8);
+part("mill", F + "encoder_posts.stl", 0xd4b24c, { metal: 0.8 });
+part("mill", F + "encoder_coupling.stl", 0x3a6fb0);
+part("mill", F + "tension_block.stl", 0x707880);
+part("mill", F + "module_bolt_heads.stl", 0x202020);
+part("mill", F + "clutch_field_housing.stl", 0x8a8f99, { housing: true });
+part("mill", F + "clutch_cover.stl", 0xc9d1d9, { housing: true });
+part("mill", F + "clutch_rotor.stl", 0xa9b4c2, { metal: 0.7 });
+part("mill", F + "clutch_armature.stl", 0x7d8fa6, { metal: 0.7 });
+part("mill", F + "clutch_hub.stl", 0x9aa7b5, { metal: 0.7 });
+part("mill", F + "clutch_output_shaft.stl", 0xcfd6dd, { metal: 0.8, rough: 0.3 });
+part("mill", F + "clutch_coil.stl", 0xc87533, { metal: 0.6 });
+part("mill", F + "motor.stl", 0x3d3f44, { housing: true });
+
+// --- clutch, exploded along its axis (clutch.py frame: motor face at z=0)
+const C = "clutch/out/";
+const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], ["coil_bobbin", 0xc87533, -25],
+            ["rotor", 0xa9b4c2, 25], ["armature", 0x7d8fa6, 55], ["spring_spacers", 0xd4b24c, 68],
+            ["leaf_springs", 0x2b4a8b, 80], ["output_hub", 0x9aa7b5, 100], ["output_shaft", 0xcfd6dd, 130],
+            ["bearings", 0xe0b050, 150], ["cover", 0xc9d1d9, 175]];
+for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 0.6, housing: n === "cover" });
+
+// --- controller box (enclosure.py frame) + the routed PCB (kicad-cli GLB: metres, Y up, board bottom at y=0)
+const E = "enclosure/out/";
+part("box", E + "base.stl", 0x5b6470, { metal: 0.1, rough: 0.8, housing: true });
+part("box", E + "lid.stl", 0x6b7480, { metal: 0.1, rough: 0.8, housing: true, tag: "lid", dz: 30 });
+part("box", E + "fuse_hatch.stl", 0xe07b39, { metal: 0.1, rough: 0.8, tag: "lid", dz: 30 });
+pending++; tick();
+new GLTFLoader().load(M + "viewer/out/pcb.glb", gltf => {
+  const pcb = gltf.scene;
+  pcb.scale.setScalar(1000);
+  pcb.rotation.x = Math.PI / 2;      // glTF (x, y, z) -> (x, -z, y)
+  pcb.position.z = 9.0;              // board bottom on the standoffs (enclosure.py)
+  groups.box.add(pcb);
+  loaded++; tick();
+}, undefined, () => { loaded++; status.textContent = "missing viewer/out/pcb.glb — run mechanical/viewer/build.sh"; });
+
+// --- front panel pendant (panel.py frame)
+const P = "panel/out/";
+part("panel", P + "shell.stl", 0x4f5966, { metal: 0.1, rough: 0.8, housing: true });
+part("panel", P + "back_cover.stl", 0x6b7480, { metal: 0.1, rough: 0.8, dz: -25 });
+part("panel", P + "hardware_placeholder.stl", 0xd04a3a, { metal: 0.2 });
+
+// --- UI
+const xray = document.getElementById("xray"), lid = document.getElementById("lid"), millref = document.getElementById("millref");
+function applyToggles() {
+  for (const m of housings) { m.transparent = xray.checked; m.opacity = xray.checked ? 0.18 : 1; m.depthWrite = !xray.checked; }
+  for (const o of tagged.lid) o.visible = lid.checked;
+  for (const o of tagged.millref) o.visible = millref.checked;
+}
+for (const el of [xray, lid, millref]) el.addEventListener("change", applyToggles);
+for (const cb of document.querySelectorAll("[data-group]")) cb.addEventListener("change", () => { groups[cb.dataset.group].visible = cb.checked; });
+function frame(objs) {
+  const box = new THREE.Box3();
+  for (const o of objs) if (o.visible) box.expandByObject(o);
+  if (box.isEmpty()) return;
+  const c = box.getCenter(new THREE.Vector3()), r = box.getSize(new THREE.Vector3()).length() / 2;
+  const d = r / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2)) * 0.85;
+  controls.target.copy(c);
+  camera.position.copy(c).add(new THREE.Vector3(0.55, -0.75, 0.42).normalize().multiplyScalar(d));
+  camera.updateProjectionMatrix();
+}
+for (const b of document.querySelectorAll("[data-view]"))
+  b.addEventListener("click", () => frame(b.dataset.view === "all" ? Object.values(groups) : [groups[b.dataset.view]]));
+camera.position.set(200, -1200, 700); controls.target.set(100, 0, 0);
+const iv = setInterval(() => { if (loaded >= pending && pending > 0) { clearInterval(iv); frame(Object.values(groups)); } }, 200);
+addEventListener("resize", () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
+window.__viewer = { scene, camera, groups, get loaded() { return loaded; }, get pending() { return pending; } };
+</script>
+</body>
+</html>

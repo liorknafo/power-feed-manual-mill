@@ -137,6 +137,11 @@ changing `P` or `F`.
 
 **The mill-side dimensions are PLACEHOLDERS:** the leadscrew-end slot, the standoff positions on the table end, and the motor angle. See `FEED_UNIT.md` and docs/mill.md.
 
+## Interactive 3D view
+`sh mechanical/viewer/build.sh` exports the PCB to `mechanical/viewer/out/pcb.glb` and serves the repo; open
+http://localhost:8765/mechanical/viewer/ to orbit the feed unit on the mill, the exploded clutch, the controller box
+with the routed PCB inside, and the panel. Run the CAD scripts first (it loads their `out/*.stl`).
+
 ## Renders
 `mechanical/tools/render.py`: VTK off-screen shaded renders of STL files. Options:
 - `--cut` with `--cut-normal x,y,z` for half sections;
