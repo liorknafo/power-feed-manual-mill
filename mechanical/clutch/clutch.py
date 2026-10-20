@@ -290,6 +290,8 @@ def cover():
     for k in range(4):  # M5 tapped (Ø4.2) into the front wall, for the feed-unit plate
         a = math.radians(45 + 90 * k)
         s = s - Pos(p.cover_bolt_r * math.cos(a), p.cover_bolt_r * math.sin(a), z_front) * Cylinder(2.1, p.cover_front_t, align=MIN)
+    # radial M5 at +Y for the feed unit's belt-tension drawbolt (+Y = away from the leadscrew when mounted)
+    s = s - Pos(0, r_out - 7, z_front + p.cover_front_t / 2) * Rot(-90, 0, 0) * Cylinder(2.1, 8, align=MIN)
     return s, z_front
 
 
@@ -416,14 +418,15 @@ def dimension_sheet(z_front):
     w("| Bearing bore | **Ø%.0f H7**, straight through the %.0f wall + %.0f boss | bored from the cavity side in the same chucking as the spigot |" % (p.bearing_od, p.cover_front_t, BOSS_LEN))
     w("| Circlip grooves | 2× for DIN 472-28: Ø29.4 × %.1f, 0.2 in from each end of the bore | |" % p.circlip_groove)
     w("| Radial screws | %d× Ø4.5 every %.0f°, %.1f from the open end | M4×8 into the housing |" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW - p.cover_spigot_z))
-    w("| Front wall | %.0f thick, 4× M5 tapped on r=%.0f at 45° | bolts the module to the feed-unit plate |\n" % (p.cover_front_t, p.cover_bolt_r))
+    w("| Front wall | %.0f thick, 4× M5 tapped thru on r=%.0f at 45° | bolts the module to the feed-unit plate |" % (p.cover_front_t, p.cover_bolt_r))
+    w("| Drawbolt hole | M5 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 | feed-unit belt tension; it points away from the leadscrew |\n")
     w("## Other parts")
     w("- Output shaft: Ø%.0f h6 ground rod × %.0f. Flats 0.6 deep: × 22 at the pulley end, × %.0f under the hub boss. DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, outboard of the outer bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[1] + p.bearing_w + 0.1 - (Z_HUB + 1.0)))
     w("- Leaf springs: 3× 0.3 mm blue spring-steel shim, %.0f wide with full-round ends, holes Ø3.3 at %.1f centres. **Flat when released**; engaged they bend %.1f mm (≈25 N total)." % (p.spring_w, 2 * p.spring_r * math.sin(math.radians(p.spring_twist_deg / 2)), p.stroke))
     w("- Spacers: 3× Ø7 × %.2f, Ø3.3 hole (steel or brass), between the armature and the strap." % p.spacer_h)
     w("- Bearing stack (front to back): circlip, outer 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), inner 6001, circlip. The inner bearing locates the shaft: a stepped spacer Ø15/Ø12 × %.1f between the hub boss and its inner race, the DIN 471-12 circlip outboard of the outer bearing. Grind or shim the stepped spacer so the springs are flat with the armature resting on them." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS (k6 shaft / H7 bore: tighter on the rotating inner ring). Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×20 (module to the feed-unit plate)." % p.cover_screws)
+    w("- Bearings: 2× 6001-2RS (k6 shaft / H7 bore: tighter on the rotating inner ring). Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate)." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
     w("- Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus %.1f deep.\n" % (p.housing_len - p.back_plate))
     w("## Teeth")

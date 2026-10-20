@@ -54,7 +54,8 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss | bored from the cavity side in the same chucking as the spigot |
 | Circlip grooves | 2× for DIN 472-28: Ø29.4 × 1.3, 0.2 in from each end of the bore | |
 | Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end | M4×8 into the housing |
-| Front wall | 8 thick, 4× M5 tapped on r=36 at 45° | bolts the module to the feed-unit plate |
+| Front wall | 8 thick, 4× M5 tapped thru on r=36 at 45° | bolts the module to the feed-unit plate |
+| Drawbolt hole | M5 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 | feed-unit belt tension; it points away from the leadscrew |
 
 ## Other parts
 - Output shaft: Ø12 h6 ground rod × 78. Flats 0.6 deep: × 22 at the pulley end, × 10 under the hub boss. DIN 471-12 groove (Ø11.5 × 1.1) at 52.6 from its motor-side end, outboard of the outer bearing.
@@ -62,7 +63,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Spacers: 3× Ø7 × 2.40, Ø3.3 hole (steel or brass), between the armature and the strap.
 - Bearing stack (front to back): circlip, outer 6001, spacer tube Ø27.95/Ø25 × 17.0 (outer races), inner 6001, circlip. The inner bearing locates the shaft: a stepped spacer Ø15/Ø12 × 4.5 between the hub boss and its inner race, the DIN 471-12 circlip outboard of the outer bearing. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
-- Bearings: 2× 6001-2RS (k6 shaft / H7 bore: tighter on the rotating inner ring). Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×20 (module to the feed-unit plate).
+- Bearings: 2× 6001-2RS (k6 shaft / H7 bore: tighter on the rotating inner ring). Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 25 mm feed-unit plate).
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
 - Coil cavity: turn it with a grooving or boring bar from the front; it's a blind annulus 15.0 deep.
 

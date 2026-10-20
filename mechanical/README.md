@@ -122,11 +122,16 @@ The DIY electromagnetic tooth clutch, modelled engaged (docs/design.md §7).
 
 The mount for the left table end of the SIEG X3.5D:
 - standoffs from the table end;
-- a belt chamber with a printed guard;
-- a 20 mm aluminium plate holding a leadscrew stub on 2× 6002 bearings;
+- a belt chamber closed by a printed guard cup;
+- a 25 mm aluminium plate holding a leadscrew stub on 2× 6002 bearings (through bore, circlips, spacer tube);
+- an acetal Oldham disc between the stub and the leadscrew slot, so the plate needn't sit exactly on the leadscrew axis;
 - HTD-5M 20T/40T pulleys with a 295 mm belt (2:1, centre distance 70.71 mm);
-- the clutch module bolted to the plate through its cover's front wall, slotted for belt tension;
-- the output encoder on the stub's outer end.
+- the clutch module bolted to the plate through its cover's front wall, slotted for belt tension, with a drawbolt tension block;
+- the output encoder on an adapter disc and three posts, coupled to the stub's outer end.
+
+`feed_unit.py` re-uses the clutch model, so the module always matches `clutch.py`. Interference checks:
+`mechanical/tools/check_clutch.py` (engaged and released) and `mechanical/tools/check_feed_unit.py`; re-run them after
+changing `P` or `F`.
 
 **Run:** `mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py`. It writes STEP/STL, renders and `FEED_UNIT.md`.
 
