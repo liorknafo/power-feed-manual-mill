@@ -52,7 +52,7 @@ for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
         print("  heads t=%+.0f vs %-12s overlap %.3f mm3, min dist %.2f" % (t, name, v, d))
 print("bad pairs incl. bolt heads", bad)
 # housing clearances: the clutch module moves +-tension_slot along the belt centre line, the housing does not
-housing_names = [n for n in parts if n in ("shell", "hood", "psu", "mains_inlet")]
+housing_names = [n for n in parts if n in ("shell", "hood", "psu", "mains_inlet", "mains_tray", "mains_tray_lid")]
 ux, uy = FU.math.cos(FU.ANG), FU.math.sin(FU.ANG)
 moving = ("motor", "clutch_cover", "clutch_field_housing", "pulley_20T")
 worst = {}
@@ -91,7 +91,8 @@ for n in ("shell", "hood"):
     if k != 1:
         bad += 1
 # nothing pokes through the outer skin (rails trimmed to it)
-skin = FU._rounded(FU.XB - FU.T, FU.X_FP, FU.Y0 - FU.T, FU.Y1 + FU.T, FU.W_SHELL0, FU.W_END, FU.f.r_long, FU.f.r_long, FU.f.r_end)
+skin = FU._rounded(FU.XB - FU.T, FU.X_FP, FU.Y0 - FU.T, FU.Y1 + FU.T, FU.W_SHELL0, FU.W_END, FU.f.r_long, FU.f.r_long, FU.f.r_end,
+                  r_bottom=FU.R_BOTTOM)
 for n in ("shell", "hood"):
     v = (parts[n] - skin).volume
     print("  %-5s outside the skin: %.3f mm3" % (n, v))
@@ -128,6 +129,43 @@ zone = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, w_term, w_inlet)
 occ = sum((zone & parts[n]).volume for n in parts if n not in ("mains_tray", "mains_tray_lid") and not n.startswith("control_"))
 print("  mains wiring zone %.1f mm long, occupied %.3f mm3" % (w_inlet - w_term, occ))
 if w_inlet - w_term < 35 or occ > 1e-3:
+    bad += 1
+# tapped/drilled holes in the plate must not run into each other (screws are not in the solid models)
+from build123d import Cylinder as _Cy, Align as _Al
+def _hole(axis, x, y, w, r, depth):
+    if axis == "W":    # into the plate's outer face, toward -W
+        return Pos(x, y, w - depth) * _Cy(r, depth, align=(_Al.CENTER, _Al.CENTER, _Al.MIN))
+    pl = Plane(origin=(x, y, w), z_dir={"+Y": (0, 1, 0), "-Y": (0, -1, 0), "+X": (1, 0, 0), "-X": (-1, 0, 0)}[axis])
+    return Solid.make_cylinder(r, depth, pl)
+holes = []
+for xt in FU.TRAY_BOLTS_X:
+    holes.append(("tray bolt x%+.0f" % xt, _hole("W", xt, FU.TRAY_FLANGE_Y, FU.Z_PLATE_OUT, 1.75, 10)))
+for xt in (-15.0, 15.0):
+    holes.append(("tension-block M5 x%+.0f" % xt, _hole("W", FU.MX + xt, FU.TB_Y, FU.Z_PLATE_OUT, 2.1, 12)))
+for part_, target, pt, d, kind in FU.screw_joints():
+    if kind == "tap":
+        axis = {(0, 1, 0): "+Y", (0, -1, 0): "-Y", (1, 0, 0): "+X", (-1, 0, 0): "-X"}[tuple(d)]
+        start = tuple(pt[i] + d[i] * FU.T for i in range(3))
+        holes.append(("%s screw at (%.0f, %.0f)" % (part_, pt[0], pt[1]), _hole(axis, *start, 1.45, 8.5)))
+clashes = 0
+for (na, ha), (nb, hb) in itertools.combinations(holes, 2):
+    inter = ha & hb
+    if inter is not None and inter.volume > 1e-3:
+        clashes += 1
+        print("  HOLE CLASH: %s x %s" % (na, nb))
+print("  plate holes checked: %d, clashes %d" % (len(holes), clashes))
+bad += clashes
+# PSU base screw heads (ISO 7380 M3) sit in their floor pockets
+v = sum(getattr(h & parts["shell"], "volume", 0.0) or 0.0 for h in FU.psu_screw_heads())
+print("  PSU screw heads vs shell: %.3f mm3" % v)
+if v > 1e-3:
+    bad += 1
+# the snap-in inlet needs flat sheet all round its flange: >= bend (t) + 1.5 mm to the floor and to the lid fold
+t_ = FU.f.tray_t; fw, fh = FU.f.inlet_flange
+m_low = (FU.INLET_Y - fh / 2) - (FU.TRAY_BOT + t_)
+m_top = (FU.TERM_TOP - t_) - (FU.INLET_Y + fh / 2)
+print("  inlet flange flat margin: bottom %.1f, top %.1f mm (need >= %.1f)" % (m_low, m_top, t_ + 1.5))
+if min(m_low, m_top) < t_ + 1.5:
     bad += 1
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent)

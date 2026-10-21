@@ -72,20 +72,24 @@ strip along the upper front with their bodies reaching back over the PCB.
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail (19 mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
 | Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
 | End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6), **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
-| Vents | intake slots in the bottom under the motor; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
+| Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
-  motor (93 wide, 32 high, W 63…253; 1.5 mm 1050/5052 sheet: floor, two side walls, end face,
-  and a flange bent up against the plate). It holds:
-  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 82 × 30), screwed through the tray floor into its base holes (M3;
-    keep to Mean Well's maximum screw depth), L/N/⏚ terminals toward the inlet, +V/−V on the same end;
+  motor (104 wide, 32 high over the PSU and 42 over the terminal/inlet zone, W 63…253; 1.5 mm
+  1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two tabs
+  bent up against the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
+  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
+    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads sit in
+    Ø7 pockets in the printed floor. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
     47.5 × 27.8; pick one rated for a 1–2 mm panel). It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
-  - a separate aluminium **lid** over the terminal/inlet zone (M3 self-tapping into the side walls), with a Ø10
-    grommet: the **only** thing that leaves the tray is the 36 V pair (1 mm², to J1).
-  - **Fixing and earth:** the tray's flange bolts to the plate's outer face (2× M4 into tapped holes): that holds it
+  - a separate aluminium **lid** over the terminal/inlet zone: 4× M3 into M3 rivnuts (or press nuts) in the walls'
+    folded flanges; the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
+    tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
+  - **Fixing and earth:** the tray's two tabs bolt to the plate's outer face (2× M4 into tapped holes; checked against
+    every other hole in the plate): that holds it
     and earths it. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
     leads longer than L/N so they pull out last. Don't anodise the plate or the tray, or scrape the bond faces.
     Through the plate the motor (4 M5), the clutch (cover + housing screws), the encoder posts, the stub and the mill
@@ -95,12 +99,14 @@ strip along the upper front with their bodies reaching back over the PCB.
     its spade and its terminal, so one loose wire can't move. Wire the whole tray on the bench, lid on, before it
     goes in: the PSU terminals can't be reached with the motor above them.
   - **Fuse:** T 2 A ceramic (high breaking capacity) 5 × 20 for 230 V; T 3.15 A for 120 V.
-  - **Power budget:** 75 W is enough. Rapid traverse draws about 40–50 W; the worst moment is the clutch pull-in
-    (54 W for 50 ms) while the motor is at its 1 A hold current, about 60 W. If the LRS ever trips (overload or the
-    overvoltage latch, which needs a mains off/on to reset), the clutch springs release and the board shows `NO 36V`;
-    nothing restarts on its own.
-  - **No floor vents** (the tray is above the floor). The motor breathes through slots in the back and front walls
-    beside it; the PSU convects up out of the open tray (no lid over its body).
+  - **Power budget:** about 35–50 W at rapid traverse and about 60 W during the clutch pull-in (54 W for 50 ms with
+    the motor at its 1 A hold current); 75 W covers normal use. Only a jam at rapid (motor at full torque, ~100 W) can
+    trip the supply before stall detection acts. That is safe: if the LRS trips (overload, or the overvoltage latch,
+    which needs a mains off/on to reset), the clutch springs release and the board shows `NO 36V`; nothing restarts
+    on its own until the switch is centred.
+  - **No floor vents** (the tray is above the floor). The motor breathes through louvred slots in the back and front
+    walls beside it; the PSU convects up out of the open tray (its own perforated case is the cover there). Two Ø4
+    drains in the floor behind the inlet let out any coolant that gets past the recess.
   - The cord moves with the table: give it a loop or a cable chain, a P-clip on the unit and strain relief at the
     stand. The rocker switch is the mains switch; the E-stop removes the drive enable and the clutch, not mains.
   - **Before first power-up (commissioning):** with the cord unplugged, measure from the cord's earth pin to the plate,
@@ -119,7 +125,8 @@ strip along the upper front with their bodies reaching back over the PCB.
 - **Fuse:** lift the hood.
 - **Heat:** the motor is inside and the PCB sits above it. Default run current 3 A (~16 W in the coils), 1 A at standstill.
   PETG's glass transition is ~80 °C; the walls are ≥ 5.8 mm from the motor. On the bench, run it closed for 30 min:
-  if the motor case passes ~60 °C, fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
+  if the motor case passes ~60 °C or the PSU case passes ~60 °C (the LRS gives full power only up to 50 °C ambient;
+  it runs at about half load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
   less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
 - **Order:**
   1. Plate: bearings, stub, clutch/motor module, encoder.

@@ -66,15 +66,18 @@ class F:
     circlip_land: float = 2.6        # material outside each plate groove (DIN 472-32 minimum edge margin)
     tension_slot: float = 3.0        # +- adjustment of the module along the centre line
     # --- built-in mains: an earthed, folded-aluminium MAINS TRAY under the clutch/motor module holds the 36 V supply
-    # (Mean Well LRS-75-36: 36 V 2.1 A, 99 x 82 x 30, terminals on one 82 mm end, toward the inlet) and a snap-in IEC
+    # (Mean Well LRS-75-36: 36 V 2.1 A, 99 x 97 x 30, case 240A; terminals 1 L, 2 N, 3 FG, 4 -V, 5 +V along one 97 mm
+    # end, toward the inlet; full load to 50 C ambient) and a snap-in IEC
     # C14 inlet (fuse + switch) clipped into the tray's own end face. All 230 V stays inside the earthed tray.
     psu_l: float = 99.0
-    psu_w: float = 82.0
+    psu_w: float = 97.0
     psu_h: float = 30.0
     psu_w0: float = 82.0             # W of the PSU's plate-side end (the tray starts at the plate face, W 63)
     psu_top_gap: float = 3.0         # tray top under the clutch cover with the module at the bottom of its tension slot
     tray_t: float = 1.5              # 5052 / 1050 aluminium sheet, folded
-    tray_side_gap: float = 4.0       # PSU side -> tray wall (convection + wiring)
+    tray_side_gap: float = 2.0       # PSU side -> tray wall
+    psu_holes: tuple = ((20.5, 45.5), (75.5, 45.5))   # base M3 (max 3 mm deep): from the terminal end, from one long edge
+    term_zone_rise: float = 10.0     # tray walls, end face and lid are this much higher over the terminal/inlet zone
     inlet_cut: tuple = (47.5, 27.8)  # snap-in IEC C14 + fuse + rocker switch, rated for 1-2 mm panels (check yours)
     inlet_flange: tuple = (50.0, 31.0)
     inlet_depth: float = 35.0        # its body behind the panel
@@ -377,19 +380,23 @@ W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim, on the plate edg
 RAIL = f.rail
 INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5.7 heat-set insert hole
 R_IN = f.r_long - T                                 # inside radius of the long edges
+R_BOTTOM = 8.5                                      # the two bottom long edges: tighter, so the mains tray fits the corners
 W_END_SCREW = W_END - f.r_end - 4.0                 # end hood screws: countersunk heads fully on the flat, not the chamfer
-INLET_Y = (PSU_BOT + TRAY_TOP) / 2      # IEC inlet centre, in the tray's end face
+TERM_TOP = TRAY_TOP + f.term_zone_rise     # tray top over the terminal/inlet zone (the motor is >= 7 mm above)
+INLET_Y = (PSU_BOT + TERM_TOP) / 2         # IEC inlet centre, in the tray's end face
 TRAY_HALF = f.psu_w / 2 + f.tray_side_gap + f.tray_t
 TRAY_W1 = W_END - f.r_end - 1.0   # tray end face (inlet panel): clear of the shell's inside end chamfer; the inlet
                                   # sits recessed ~9 mm behind the end wall's opening (shielded from run-off coolant)
 TRAY_WALL_W0 = Z_PLATE_OUT + 12.0                # side walls start past the belt-tension block
-TRAY_BOLTS_X = (-38.0, -24.0)                 # flange bolts into the plate face, clear of the drawbolt hole (x 0)
+TRAY_BOLTS_X = (-45.0, -13.0)                 # flange bolts into the plate face: clear of the shell's plate-edge
+                                              # screws (x -35/-22), the drawbolt (x 0) and its tool path
 TRAY_FLANGE_Y = TRAY_BOT + 6.0
 GROMMET = (-30.0, TRAY_W1 - 12.0)             # (x, W) of the Ø10 grommet in the tray lid: 36 V leads up to J1
 USB_PORT = (15.0, 10.0)     # (x, y) on the end wall
 SWD_PORT = (-15.0, 10.0)
 BOOT_BTN = (-15.0, -9.0)    # 7 mm momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
 RESET_BTN = (15.0, -9.0)
+INTAKE = dict(w0=145.0, w1=225.0, y0=-100.0, y1=-72.0)    # motor-air louvres, back and front walls
 FAN = dict(w0=115.0, w1=155.0, y0=-12.0, y1=28.0, x_in=XB + 4.5)   # 40 mm fan / louvre field on the back wall
 
 
@@ -459,29 +466,52 @@ def psu_placeholder():
     return psu, inlet
 
 
+def psu_screws():
+    """(x, W) of the PSU's two base screws (from Mean Well's drawing)."""
+    w_term = f.psu_w0 + f.psu_l
+    return [(-f.psu_w / 2 + e, w_term - d) for d, e in f.psu_holes]
+
+
 def mains_tray():
-    """Folded aluminium tray: floor + side walls + end face (inlet cut-out) + a flange bent up against the plate face
-    (2x M4: it is fixed AND earthed there), and a separate lid over the terminal/inlet zone. The PSU screws through
-    the floor into its base holes. Only the 36 V leads leave, through a grommet in the lid. No vents in the floor."""
+    """Folded aluminium tray: floor + side walls + end face (inlet cut-out) + 2 tabs bent up against the plate face
+    (2x M4: fixed AND earthed there), side walls and end face 10 mm higher over the terminal/inlet zone with inward
+    folded lid flanges, and a separate lid over that zone. The PSU screws through the floor into its base holes. Only
+    the 36 V leads leave, through a grommet in the lid. No vents in the floor."""
     t, hw = f.tray_t, TRAY_HALF
-    w0 = Z_PLATE_OUT                                 # flange against the plate's outer face
+    w0 = Z_PLATE_OUT
+    wz = f.psu_w0 + f.psu_l - 6                      # start of the raised terminal/inlet zone
     floor = bx(-hw, hw, TRAY_BOT, TRAY_BOT + t, w0, TRAY_W1)
-    walls = bx(-hw, -hw + t, TRAY_BOT, TRAY_TOP, TRAY_WALL_W0, TRAY_W1) + bx(hw - t, hw, TRAY_BOT, TRAY_TOP, TRAY_WALL_W0, TRAY_W1)
-    end = bx(-hw, hw, TRAY_BOT, TRAY_TOP, TRAY_W1 - t, TRAY_W1)
-    flange = bx(TRAY_BOLTS_X[0] - 8, TRAY_BOLTS_X[1] + 8, TRAY_BOT, TRAY_BOT + 13, w0, w0 + t)
-    tray = floor + walls + end + flange
+    walls = None
+    for sx in (-1, 1):
+        x0, x1 = (-hw, -hw + t) if sx < 0 else (hw - t, hw)
+        wall = bx(x0, x1, TRAY_BOT, TRAY_TOP, TRAY_WALL_W0, wz) + bx(x0, x1, TRAY_BOT, TERM_TOP, wz, TRAY_W1)
+        lx0, lx1 = (-hw, -hw + 8) if sx < 0 else (hw - 8, hw)          # flange folded inward at the top (lid screws)
+        lip = bx(lx0, lx1, TERM_TOP - t, TERM_TOP, wz, TRAY_W1 - t)
+        walls = wall + lip if walls is None else walls + wall + lip
+    end = bx(-hw, hw, TRAY_BOT, TERM_TOP, TRAY_W1 - t, TRAY_W1)
+    tray = floor + walls + end
+    for xt in TRAY_BOLTS_X:                          # two tabs bent up against the plate face
+        tray = tray + bx(xt - 7, xt + 7, TRAY_BOT, TRAY_BOT + 13, w0, w0 + t)
+        tray = tray - Pos(xt, TRAY_FLANGE_Y, w0 - 1) * Cylinder(2.2, t + 2, align=MIN)
     iw, ih = f.inlet_cut
     tray = tray - bx(-iw / 2, iw / 2, INLET_Y - ih / 2, INLET_Y + ih / 2, TRAY_W1 - t - 1, TRAY_W1 + 1)
-    for xt in TRAY_BOLTS_X:
-        tray = tray - Pos(xt, TRAY_FLANGE_Y, w0 - 1) * Cylinder(2.2, t + 2, align=MIN)
     tray = tray - ycyl(6.0, TRAY_BOT - 1, TRAY_BOT + t + 1, MX, Z_PLATE_OUT + 4)    # drawbolt access (outside the walls)
-    for xp in (-f.psu_w / 2 + 10, f.psu_w / 2 - 10):           # PSU base screws (M3, see Mean Well's max depth)
-        for wp in (f.psu_w0 + 15, f.psu_w0 + f.psu_l - 15):
-            tray = tray - ycyl(1.7, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
-    lid_w0 = f.psu_w0 + f.psu_l - 6                            # overlaps the PSU's terminal cover end
-    lid = bx(-hw, hw, TRAY_TOP, TRAY_TOP + t, lid_w0, TRAY_W1)
-    lid = lid - ycyl(5.0, TRAY_TOP - 1, TRAY_TOP + t + 1, GROMMET[0], GROMMET[1])
+    for xp, wp in psu_screws():                      # PSU base screws: M3 x 4 button head (ISO 7380) from below
+        tray = tray - ycyl(1.7, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
+    for xs in (-hw + 4, hw - 4):                     # lid screws: M3 into rivnuts in the folded lid flanges
+        for ws in (wz + 8, TRAY_W1 - 8):
+            tray = tray - ycyl(1.7, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
+    lid = bx(-hw, hw, TERM_TOP, TERM_TOP + t, wz, TRAY_W1)
+    lid = lid - ycyl(5.0, TERM_TOP - 1, TERM_TOP + t + 1, GROMMET[0], GROMMET[1])
+    for xs in (-hw + 4, hw - 4):
+        for ws in (wz + 8, TRAY_W1 - 8):
+            lid = lid - ycyl(1.7, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
     return tray, lid
+
+
+def psu_screw_heads():
+    """ISO 7380 M3 button heads (Ø5.7 x 1.65) under the tray floor, for the checks."""
+    return [ycyl(2.85, TRAY_BOT - 1.65, TRAY_BOT, xp, wp) for xp, wp in psu_screws()]
 
 
 def plug_wires():
@@ -505,7 +535,7 @@ LABELS = (("LEFT", 175.0, 28.0), ("STOP", 160.0, 28.0), ("RIGHT", 145.0, 28.0),
           ("RAPID", 140.0, -6.0), ("SPEED", 113.0, -6.0))
 
 
-def _rounded(x0, x1, y0, y1, w0, w1, r, c_tf, c_end, chamfer_back_top=False):
+def _rounded(x0, x1, y0, y1, w0, w1, r, c_tf, c_end, chamfer_back_top=False, r_bottom=None):
     """Box with its long edges filleted r, except the top-front one (and the top-back one if asked), which are 45-degree
     chamfers c_tf; the +W end edges chamfered c_end."""
     body = bx(x0, x1, y0, y1, w0, w1)
@@ -514,7 +544,12 @@ def _rounded(x0, x1, y0, y1, w0, w1, r, c_tf, c_end, chamfer_back_top=False):
     def is_ch(e):
         return e.center().Y > ym and (e.center().X > xm or chamfer_back_top)
     body = chamfer([e for e in body.edges().filter_by(Axis.Z) if is_ch(e)], c_tf)
-    body = fillet([e for e in body.edges().filter_by(Axis.Z) if not is_ch(e) and e.length > (w1 - w0) - 0.01], r)
+    longs = [e for e in body.edges().filter_by(Axis.Z) if not is_ch(e) and e.length > (w1 - w0) - 0.01]
+    rb = r if r_bottom is None else r_bottom
+    tops = [e for e in longs if e.center().Y > ym]
+    if tops:
+        body = fillet(tops, r)
+    body = fillet([e for e in body.edges().filter_by(Axis.Z) if e.center().Y < ym and e.length > (w1 - w0) - 0.01], rb)
     if c_end > 0:
         body = chamfer(body.edges().group_by(Axis.Z)[-1], c_end)
     return body
@@ -523,9 +558,9 @@ def _rounded(x0, x1, y0, y1, w0, w1, r, c_tf, c_end, chamfer_back_top=False):
 def outer_body():
     """The whole closed outer volume of the housing (before it is split into shell and hood). Every edge that lies on
     the print bed is a 45-degree chamfer (end wall for the shell, top-front edge for the hood); the rest are fillets."""
-    out = _rounded(XB - T, X_FP, Y0 - T, Y1 + T, W_SHELL0, W_END, f.r_long, f.r_long, f.r_end)
+    out = _rounded(XB - T, X_FP, Y0 - T, Y1 + T, W_SHELL0, W_END, f.r_long, f.r_long, f.r_end, r_bottom=R_BOTTOM)
     cav = _rounded(XB - G, XF + G, Y0 - G, Y1 + G, W_SHELL0 - 1, W_END - T, R_IN + G, CHAMFER_IN, max(f.r_end - T, 1.0),
-                   chamfer_back_top=True)
+                   chamfer_back_top=True, r_bottom=R_BOTTOM - T + G)
     return out - cav
 
 
@@ -577,7 +612,7 @@ def pcb_bosses():
 def shell():
     """Back, bottom, end and lower-front walls, rails, PCB bosses, louvres: one print standing on the end wall."""
     s = outer_body() - hood_region()
-    skin = _rounded(XB - T, X_FP, Y0 - T, Y1 + T, W_SHELL0, W_END, f.r_long, f.r_long, f.r_end)   # trims rails to the skin
+    skin = _rounded(XB - T, X_FP, Y0 - T, Y1 + T, W_SHELL0, W_END, f.r_long, f.r_long, f.r_end, r_bottom=R_BOTTOM)  # trims rails
     rail_w = (Z_PLATE_OUT, W_END - T)
     # back-top rail (hood screws) on the flat part of the top, tied to the back wall by a 4 mm shelf under it (its
     # section lies in the bed plane while the shell prints, so any shape prints)
@@ -605,9 +640,20 @@ def shell():
     # Motor air intake: slots along W in the back and front walls beside the motor (they face sideways, so falling
     # chips don't enter; in the print they run vertically)
     s = s - ycyl(6.0, Y0 - T - 1, Y0 + 1, MX, Z_PLATE_OUT + 4)
-    for yv in (-96.0, -89.0, -82.0, -75.0):
-        for x0_, x1_ in ((XB - T - 1, XB + 1), (XF - 1, X_FP + 1)):
-            s = s - bx(x0_, x1_, yv - 1.5, yv + 1.5, 145, 225)
+    # louvred like the exhaust: each slot climbs 45 degrees inward through a 5 mm block, so chips and coolant spray
+    # can't reach the mains tray below; the blocks have 45-degree undersides for printing
+    for sx in (-1, 1):
+        x_wall = XB - G if sx < 0 else XF + G
+        x_in = x_wall - 5.0 * sx
+        d = 5.0
+        s = s + xw_prism([(x_wall, INTAKE["w0"]), (x_in, INTAKE["w0"]), (x_in, INTAKE["w1"]), (x_wall, INTAKE["w1"] + d)],
+                         INTAKE["y0"], INTAKE["y1"])
+        for k in range(4):
+            y = INTAKE["y0"] + 5 + 6.0 * k
+            slot = Pos(x_wall + 2.0 * sx, y, (INTAKE["w0"] + INTAKE["w1"]) / 2) * Rot(0, 0, -45 * sx) * Box(14, 2.4, INTAKE["w1"] - INTAKE["w0"] - 4)
+            lim = bx(min(x_wall + 3.5 * sx, x_in) - 0.01, max(x_wall + 3.5 * sx, x_in) + 0.01, INTAKE["y0"] + 1, INTAKE["y1"] - 1,
+                     INTAKE["w0"] + 2, INTAKE["w1"] - 2)
+            s = s - (slot & lim)
     # back wall: louvred exhaust / 40 mm fan field, beside the encoder and the board's start, away from the fuse.
     # Each slot climbs 45 degrees inward through a 6 mm block, so a chip can't fall or bounce through. In the print
     # (W vertical) the slots lie in the horizontal plane: no overhang.
@@ -631,6 +677,10 @@ def shell():
     s = s - bx(-fw / 2 - 1, fw / 2 + 1, INLET_Y - fh / 2 - 1, INLET_Y + fh / 2 + 1, W_END - T - 1, W_END + 1)
     for xr_ in (-30.0, 30.0):
         s = s + bx(xr_ - 1.5, xr_ + 1.5, Y0 - G - 0.5, TRAY_BOT, TRAY_W1 - 60, TRAY_W1 - 6)
+    for xp, wp in psu_screws():                      # pockets for the PSU's M3 button heads under the tray floor
+        s = s - ycyl(3.5, Y0 - G - 1.5, Y0 + 0.1, xp, wp)
+    for xd in (-15.0, 15.0):                         # drains: coolant that gets in behind the inlet runs out
+        s = s - ycyl(2.0, Y0 - T - 8, Y0 + 6, xd, W_END - T - 2.5)
     # programming ports, usable with the box closed (above the plugs, clear of the end rails):
     #   USB-C: round nut-mount panel extension (e.g. Adafruit #6069, 12-18 mm hole), its male end left in J4
     #   SWD:   1x3 0.1" pin header pressed into a slot from outside, pins sunk in a recess; 3 wires inside to J3.
@@ -883,20 +933,24 @@ strip along the upper front with their bodies reaching back over the PCB.
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail ({f.tail_clear:.0f} mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
 | Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
 | End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6), **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
-| Vents | intake slots in the bottom under the motor; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
+| Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
-  motor ({2 * TRAY_HALF:.0f} wide, {TRAY_TOP - TRAY_BOT:.0f} high, W {Z_PLATE_OUT:.0f}…{TRAY_W1:.0f}; 1.5 mm 1050/5052 sheet: floor, two side walls, end face,
-  and a flange bent up against the plate). It holds:
-  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 82 × 30), screwed through the tray floor into its base holes (M3;
-    keep to Mean Well's maximum screw depth), L/N/⏚ terminals toward the inlet, +V/−V on the same end;
+  motor ({2 * TRAY_HALF:.0f} wide, {TRAY_TOP - TRAY_BOT:.0f} high over the PSU and {TERM_TOP - TRAY_BOT:.0f} over the terminal/inlet zone, W {Z_PLATE_OUT:.0f}…{TRAY_W1:.0f}; 1.5 mm
+  1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two tabs
+  bent up against the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
+  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
+    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads sit in
+    Ø7 pockets in the printed floor. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
     {f.inlet_cut[0]} × {f.inlet_cut[1]}; pick one rated for a 1–2 mm panel). It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
-  - a separate aluminium **lid** over the terminal/inlet zone (M3 self-tapping into the side walls), with a Ø10
-    grommet: the **only** thing that leaves the tray is the 36 V pair (1 mm², to J1).
-  - **Fixing and earth:** the tray's flange bolts to the plate's outer face (2× M4 into tapped holes): that holds it
+  - a separate aluminium **lid** over the terminal/inlet zone: 4× M3 into M3 rivnuts (or press nuts) in the walls'
+    folded flanges; the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
+    tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
+  - **Fixing and earth:** the tray's two tabs bolt to the plate's outer face (2× M4 into tapped holes; checked against
+    every other hole in the plate): that holds it
     and earths it. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
     leads longer than L/N so they pull out last. Don't anodise the plate or the tray, or scrape the bond faces.
     Through the plate the motor (4 M5), the clutch (cover + housing screws), the encoder posts, the stub and the mill
@@ -906,12 +960,14 @@ strip along the upper front with their bodies reaching back over the PCB.
     its spade and its terminal, so one loose wire can't move. Wire the whole tray on the bench, lid on, before it
     goes in: the PSU terminals can't be reached with the motor above them.
   - **Fuse:** T 2 A ceramic (high breaking capacity) 5 × 20 for 230 V; T 3.15 A for 120 V.
-  - **Power budget:** 75 W is enough. Rapid traverse draws about 40–50 W; the worst moment is the clutch pull-in
-    (54 W for 50 ms) while the motor is at its 1 A hold current, about 60 W. If the LRS ever trips (overload or the
-    overvoltage latch, which needs a mains off/on to reset), the clutch springs release and the board shows `NO 36V`;
-    nothing restarts on its own.
-  - **No floor vents** (the tray is above the floor). The motor breathes through slots in the back and front walls
-    beside it; the PSU convects up out of the open tray (no lid over its body).
+  - **Power budget:** about 35–50 W at rapid traverse and about 60 W during the clutch pull-in (54 W for 50 ms with
+    the motor at its 1 A hold current); 75 W covers normal use. Only a jam at rapid (motor at full torque, ~100 W) can
+    trip the supply before stall detection acts. That is safe: if the LRS trips (overload, or the overvoltage latch,
+    which needs a mains off/on to reset), the clutch springs release and the board shows `NO 36V`; nothing restarts
+    on its own until the switch is centred.
+  - **No floor vents** (the tray is above the floor). The motor breathes through louvred slots in the back and front
+    walls beside it; the PSU convects up out of the open tray (its own perforated case is the cover there). Two Ø4
+    drains in the floor behind the inlet let out any coolant that gets past the recess.
   - The cord moves with the table: give it a loop or a cable chain, a P-clip on the unit and strain relief at the
     stand. The rocker switch is the mains switch; the E-stop removes the drive enable and the clutch, not mains.
   - **Before first power-up (commissioning):** with the cord unplugged, measure from the cord's earth pin to the plate,
@@ -930,7 +986,8 @@ strip along the upper front with their bodies reaching back over the PCB.
 - **Fuse:** lift the hood.
 - **Heat:** the motor is inside and the PCB sits above it. Default run current 3 A (~16 W in the coils), 1 A at standstill.
   PETG's glass transition is ~80 °C; the walls are ≥ 5.8 mm from the motor. On the bench, run it closed for 30 min:
-  if the motor case passes ~60 °C, fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
+  if the motor case passes ~60 °C or the PSU case passes ~60 °C (the LRS gives full power only up to 50 °C ambient;
+  it runs at about half load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
   less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
 - **Order:**
   1. Plate: bearings, stub, clutch/motor module, encoder.
