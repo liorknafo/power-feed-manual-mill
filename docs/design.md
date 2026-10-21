@@ -13,14 +13,14 @@ Status: draft. The mechanical design is deferred until the mill model is known.
 | R5 | 3-position switch: center = stop and clutch released (handwheel free). Left/right = clutch engaged, feed in that direction. |
 | R6 | Rapid-traverse push-button. |
 | R7 | Overload protection ("resistance limit"): cap the motor torque, and stop the feed when the table jams or meets too much resistance. |
-| R8 | Powered from AC mains through a built-in 36 V supply (Mean Well LRS-100-36, 2.8 A) behind a fused, switched IEC C14 inlet in the housing's end wall. (The S-350-36 was the original plan; it doesn't fit inside.) |
-| R9 | Custom PCB carrying the controller, stepper driver and clutch driver. Mains AC never reaches the custom PCB. |
+| R8 | Powered from AC mains through a built-in 36 V supply (Mean Well LRS-75-36, 2.1 A) in an earthed aluminium mains tray inside the housing, behind a fused, switched IEC C14 inlet. (The S-350-36 was the original plan; it doesn't fit inside.) |
+| R9 | Custom PCB carrying the controller, stepper driver and clutch driver. Mains AC never reaches the custom PCB: all 230 V stays inside the earthed aluminium mains tray, and only the 36 V pair leaves it. |
 | R10 | E-stop and end-of-travel limit switches. |
 
 ## 2. Architecture
 
 ```
- AC mains ─► [IEC inlet + fuse + switch] ─► 36 V PSU (LRS-100-36, built in)
+ AC mains ─► [IEC inlet + fuse + switch] ─► 36 V PSU (LRS-75-36), both in the earthed mains tray
                                                │ 36 V DC
  ┌─────────────────────────────── custom PCB ──┴──────────────────────────────┐
  │  input fuse, reverse-polarity protection, TVS, bulk caps                   │
@@ -142,7 +142,7 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
 | Clutch | DIY electromagnetic tooth clutch, coil designed for the 36 V bus (see §7) | to build |
 | Motor | STEPPERONLINE NEMA 23, 3 N·m | owned |
-| PSU | Mean Well LRS-100-36, 36 V / 2.8 A (fits inside the housing) + snap-in IEC C14 inlet with fuse and switch | to buy |
+| PSU | Mean Well LRS-75-36, 36 V / 2.1 A + snap-in IEC C14 inlet with fuse (T 2 A ceramic) and switch + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
 | Fallback driver | DM556 | owned — used for breadboard firmware bring-up |
 | Panel | ON-OFF-ON toggle, rapid push-button, mushroom E-stop (NC), 2× limit switches | to buy |
 
@@ -275,6 +275,17 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 - **Flashing / debugging:** `probe-rs` with a Raspberry Pi Debug Probe (or a Pico running debugprobe). Plain UF2 drag-and-drop also works.
 
 ## 8a. Safety notes
+
+- **Mains (230 V) inside the unit:** the unit rides on the table, so mains is kept in one place and double-fenced.
+  - All 230 V parts (IEC inlet with fuse and switch, the LRS-75-36, L/N/PE wiring) sit in an **earthed folded-aluminium
+    tray** with a lid over the terminals. It is a metal fire enclosure; the printed PETG housing never touches mains, and
+    the floor below the tray has no vents.
+  - Only the 36 V pair leaves the tray (grommet in the lid). No low-voltage wire enters it; `check_feed_unit.py` checks
+    that nothing else intrudes into the tray and that the wiring zone (≥ 35 mm) is empty.
+  - The tray is bolted to the plate, which fixes it and bonds it to PE; the plate in turn earths the motor, clutch,
+    encoder and the mill table. Earth leads longer than L/N. Inlet fuse in L, T 2 A ceramic.
+  - Commissioning: earth-pin to plate / motor / clutch / encoder / PSU case ≤ 0.1 Ω before the first plug-in.
+  - The rocker switch on the inlet is the mains switch. The E-stop removes drive enable and clutch, not mains.
 - **E-stop scope:** the E-stop removes the driver enable (TMC5160 outputs float) and the clutch drive (the table becomes mechanically free). It does **not** disconnect the 36 V bus. A mains-side contactor would be a separate addition.
 - **Bus overvoltage:** the input TVS (SMBJ36A) clamps transients at ≤58 V, against 60 V MOSFETs and a 60 V TMC5160 abs-max limit.
   - It cannot absorb sustained regeneration.

@@ -110,6 +110,25 @@ for part_, target, pt, d, kind in FU.screw_joints():
         bad += 1
         print("  insert seat at (%.1f, %.1f, %.1f) only %.0f %% material <- FIX" % (pt[0], pt[1], pt[2], 100 * full))
 print("  insert seats checked: %d" % sum(1 for j in FU.screw_joints() if j[4] == "insert"))
+# mains separation: nothing but the PSU and the inlet may enter the earthed tray's inside, and the wiring zone
+# between the PSU terminals and the inlet body (>= 35 mm) must be empty
+t, hw = FU.f.tray_t, FU.TRAY_HALF
+inside = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, FU.TRAY_WALL_W0, FU.TRAY_W1 - t)   # the walled part
+mains_ok = ("mains_tray", "mains_tray_lid", "psu", "mains_inlet", "shell", "plate")
+for n in parts:
+    if n in mains_ok or n.startswith("control_"):
+        continue
+    v = (parts[n] & inside).volume
+    if v > 1e-3:
+        bad += 1
+        print("  MAINS ZONE INTRUSION: %s %.2f mm3" % (n, v))
+w_term = FU.f.psu_w0 + FU.f.psu_l
+w_inlet = FU.TRAY_W1 - t - FU.f.inlet_depth
+zone = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, w_term, w_inlet)
+occ = sum((zone & parts[n]).volume for n in parts if n not in ("mains_tray", "mains_tray_lid") and not n.startswith("control_"))
+print("  mains wiring zone %.1f mm long, occupied %.3f mm3" % (w_inlet - w_term, occ))
+if w_inlet - w_term < 35 or occ > 1e-3:
+    bad += 1
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent)
 bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
