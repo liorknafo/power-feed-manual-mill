@@ -34,6 +34,7 @@ ROLES = {
     "AGM60P": "P-MOSFET: high side of the clutch coil driver (PWM).",
     "SI2308": "N-MOSFET: low side of the clutch coil driver.",
     "2N7002": "Small N-MOSFET: level shifter for the clutch high-side gate.",
+    "USBLC6": "ESD protection for the USB-C data lines and VBUS.",
     "B5819W": "Schottky diode (power OR-ing / protection).",
     "SS210": "Schottky diode: clutch coil freewheel path.",
     "USB-C": "USB-C: flashing and power for the logic on the bench.",
