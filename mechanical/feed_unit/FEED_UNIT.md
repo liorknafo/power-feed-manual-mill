@@ -25,7 +25,7 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø24 × 9: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 4.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, 5 mm | Ø50 with a flat 20 from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r=23 (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
 | Encoder posts | 3× M3 hex standoffs F-F, 21 mm | |
-| Tension block | steel | 72 × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±30); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
+| Tension block | 6061 | 72 × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±30), **with a 39.8 × 28 tongue that fills the slot** from the plate's bottom edge up to 60 (just under the clutch boss): it seals the belt chamber off from the box (chips, coolant) and ties the plate's legs (checked); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø28 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
 ## Assembly
@@ -65,7 +65,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 |---|---|
 | Outer size | 116 (front-back) × 204 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
 | `shell` (one print) | back, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door). **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
-| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included (116 × 207 mm, up to 8.5 mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; press the pin into the shell's two end knuckles (Ø2.95), it turns in the rest. Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x 44) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips under the knuckles, no supports |
+| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included (116 × 207 mm, up to 8.5 mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; press the pin into the shell's two end knuckles (Ø2.95), it turns in the rest. Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x 44) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (keep it or trim it), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, 110 wide, bottom corners R9, both top corners chamfered 10.5 × 45° to sit under the housing's chamfered inside |
 | Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (12× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
@@ -133,26 +133,32 @@ strip along the upper front with their bodies reaching back over the PCB.
   if the motor case passes ~60 °C or the PSU case passes ~60 °C (the LRS gives full power only up to 50 °C ambient;
   it runs at about half load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
   less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
-- **Order** (the box goes on first; the module and the tray go in from below, the PCB from above):
-  1. Plate on the bench: stub bearings and stub, encoder. Shell onto the plate edges (back and front screws), heat-set
-     inserts, door on its hinge (pin through the knuckles along the back), hanging open. (Or all of this on the mill.)
+- **Order** (on the bench, before the plate goes onto the mill; the box goes on first, the module and the tray go in
+  from below, the PCB from above):
+  1. Plate: stub bearings and stub, encoder. Put the 4 module bolts (M5×35) into the plate's slots from the chamber side
+     now, tips just flush with the outer face (on the mill there is no room for them: the chamber is 35 deep). Shell onto
+     the plate edges (back and front screws), heat-set inserts, door on its hinge (pin through the knuckles along the
+     back), hanging open.
   2. **Clutch/motor module up through the bottom**: its bearing boss and output shaft slide up the plate's slot until the
-     cover's front face is on the plate (checked: nothing in the way on the whole lift). The 4 module bolts from the belt-
-     chamber side, then the 20T pulley, belt and guard in the chamber.
-  3. Tension block onto the plate below the module (2× M5), drawbolt into the cover; tension the belt, lock the 4 bolts.
-  4. Mains tray, wired on the bench (PSU in, earth stud, L/N/PE tied, 36 V pair out through the grommet, lid on; the
-     inlet left loose inside the wiring zone on its leads): **up through the bottom** (checked), tabs into the plate's
-     rebates, 2× M4 + star washers up into the plate. Reach in through the end wall's inlet opening, draw the inlet out
-     through the tray's cut-out and snap it in. Feed the 36 V pair up beside the motor.
+     cover's front face is on the plate (checked: nothing in the way on the whole lift). Run the 4 bolts into the cover,
+     then the 20T pulley, belt and guard in the chamber.
+  3. **Tension block up from below**: its tongue slides up into the slot and closes it; 2× M5 into the plate's legs,
+     drawbolt into the cover. Tension the belt, lock the 4 module bolts.
+  4. Mains tray, fully built on the bench (PSU in, **inlet clipped into its end face**, earth stud, L/N/PE tied, 36 V pair
+     out through the grommet, lid on): **up through the bottom** with the inlet in place (checked, flange included),
+     tabs into the plate's rebates, 2× M4 + star washers up into the plate. Feed the 36 V pair up beside the motor.
+     Recommended extra: a green/yellow lead from the tray's earth stud to an M4 tapped hole in the plate's outer face,
+     so the tray stays bonded even with its two screws loose.
   5. Hood off: PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.
   6. Limit-switch cable through the gland; USB-C extension, BOOT/RESET and SWD wires to the PCB.
   7. Fan (optional; it covers the H1 hole's tool path, so after the PCB); hood with its controls.
-  8. Close the door: 2 screws on the front side. Earth test (above) before the first plug-in.
-  - **Service from below:** 2 screws and the door swings down to the back: the PSU's screws, the tray's 2 screws (the tray drops out
-    once the inlet is pushed back in and J1 is unplugged) and, with the tray out, the module's underside, the tension
-    block and the wiring beside the motor.
-  - **Removal of the module:** door open, tray out, J2/J5 unplugged, tension block off, belt off, 4 module bolts out
-    (chamber side): it comes down out of the slot.
+  8. Close the door: 2 screws on the front side. Earth test (above) before the first plug-in. Then the plate onto the mill.
+  - **Service on the mill, from below:** 2 screws and the door swings down to the back: the PSU's screws, the belt
+    tension, and the mains tray (unplug J1, 2 screws: it drops out with its inlet). **Repeat the earth test every time
+    the tray has been out.**
+  - **The module can't come out on the mill:** its 20T pulley sits inside the belt guard, which is trapped between the
+    plate and the table. Take the plate off the table first, then: door open, tray out, tension block off, belt off, back
+    the 4 bolts out of the cover (they stay in the plate), and the module comes down out of the slot.
 - **Possible next size cut:** the floor is set by the belt-tension block under the clutch; behind it (from W ≈ 130)
   the floor could step up ~35 mm, under the motor. Not done yet.
 

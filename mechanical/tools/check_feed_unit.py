@@ -95,7 +95,7 @@ for n in ("shell", "hood", "door"):
 # nothing pokes through the outer skin (rails trimmed to it)
 skin = FU._rounded(FU.XB - FU.T, FU.X_FP, FU.Y0 - FU.T, FU.Y1 + FU.T, FU.W_SHELL0, FU.W_END, FU.f.r_long, FU.f.r_long, FU.f.r_end,
                   r_bottom=FU.R_BOTTOM)
-hinge_zone = FU.bx(FU.HINGE_X - 6, FU.XB - FU.T + 2.5, FU.HINGE_Y - 6, FU.HINGE_Y + 4.5, FU.W_SHELL0 - 1,
+hinge_zone = FU.bx(FU.HINGE_X - 6, FU.XB - FU.T + 2.5, FU.Y0 - FU.T - 0.01, FU.HINGE_Y + 4.5, FU.W_SHELL0 - 1,
                    FU.W_END + 1)                      # the door hinge's knuckles stand outside the back wall on purpose
 for sx in (-1, 1):                                    # and the door's 45-degree printing feet
     xa = sx * (FU.X_FP - FU.R_BOTTOM)
@@ -247,9 +247,18 @@ around = ["shell", "plate", "stub_shaft", "bearings_6002", "oldham_disc", "pulle
           "encoder_posts", "encoder_coupling", "standoffs", "mill_reference", "pcb_placeholder", "hood", "controls"]
 mod_top = max(parts[n].bounding_box().max.Y for n in module)
 bad += _lift(_solids(module), around, int(mod_top - (FU.Y0 - FU.T)) + 2, 4, "module")
-tray = ["mains_tray", "mains_tray_lid", "psu"]
+tray = ["mains_tray", "mains_tray_lid", "psu", "mains_inlet"]          # the inlet is clipped in on the bench
 tray_top = max(parts[n].bounding_box().max.Y for n in tray)
-bad += _lift(_solids(tray), around + module + ["tension_block"], int(tray_top - (FU.Y0 - FU.T)) + 2, 3, "mains tray")
+fw_, fh_ = FU.f.inlet_flange                                           # + the inlet's flange in front of the tray's end face
+flange = FU.bx(-fw_ / 2, fw_ / 2, FU.INLET_Y - fh_ / 2, FU.INLET_Y + fh_ / 2, FU.TRAY_W1, FU.TRAY_W1 + 3.0)
+bad += _lift(_solids(tray) + [flange], around + module + ["tension_block"], int(tray_top - (FU.Y0 - FU.T)) + 2, 3,
+             "mains tray + inlet")
+# the plate's open slot must be closed below the clutch boss (chips, coolant from the belt chamber): tension-block tongue
+slot = FU.bx(FU.MX - 20, FU.MX + 20, FU.PLATE_BOT, FU.KEY_TOP, FU.Z_PLATE_IN, FU.Z_PLATE_OUT)
+filled = 1 - (slot - parts["plate"] - parts["tension_block"]).volume / slot.volume
+print("  plate slot below the clutch boss: %.1f %% filled (tongue 0.1 clear each side)" % (100 * filled))
+if filled < 0.99:
+    bad += 1
 # the tray's tab screws (M4 ISO 7380, head Ø7.6 x 2.2) under the tabs vs the closed door
 from build123d import Cylinder as _Cyl, Align as _Al2
 tab_heads = [FU.ycyl(3.8, FU.TRAY_BOT - 2.2, FU.TRAY_BOT, xt, FU.TRAY_SCREW_W) for xt in FU.TRAY_TABS_X]
@@ -281,6 +290,27 @@ for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
     area = m.area_faces[down & above_bed]
     big = area.sum()
     print("  overhang >45deg %-5s %.0f mm2 (hole ceilings and bridges included)" % (n, big))
+# nothing may start printing in mid-air: slice each print in its print orientation every 0.2 mm (one fixed 2D frame)
+# and require every island to touch one in the layer below (a door without its knuckle webs fails this: 2 islands)
+from trimesh.geometry import plane_transform
+for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
+    m = trimesh.load(os.path.join(FU.OUT, n + ".stl"))
+    upv = np.array(up, float)
+    h = m.vertices @ upv
+    prev, floating = None, []
+    for z in np.arange(h.min() + 0.1, h.max(), 0.2):
+        sec = m.section(plane_origin=upv * z, plane_normal=upv)
+        if sec is None:
+            prev = None
+            continue
+        p2, _ = sec.to_2D(to_2D=plane_transform(upv * z, upv))
+        polys = [pg for pg in p2.polygons_full if pg.area > 0.3]
+        if prev is not None:
+            floating += [z - h.min() for pg in polys if not any(pg.buffer(0.05).intersects(q) for q in prev)]
+        prev = polys
+    print("  %-5s islands starting in mid-air: %d %s" % (n, len(floating), ["%.1f" % f for f in floating[:5]]))
+    if floating:
+        bad += 1
 # tool access with the hood off: straight-down screwdriver (Ø6 shaft) and soldering iron (Ø8) onto each PCB hole
 from build123d import Cylinder as Cy, Align as Al
 for px, py in FU.PCB_HOLES:

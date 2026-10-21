@@ -269,10 +269,18 @@ def tray_rebate(xt):
             ycyl(3, y0, y1, xt - 4, w_in + 3) + ycyl(3, y0, y1, xt + 4, w_in + 3))
 
 
+KEY_TOP = MY - (CP.bearing_od / 2 + 5) - f.tension_slot - 0.5   # just under the clutch boss at its lowest tension
+
+
 def tension_block():
-    """Steel block on the plate's outer face, below the module, bridging the plate's slot. An M4 drawbolt through it
-    into a radial tapped hole in the cover's front wall pulls the module away from the leadscrew: belt tension."""
+    """6061 block on the plate's outer face, below the module, bridging the plate's slot, with a tongue that fills the
+    slot from the plate's bottom edge up to just under the clutch boss: it closes the slot between the belt chamber
+    and the box (chips, coolant) and ties the plate's two legs. An M4 drawbolt through it into a radial tapped hole in
+    the cover's front wall pulls the module away from the leadscrew: belt tension. Goes on from below after the
+    module."""
     b = Pos(MX, TB_Y, Z_PLATE_OUT) * Box(2 * TB_HALF, 14, 12, align=MIN)
+    slot_half = CP.bearing_od / 2 + 6 - 0.1
+    b = b + bx(MX - slot_half, MX + slot_half, PLATE_BOT, KEY_TOP, Z_PLATE_IN, Z_PLATE_OUT)
     for x in TB_SCREWS_X:
         b = b - Pos(MX + x, TB_Y, Z_PLATE_OUT) * Cylinder(2.75, 12, align=MIN)
     b = b - Pos(MX, TB_Y, Z_PLATE_OUT + 4) * Rot(90, 0, 0) * Cylinder(2.25, 20)          # M4 drawbolt clearance
@@ -781,6 +789,9 @@ def door():
         d = d - wcyl(KNUCKLE_R + 0.3, w0 - 0.5, w1 + 0.5, HINGE_X, HINGE_Y)
     for w0, w1 in DOOR_KNUCKLES:
         d = d + door_knuckle(w0, w1)
+        # 1.2 mm web from the knuckle's drip down to the bed: the knuckle stands outside the rounded edge, so without it
+        # the knuckle would start printing in mid-air (leave it, or trim it off after printing)
+        d = d + bx(HINGE_X - 0.6, HINGE_X + 0.6, Y0 - T, HINGE_Y - KNUCKLE_R * math.sqrt(2) + 0.3, w0, w1)
     d = d - wcyl(1.6, SHELL_KNUCKLES[0][0] - 1, SHELL_KNUCKLES[-1][1] + 1, HINGE_X, HINGE_Y)
     d = d - ycyl(6.0, Y0 - T - 1, Y0 + 1, MX, Z_PLATE_OUT + 4)          # belt drawbolt, reachable with the door shut
     for xp, wp in psu_screws():                                       # the PSU's M3 button heads stand 0.9 into it
@@ -981,7 +992,7 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø{f.oldham_d:.0f} × {f.oldham_t:.0f}: tongue {f.screw_d - 2:.0f} × {f.screw_end_slot_w - 0.2:.1f} on one face (into the leadscrew slot), cross slot {f.stub_tongue_w + 0.2:.1f} wide × {f.stub_tongue_h + 0.5:.1f} deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, {f.enc_disc_t:.0f} mm | Ø{f.enc_disc_d:.0f} with a flat {f.enc_disc_flat:.0f} from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r={f.enc_post_r:.0f} (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
 | Encoder posts | 3× M3 hex standoffs F-F, {f.enc_post_len:.0f} mm | |
-| Tension block | steel | {2 * TB_HALF:.0f} × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±{TB_SCREWS_X[1]:.0f}); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
+| Tension block | 6061 | {2 * TB_HALF:.0f} × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±{TB_SCREWS_X[1]:.0f}), **with a {2 * (CP.bearing_od / 2 + 6 - 0.1):.1f} × {Z_PLATE_OUT - Z_PLATE_IN:.0f} tongue that fills the slot** from the plate's bottom edge up to {KEY_TOP - PLATE_BOT:.0f} (just under the clutch boss): it seals the belt chamber off from the box (chips, coolant) and ties the plate's legs (checked); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø{f.oldham_d + 4:.0f} pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
 ## Assembly
@@ -1021,7 +1032,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 |---|---|
 | Outer size | {X_FP - (XB - T):.0f} (front-back) × {Y1 - Y0 + 2 * T:.0f} (high) × {W_END - W_SHELL0:.0f} mm (along the table); long edges R{f.r_long:.0f}, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the {f.chamber:.0f} mm belt chamber and the controls proud of the front |
 | `shell` (one print) | back, end and lower-front walls ({T:.0f} mm), the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door). **Print standing on the end wall**, {W_END - W_SHELL0:.0f} mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
-| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; press the pin into the shell's two end knuckles (Ø2.95), it turns in the rest. Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips under the knuckles, no supports |
+| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; press the pin into the shell's two end knuckles (Ø2.95), it turns in the rest. Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (keep it or trim it), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, {2 * f.x_half:.0f} wide, bottom corners R{f.r_long - f.panel_t:.0f}, both top corners chamfered {CHAMFER_IN + 0.3:.1f} × 45° to sit under the housing's chamfered inside |
 | Fixing | both prints overlap the plate edges by {f.lap:.0f} mm with {f.fit_gap} mm clearance per side, and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
@@ -1089,26 +1100,32 @@ strip along the upper front with their bodies reaching back over the PCB.
   if the motor case passes ~60 °C or the PSU case passes ~60 °C (the LRS gives full power only up to 50 °C ambient;
   it runs at about half load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
   less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
-- **Order** (the box goes on first; the module and the tray go in from below, the PCB from above):
-  1. Plate on the bench: stub bearings and stub, encoder. Shell onto the plate edges (back and front screws), heat-set
-     inserts, door on its hinge (pin through the knuckles along the back), hanging open. (Or all of this on the mill.)
+- **Order** (on the bench, before the plate goes onto the mill; the box goes on first, the module and the tray go in
+  from below, the PCB from above):
+  1. Plate: stub bearings and stub, encoder. Put the 4 module bolts (M5×35) into the plate's slots from the chamber side
+     now, tips just flush with the outer face (on the mill there is no room for them: the chamber is 35 deep). Shell onto
+     the plate edges (back and front screws), heat-set inserts, door on its hinge (pin through the knuckles along the
+     back), hanging open.
   2. **Clutch/motor module up through the bottom**: its bearing boss and output shaft slide up the plate's slot until the
-     cover's front face is on the plate (checked: nothing in the way on the whole lift). The 4 module bolts from the belt-
-     chamber side, then the 20T pulley, belt and guard in the chamber.
-  3. Tension block onto the plate below the module (2× M5), drawbolt into the cover; tension the belt, lock the 4 bolts.
-  4. Mains tray, wired on the bench (PSU in, earth stud, L/N/PE tied, 36 V pair out through the grommet, lid on; the
-     inlet left loose inside the wiring zone on its leads): **up through the bottom** (checked), tabs into the plate's
-     rebates, 2× M4 + star washers up into the plate. Reach in through the end wall's inlet opening, draw the inlet out
-     through the tray's cut-out and snap it in. Feed the 36 V pair up beside the motor.
+     cover's front face is on the plate (checked: nothing in the way on the whole lift). Run the 4 bolts into the cover,
+     then the 20T pulley, belt and guard in the chamber.
+  3. **Tension block up from below**: its tongue slides up into the slot and closes it; 2× M5 into the plate's legs,
+     drawbolt into the cover. Tension the belt, lock the 4 module bolts.
+  4. Mains tray, fully built on the bench (PSU in, **inlet clipped into its end face**, earth stud, L/N/PE tied, 36 V pair
+     out through the grommet, lid on): **up through the bottom** with the inlet in place (checked, flange included),
+     tabs into the plate's rebates, 2× M4 + star washers up into the plate. Feed the 36 V pair up beside the motor.
+     Recommended extra: a green/yellow lead from the tray's earth stud to an M4 tapped hole in the plate's outer face,
+     so the tray stays bonded even with its two screws loose.
   5. Hood off: PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.
   6. Limit-switch cable through the gland; USB-C extension, BOOT/RESET and SWD wires to the PCB.
   7. Fan (optional; it covers the H1 hole's tool path, so after the PCB); hood with its controls.
-  8. Close the door: 2 screws on the front side. Earth test (above) before the first plug-in.
-  - **Service from below:** 2 screws and the door swings down to the back: the PSU's screws, the tray's 2 screws (the tray drops out
-    once the inlet is pushed back in and J1 is unplugged) and, with the tray out, the module's underside, the tension
-    block and the wiring beside the motor.
-  - **Removal of the module:** door open, tray out, J2/J5 unplugged, tension block off, belt off, 4 module bolts out
-    (chamber side): it comes down out of the slot.
+  8. Close the door: 2 screws on the front side. Earth test (above) before the first plug-in. Then the plate onto the mill.
+  - **Service on the mill, from below:** 2 screws and the door swings down to the back: the PSU's screws, the belt
+    tension, and the mains tray (unplug J1, 2 screws: it drops out with its inlet). **Repeat the earth test every time
+    the tray has been out.**
+  - **The module can't come out on the mill:** its 20T pulley sits inside the belt guard, which is trapped between the
+    plate and the table. Take the plate off the table first, then: door open, tray out, tension block off, belt off, back
+    the 4 bolts out of the cover (they stay in the plate), and the module comes down out of the slot.
 - **Possible next size cut:** the floor is set by the belt-tension block under the clutch; behind it (from W ≈ 130)
   the floor could step up ~35 mm, under the motor. Not done yet.
 
