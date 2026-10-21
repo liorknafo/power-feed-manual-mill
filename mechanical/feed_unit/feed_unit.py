@@ -357,7 +357,7 @@ W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim, on the plate edg
 RAIL = f.rail
 INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5.7 heat-set insert hole
 R_IN = f.r_long - T                                 # inside radius of the long edges
-FAN = dict(w0=115.0, w1=155.0, y0=-7.0, y1=33.0, x_in=XB + 4.5)   # 40 mm fan / louvre field on the back wall
+FAN = dict(w0=115.0, w1=155.0, y0=-12.0, y1=28.0, x_in=XB + 4.5)   # 40 mm fan / louvre field on the back wall
 
 
 def bx(x0, x1, y0, y1, w0, w1):
@@ -471,12 +471,21 @@ def hood_region():
         bx(XB - T - 1, XB + CHAMFER_IN, Y1 - CHAMFER_IN, Y1 + G, W_SHELL0 - 1, W_END - T)
 
 
-def windows(body, x0, x1, y0, y1):
-    """Cut tool-access windows (12 mm long) out of a rail over the PCB's mounting holes."""
-    for _, py in PCB_HOLES[:2] + PCB_HOLES[2:3]:
+def windows(body, x_wall, x_far, y0, y1):
+    """Cut 12 mm tool-access windows over the PCB's mounting holes out of a rail (and its web). The window's low-W
+    side, which is the underside of the rail segment above it while the shell prints standing on its end wall, rises
+    at 45 degrees from the wall, so that segment prints without support."""
+    d = abs(x_far - x_wall)
+    for py in (4, 96):
         w = pcb_to_world(0, py, 0)[2]
-        body = body - bx(x0, x1, y0, y1, w - 6, w + 6)
+        body = body - xw_prism([(x_wall, w - 6), (x_wall, w + 6), (x_far, w + 6), (x_far, w - 6 - d)], y0, y1)
     return body
+
+
+def xy_prism(pts_xy, w0, w1):
+    """Prism from a polygon in the (x, y) plane, extruded along W from w0 to w1."""
+    face = make_face(Polyline(*[(x, y, w0) for x, y in pts_xy], close=True))
+    return extrude(face, amount=w1 - w0, dir=(0, 0, 1))
 
 
 def xw_prism(pts_xw, y0, y1):
@@ -501,14 +510,26 @@ def pcb_bosses():
 def shell():
     """Back, bottom, end and lower-front walls, rails, PCB bosses, louvres: one print standing on the end wall."""
     s = outer_body() - hood_region()
-    xr = XB + CHAMFER_IN                                 # back-top rail sits on the flat part of the top
-    rails = [windows(bx(xr, xr + RAIL, Y1 - RAIL, Y1, Z_PLATE_OUT, W_END - T), xr - 1, xr + RAIL + 1, Y1 - RAIL - 1, Y1 + 1),
-             windows(bx(XF - RAIL, XF, f.band_y, f.band_y + RAIL, Z_PLATE_OUT, W_END - T),
-                     XF - RAIL - 1, XF + 1, f.band_y - 1, f.band_y + RAIL + 1),               # front, behind the strip edge
-             bx(XF - RAIL, XF, f.band_y, Y1 - CHAMFER_IN, W_END - T - RAIL, W_END - T),       # end-front (strip screws)
-             bx(xr, XF - RAIL, Y1 - RAIL, Y1, W_END - T - RAIL, W_END - T)]                   # end-top (hood screws)
+    skin = _rounded(XB - T, X_FP, Y0 - T, Y1 + T, W_SHELL0, W_END, f.r_long, f.r_long, f.r_end)   # trims rails to the skin
+    rail_w = (Z_PLATE_OUT, W_END - T)
+    # back-top rail (hood screws) on the flat part of the top, tied to the back wall by a 4 mm shelf under it (its
+    # section lies in the bed plane while the shell prints, so any shape prints)
+    xr = XB + CHAMFER_IN
+    yr = Y1 - RAIL
+    back = bx(xr, xr + RAIL, yr, Y1, *rail_w)
+    back = back + xy_prism([(XB - G - 0.5, yr - 4), (XB - G - 0.5, Y1 - CHAMFER_IN), (xr, Y1 - CHAMFER_IN), (xr, yr),
+                            (xr + RAIL, yr), (xr + RAIL, yr - 4)], *rail_w)
+    back = windows(back, XB - G - 0.5, xr + RAIL + 0.5, yr - 5, Y1 + 1)
+    # front rail (strip screws) behind the strip's lower edge, carried by a 45-degree web off the front wall below it
+    xf0 = XF - RAIL
+    front = bx(xf0, XF, f.band_y, f.band_y + RAIL, *rail_w)
+    front = front + xy_prism([(XF + G + 0.5, f.band_y - (XF + G + 0.5 - xf0)), (XF + G + 0.5, f.band_y), (xf0, f.band_y)], *rail_w)
+    front = windows(front, XF + G + 0.5, xf0 - 0.5, f.band_y - (XF + G + 0.5 - xf0) - 1, f.band_y + RAIL + 1)
+    rails = [back, front,
+             bx(XF - RAIL, XF + G + 0.5, f.band_y - RAIL, Y1 - CHAMFER_IN, W_END - T - RAIL, W_END - T + 0.5),   # end-front
+             bx(xr, XF - RAIL, Y1 - RAIL, Y1, W_END - T - RAIL, W_END - T + 0.5)]                             # end-top
     for r in rails + pcb_bosses():
-        s = s + r
+        s = s + (r & skin)
     s = s - hood_region()
     for px, py in PCB_HOLES:                                                              # PCB inserts
         x, y, w = pcb_to_world(px, py, 0)
@@ -533,7 +554,7 @@ def shell():
             s = s - xcyl(1.25, fz["x_in"] - 8, fz["x_in"] + 0.1, (fz["y0"] + fz["y1"]) / 2 + dy, (fz["w0"] + fz["w1"]) / 2 + dw)
     # end wall: 2x M16 cable glands LOW, beside the motor (36 V on the J1 side, limit switches on the J7 side): the
     # wires drop from the plugs past the board's edge, behind the motor tail; and the USB-C access slot
-    for xg in (-41.0, 41.0):
+    for xg in (-36.0, 36.0):                     # locknut (23 across corners) clears the inside chamfer
         s = s - wcyl(8.1, W_END - T - 1, W_END + 1, xg, -62.0)
     ux, uy, _ = pcb_to_world(87.6, 100, 1.6 + 1.6)                                # USB-C J4 centre
     s = s - bx(ux - 7.0, ux + 7.0, uy - 4.0, uy + 4.0, W_END - T - 1, W_END + 1)
@@ -554,10 +575,10 @@ def control_cutouts(fp):
     w, y = CTRL["dial"]; fp = fp - xcyl(3.7, X_FRONT - 1, X_FP + 1, y, w) - xcyl(1.6, X_FRONT - 1, X_FRONT + 1.0, y + 7.8, w)
     w, y = CTRL["oled"]; fp = fp - bx(X_FRONT - 1, X_FP + 1, y - 8, y + 8, w - 15, w + 15)
     for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):   # OLED M2 posts
-        fp = fp + xcyl(2.5, X_FRONT - 2.5, X_FRONT, y - 2 + dy, w + dw) - xcyl(0.8, X_FRONT - 2.6, X_FRONT + 1.0, y - 2 + dy, w + dw)
+        fp = fp + xcyl(2.5, X_FRONT - 2.5, XF + G + 0.5, y - 2 + dy, w + dw) - xcyl(0.8, X_FRONT - 2.6, X_FRONT + 1.0, y - 2 + dy, w + dw)
     w, y = CTRL["adapter"]
     for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):              # adapter board posts, M3 inserts
-        fp = fp + xcyl(4.0, X_FRONT - 5, X_FRONT, y + dy, w + dw) - xcyl(INSERT_D / 2, X_FRONT - 5.1, X_FRONT - 5 + INSERT_L, y + dy, w + dw)
+        fp = fp + xcyl(4.0, X_FRONT - 5, XF + G + 0.5, y + dy, w + dw) - xcyl(INSERT_D / 2, X_FRONT - 5.1, X_FRONT - 5 + INSERT_L, y + dy, w + dw)
     for txt, w, y in LABELS:                                                       # engraved 0.6 deep (3 layers)
         pl = Plane(origin=(X_FP, y, w), x_dir=(0, 0, -1), z_dir=(1, 0, 0))
         try:

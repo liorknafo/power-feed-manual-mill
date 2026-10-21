@@ -84,6 +84,19 @@ for t in (-FU.f.tension_slot, FU.f.tension_slot):
     print("  pcb <-> motor at t=%+.0f: %.2f mm" % (t, d))
     if d < 3.0:
         bad += 1
+# every print must be ONE connected solid (no floating rails/posts)
+for n in ("shell", "hood"):
+    k = len(parts[n].solids())
+    print("  %-5s is %d solid(s) %s" % (n, k, "OK" if k == 1 else "<- FLOATING PIECES"))
+    if k != 1:
+        bad += 1
+# nothing pokes through the outer skin (rails trimmed to it)
+skin = FU._rounded(FU.XB - FU.T, FU.X_FP, FU.Y0 - FU.T, FU.Y1 + FU.T, FU.W_SHELL0, FU.W_END, FU.f.r_long, FU.f.r_long, FU.f.r_end)
+for n in ("shell", "hood"):
+    v = (parts[n] - skin).volume
+    print("  %-5s outside the skin: %.3f mm3" % (n, v))
+    if v > 1e-2:
+        bad += 1
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent)
 bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
