@@ -213,7 +213,7 @@ The clutch goes **on the motor side, before the belt reduction**, so it only has
 | Target cam-out torque | ≈ 4.5 N·m | 1.5× the motor's 3 N·m holding torque. It only trips on inertial shocks or faults |
 | Tangential tooth force at cam-out | 4.5 / 0.035 ≈ 130 N | |
 | Axial push-apart force | F_t·(tan α − μ)/(1 + μ·tan α) ≈ 55 N | μ ≈ 0.1–0.15 steel on steel, so ±10% spread |
-| Spring force | ≈ 24 N released (preload) → ≈ 32 N engaged | 3 compression springs on the drive pins, ≈ 2.5 N/mm each, 8.0 mm long released, 6.9 engaged. Preloaded, so the armature sits hard on its stop when off and ≥ 24 N always works against remanence |
+| Spring force | ≈ 24 N released (preload) → ≈ 32 N engaged | 3 compression springs on the drive pins, ≈ 2.5 N/mm each, 8.7 mm long released, 7.6 engaged. Preloaded, so the armature sits hard on its stop when off and ≥ 24 N always works against remanence |
 | Hold force needed | ≈ 90 N | 55 + 32. Plus the pins' friction in the bushes: at cam-out they carry ≈ 210 N together, so μ 0.1–0.15 adds ±20–30 N against the armature moving. That widens the cam-out spread; the bench calibration measures it |
 | Pole-face area | 2 × 5 cm² (inner ring Ø16–30 mm, outer ring Ø54–60 mm) | |
 | Hold MMF (0.15 mm engaged gap, ×2) | ≈ 170 A·turns → ≈ 0.2 A | **the hold current sets the cam-out torque**, so it is tunable in firmware |

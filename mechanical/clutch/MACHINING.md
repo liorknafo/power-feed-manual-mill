@@ -34,7 +34,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | OD × thickness | **Ø76.0 h7 × 6.0** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth and the pin holes; faces parallel within 0.02 |
 | Bore | Ø11.5 | clearance over the rotor's M3 head |
 | Tooth ring | as the rotor, rotated half a pitch (6.0°) | flanks meet 0.25 behind the pole face, root floor 0.75 behind it (from r 31.0 out), tips truncated 0.1 |
-| Drive-pin holes | 3× **Ø6.10–6.15 through** (glue gap for Loctite 638) at r=21.0, 90°/210°/330°, position ±0.02 from the bore | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r 21 faces the rotor's slot ring, between the poles) |
+| Drive-pin holes | 3× **Ø6.15–6.20 through** (glue gap for Loctite 638) at r=21.0, 90°/210°/330°, position ±0.02 from the bore, 0.3 × 45° chamfer at the front-face mouth (glue trap) | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r 21 faces the rotor's slot ring, between the poles) |
 
 ## Output hub (6061) — `output_hub.step`
 | Feature | Dimension | Note |
@@ -62,13 +62,17 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Bushes: 3× sintered (oil-impregnated) bronze plain bush 6 × 10 × 8, ISO 2795 form C.
 - Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 12.8 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.6 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
 - Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):
-  0. **Armature on the hub; the bushes line the pins up.** Press the 3 bushes into the hub, flush with its stop face.
+  0. **Armature on the hub; the bushes line the pins up.** Press the 3 bushes into the hub from the spring side, with
+     the stop face on a flat plate, so they finish flush with it.
      Hub on the shaft with the shaft end **3.70 inside the stop face** (depth micrometer), then the set screws.
      Armature pole face down on PE film on a surface plate, the hub on it (stop face on the armature's front face, bushes
-     over the pin holes), a **centring sleeve** over both (any tube bored Ø76 H7, ~25 long). A thin film of Loctite 638 on
-     the armature holes' walls only (not the pins), push each pin down through its bush until it stops on the film-covered
-     plate, then lift it 0.5 (a 0.5 shim under a stop collar). Excess glue leaves through the bottom of the through hole,
-     away from the bushes. Clamp, let it cure, sleeve off, scrape the back face flush: nothing may stand proud of it (the
+     over the pin holes), a **centring sleeve** over both (any tube bored Ø76 H7, ~25 long). Glue must never reach a
+     bush (the pin-to-bush gap is 0.01–0.03; 638 would lock it), so: wax the bush ends (clean it off after curing); put a Ø6 shaft collar on each
+     pin's free end, set 14.2 from its chamfered end (it then stops with the collar on the hub's spring-side face and
+     the tip 0.5 inside the armature's back face); a thin film of Loctite 638 on the hole walls only, keeping the top
+     1.5 mm of each hole dry; push each pin straight **down** through its bush until the collar lands, and never lift it.
+     Excess glue leaves through the bottom of the through hole, away from the bushes. Clamp, let it cure, collars and
+     sleeve off, scrape the back face flush: nothing may stand proud of it (the
      engaged pole gap is 0.15). Each pin is set by its own bush, so three pins in three bushes can't bind. Then on each
      pin, from the hub's far side: spring (into the counterbore on the bush), washer, E-clip (compress the spring with a
      slotted tube). Check:
