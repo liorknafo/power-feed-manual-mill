@@ -53,3 +53,14 @@ from build123d import Box, Cylinder as Cyl, Align as Al
 pilot_flange = Pos(0, 0, -10) * Box(57, 57, 10, align=(Al.CENTER, Al.CENTER, Al.MIN)) + Cyl(p.pilot_d / 2, p.pilot_h, align=(Al.CENTER, Al.CENTER, Al.MIN))
 print("rotor<->motor pilot/flange dist %.2f (the shaft itself sits in the bore)" % C.rotor().distance_to(pilot_flange))
 print("hub start z", p.hub_start, "pilot h", p.pilot_h)
+# hex-key access to the hub's set screws: a Ø4 path radially out from the boss at each screw, past pins/springs/clips
+from build123d import Cylinder as _C, Rot as _R
+zs = C.Z_HUB + p.hub_flange_t + p.hub_boss_len / 2
+springs, washers, clips = C.return_springs(True)
+around = Compound(children=C.drive_pins(True) + springs + washers + clips)
+for a in C.SET_SCREW_DEG:
+    key = Pos(0, 0, zs) * _R(0, 0, a) * Pos(p.hub_boss_od / 2, 0, 0) * _R(0, 90, 0) * _C(2.0, 30)
+    hit = key & around
+    v = hit.volume if hit is not None else 0.0
+    print("set screw at %.0f deg: hex-key path %s" % (a, "clear" if v < 1e-3 else "BLOCKED %.1f mm3" % v))
+

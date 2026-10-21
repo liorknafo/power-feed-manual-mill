@@ -176,7 +176,7 @@ The user builds the clutch in their own shop (CNC, manual lathe, manual mill), s
                  ↕ 1.1 mm stroke: teeth fully out when the coil is off
                ┌────────────┐
                │  ARMATURE  │   ← low-carbon steel, flat pole faces + mating tooth ring \/\/\/\/
-               └──╥──────╥──┘     3 drive pins pressed into it
+               └──╥──────╥──┘     3 drive pins bonded into it
                ═══╬══════╬═══  output hub: the pins slide in bronze bushes in it ─► pulley ─► reduction ─► leadscrew
                  ⌇⌇      ⌇⌇    return springs on the pins, behind the hub: pull the armature back onto the hub
 ```
@@ -203,7 +203,7 @@ The clutch goes **on the motor side, before the belt reduction**, so it only has
 | Number of teeth | 30, pitch ≈ 7.3 mm | engagement jog ≤ 1 pitch = 12° at the motor ≈ 7 full steps |
 | Tooth depth | 0.9 mm flank-to-flank, tips truncated 0.1 mm on both rings, so 0.8 mm working height | 0.1 mm tip/root clearance: the flanks carry the load and the tips never bottom out |
 | Pole gap | 0.15 mm engaged | the armature's tooth roots sit 0.25 mm behind its pole face |
-| Stroke | 1.1 mm (0.8 working height + 0.3 tip clearance when released) | released pole gap 1.25 mm |
+| Stroke | 1.1 mm (0.7 flank overlap engaged + 0.4 tip clearance released) | released pole gap 1.25 mm |
 | Material | same low-carbon steel as the armature/rotor; case-harden the tooth rings if wear shows up | |
 
 ### 7.4 First-pass sizing (estimate — verify on the bench)
@@ -214,7 +214,7 @@ The clutch goes **on the motor side, before the belt reduction**, so it only has
 | Tangential tooth force at cam-out | 4.5 / 0.035 ≈ 130 N | |
 | Axial push-apart force | F_t·(tan α − μ)/(1 + μ·tan α) ≈ 55 N | μ ≈ 0.1–0.15 steel on steel, so ±10% spread |
 | Spring force | ≈ 24 N released (preload) → ≈ 32 N engaged | 3 compression springs on the drive pins, ≈ 2.5 N/mm each, 8.0 mm long released, 6.9 engaged. Preloaded, so the armature sits hard on its stop when off and ≥ 24 N always works against remanence |
-| Hold force needed | ≈ 90 N | 55 + 32 |
+| Hold force needed | ≈ 90 N | 55 + 32. Plus the pins' friction in the bushes: at cam-out they carry ≈ 210 N together, so μ 0.1–0.15 adds ±20–30 N against the armature moving. That widens the cam-out spread; the bench calibration measures it |
 | Pole-face area | 2 × 5 cm² (inner ring Ø16–30 mm, outer ring Ø54–60 mm) | |
 | Hold MMF (0.15 mm engaged gap, ×2) | ≈ 170 A·turns → ≈ 0.2 A | **the hold current sets the cam-out torque**, so it is tunable in firmware |
 | Pull-in at the 1.25 mm released gap (×2) | 1.5 A × 850 = 1.3 kA·turns → ≈ 70 N (with ×1.5 for leakage) | against the 24 N preload: ≈ 3× margin; the force rises steeply as the gap closes, faster than the springs' 32 N |
@@ -257,7 +257,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 - **Magnetic parts:** rotor, field housing and armature in low-carbon steel (1018/1020 or 12L14). Anneal them if possible. Avoid 300-series stainless, which is non-magnetic.
 - **Pole separation:** a non-magnetic ring between the inner and outer pole on the rotor (brass, bronze or aluminium, or machined slots). It forces the flux through the armature.
 - **Mating tooth rings:** cut them as a pair with the same setup (same cutter and indexing) so all 30 teeth bear evenly. A CNC with a V/chamfer cutter or the mill with an indexer both work.
-- **What holds the armature:** three Ø6 drive pins pressed into it (Loctite 638) slide in sintered-bronze bushes in the hub flange, with 0.01–0.03 clearance. They do everything a solid connection would:
+- **What holds the armature:** three Ø6 drive pins bonded into it (Loctite 638, set in place through the bushes so they line up) slide in sintered-bronze bushes in the hub flange, with 0.01–0.03 clearance. They do everything a solid connection would:
   - **rotation:** the armature can't turn without the hub, it drives the hub through the pins;
   - **centring and squareness:** three pins at 120° in 8 mm long bushes; when engaged the 30° teeth centre it the last hundredths;
   - **axially:** three compression springs on the pins, behind the hub (each held by a washer and an E-clip), pull the armature back onto the hub's face when the coil is off: a hard, preloaded stop (≈ 24 N), not a balance of forces. The magnet pulls it 1.1 mm off that stop onto the rotor.
