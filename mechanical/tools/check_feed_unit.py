@@ -52,7 +52,7 @@ for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
         print("  heads t=%+.0f vs %-12s overlap %.3f mm3, min dist %.2f" % (t, name, v, d))
 print("bad pairs incl. bolt heads", bad)
 # housing clearances: the clutch module moves +-tension_slot along the belt centre line, the housing does not
-housing_names = [n for n in parts if n in ("shell", "hood")]
+housing_names = [n for n in parts if n in ("shell", "hood", "psu", "mains_inlet")]
 ux, uy = FU.math.cos(FU.ANG), FU.math.sin(FU.ANG)
 moving = ("motor", "clutch_cover", "clutch_field_housing", "pulley_20T")
 worst = {}

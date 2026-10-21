@@ -13,14 +13,14 @@ Status: draft. The mechanical design is deferred until the mill model is known.
 | R5 | 3-position switch: center = stop and clutch released (handwheel free). Left/right = clutch engaged, feed in that direction. |
 | R6 | Rapid-traverse push-button. |
 | R7 | Overload protection ("resistance limit"): cap the motor torque, and stop the feed when the table jams or meets too much resistance. |
-| R8 | Powered from AC mains through the existing 36 V / 9.7 A PSU (StepperOnline S-350-36). |
+| R8 | Powered from AC mains through a built-in 36 V supply (Mean Well LRS-100-36, 2.8 A) behind a fused, switched IEC C14 inlet in the housing's end wall. (The S-350-36 was the original plan; it doesn't fit inside.) |
 | R9 | Custom PCB carrying the controller, stepper driver and clutch driver. Mains AC never reaches the custom PCB. |
 | R10 | E-stop and end-of-travel limit switches. |
 
 ## 2. Architecture
 
 ```
- AC mains ─► [IEC inlet + fuse + switch] ─► 36 V PSU (S-350-36)
+ AC mains ─► [IEC inlet + fuse + switch] ─► 36 V PSU (LRS-100-36, built in)
                                                │ 36 V DC
  ┌─────────────────────────────── custom PCB ──┴──────────────────────────────┐
  │  input fuse, reverse-polarity protection, TVS, bulk caps                   │
@@ -142,9 +142,9 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
 | Clutch | DIY electromagnetic tooth clutch, coil designed for the 36 V bus (see §7) | to build |
 | Motor | STEPPERONLINE NEMA 23, 3 N·m | owned |
-| PSU | StepperOnline S-350-36, 36 V / 9.7 A | owned |
+| PSU | Mean Well LRS-100-36, 36 V / 2.8 A (fits inside the housing) + snap-in IEC C14 inlet with fuse and switch | to buy |
 | Fallback driver | DM556 | owned — used for breadboard firmware bring-up |
-| Panel | ON-OFF-ON toggle, rapid push-button, mushroom E-stop (NC), 2× limit switches, fused IEC inlet | to buy |
+| Panel | ON-OFF-ON toggle, rapid push-button, mushroom E-stop (NC), 2× limit switches | to buy |
 
 ## 6. Plan
 

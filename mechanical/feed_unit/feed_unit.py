@@ -65,6 +65,16 @@ class F:
     circlip_groove: float = 1.3      # DIN 472-32 in the plate, DIN 471-15 on the stub
     circlip_land: float = 2.6        # material outside each plate groove (DIN 472-32 minimum edge margin)
     tension_slot: float = 3.0        # +- adjustment of the module along the centre line
+    # --- built-in 36 V supply (Mean Well LRS-100-36: 36 V 2.8 A, 129 x 97 x 30, terminals on one 97 mm end) and a
+    # fused, switched IEC C14 inlet; lies flat under the clutch/motor module, terminals toward the end wall
+    psu_l: float = 129.0
+    psu_w: float = 97.0
+    psu_h: float = 30.0
+    psu_w0: float = 80.0             # W of the PSU's plate-side end: just past the belt-tension block (W 63..75)
+    psu_top_gap: float = 3.0         # under the clutch cover with the module at the bottom of its tension slot
+    psu_feet: float = 3.0            # printed ribs under it: air gap to the floor vents
+    inlet_cut: tuple = (47.5, 27.8)  # snap-in IEC C14 + fuse + rocker switch module, panel cut-out (check yours)
+    inlet_depth: float = 35.0        # its body behind the panel
     # --- Oldham coupling (steel/bronze disc): tongue into the leadscrew slot, cross slot for the stub tongue
     oldham_d: float = 24.0           # outside the bracket, so not tied to the leadscrew diameter
     oldham_t: float = 9.0
@@ -176,7 +186,10 @@ def place_module(shape):
 
 # ------------------------------------------------------------------ parts
 GUARD_R1 = GUARD_R1_
-PLATE_BOT = MY - (CP.housing_od / 2 + CP.cover_wall) - f.tension_slot - 22   # room for the tension block
+PSU_TOP = MY - (CP.housing_od / 2 + CP.cover_wall) - f.tension_slot - f.psu_top_gap    # under the clutch cover
+PSU_BOT = PSU_TOP - f.psu_h
+PLATE_BOT = min(MY - (CP.housing_od / 2 + CP.cover_wall) - f.tension_slot - 22,           # room for the tension block
+                PSU_BOT - f.psu_feet)                                                  # and the built-in PSU
 
 
 def bearing_zs():
@@ -226,6 +239,7 @@ def plate():
     for k in range(3):  # encoder posts, M3 tapped 8 deep from the outer face
         a = math.radians(90 + 120 * k)
         s = s - Pos(f.enc_post_r * math.cos(a), f.enc_post_r * math.sin(a), Z_PLATE_OUT - 8) * Cylinder(1.25, 8, align=MIN)
+    s = s - Pos(-44.0, PLATE_BOT + 8, Z_PLATE_OUT - 8) * Cylinder(1.65, 8, align=MIN)   # M4 earth bond (PE to the plate)
     for x in (-15.0, 15.0):  # tension block, 2x M5 tapped from the outer face
         s = s - Pos(MX + x, TB_Y, Z_PLATE_OUT - 12) * Cylinder(2.1, 12, align=MIN)
     return s
@@ -358,6 +372,7 @@ RAIL = f.rail
 INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5.7 heat-set insert hole
 R_IN = f.r_long - T                                 # inside radius of the long edges
 W_END_SCREW = W_END - f.r_end - 4.0                 # end hood screws: countersunk heads fully on the flat, not the chamfer
+INLET_Y = PSU_BOT + 18.0    # IEC inlet centre height on the end wall (cut-out stays above the end chamfer)
 USB_PORT = (15.0, 10.0)     # (x, y) on the end wall
 SWD_PORT = (-15.0, 10.0)
 BOOT_BTN = (-15.0, -9.0)    # 7 mm momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
@@ -420,6 +435,14 @@ def pcb_placeholder():
 MSTB_PLUG = 13.0          # MSTB 2,5/..-ST-5,08 plug body beyond the header face (Phoenix drawing: ~12.5)
 WIRE_RUN = 10.0           # ferrule (8) + 2 straight before the bend
 WIRE_BEND = 7.0           # bend radius, 1.5 mm2 wire turning down past the board edge
+
+
+def psu_placeholder():
+    """LRS-100-36 body (plus its terminal cover) and the IEC inlet module's body behind the end wall."""
+    psu = bx(-f.psu_w / 2, f.psu_w / 2, PSU_BOT, PSU_TOP, f.psu_w0, f.psu_w0 + f.psu_l)
+    iw, ih = f.inlet_cut
+    inlet = bx(-iw / 2 + 1, iw / 2 - 1, INLET_Y - ih / 2 + 1, INLET_Y + ih / 2 - 1, W_END - T - f.inlet_depth, W_END - T)
+    return psu, inlet
 
 
 def plug_wires():
@@ -559,8 +582,14 @@ def shell():
             s = s - xcyl(1.25, fz["x_in"] - 8, fz["x_in"] + 0.1, (fz["y0"] + fz["y1"]) / 2 + dy, (fz["w0"] + fz["w1"]) / 2 + dw)
     # end wall: 2x M16 cable glands LOW, beside the motor (36 V on the J1 side, limit switches on the J7 side): the
     # wires drop from the plugs past the board's edge, behind the motor tail; and the USB-C access slot
-    for xg in (-36.0, 36.0):                     # locknut (23 across corners) clears the inside chamfer
-        s = s - wcyl(8.1, W_END - T - 1, W_END + 1, xg, -62.0)
+    # M16 gland for the limit-switch cable (36 V is internal now); locknut clears the inside chamfer
+    s = s - wcyl(8.1, W_END - T - 1, W_END + 1, 36.0, -62.0)
+    # mains: snap-in IEC C14 inlet (fuse + switch) low in the end wall, below the PSU-free strip behind the motor tail
+    iw, ih = f.inlet_cut
+    s = s - bx(-iw / 2, iw / 2, INLET_Y - ih / 2, INLET_Y + ih / 2, W_END - T - 1, W_END + 1)
+    # PSU support ribs on the floor (along W, so air from the floor vents passes between them)
+    for xr_ in (-40.0, -12.0, 12.0, 40.0):
+        s = s + bx(xr_ - 1.5, xr_ + 1.5, Y0 - G - 0.5, PSU_BOT, f.psu_w0 + 5, f.psu_w0 + f.psu_l - 5)
     # programming ports, usable with the box closed (above the plugs, clear of the end rails):
     #   USB-C: round nut-mount panel extension (e.g. Adafruit #6069, 12-18 mm hole), its male end left in J4
     #   SWD:   1x3 0.1" pin header pressed into a slot from outside, pins sunk in a recess; 3 wires inside to J3.
@@ -576,12 +605,14 @@ def shell():
     for bxx, byy in (BOOT_BTN, RESET_BTN):
         s = s + wcyl(8.0, wi - 5, wi + 0.5, bxx, byy)
         s = s - wcyl(5.5, W_END - 4, W_END + 1, bxx, byy) - wcyl(3.5, wi - 6, W_END + 1, bxx, byy)
-    for txt, x, y in (("SWD", sx, sy - 11), ("USB", ux, uy - 14), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
+    for txt, x, y in (("SWD", sx, sy + 9), ("USB", ux, uy + 12), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
                       ("RESET", RESET_BTN[0], RESET_BTN[1] - 11)):                      # engraved on the bed face
         try:
             s = s - extrude(Plane(origin=(x, y, W_END), x_dir=(1, 0, 0), z_dir=(0, 0, 1)) * Text(txt, 4.5), amount=-0.6)
         except Exception as e:  # noqa: BLE001 - a missing font must not stop the build
             print("label %s skipped: %s" % (txt, e))
+    s = s - extrude(Plane(origin=(0, INLET_Y + f.inlet_cut[1] / 2 + 6, W_END), x_dir=(1, 0, 0), z_dir=(0, 0, 1))
+                    * Text("230V~", 4.5), amount=-0.6)
     return s
 
 
@@ -718,6 +749,7 @@ def build():
     parts["pcb_placeholder"] = Compound(children=pcb_placeholder())
     parts["controls"] = Compound(children=controls())
     parts["plug_wires"] = Compound(children=plug_wires())
+    parts["psu"], parts["mains_inlet"] = psu_placeholder()
     groups = {"estop": (0, 3), "toggle": (3, 5), "rapid": (5, 7), "dial": (7, 9), "oled": (9, 10), "adapter": (10, 12)}
     cs = controls()
     for nm, (i0, i1) in groups.items():                       # one STL per control, so the viewer can name them
@@ -726,7 +758,7 @@ def build():
         json.dump({"pcb_x0": f.pcb_x0, "pcb_y": f.pcb_y, "pcb_w0": f.pcb_w0}, fh)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -811,6 +843,20 @@ strip along the upper front with their bodies reaching back over the PCB.
 | End wall | 2× M16 cable glands **low**, beside the motor (36 V on the J1 side, limit switches on the J7 side). **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6), **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake slots in the bottom under the motor; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
+- **Power, built in:** a Mean Well **LRS-100-36** (36 V / 2.8 A, 129 × 97 × 30) lies flat under the clutch and motor on
+  four printed ribs, terminals toward the end wall; a **snap-in IEC C14 inlet with fuse and rocker switch** (panel
+  cut-out {f.inlet_cut[0]} × {f.inlet_cut[1]}, check yours) sits low in the end wall. A normal kettle cord plugs in.
+  - Inlet fuse: T 2 A for 230 V (T 3.15 A for 120 V). The PCB's own 5 A fuse protects the 36 V side.
+  - **Protective earth:** inlet ⏚ → PSU ⏚ terminal, and a second green/yellow lead from the inlet ⏚ to an M4 ring
+    terminal on the aluminium plate (tapped hole in the plate's outer face, star washer): the plate, motor and clutch
+    are then earthed.
+  - Mains wiring: 0.75 mm² 300/500 V wire, insulated female spades on the inlet, crimp ferrules in the PSU
+    terminals, the PSU's terminal cover fitted. Keep it along the floor at the end wall, away from the PCB; 36 V
+    (PSU +V/−V → J1, 1 mm²) goes up behind the motor tail with the other wires.
+  - The cord moves with the table: give it a loop or a cable chain and strain-relieve it at the mill stand; the
+    inlet is the only mains connection, so unplugging the cord makes the whole unit dead.
+  - The rocker switch is the mains switch; the E-stop still only removes the drive enable and the clutch (design.md §8a).
+  - Your S-350-36 is no longer needed for this unit.
 - **Programming with the box closed:**
   - **From your Mac, whatever the firmware does:** USB-C cable from the Mac to the end-wall USB-C. Hold **BOOT**, tap
     **RESET**, release BOOT: the RP2040 comes up as the `RPI-RP2` drive; copy `power-feed.uf2` onto it. (With the 36 V

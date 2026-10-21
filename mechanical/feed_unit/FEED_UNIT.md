@@ -63,7 +63,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 
 | | |
 |---|---|
-| Outer size | 116 (front-back) × 190 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
+| Outer size | 116 (front-back) × 204 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
 | `shell` (one print) | back, bottom, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre block. **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, 110 wide, bottom corners R9, both top corners chamfered 10.5 × 45° to sit under the housing's chamfered inside |
@@ -74,6 +74,20 @@ strip along the upper front with their bodies reaching back over the PCB.
 | End wall | 2× M16 cable glands **low**, beside the motor (36 V on the J1 side, limit switches on the J7 side). **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6), **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake slots in the bottom under the motor; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
+- **Power, built in:** a Mean Well **LRS-100-36** (36 V / 2.8 A, 129 × 97 × 30) lies flat under the clutch and motor on
+  four printed ribs, terminals toward the end wall; a **snap-in IEC C14 inlet with fuse and rocker switch** (panel
+  cut-out 47.5 × 27.8, check yours) sits low in the end wall. A normal kettle cord plugs in.
+  - Inlet fuse: T 2 A for 230 V (T 3.15 A for 120 V). The PCB's own 5 A fuse protects the 36 V side.
+  - **Protective earth:** inlet ⏚ → PSU ⏚ terminal, and a second green/yellow lead from the inlet ⏚ to an M4 ring
+    terminal on the aluminium plate (tapped hole in the plate's outer face, star washer): the plate, motor and clutch
+    are then earthed.
+  - Mains wiring: 0.75 mm² 300/500 V wire, insulated female spades on the inlet, crimp ferrules in the PSU
+    terminals, the PSU's terminal cover fitted. Keep it along the floor at the end wall, away from the PCB; 36 V
+    (PSU +V/−V → J1, 1 mm²) goes up behind the motor tail with the other wires.
+  - The cord moves with the table: give it a loop or a cable chain and strain-relieve it at the mill stand; the
+    inlet is the only mains connection, so unplugging the cord makes the whole unit dead.
+  - The rocker switch is the mains switch; the E-stop still only removes the drive enable and the clutch (design.md §8a).
+  - Your S-350-36 is no longer needed for this unit.
 - **Programming with the box closed:**
   - **From your Mac, whatever the firmware does:** USB-C cable from the Mac to the end-wall USB-C. Hold **BOOT**, tap
     **RESET**, release BOOT: the RP2040 comes up as the `RPI-RP2` drive; copy `power-feed.uf2` onto it. (With the 36 V
@@ -99,6 +113,6 @@ strip along the upper front with their bodies reaching back over the PCB.
   - If there is no slot, use a pinned sleeve coupling instead of the tongue.
 - `standoffs`: where M6 can go into the table end or the left bracket.
 - `motor_angle_deg`: rotate the module if it hits the saddle, the base or the DRO cable at full travel.
-- The housing reaches -6 mm in front of the table's front edge (E-stop head included) and 143 mm below the
+- The housing reaches -6 mm in front of the table's front edge (E-stop head included) and 157 mm below the
   leadscrew: check both against the saddle, the DRO reader and the base at full right travel.
 - `chamber`: the minimum is set by the clutch output shaft; the script asserts it fits.
