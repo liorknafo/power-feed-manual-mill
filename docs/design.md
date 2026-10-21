@@ -176,16 +176,16 @@ The user builds the clutch in their own shop (CNC, manual lathe, manual mill), s
                  ↕ 1.1 mm stroke: teeth fully out when the coil is off
                ┌────────────┐
                │  ARMATURE  │   ← low-carbon steel, flat pole faces + mating tooth ring \/\/\/\/
-               └─────┬──────┘
-                     │  3 tangential leaf springs (no backlash, they lift the teeth out)
-               ══════╧═══════  output hub / belt pulley ─► reduction ─► leadscrew
+               └──╥──────╥──┘     3 drive pins pressed into it
+               ═══╬══════╬═══  output hub: the pins slide in bronze bushes in it ─► pulley ─► reduction ─► leadscrew
+                 ⌇⌇      ⌇⌇    return springs on the pins, behind the hub: pull the armature back onto the hub
 ```
 
-- **Coil off:** the leaf springs lift the armature so the teeth are fully out of mesh, with 0.3 mm clearance. The handwheel turns freely.
+- **Coil off:** the three return springs pull the armature back against the hub face (a hard stop), so the teeth are fully out of mesh: the tips are 0.4 mm apart. The handwheel turns freely.
 - **Fail-safe — no power means disengaged:** only the coil holds the clutch engaged; the springs always disengage it.
   - On power loss, E-stop, a firmware crash or an MCU reset, the gate drive drops: the 5 V AND gates go low and the MCU outputs have pull-downs.
   - The coil current then dies through the fast-decay diodes, and the springs lift the teeth out.
-  - The ≈25 N spring preload (§7.4) is sized to overcome residual magnetism, so the armature can't stick engaged.
+  - The springs are preloaded: ≈ 24 N even at the released stop, ≈ 32 N engaged (§7.4), so residual magnetism can't hold the armature engaged.
 - **Coil on:** the flux runs inner pole → armature → outer pole and pulls the teeth into mesh. Torque passes through the tooth flanks.
 - **Angled flanks:** the coil force presses the flanks together, so there's **zero backlash**.
 - **Cam-out:** above a set torque the flanks push the armature back against the coil force and the teeth ratchet. That's the mechanical backup to the electronic torque cap (R7). The output encoder sees it at once and triggers a FAULT.
@@ -213,11 +213,11 @@ The clutch goes **on the motor side, before the belt reduction**, so it only has
 | Target cam-out torque | ≈ 4.5 N·m | 1.5× the motor's 3 N·m holding torque. It only trips on inertial shocks or faults |
 | Tangential tooth force at cam-out | 4.5 / 0.035 ≈ 130 N | |
 | Axial push-apart force | F_t·(tan α − μ)/(1 + μ·tan α) ≈ 55 N | μ ≈ 0.1–0.15 steel on steel, so ±10% spread |
-| Spring force | 0 N released → ≈ 25 N engaged (≈ 23 N/mm) | 3 straps 0.3 × 14 mm, ≈ 21 mm free, **flat when released**. ≈ 430 MPa bending stress. At tooth clearance (0.8 mm into the release) ≈ 7 N remains to beat remanence |
-| Hold force needed | ≈ 80 N | 55 + 25 |
+| Spring force | ≈ 24 N released (preload) → ≈ 32 N engaged | 3 compression springs on the drive pins, ≈ 2.5 N/mm each, 8.0 mm long released, 6.9 engaged. Preloaded, so the armature sits hard on its stop when off and ≥ 24 N always works against remanence |
+| Hold force needed | ≈ 90 N | 55 + 32 |
 | Pole-face area | 2 × 5 cm² (inner ring Ø16–30 mm, outer ring Ø54–60 mm) | |
-| Hold MMF (0.15 mm engaged gap, ×2) | ≈ 160 A·turns → ≈ 0.2 A | **the hold current sets the cam-out torque**, so it is tunable in firmware |
-| Pull-in MMF (1.25 mm released gap, ×2) | ≈ 1.1–1.2 kA·turns | the spring force is ~0 at the released gap and grows only as the gap closes, so pull-in has margin; ×1.5 for leakage |
+| Hold MMF (0.15 mm engaged gap, ×2) | ≈ 170 A·turns → ≈ 0.2 A | **the hold current sets the cam-out torque**, so it is tunable in firmware |
+| Pull-in at the 1.25 mm released gap (×2) | 1.5 A × 850 = 1.3 kA·turns → ≈ 70 N (with ×1.5 for leakage) | against the 24 N preload: ≈ 3× margin; the force rises steeply as the gap closes, faster than the springs' 32 N |
 | Coil | ≈ 850 turns of 0.32 mm (AWG 28) enamelled copper, ≈ 24 Ω | winding window 10 mm radial × 12 mm axial, fill factor 0.6 |
 | Pull-in burst | 36 V full-on → ≈ 1.5 A, ≈ 54 W, for ~50 ms (≈ 3 J) | short, so thermally harmless |
 | Hold | ≈ 0.2–0.4 A, about 1–4 W | calibrated against the cam-out torque |
@@ -257,19 +257,18 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 - **Magnetic parts:** rotor, field housing and armature in low-carbon steel (1018/1020 or 12L14). Anneal them if possible. Avoid 300-series stainless, which is non-magnetic.
 - **Pole separation:** a non-magnetic ring between the inner and outer pole on the rotor (brass, bronze or aluminium, or machined slots). It forces the flux through the armature.
 - **Mating tooth rings:** cut them as a pair with the same setup (same cutter and indexing) so all 30 teeth bear evenly. A CNC with a V/chamfer cutter or the mill with an indexer both work.
-- **Leaf springs:** spring-steel shim, three tangential straps. They carry torque with no backlash and set the lift-off force. They are **flat when released** and bend 1.1 mm when engaged, so they never push the armature into the hub.
-- **What holds the armature:** only the three springs; it floats, with nothing sliding and nothing else touching it (as on a car A/C clutch). Each strap is soft out of its plane (that is the 1.1 mm stroke: ≈ 23 N/mm for all three) but very stiff along its length (EA/L ≈ 42 kN/mm each), so:
-  - sideways: any shift must stretch or compress the straps along their length, ≈ 60 kN/mm together; its own weight (≈ 2 N) moves it by well under 0.001 mm;
-  - tilt: the three springs lie in one plane, flat when released; when engaged the magnet pulls it flat onto all 30 teeth;
-  - axially: the flat springs set the released position, the magnet the engaged one.
-  So it stays wherever it was screwed on: centre it on the hub at assembly with a Ø76 sleeve over the armature and the hub flange (same diameter, both turned true to their bores), see MACHINING.md step 0.
-- **Torque path, armature → hub:** nothing slides. Each strap is screwed to the armature at one end and to the hub at the other, along a chord of the r 30 circle. A 0.3 × 14 mm strap bends easily out of its plane (the 1.1 mm axial stroke) but is very stiff along its length, so turning the armature pulls (or, the other way round, pushes) the three straps along their length, and they turn the hub. The most torque the straps can see is the cam-out torque, 4.5 N·m, because the teeth ratchet above it. Their lever arm is 26.6 mm (the chord's distance from the axis), so each strap carries ≈ 56 N:
-  - tension: 13 MPa (18 MPa at the screw hole);
-  - compression (the other direction): the clamped Euler buckling load over the 20.7 mm free length is ≈ 600 N, so a 10× margin; the 1.1 mm S-bend adds about ±150 MPa to the 430 MPa engaged bending stress, which hardened shim steel takes;
-  - at the screws: an M3 clamps with ≈ 1.5 kN, so friction alone holds ≈ 225 N, 4× the load, before the strap would bear on the screw.
+- **What holds the armature:** three Ø6 drive pins pressed into it (Loctite 638) slide in sintered-bronze bushes in the hub flange, with 0.01–0.03 clearance. They do everything a solid connection would:
+  - **rotation:** the armature can't turn without the hub, it drives the hub through the pins;
+  - **centring and squareness:** three pins at 120° in 8 mm long bushes; when engaged the 30° teeth centre it the last hundredths;
+  - **axially:** three compression springs on the pins, behind the hub (each held by a washer and an E-clip), pull the armature back onto the hub's face when the coil is off: a hard, preloaded stop (≈ 24 N), not a balance of forces. The magnet pulls it 1.1 mm off that stop onto the rotor.
+  The same layout as a spring-applied brake's armature on its guide pins.
+- **Torque path:** rotor teeth → armature → 3 pins → bronze bushes → hub → set screws on the shaft flat → output shaft → 20T pulley. The most torque it can see is the cam-out torque, 4.5 N·m (the teeth ratchet above it). At r 21 that is ≈ 71 N per pin:
+  - bush pressure 71 N / (6 × 8 mm) ≈ 1.5 MPa (sintered bronze takes ~10 MPa);
+  - the pin bends over at most the 1.1 mm gap between armature and hub: negligible for Ø6 steel;
+  - backlash: the 0.01–0.03 pin clearance at r 21 is ≤ 0.1° at the motor, ≤ 0.05° at the leadscrew; the leadscrew nut's own backlash is far larger.
 - **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 641 onto the motor's D-shaft. That holds >10 N·m against the motor's 3 N·m, avoids broaching a D-bore, and comes off with moderate heat (648 would need the whole motor heated). An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
 - **Model and machining data:** `mechanical/clutch/clutch.py` holds the parametric model; `mechanical/clutch/MACHINING.md` has the dimension tables, fits and tooth-cutting notes, generated from the same parameters.
-- **Shimming:** the rotor's axial position comes from its bore depth (measured shaft length − 2.2 mm). The output side is set with a shim between the stepped spacer and the inner bearing, so the springs are flat when released.
+- **Shimming:** the rotor's axial position comes from its bore depth (measured shaft length − 2.2 mm). The released gap (1.25) is set by where the hub sits, which the stepped spacer between the hub boss and the inner bearing sets: grind it shorter or shim it (MACHINING.md, step 6).
 
 ## 8. Firmware
 

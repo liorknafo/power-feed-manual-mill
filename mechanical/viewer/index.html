@@ -42,6 +42,7 @@
   <label><input type="checkbox" id="xray"> X-ray (see inside)</label>
   <label><input type="checkbox" id="millref" checked> Mill table-end stand-in</label>
   <label><input type="checkbox" id="coil"> Clutch coil ON (engaged)</label>
+  <label><input type="checkbox" id="door"> Open the bottom door</label>
   <div class="sep"></div>
   <button data-view="all">All</button><button data-view="mill">Power feed</button><button data-view="clutch">Clutch</button>
 </div>
@@ -76,8 +77,8 @@ const INFO = {
   clutch_field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body bolted to the motor flange. Holds the coil; its poles pull the armature."],
   clutch_coil: ["Clutch coil", "~850 turns 0.32 mm Cu, ≈24 Ω", "The electromagnet: 1.5 A pull-in, then ≈0.25 A hold from the PCB's clutch driver. No power = clutch released (fail-safe)."],
   clutch_rotor: ["Clutch rotor", "Low-carbon steel, lathe + CNC teeth", "Glued (Loctite 641) onto the motor shaft. Its face carries 30 radial teeth and the magnetic poles."],
-  clutch_armature: ["Clutch armature", "Low-carbon steel, lathe + CNC teeth", "Shown released (coil off): three leaf springs hold it 1.25 mm off the rotor, so the teeth don't touch and the handwheel turns freely. With the coil on (tick 'Clutch coil ON') the magnet pulls it 1.1 mm onto the rotor, the teeth mesh and the motor drives the leadscrew."],
-  clutch_hub: ["Clutch output hub", "Steel or 6061", "Carries the leaf springs that lift the armature off when the coil is off, and drives the output shaft."],
+  clutch_armature: ["Clutch armature", "Low-carbon steel, lathe + CNC teeth", "Shown released (coil off): its 3 return springs pull it back against the hub, 1.25 mm off the rotor, so the teeth don't touch and the handwheel turns freely. With the coil on (tick 'Clutch coil ON') the magnet pulls it 1.1 mm onto the rotor, the teeth mesh and the motor drives the leadscrew. Three pins pressed into it slide in the hub: they turn the hub and keep it centred."],
+  clutch_hub: ["Clutch output hub", "6061, with 3 bronze bushes", "On the output shaft. The armature's 3 drive pins slide in its bronze bushes (that is how the armature turns the hub), and its face is the armature's released stop."],
   clutch_output_shaft: ["Clutch output shaft", "Ø12 h6 ground rod", "Runs in the cover's two 6001 bearings and carries the 20T pulley."],
   clutch_cover: ["Clutch cover", "6061 (non-magnetic), lathe", "Closes the clutch, carries the output bearings and bolts the whole module to the plate."],
   motor: ["Stepper motor", "NEMA 23, 3 N·m, 4.2 A (yours)", "Drives the feed through the clutch and the 2:1 belt; the TMC5160 on the PCB drives it."],
@@ -85,6 +86,7 @@ const INFO = {
   mains_tray: ["Mains tray", "1.5 mm aluminium, folded, earthed", "Metal box holding the power supply and closing off everything at mains voltage. Bolted to the plate by two tabs (that is also the earth bond); the IEC inlet sits in its end face. Earth test after assembly: ≤ 0.1 Ω from the inlet's earth pin to the plate."],
   mains_tray_lid: ["Mains tray lid", "1.5 mm aluminium, folded", "Closes the mains zone over the PSU terminals. Its edge folds down so the zone is closed all round; 4× M3 into closed-end rivnuts, so no screw tips stick into the mains zone. Line the inside of the fold with 0.4 mm Nomex/Formex."],
   mains_inlet: ["AC inlet", "IEC C14 snap-in with fuse + switch (buy)", "Where the mains cord plugs in, in the end wall. Built-in on/off switch and fuse holder: T 2 A ceramic 5×20 for 230 V (T 3.15 A for 120 V). L and N go switched and fused to the PSU; PE goes to the tray."],
+  door: ["Bottom service door", "3D print (PETG), one piece", "Opens the floor under the mains tray: the power supply's two mounting screws and the belt-tension drawbolt. Hinged on a Ø3 steel pin along its far edge, it swings down; 2× M3 into the plate's bottom edge hold it shut. Tick 'Open the bottom door' to see it open."],
   shell: ["Housing shell", "3D print (PETG), one piece", "Back, bottom, end and lower-front walls with the PCB rails. Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: the AC inlet, a cable gland for the limit switches, USB-C, BOOT/RESET and the SWD port. Vents in the bottom and high on the back."],
   hood: ["Hood", "3D print (PETG), one piece", "Top + control strip in one L-shaped print with engraved labels. Lift it off and the whole PCB is exposed from above."],
   control_estop: ["E-stop", "22 mm mushroom, NC contact (buy)", "Hardware emergency stop: opening its loop cuts the motor-driver enable and the clutch drive in hardware, whatever the firmware does. Latches until released and the switch is centred."],
@@ -96,10 +98,13 @@ const INFO = {
   field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body with the coil cavity (exploded view)."],
   coil_bobbin: ["Clutch coil", "~850 turns 0.32 mm Cu", "The electromagnet (exploded view)."],
   rotor: ["Clutch rotor", "Low-carbon steel", "On the motor shaft: toothed face and magnetic poles (exploded view)."],
-  armature: ["Clutch armature", "Low-carbon steel", "Moves 1.1 mm to mesh its teeth with the rotor (exploded view)."],
-  leaf_springs: ["Leaf springs", "0.3 mm spring steel, 3 pcs", "Flat when released; bend 1.1 mm when engaged and pull the armature back (≈25 N). Carry the torque with no backlash."],
-  spring_spacers: ["Spring spacers", "Steel or brass, 3 pcs", "Space the springs off the armature."],
-  output_hub: ["Clutch output hub", "Steel or 6061", "Spring carrier on the output shaft (exploded view)."],
+  armature: ["Clutch armature", "Low-carbon steel", "Moves 1.1 mm to mesh its teeth with the rotor; the 3 drive pins are pressed into it (exploded view)."],
+  drive_pins: ["Drive pins", "Ø6 h6 silver steel × 25, 3 pcs", "Pressed into the armature, they slide in the hub's bronze bushes: they carry the torque (≈71 N each at the 4.5 N·m cam-out torque) and keep the armature centred. E-clip groove at the end."],
+  return_springs: ["Return springs, washers, E-clips", "0.8 mm wire, OD 9, ≈2.5 N/mm, 3 pcs", "On the pins behind the hub: they pull the armature back onto the hub (≈24 N even when released, ≈32 N engaged), so with no power the clutch is always open."],
+  bushes: ["Bronze bushes", "Sintered bronze 6 × 10 × 8, 3 pcs", "Pressed into the hub; the drive pins slide in them."],
+  clutch_pins: ["Clutch drive pins", "Ø6 silver steel, 3 pcs, + washers and E-clips", "Pressed into the armature, they slide in bronze bushes in the hub: they turn the hub and keep the armature centred."],
+  clutch_springs: ["Clutch return springs + bushes", "3 springs on the pins, 3 bronze bushes in the hub", "The springs pull the armature back onto the hub when the coil is off (≈24 N preload)."],
+  output_hub: ["Clutch output hub", "6061 + 3 bronze bushes", "On the output shaft; the armature's pins slide in it and its face is the armature's released stop (exploded view)."],
   output_shaft: ["Clutch output shaft", "Ø12 h6", "Exploded view."],
   bearings: ["Clutch bearings", "2× 6001-2RS, spacers, circlips", "Carry the output shaft in the cover (exploded view)."],
   cover: ["Clutch cover", "6061", "Exploded view."],
@@ -131,6 +136,8 @@ groups.clutch.position.set(-300, 0, -60);
 
 const housings = [];
 const tagged = { shell: [], hood: [], millref: [], armature: [] };
+// the bottom door hangs on a pivot group whose origin is its hinge axis (from feed_unit.py's layout file)
+const doorPivot = new THREE.Group();
 const STROKE = 1.1;   // clutch armature travel (clutch.py p.stroke); the CAD exports it engaged
 const stl = new STLLoader();
 let pending = 0, loaded = 0;
@@ -148,7 +155,7 @@ function part(group, path, color, opts = {}) {
     if (opts.dz) mesh.position.z = opts.dz;
     if (opts.housing) housings.push(mesh);
     if (opts.tag) tagged[opts.tag].push(mesh);
-    groups[group].add(mesh);
+    (opts.pivot || groups[group]).add(mesh);
     loaded++; tick(); applyToggles();
   }, undefined, () => { loaded++; status.textContent = "missing: " + path; });
 }
@@ -175,6 +182,8 @@ part("mill", F + "clutch_cover.stl", 0xc9d1d9, { housing: true });
 part("mill", F + "clutch_rotor.stl", 0xa9b4c2, { metal: 0.7 });
 part("mill", F + "clutch_armature.stl", 0x7d8fa6, { metal: 0.7, tag: "armature" });
 part("mill", F + "clutch_hub.stl", 0x9aa7b5, { metal: 0.7 });
+part("mill", F + "clutch_pins.stl", 0x3b3f46, { metal: 0.8, tag: "armature" });
+part("mill", F + "clutch_springs.stl", 0x2f6fd6, { metal: 0.6 });
 part("mill", F + "clutch_output_shaft.stl", 0xcfd6dd, { metal: 0.8, rough: 0.3 });
 part("mill", F + "clutch_coil.stl", 0xc87533, { metal: 0.6 });
 part("mill", F + "motor.stl", 0x3d3f44, { housing: true });
@@ -182,6 +191,7 @@ part("mill", F + "psu.stl", 0x5b8fd0, { metal: 0.5, rough: 0.5 });
 part("mill", F + "mains_tray.stl", 0xa7b0ba, { metal: 0.7, rough: 0.4, housing: true });
 part("mill", F + "mains_tray_lid.stl", 0xb9c2cb, { metal: 0.7, rough: 0.4, housing: true });
 part("mill", F + "mains_inlet.stl", 0x1e1e1e, { metal: 0.1, rough: 0.7 });
+part("mill", F + "door.stl", 0xe0dccf, { metal: 0, rough: 0.7, housing: true, tag: "shell", pivot: doorPivot });
 part("mill", F + "shell.stl", 0xe8e4da, { metal: 0, rough: 0.7, housing: true, tag: "shell" });
 part("mill", F + "hood.stl", 0xf0ece2, { metal: 0, rough: 0.7, housing: true, tag: "hood" });
 for (const c of ["estop", "toggle", "rapid", "dial", "oled", "adapter"])
@@ -189,8 +199,8 @@ for (const c of ["estop", "toggle", "rapid", "dial", "oled", "adapter"])
 
 const C = "clutch/out/";
 const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], ["coil_bobbin", 0xc87533, -25],
-            ["rotor", 0xa9b4c2, 25], ["armature", 0x7d8fa6, 55], ["spring_spacers", 0xd4b24c, 68],
-            ["leaf_springs", 0x2b4a8b, 80], ["output_hub", 0x9aa7b5, 100], ["output_shaft", 0xcfd6dd, 130],
+            ["rotor", 0xa9b4c2, 25], ["armature", 0x7d8fa6, 55], ["drive_pins", 0x3b3f46, 55],
+            ["output_hub", 0x9aa7b5, 100], ["bushes", 0xb5823a, 100], ["return_springs", 0x2f6fd6, 112], ["output_shaft", 0xcfd6dd, 130],
             ["bearings", 0xe0b050, 150], ["cover", 0xc9d1d9, 175]];
 for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 0.6, housing: n === "cover" });
 
@@ -199,6 +209,12 @@ let layout = { pcb_x0: -50, pcb_y: -33, pcb_w0: 129 }, pcbParts = [];
 pending++; tick();
 (async () => {
   try { layout = await (await fetch(M + F + "viewer_layout.json")).json(); } catch (e) { /* keep the defaults */ }
+  if (layout.door_axis_y !== undefined) {         // pivot on the hinge axis; the door mesh is offset back to its place
+    doorPivot.position.set(0, layout.door_axis_y, layout.door_axis_w);
+    for (const m of doorPivot.children) m.position.set(0, -layout.door_axis_y, -layout.door_axis_w);
+    doorPivot.userData.ready = true;
+  }
+  groups.mill.add(doorPivot); applyToggles();
   try { pcbParts = await (await fetch("out/pcb_parts.json")).json(); } catch (e) { pcbParts = []; }
   new GLTFLoader().load(M + "viewer/out/pcb.glb", gltf => {
     // kicad-cli GLB: metres, (x, up, y_pcb). The board lies flat above the motor: x = x0 + px, y = y_board + h, W = w0 + py
@@ -212,8 +228,8 @@ pending++; tick();
 })();
 
 // ---------------------------------------------------------------- toggles, framing
-const ids = ["xray", "shell", "hood", "millref", "coil"].map(i => document.getElementById(i));
-const [xray, shellCb, hoodCb, millref, coil] = ids;
+const ids = ["xray", "shell", "hood", "millref", "coil", "door"].map(i => document.getElementById(i));
+const [xray, shellCb, hoodCb, millref, coil, doorCb] = ids;
 function applyToggles() {
   for (const m of housings) {
     m.material.transparent = xray.checked; m.material.opacity = xray.checked ? 0.18 : 1; m.material.depthWrite = !xray.checked;
@@ -223,6 +239,11 @@ function applyToggles() {
   for (const o of tagged.millref) o.visible = millref.checked;
   // coil off (the default, as with no power): the springs hold the armature STROKE back toward the output (-W)
   for (const o of tagged.armature) o.position.z = coil.checked ? 0 : -STROKE;
+  // the door swings down about its hinge (along x); negative rotation drops its rim end
+  if (doorPivot.userData.ready) {
+    for (const m of doorPivot.children) m.position.set(0, -doorPivot.position.y, -doorPivot.position.z);
+    doorPivot.rotation.x = doorCb.checked ? -THREE.MathUtils.degToRad(95) : 0;
+  }
 }
 for (const el of ids) el.addEventListener("change", applyToggles);
 for (const cb of document.querySelectorAll("[data-group]")) cb.addEventListener("change", () => { groups[cb.dataset.group].visible = cb.checked; });

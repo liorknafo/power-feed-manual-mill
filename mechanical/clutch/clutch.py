@@ -4,16 +4,17 @@ Run:  mechanical/.venv/bin/python mechanical/clutch/clutch.py
 Out:  mechanical/clutch/out/*.step|*.stl (one file per part + assembly) and preview SVGs.
 
 Axis = Z. Motor flange face at z = 0, the motor is on the -Z side, output toward +Z.
-The assembly is modelled ENGAGED (coil on). Released, the armature, springs' free ends and
-nothing else move +STROKE along Z.
+The assembly is modelled ENGAGED (coil on). Released, the armature with its drive pins, washers and E-clips moves
++STROKE along Z (back against the hub), and the return springs lengthen by STROKE.
 
 Stack (see docs/design.md §7):
   field housing (steel, stationary, bolted to the motor face, centred on the motor pilot)
   coil + bobbin inside it
   rotor (steel) on the motor shaft: hub inside the housing bore + pole face with banana slots
         and an outer tooth ring
-  armature (steel) with mating teeth, held by 3 tangential leaf springs to
-  output hub (steel or alu) on the output shaft (12 mm), which runs in two 6001 bearings in
+  armature (steel) with mating teeth and 3 drive pins pressed into it; the pins slide in bronze bushes in the
+  output hub (6061) on the output shaft (12 mm), carry the torque, and 3 compression springs on them pull the
+  armature back against the hub when the coil is off. The output shaft runs in two 6001 bearings in
   cover (aluminium, non-magnetic), registered on the housing OD.
 """
 
@@ -66,18 +67,24 @@ class P:
     flank_deg: float = 30.0          # flank angle from the axis, at the mean radius
     engaged_gap: float = 0.15        # pole-face gap when meshed
     stroke: float = 1.1              # armature travel; released pole gap = engaged_gap + stroke
-    # armature + springs + hub
+    # armature + drive pins + return springs + hub
     armature_t: float = 6.0
     armature_bore: float = 11.5
-    spring_r: float = 30.0           # clear of the tooth ring (r 32)
-    spring_twist_deg: float = 55.0
-    spring_w: float = 14.0           # 0.3 x 14, ~21 mm free between clamps: ~22 N lift-off at ~400 MPa (fatigue-safe)
-    spring_t: float = 0.3
-    spacer_h: float = 2.4            # springs are FLAT when released; engaged they bend 1.1 toward the rotor
-    arm_pocket: float = 1.5          # Ø8 pockets in the armature front under the hub-end low-head screws
+    pin_r: float = 21.0              # between the pole rings (r 15 / r 27): there the armature only carries flux radially
+    pin_d: float = 6.0               # Ø6 h6 silver steel (unhardened), pressed + Loctite 638 into the armature
+    pin_press: float = 5.0           # blind, 1 mm short of the armature's back face
+    pin_len: float = 25.0
+    bush_od: float = 10.0            # sintered bronze plain bush 6 x 10 x 8 (ISO 2795), pressed into the hub flange
+    bush_len: float = 8.0
+    spring_od: float = 9.0           # return spring: 0.8 wire, OD 9, free length ~11.2, ~2.5 N/mm
+    spring_wire: float = 0.8
+    spring_free: float = 11.2
+    spring_rate: float = 2.5
+    washer_t: float = 1.6            # ISO 7089 M6 washer Ø6.4 / Ø12
+    eclip_t: float = 0.7             # DIN 6799 RS5 E-clip, groove Ø5 x 0.74
     hub_start: float = 2.2           # rotor hub starts above the motor pilot (1.6) with clearance
     hub_flange_od: float = 76.0      # = armature OD: one Ø76 sleeve over both centres the armature at assembly
-    hub_flange_t: float = 6.0
+    hub_flange_t: float = 8.7        # its armature-side face is the released stop; its top is where the springs sit
     hub_boss_od: float = 24.0
     hub_boss_len: float = 10.0
     out_shaft_d: float = 12.0
@@ -185,8 +192,10 @@ Z_ARM = Z_POLE + p.engaged_gap                       # armature pole face (engag
 Z_ROTOR_ROOT = Z_POLE - 0.5
 Z_ARM_ROOT = Z_ROTOR_ROOT + p.tooth_h                # flanks meet when the roots are tooth_h apart
 Z_ARM_FRONT = Z_ARM + p.armature_t
-Z_SPRING = Z_ARM_FRONT + p.spacer_h                  # spring at the armature end, engaged
-Z_HUB = Z_ARM_FRONT + p.stroke + p.spacer_h + p.spring_t   # hub underside: spring flat when released
+Z_HUB = Z_ARM_FRONT + p.stroke                       # hub underside = the released stop: the armature rests on it
+Z_SHAFT0 = Z_HUB + p.hub_flange_t - 5.0              # output shaft's motor-side end, inside the hub bore
+Z_PIN_END = Z_ARM_FRONT - p.pin_press + p.pin_len    # drive pins' free end (engaged)
+SPRING_LEN_RELEASED = Z_PIN_END + p.stroke - p.eclip_t - 1.0 - p.washer_t - (Z_HUB + p.hub_flange_t)
 
 
 Z_COVER_SCREW = (p.cover_spigot_z + p.housing_len) / 2 + 1.0
@@ -249,65 +258,62 @@ def armature():
     s = ring(p.rotor_od / 2, p.armature_bore / 2, p.armature_t, Z_ARM)
     s = s - ring(p.tooth_r_out + 1, p.tooth_r_in - p.tooth_runout, Z_ARM_ROOT + p.root_relief - Z_ARM + 0.01, Z_ARM - 0.01)
     s = s + tooth_ring(Z_ARM_ROOT, -1, math.pi / p.teeth)                  # half a pitch out of phase
-    for k in range(3):                                                     # M3 for the springs
-        a = math.radians(90 + 120 * k)
-        s = s - Pos(p.spring_r * math.cos(a), p.spring_r * math.sin(a), Z_ARM_FRONT - 4.5) * Cylinder(1.25, 4.6, align=MIN)  # blind M3
-        (bx, by) = spring_points(k)[1]                                    # pocket under the hub-end screw head
-        s = s - Pos(bx, by, Z_ARM_FRONT - p.arm_pocket) * Cylinder(4.0, p.arm_pocket + 0.1, align=MIN)
+    for x, y in pin_points():                                              # drive pins, pressed in
+        s = s - Pos(x, y, Z_ARM_FRONT - p.pin_press) * Cylinder(p.pin_d / 2, p.pin_press + 0.01, align=MIN)
     return s
 
 
-def spring_points(k):
-    a = math.radians(90 + 120 * k)
-    b = a + math.radians(p.spring_twist_deg)
-    return (p.spring_r * math.cos(a), p.spring_r * math.sin(a)), (p.spring_r * math.cos(b), p.spring_r * math.sin(b))
+def pin_points():
+    return [(p.pin_r * math.cos(math.radians(90 + 120 * k)), p.pin_r * math.sin(math.radians(90 + 120 * k)))
+            for k in range(3)]
 
 
-def leaf_springs(released=False):
-    """Straps: armature end on its spacer, hub end under the hub. Flat when released; engaged, the
-    armature end sits `stroke` lower, so the strap is bent and pulls the armature back."""
-    parts = []
-    za = Z_SPRING + (p.stroke if released else 0.0)           # armature-end strap underside
-    zb = Z_HUB - p.spring_t                                    # hub-end strap underside
-    for k in range(3):
-        (ax, ay), (bx, by) = spring_points(k)
-        span = math.hypot(bx - ax, by - ay)
-        ang = math.degrees(math.atan2(by - ay, bx - ax))
-        # stadium-shaped strap: flat clamped pads at both screws (round outer ends, straight sides on to the web),
-        # straight web between them
-        half = Box(p.spring_w / 2, p.spring_w, p.spring_t, align=MIN)
-        pad_a = Pos(-span / 2, 0, za) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN) + \
-            Pos(-span / 2 + p.spring_w / 4, 0, za) * half
-        pad_b = Pos(span / 2, 0, zb) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN) + \
-            Pos(span / 2 - p.spring_w / 4, 0, zb) * half
-        web_len = span - p.spring_w + 0.2
-        tilt = math.degrees(math.atan2(zb - za, web_len))
-        web = Pos(0, 0, (za + zb) / 2) * Rot(0, -tilt, 0) * Box(math.hypot(web_len, zb - za), p.spring_w, p.spring_t,
-                                                                align=(Align.CENTER, Align.CENTER, Align.MIN))
-        strap = pad_a + pad_b + web
-        for x, z in ((-span / 2, za), (span / 2, zb)):
-            strap = strap - Pos(x, 0, z - 1) * Cylinder(1.65, 3, align=MIN)
-        strap = Pos((ax + bx) / 2, (ay + by) / 2, 0) * Rot(0, 0, ang) * strap
-        spacer = Pos(ax, ay, Z_ARM_FRONT + (p.stroke if released else 0.0)) * ring(3.5, 1.65, p.spacer_h)
-        parts += [strap, spacer]
-    return parts
+def drive_pins(released=False):
+    """3 drive pins (pressed into the armature, move with it), each with an E-clip groove 1 mm from its end."""
+    dz = p.stroke if released else 0.0
+    out = []
+    for x, y in pin_points():
+        pin = Pos(x, y, Z_ARM_FRONT - p.pin_press + dz) * Cylinder(p.pin_d / 2, p.pin_len, align=MIN)
+        pin = pin - Pos(x, y, Z_PIN_END + dz - 1.0 - 0.74) * ring(p.pin_d / 2 + 1, 2.5, 0.74)
+        out.append(pin)
+    return out
+
+
+def return_springs(released=False):
+    """Per pin: compression spring (hub top -> washer), M6 washer, E-clip. The washer and clip ride on the pin, so the
+    spring is SPRING_LEN_RELEASED long when released and STROKE shorter when engaged: it always pulls the armature
+    back toward the hub."""
+    dz = p.stroke if released else 0.0
+    z_clip = Z_PIN_END + dz - 1.0 - p.eclip_t
+    z_wash = z_clip - p.washer_t
+    z_hub = Z_HUB + p.hub_flange_t
+    springs, washers, clips = [], [], []
+    for x, y in pin_points():
+        springs.append(Pos(x, y, 0) * ring(p.spring_od / 2, p.spring_od / 2 - p.spring_wire, z_wash - z_hub, z_hub))
+        washers.append(Pos(x, y, 0) * ring(6.0, 3.2, p.washer_t, z_wash))
+        clips.append(Pos(x, y, 0) * ring(5.5, 2.5, p.eclip_t, z_clip))
+    return springs, washers, clips
 
 
 def output_hub():
     s = ring(p.hub_flange_od / 2, p.out_shaft_d / 2, p.hub_flange_t, Z_HUB)
     s = s + ring(p.hub_boss_od / 2, p.out_shaft_d / 2, p.hub_boss_len, Z_HUB + p.hub_flange_t)
-    for k in range(3):
-        (ax, ay), (bx, by) = spring_points(k)
-        s = s - Pos(ax, ay, Z_HUB) * Cylinder(5.0, p.hub_flange_t, align=MIN)   # clearance/access over the armature end
-        s = s - Pos(bx, by, Z_HUB) * Cylinder(1.25, p.hub_flange_t, align=MIN)  # M3 tapped, spring hub end
+    for x, y in pin_points():                     # Ø10 H7 for the bronze bushes, flush with the spring-side face
+        s = s - Pos(x, y, Z_HUB) * Cylinder(p.bush_od / 2, p.hub_flange_t, align=MIN)
     zs = Z_HUB + p.hub_flange_t + p.hub_boss_len / 2
     for a in (0, 90):  # 2x M5 set screws at 90°, onto the shaft flat (+ Loctite 243)
         s = s - Pos(0, 0, zs) * Rot(0, 0, a) * Pos(p.hub_boss_od / 4, 0, 0) * Rot(0, 90, 0) * Cylinder(2.1, p.hub_boss_od / 2)
     return s
 
 
+def bushes():
+    """Sintered bronze plain bushes, pressed into the hub flange flush with its spring-side face."""
+    z0 = Z_HUB + p.hub_flange_t - p.bush_len
+    return [Pos(x, y, 0) * ring(p.bush_od / 2, p.pin_d / 2, p.bush_len, z0) for x, y in pin_points()]
+
+
 def output_shaft():
-    z0 = Z_HUB + 1.0
+    z0 = Z_SHAFT0
     s = Pos(0, 0, z0) * Cylinder(p.out_shaft_d / 2, p.out_shaft_len, align=MIN)
     tip = z0 + p.out_shaft_len
     flat = (Align.CENTER, Align.CENTER, Align.MIN)
@@ -375,15 +381,17 @@ def motor_stub():
 def build():
     os.makedirs(OUT, exist_ok=True)
     cov, z_front = cover()
-    springs = leaf_springs()
+    springs, washers, clips = return_springs()
     parts = {
         "field_housing": (field_housing(), "1018 steel (annealed)"),
         "coil_bobbin": (coil(), "~850 turns 0.32 mm enamelled Cu on a nylon/printed bobbin"),
         "rotor": (rotor(), "1018 steel (annealed)"),
         "armature": (armature(), "1018 steel (annealed)"),
-        "leaf_springs": (Compound(children=springs[0::2]), "0.3 mm spring steel (blue shim), 3 pcs"),
-        "spring_spacers": (Compound(children=springs[1::2]), "steel or brass, 3 pcs"),
-        "output_hub": (output_hub(), "steel or 6061"),
+        "drive_pins": (Compound(children=drive_pins()), "Ø6 h6 silver steel x 25, 3 pcs"),
+        "return_springs": (Compound(children=springs + washers + clips),
+                           "3x compression spring 0.8 wire OD 9, 3x ISO 7089 M6 washer, 3x DIN 6799 RS5 E-clip"),
+        "bushes": (Compound(children=bushes()), "3x sintered bronze plain bush 6 x 10 x 8"),
+        "output_hub": (output_hub(), "6061"),
         "output_shaft": (output_shaft(), "12 mm ground shaft"),
         "cover": (cov, "6061 aluminium (must be non-magnetic)"),
         "bearings": (Compound(children=bearings(z_front)), "2x 6001-2RS + spacer tube + inner-race spacer, 2x DIN 472-28, 1x DIN 471-12"),
@@ -457,17 +465,15 @@ def dimension_sheet(z_front):
     w("| Tooth ring | r %.1f … %.1f, %d teeth (%.1f° pitch), flank %.0f° from axis | flanks meet 0.5 below the pole face; root floor %.1f deeper (%.1f below the pole face, from r %.1f out to the OD); tips %.2f above where the flanks meet; see Teeth |\n" % (p.tooth_r_in, p.tooth_r_out, p.teeth, pitch_deg, p.flank_deg, p.root_relief, 0.5 + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tooth_h - p.tip_trunc))
     w("## Armature (steel) — `armature.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
-    w("| OD × thickness | **Ø%.1f h7 × %.1f** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth AND centres it on the hub at assembly; faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
-    w("| Bore | Ø%.1f | clearance over the M3 head |" % p.armature_bore)
+    w("| OD × thickness | **Ø%.1f h7 × %.1f** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth and the pin holes; faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
+    w("| Bore | Ø%.1f | clearance over the rotor's M3 head |" % p.armature_bore)
     w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | flanks meet %.2f behind the pole face, root floor %.2f behind it (from r %.1f out), tips truncated %.1f |" % (pitch_deg / 2, Z_ARM_ROOT - Z_ARM, Z_ARM_ROOT - Z_ARM + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tip_trunc))
-    w("| Spring holes | 3× M3 blind at r=%.1f, 90°/210°/330°, front face | drill Ø2.5 × 4.5, bottoming tap, ≥ 3.3 full threads |" % p.spring_r)
-    w("| Screw-head pockets | 3× Ø8 × %.1f deep at r=%.1f, %.0f° after each spring hole, front face | clear the hub-end low-head screws |\n" % (p.arm_pocket, p.spring_r, p.spring_twist_deg))
-    w("## Output hub (steel or 6061) — `output_hub.step`")
+    w("| Drive-pin holes | 3× **Ø%.0f H7** blind %.1f deep at r=%.1f, 90°/210°/330°, front face, position ±0.02 from the bore | same program and zero as the hub's bush holes, so the pins line up with the bushes. Blind: %.1f left to the back face (between the poles, no pole face there) |\n" % (p.pin_d, p.pin_press, p.pin_r, p.armature_t - p.pin_press))
+    w("## Output hub (6061) — `output_hub.step`")
     w("| Feature | Dimension | Note |\n|---|---|---|")
-    w("| Flange | **Ø%.1f h7** × %.1f | same chucking as the Ø%.0f H7 bore (≤ 0.02 TIR): the same diameter as the armature, so one sleeve over both centres the armature at assembly |" % (p.hub_flange_od, p.hub_flange_t, p.out_shaft_d))
+    w("| Flange | Ø%.1f × **%.1f** | its armature-side face is the **released stop** the springs pull the armature against: face it flat and square to the bore within 0.02, in the same chucking as the bore |" % (p.hub_flange_od, p.hub_flange_t))
     w("| Boss | Ø%.1f × %.1f, bore **Ø%.0f H7** | 2× M5 set screws at 90°, mid-boss: one on the shaft flat, one on the round (+ Loctite 243) |" % (p.hub_boss_od, p.hub_boss_len, p.out_shaft_d))
-    w("| Spring holes | 3× M3 tapped thru at r=%.1f, %.0f° after each armature hole | screws go in from the armature side |" % (p.spring_r, p.spring_twist_deg))
-    w("| Access holes | 3× Ø10 at the armature spring points | screwdriver access, clearance for the armature-end screws |\n")
+    w("| Bush holes | 3× **Ø%.0f H7** through at r=%.1f, 90°/210°/330°, position ±0.02 from the bore | same program and zero as the armature's pin holes; press the bronze bushes in flush with the spring-side face (the bush bore closes to about F7 on the pins) |\n" % (p.bush_od, p.pin_r))
     w("## Cover (6061 — must be non-magnetic) — `cover.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
     w("| OD | Ø%.1f | |" % (p.housing_od + 2 * p.cover_wall))
@@ -479,33 +485,35 @@ def dimension_sheet(z_front):
     w("| Front wall | %.0f thick, 4× M5 tapped thru on r=%.0f at %s° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |" % (p.cover_front_t, p.cover_bolt_r, "/".join("%.0f" % a for a in p.cover_bolt_deg)))
     w("| Drawbolt hole | M4 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew |\n")
     w("## Other parts")
-    w("- Output shaft: Ø%.0f h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × %.0f. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø%.0f spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - (Z_HUB + 1.0)))
-    w("- Leaf springs: 3× 0.3 mm blue spring-steel shim, %.0f wide with full-round ends, holes Ø3.3 at %.1f centres. **Flat when released**; engaged they bend %.1f mm (≈25 N total)." % (p.spring_w, 2 * p.spring_r * math.sin(math.radians(p.spring_twist_deg / 2)), p.stroke))
-    w("- Spacers: 3× Ø7 × %.2f, Ø3.3 hole (steel or brass), between the armature and the strap." % p.spacer_h)
+    w("- Output shaft: Ø%.0f h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × %.0f. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø%.0f spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - Z_SHAFT0))
+    f_rel = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED)
+    f_eng = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED + p.stroke)
+    w("- Drive pins: 3× Ø%.0f h6 silver steel (unhardened ground rod) × %.0f, pressed %.0f deep into the armature with Loctite 638. E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ %.0f N per pin at the 4.5 N·m cam-out torque) and keep the armature centred." % (p.pin_d, p.pin_len, p.pin_press, 4.5e3 / (3 * p.pin_r)))
+    w("- Return springs: 3× compression spring, music wire %.1f, OD %.0f (ID %.1f: clears the pin, sits on the bush end), free length ≈ %.1f, rate ≈ %.1f N/mm, solid ≤ 5. Installed %.1f long released (≈ %.0f N each, %.0f N total: the armature is pulled firmly against the hub) and %.1f long engaged (≈ %.0f N each, %.0f N total). Any catalogue spring near this works; the coil current is calibrated afterwards. On each pin: spring, M6 washer (ISO 7089, Ø6.4/12 × 1.6), E-clip." % (p.spring_wire, p.spring_od, p.spring_od - 2 * p.spring_wire, p.spring_free, p.spring_rate, SPRING_LEN_RELEASED, f_rel, 3 * f_rel, SPRING_LEN_RELEASED - p.stroke, f_eng, 3 * f_eng))
+    w("- Bushes: 3× sintered (oil-impregnated) bronze plain bush %.0f × %.0f × %.0f, ISO 2795 form C." % (p.pin_d, p.bush_od, p.bush_len))
     w("- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × %.1f (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
     w("- Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):")
-    w("  0. **Spring pack, armature centred on the hub.** The armature floats: only the three springs hold it (nothing slides,")
-    w("     nothing else touches it), so it must be screwed on centred. Hub on the shaft (set screws). Screw the 3 springs to")
-    w("     the hub (low-head M3 from the armature side), stand the armature on its 3 spacers under them and start its 3 screws")
-    w("     through the hub's access holes. Slide a **centring sleeve** over both (any tube bored Ø%.0f H7 through, ~25 long;" % p.rotor_od)
-    w("     it passes over the shaft end and the hub boss), tighten the 3 armature screws, slide the sleeve off. The armature is")
-    w("     now on the shaft's axis within ~0.03, so all %d teeth bear; the springs, very stiff in their own plane, keep it there." % p.teeth)
+    w("  0. **Armature on the hub.** Press the 3 pins into the armature (Loctite 638) and the 3 bushes into the hub, flush with")
+    w("     its spring side. Hub on the shaft (set screws). Push the armature's pins through the bushes from the motor side; on")
+    w("     each pin, from the hub's far side: spring, washer, E-clip (compress the spring with a slotted tube). The springs now")
+    w("     pull the armature flat against the hub. Check: it slides 1.1+ mm toward the motor by hand, freely, and snaps back.")
     w("  1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.")
-    w("  3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,")
+    w("  3. Shaft with hub, armature, pins, springs and stepped spacer already fitted: push it through the inner bearing from the cavity side,")
     w("     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).")
     w("  4. DIN 471-12 down the bore into its groove (~%.0f deep from the outer end) with a cone on the shaft end and a push tube." % (Z_FRONT + p.cover_front_t + BOSS_LEN - (zb[0] + p.bearing_w + 0.1)))
-    w("  5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.")
+    w("  5. Spacer tube, outer 6001 (slides on), outer circlip.")
     a_rot, b_arm = Z_POLE - p.housing_len, Z_ARM + p.stroke - p.housing_len
-    w("  6. **Release check** (the springs are what disengage the clutch, so this decides fail-safe). The gap is out of reach")
-    w("     once the cover is on, so measure two depths before closing, with a depth micrometer:")
+    w("  6. **Released-gap check.** The springs hold the armature against the hub, so the released gap is set by where the hub")
+    w("     sits: the stepped spacer (hub boss → inner race) sets it. The gap is out of reach once the cover is on, so measure two")
+    w("     depths before closing, with a depth micrometer:")
     w("     A = rotor pole face above the field housing's front face (rotor glued on, motor shaft in): %.2f;" % a_rot)
-    w("     B = cover shoulder face (the step that sits on the housing rim) down to the armature's pole face, springs flat: %.2f." % b_arm)
-    w("     B − A is the released gap: %.2f ± 0.10. Smaller means the springs are preloaded TOWARD the rotor (stepped spacer too"
+    w("     B = cover shoulder face (the step that sits on the housing rim) down to the armature's pole face: %.2f." % b_arm)
+    w("     B − A is the released gap: %.2f ± 0.10. Too small: grind the stepped spacer shorter; too big: shim it. After closing,"
       % (p.engaged_gap + p.stroke))
-    w("     short): shim it until B is right. After closing, turning the output by hand with the coil off must not tick (no tooth")
-    w("     contact); coil on (1.5 A) the output locks to the motor, coil off it frees at once.")
+    w("     turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to")
+    w("     the motor, coil off it frees at once.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
+    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
     w("## Teeth")
     w("- %d radial teeth, flanks **flat planes** at %.0f° from the axis: every flank is the plane through a radial line at the pitch" % (p.teeth, p.flank_deg))

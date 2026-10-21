@@ -65,6 +65,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 |---|---|
 | Outer size | 116 (front-back) × 204 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
 | `shell` (one print) | back, bottom, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre block. **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
+| `door` (one print) | **service door** in the floor under the mains tray, 50 × 117 mm from the shell's rim to a pin hinge: it reaches the PSU's two base screws and the belt drawbolt (that hole is in the door, so belt tension is still set with it shut). Hinge: Ø3 × 50 steel pin (silver steel / drill blank) through 5 knuckles that hang 4.25 mm below the floor (the tray is only 0.75 above it, so they can't go inside); press the pin into the shell's two outer knuckles (Ø2.95), it turns in the rest. Shut with 2× M3×8 countersunk into tapped holes in the plate's bottom edge; it swings down 100° (checked). **Print inner face down**, no supports; the shell's knuckles have a 45° drip so they print standing |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, 110 wide, bottom corners R9, both top corners chamfered 10.5 × 45° to sit under the housing's chamfered inside |
 | Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (15× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
@@ -79,8 +80,8 @@ strip along the upper front with their bodies reaching back over the PCB.
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two tabs
   bent up against the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
   - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
-    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads run in
-    a 7 mm groove in the printed floor (open to the shell's rim, so the shell slides on over them). Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
+    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
+    the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
     47.5 × 27.8; pick one rated for a 1–2 mm panel). It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
@@ -102,8 +103,6 @@ strip along the upper front with their bodies reaching back over the PCB.
     its spade and its terminal, so one loose wire can't move. Wire the whole tray on the bench, lid on, before it
     goes in: the PSU terminals can't be reached with the motor above them.
   - **Fuse:** T 2 A ceramic (high breaking capacity) 5 × 20 for 230 V; T 3.15 A for 120 V.
-  - **Print note:** the printed floor is 1.5 mm thick along the screw-head groove (about 110 mm): print the shell with
-    at least 4 perimeters so that strip is solid.
   - **Power budget:** about 35–50 W at rapid traverse and about 60 W during the clutch pull-in (54 W for 50 ms with
     the motor at its 1 A hold current); 75 W covers normal use. Only a jam at rapid (motor at full torque, ~100 W) can
     trip the supply before stall detection acts. That is safe: if the LRS trips (overload, or the overvoltage latch,
@@ -137,12 +136,15 @@ strip along the upper front with their bodies reaching back over the PCB.
   1. Plate: bearings, stub, clutch/motor module, encoder.
   2. Mains tray on the bench: PSU screwed in, inlet clipped in, earth stud, L/N/PE wired and tied, 36 V pair out
      through the grommet, lid on. Bolt its flange to the plate (2× M4, star washers).
-  3. Slide the shell over the module and the tray onto the plate edges; screw it on. Heat-set inserts.
+  3. Slide the shell over the module and the tray onto the plate edges (the door is off: the floor under the PSU screws
+     is open, so nothing catches); screw it on. Heat-set inserts.
   4. PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.
   5. Limit-switch cable through the gland; USB-C extension, BOOT/RESET and SWD wires to the PCB.
   6. Fan (optional; it covers the H1 hole's tool path, so after the PCB); hood with its controls last.
-  7. Earth test (above) before the first plug-in.
-  - **Removal:** hood off; unplug J1/J2/J5/J7 and the panel wires; PCB off; shell off; then the tray comes off the
+  7. Door: hold it in its knuckles, push the Ø3 pin through, close it, 2× M3 into the plate.
+  8. Earth test (above) before the first plug-in.
+  - **PSU screws or a look at the tray floor:** 2 screws, the door swings down. Nothing else comes off.
+  - **Removal:** hood off; door open; unplug J1/J2/J5/J7 and the panel wires; PCB off; shell off; then the tray comes off the
     plate with its two bolts.
 - **Possible next size cut:** the floor is set by the belt-tension block under the clutch; behind it (from W ≈ 130)
   the floor could step up ~35 mm, under the motor. Not done yet.

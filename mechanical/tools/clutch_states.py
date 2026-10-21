@@ -20,14 +20,22 @@ p = C.p
 OUT = os.path.join(ROOT, "clutch", "out")
 TMP = tempfile.mkdtemp()
 cov, z_front = C.cover()
-sp_eng, sp_rel = C.leaf_springs(), C.leaf_springs(released=True)
 common = {"motor": C.motor_stub(), "field_housing": C.field_housing(), "coil": C.coil(), "rotor": C.rotor(),
-          "hub": C.output_hub(), "shaft": C.output_shaft(), "cover": cov, "bearings": Compound(children=C.bearings(z_front))}
+          "hub": C.output_hub(), "bushes": Compound(children=C.bushes()), "shaft": C.output_shaft(), "cover": cov,
+          "bearings": Compound(children=C.bearings(z_front))}
 arm = C.armature()
-states = {"off": dict(armature=Pos(0, 0, p.stroke) * arm, springs=Compound(children=sp_rel[0::2]), spacers=Compound(children=sp_rel[1::2])),
-          "on": dict(armature=arm, springs=Compound(children=sp_eng[0::2]), spacers=Compound(children=sp_eng[1::2]))}
+
+
+def state(released):
+    springs, washers, clips = C.return_springs(released)
+    return dict(armature=Pos(0, 0, p.stroke if released else 0.0) * arm, pins=Compound(children=C.drive_pins(released)),
+                springs=Compound(children=springs), clips=Compound(children=washers + clips))
+
+
+states = {"off": state(True), "on": state(False)}
 COL = {"motor": "#5a5d63", "field_housing": "#8a8f99", "coil": "#c87533", "rotor": "#4f7fbf", "armature": "#d9534f",
-       "springs": "#1f3a7a", "spacers": "#d4b24c", "hub": "#9aa7b5", "shaft": "#cfd6dd", "cover": "#c9d1d9", "bearings": "#e0b050"}
+       "pins": "#3b3f46", "springs": "#2f6fd6", "clips": "#d4b24c", "bushes": "#b5823a", "hub": "#9aa7b5", "shaft": "#cfd6dd",
+       "cover": "#c9d1d9", "bearings": "#e0b050"}
 T = np.array([[0, 0, 1, 0], [0, 1, 0, 0], [-1, 0, 0, 0], [0, 0, 0, 1.0]])   # plane x = 0 -> (u, v) = (z, y)
 
 def polys(shape, name):
@@ -65,9 +73,9 @@ zp = C.Z_POLE
 rot = C.rotor()
 for row, st in enumerate(("off", "on")):
     draw(axs[row, 0], st, *big, True)
-    axs[row, 0].set_title(("COIL OFF (no power): springs hold the armature %.2f mm off the rotor. Teeth don't touch -> handwheel free"
+    axs[row, 0].set_title(("COIL OFF (no power): the springs pull the armature back onto the hub, %.2f mm off the rotor. Teeth apart"
                            % (p.engaged_gap + p.stroke)) if st == "off" else
-                          ("COIL ON: the magnet pulls the armature %.1f mm onto the rotor. Teeth mesh -> motor drives the leadscrew" % p.stroke),
+                          ("COIL ON: the magnet pulls the armature %.1f mm onto the rotor, compressing the springs. Teeth mesh; the pins drive the hub" % p.stroke),
                           fontsize=11, color="#b00" if st == "off" else "#060", loc="left")
     ax = axs[row, 1]
     u, zr = profile(rot, st + "_rot", zp + 6, -1)
@@ -89,7 +97,7 @@ for row, st in enumerate(("off", "on")):
     ax.set_title("teeth apart" if st == "off" else "teeth meshed: flanks pressed together, the motor turns the output", fontsize=10)
 from matplotlib.patches import Patch
 names = {"motor": "motor (shaft + flange)", "field_housing": "field housing (fixed, steel)", "coil": "coil", "rotor": "rotor (on motor shaft)",
-         "armature": "armature (moves 1.1 mm)", "springs": "leaf springs", "spacers": "spring spacers", "hub": "output hub",
+         "armature": "armature (moves 1.1 mm)", "pins": "drive pins (pressed in the armature)", "springs": "return springs", "clips": "washer + E-clip", "bushes": "bronze bushes", "hub": "output hub",
          "shaft": "output shaft -> 20T pulley", "cover": "cover (aluminium)", "bearings": "bearings"}
 fig.legend(handles=[Patch(fc=COL[k], ec="k", label=v) for k, v in names.items()], loc="lower center", ncol=6, fontsize=10)
 fig.suptitle("Left: clutch cut through its axis (motor left, output right; upper half only). Right: the tooth ring unrolled flat.", fontsize=12)
