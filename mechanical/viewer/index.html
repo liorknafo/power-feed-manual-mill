@@ -41,6 +41,7 @@
   <label><input type="checkbox" id="hood" checked> Hood (top + controls)</label>
   <label><input type="checkbox" id="xray"> X-ray (see inside)</label>
   <label><input type="checkbox" id="millref" checked> Mill table-end stand-in</label>
+  <label><input type="checkbox" id="coil"> Clutch coil ON (engaged)</label>
   <div class="sep"></div>
   <button data-view="all">All</button><button data-view="mill">Power feed</button><button data-view="clutch">Clutch</button>
 </div>
@@ -75,7 +76,7 @@ const INFO = {
   clutch_field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body bolted to the motor flange. Holds the coil; its poles pull the armature."],
   clutch_coil: ["Clutch coil", "~850 turns 0.32 mm Cu, ≈24 Ω", "The electromagnet: 1.5 A pull-in, then ≈0.25 A hold from the PCB's clutch driver. No power = clutch released (fail-safe)."],
   clutch_rotor: ["Clutch rotor", "Low-carbon steel, lathe + CNC teeth", "Glued (Loctite 641) onto the motor shaft. Its face carries 30 radial teeth and the magnetic poles."],
-  clutch_armature: ["Clutch armature", "Low-carbon steel, lathe + CNC teeth", "Pulled 1.1 mm against the rotor when the coil is on, so its teeth mesh with the rotor's and the motor drives the leadscrew."],
+  clutch_armature: ["Clutch armature", "Low-carbon steel, lathe + CNC teeth", "Shown released (coil off): three leaf springs hold it 1.25 mm off the rotor, so the teeth don't touch and the handwheel turns freely. With the coil on (tick 'Clutch coil ON') the magnet pulls it 1.1 mm onto the rotor, the teeth mesh and the motor drives the leadscrew."],
   clutch_hub: ["Clutch output hub", "Steel or 6061", "Carries the leaf springs that lift the armature off when the coil is off, and drives the output shaft."],
   clutch_output_shaft: ["Clutch output shaft", "Ø12 h6 ground rod", "Runs in the cover's two 6001 bearings and carries the 20T pulley."],
   clutch_cover: ["Clutch cover", "6061 (non-magnetic), lathe", "Closes the clutch, carries the output bearings and bolts the whole module to the plate."],
@@ -129,7 +130,8 @@ groups.mill.rotation.x = Math.PI / 2;            // feed_unit.py frame (Y up) ->
 groups.clutch.position.set(-300, 0, -60);
 
 const housings = [];
-const tagged = { shell: [], hood: [], millref: [] };
+const tagged = { shell: [], hood: [], millref: [], armature: [] };
+const STROKE = 1.1;   // clutch armature travel (clutch.py p.stroke); the CAD exports it engaged
 const stl = new STLLoader();
 let pending = 0, loaded = 0;
 const status = document.getElementById("status");
@@ -171,7 +173,7 @@ part("mill", F + "module_bolt_heads.stl", 0x202020);
 part("mill", F + "clutch_field_housing.stl", 0x8a8f99, { housing: true });
 part("mill", F + "clutch_cover.stl", 0xc9d1d9, { housing: true });
 part("mill", F + "clutch_rotor.stl", 0xa9b4c2, { metal: 0.7 });
-part("mill", F + "clutch_armature.stl", 0x7d8fa6, { metal: 0.7 });
+part("mill", F + "clutch_armature.stl", 0x7d8fa6, { metal: 0.7, tag: "armature" });
 part("mill", F + "clutch_hub.stl", 0x9aa7b5, { metal: 0.7 });
 part("mill", F + "clutch_output_shaft.stl", 0xcfd6dd, { metal: 0.8, rough: 0.3 });
 part("mill", F + "clutch_coil.stl", 0xc87533, { metal: 0.6 });
@@ -210,8 +212,8 @@ pending++; tick();
 })();
 
 // ---------------------------------------------------------------- toggles, framing
-const ids = ["xray", "shell", "hood", "millref"].map(i => document.getElementById(i));
-const [xray, shellCb, hoodCb, millref] = ids;
+const ids = ["xray", "shell", "hood", "millref", "coil"].map(i => document.getElementById(i));
+const [xray, shellCb, hoodCb, millref, coil] = ids;
 function applyToggles() {
   for (const m of housings) {
     m.material.transparent = xray.checked; m.material.opacity = xray.checked ? 0.18 : 1; m.material.depthWrite = !xray.checked;
@@ -219,6 +221,8 @@ function applyToggles() {
   for (const o of tagged.shell) o.visible = shellCb.checked;
   for (const o of tagged.hood) o.visible = hoodCb.checked;
   for (const o of tagged.millref) o.visible = millref.checked;
+  // coil off (the default, as with no power): the springs hold the armature STROKE back toward the output (-W)
+  for (const o of tagged.armature) o.position.z = coil.checked ? 0 : -STROKE;
 }
 for (const el of ids) el.addEventListener("change", applyToggles);
 for (const cb of document.querySelectorAll("[data-group]")) cb.addEventListener("change", () => { groups[cb.dataset.group].visible = cb.checked; });
