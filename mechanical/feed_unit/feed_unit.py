@@ -684,8 +684,10 @@ def shell():
         s = s - wcyl(KNUCKLE_R + 0.3, w0 - 0.5, w1 + 0.5, HINGE_X, HINGE_Y)
     for i, (w0, w1) in enumerate(SHELL_KNUCKLES):     # vertical while the shell prints: plain cylinders
         s = s + wcyl(KNUCKLE_R, w0, w1, HINGE_X, HINGE_Y)
-        # the steel pin presses into the two end knuckles (Ø2.95) and turns in the rest (Ø3.2)
-        s = s - wcyl(1.475 if i in (0, len(SHELL_KNUCKLES) - 1) else 1.6, w0 - 0.01, w1 + 0.01, HINGE_X, HINGE_Y)
+        # the steel pin goes in from the end-wall end, slides through every knuckle (Ø3.2) and presses only its last
+        # 30 mm into the plate-end knuckle (Ø2.95): a press fit at both ends would mean forcing it 150 mm through one
+        s = s - wcyl(1.475 if i == 0 else 1.6, w0 - 0.01, w1 + 0.01, HINGE_X, HINGE_Y)
+    s = s - pin_paths()
     # boss in the end wall's bottom-front corner (behind the tray's end) for the door's far screw: M3 heat-set insert
     s = s + (bx(40.0, XF + G + 0.5, SPLIT_Y, SPLIT_Y + 9.0, TRAY_W1 + 0.6, W_END - T + 0.5) & skin)
     s = s - ycyl(INSERT_D / 2, SPLIT_Y - 0.1, SPLIT_Y + INSERT_L, END_SCREW[0], END_SCREW[1])
@@ -760,6 +762,13 @@ def door_knuckle(w0, w1, r=KNUCKLE_R):
     return wcyl(r, w0, w1, HINGE_X, HINGE_Y) + xy_prism(drip[::-1], w0, w1)
 
 
+def pin_paths():
+    """The hinge pin's way in (end-wall end) and the punch's way in to push it out (plate end): the axis is only 0.75
+    outside the back wall, so a Ø3.2 groove, 0.75 deep, runs along the back bottom edge beyond the end knuckles."""
+    return wcyl(1.6, SHELL_KNUCKLES[-1][1] - 0.01, W_END + 1, HINGE_X, HINGE_Y) + \
+        wcyl(1.6, W_SHELL0 - 1, SHELL_KNUCKLES[0][0] + 0.01, HINGE_X, HINGE_Y)
+
+
 def door_region():
     """Everything below the split, the whole length of the shell."""
     return bx(XB - T - 1, X_FP + 1, Y0 - T - 6, SPLIT_Y, W_SHELL0 - 1, W_END + 1)
@@ -792,7 +801,7 @@ def door():
         # 1.2 mm web from the knuckle's drip down to the bed: the knuckle stands outside the rounded edge, so without it
         # the knuckle would start printing in mid-air (trim it off after printing)
         d = d + bx(HINGE_X - 0.6, HINGE_X + 0.6, Y0 - T, HINGE_Y - KNUCKLE_R * math.sqrt(2) + 0.3, w0, w1)
-    d = d - wcyl(1.6, SHELL_KNUCKLES[0][0] - 1, SHELL_KNUCKLES[-1][1] + 1, HINGE_X, HINGE_Y)
+    d = d - wcyl(1.6, SHELL_KNUCKLES[0][0] - 1, SHELL_KNUCKLES[-1][1] + 1, HINGE_X, HINGE_Y) - pin_paths()
     d = d - ycyl(6.0, Y0 - T - 1, Y0 + 1, MX, Z_PLATE_OUT + 4)          # belt drawbolt, reachable with the door shut
     for xp, wp in psu_screws():                                       # the PSU's M3 button heads stand 0.9 into it
         d = d - ycyl(4.5, Y0 - G - 1.2, Y0 - G + 0.1, xp, wp)
@@ -944,6 +953,8 @@ def build():
     parts["plug_wires"] = Compound(children=plug_wires())
     parts["psu"], parts["mains_inlet"] = psu_placeholder()
     parts["mains_tray"], parts["mains_tray_lid"] = mains_tray()
+    # the door's hinge pin: Ø3 silver steel, pressed into the shell's plate-end knuckle, the door turns on it
+    parts["door_pin"] = wcyl(1.5, SHELL_KNUCKLES[0][0], SHELL_KNUCKLES[-1][1], HINGE_X, HINGE_Y)
     groups = {"estop": (0, 3), "toggle": (3, 5), "rapid": (5, 7), "dial": (7, 9), "oled": (9, 10), "adapter": (10, 12)}
     cs = controls()
     for nm, (i0, i1) in groups.items():                       # one STL per control, so the viewer can name them
@@ -956,7 +967,7 @@ def build():
                    "spring_len_engaged": clutch.SPRING_LEN_RELEASED - CP.stroke, "stroke": CP.stroke}, fh)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet", "door_pin")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -1032,7 +1043,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 |---|---|
 | Outer size | {X_FP - (XB - T):.0f} (front-back) × {Y1 - Y0 + 2 * T:.0f} (high) × {W_END - W_SHELL0:.0f} mm (along the table); long edges R{f.r_long:.0f}, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the {f.chamber:.0f} mm belt chamber and the controls proud of the front |
 | `shell` (one print) | back, end and lower-front walls ({T:.0f} mm), the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door). **Print standing on the end wall**, {W_END - W_SHELL0:.0f} mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
-| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; press the pin into the shell's two end knuckles (Ø2.95), it turns in the rest. Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
+| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; push the pin in **from the end-wall end** (that line runs just outside the box; from the plate end it would hit the mill): it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95, a drop of CA). To take the door off, punch the pin out from the plate end (there is room under the belt guard). Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, {2 * f.x_half:.0f} wide, bottom corners R{f.r_long - f.panel_t:.0f}, both top corners chamfered {CHAMFER_IN + 0.3:.1f} × 45° to sit under the housing's chamfered inside |
 | Fixing | both prints overlap the plate edges by {f.lap:.0f} mm with {f.fit_gap} mm clearance per side, and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |

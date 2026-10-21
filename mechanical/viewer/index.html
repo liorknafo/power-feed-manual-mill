@@ -86,6 +86,7 @@ const INFO = {
   mains_tray: ["Mains tray", "1.5 mm aluminium, folded, earthed", "Metal box holding the power supply and closing off everything at mains voltage. It goes in from below: its two floor tabs sit in rebates in the plate's bottom edge and 2× M4 go up into the plate (that is also the earth bond). The IEC inlet clips into its end face from outside. Earth test after assembly: ≤ 0.1 Ω from the inlet's earth pin to the plate."],
   mains_tray_lid: ["Mains tray lid", "1.5 mm aluminium, folded", "Closes the mains zone over the PSU terminals. Its edge folds down so the zone is closed all round; 4× M3 into closed-end rivnuts, so no screw tips stick into the mains zone. Line the inside of the fold with 0.4 mm Nomex/Formex."],
   mains_inlet: ["AC inlet", "IEC C14 snap-in with fuse + switch (buy)", "Where the mains cord plugs in, in the end wall. Built-in on/off switch and fuse holder: T 2 A ceramic 5×20 for 230 V (T 3.15 A for 120 V). L and N go switched and fused to the PSU; PE goes to the tray."],
+  door_pin: ["Door hinge pin", "Ø3 × 180 silver steel rod (or a drill blank)", "The bottom door's axis, along the back bottom edge. Push it in from the end-wall end: it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95). The door's knuckles turn on it. Punch it out from the plate end to take the door off."],
   door: ["Bottom door", "3D print (PETG), one piece", "The whole floor of the box, rounded bottom edges included. Open it (2 screws on the front side, it swings down on a Ø3 steel pin hinge along the back edge and hangs beside the box) and the clutch/motor module and the mains tray go in and come out from below; the PCB goes in from the top. Tick 'Open the bottom door' to see it open."],
   shell: ["Housing shell", "3D print (PETG), one piece", "Back, end and lower-front walls with the PCB rails (no floor: that is the bottom door). Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: the AC inlet, a cable gland for the limit switches, USB-C, BOOT/RESET and the SWD port. Vents in the bottom and high on the back."],
   hood: ["Hood", "3D print (PETG), one piece", "Top + control strip in one L-shaped print with engraved labels. Lift it off and the whole PCB is exposed from above."],
@@ -193,6 +194,7 @@ part("mill", F + "psu.stl", 0x5b8fd0, { metal: 0.5, rough: 0.5 });
 part("mill", F + "mains_tray.stl", 0xa7b0ba, { metal: 0.7, rough: 0.4, housing: true });
 part("mill", F + "mains_tray_lid.stl", 0xb9c2cb, { metal: 0.7, rough: 0.4, housing: true });
 part("mill", F + "mains_inlet.stl", 0x1e1e1e, { metal: 0.1, rough: 0.7 });
+part("mill", F + "door_pin.stl", 0x9aa0a6, { metal: 0.9, rough: 0.3 });
 part("mill", F + "door.stl", 0xe0dccf, { metal: 0, rough: 0.7, housing: true, tag: "shell", pivot: doorPivot });
 part("mill", F + "shell.stl", 0xe8e4da, { metal: 0, rough: 0.7, housing: true, tag: "shell" });
 part("mill", F + "hood.stl", 0xf0ece2, { metal: 0, rough: 0.7, housing: true, tag: "hood" });

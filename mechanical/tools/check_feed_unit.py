@@ -15,6 +15,7 @@ ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pu
       ("pulley_20T","clutch_output_shaft"),("belt","pulley_40T"),("belt","pulley_20T"),("plate","tension_block"),
       ("plate","clutch_cover"),("clutch_field_housing","clutch_cover"),("clutch_field_housing","clutch_coil"),
       ("clutch_rotor","motor"),("clutch_field_housing","motor"),("clutch_hub","clutch_output_shaft"),
+      ("door_pin","shell"),   # pressed into the shell's plate-end knuckle (Ø2.95 on a Ø3 pin)
       ("clutch_pins","clutch_armature"),("clutch_pins","clutch_springs"),("clutch_pins","clutch_bushes"),
       ("clutch_bushes","clutch_hub"),("clutch_springs","clutch_bushes"),
       ("clutch_cover","clutch_output_shaft"),("belt_guard","mill_reference"),("belt_guard","plate"),
@@ -265,6 +266,18 @@ tab_heads = [FU.ycyl(3.8, FU.TRAY_BOT - 2.2, FU.TRAY_BOT, xt, FU.TRAY_SCREW_W) f
 v = sum(getattr(h & parts["door"], "volume", 0) or 0 for h in tab_heads)
 print("  tray tab screw heads vs door: %.3f mm3" % v)
 if v > 1e-3:
+    bad += 1
+# the hinge pin goes in from the end-wall end: its whole insertion path beyond the box must be clear, it must slide
+# through every knuckle but the plate-end one, and press only into that one
+w_a, w_b = FU.SHELL_KNUCKLES[0][0], FU.SHELL_KNUCKLES[-1][1]
+path = FU.wcyl(1.5, w_b, w_b + (w_b - w_a) + 10, FU.HINGE_X, FU.HINGE_Y) + \
+    FU.wcyl(1.25, w_a - 60, w_a, FU.HINGE_X, FU.HINGE_Y)        # + a Ø2.5 punch from the plate end to push it out
+hit = sum(getattr(path & parts[n], "volume", 0) or 0 for n in parts if not n.startswith("control_") and n != "door_pin")
+slide = FU.wcyl(1.5, FU.SHELL_KNUCKLES[0][1], w_b, FU.HINGE_X, FU.HINGE_Y)
+rub = sum(getattr(slide & parts[n], "volume", 0) or 0 for n in ("shell", "door"))
+press = getattr(FU.wcyl(1.5, w_a, FU.SHELL_KNUCKLES[0][1], FU.HINGE_X, FU.HINGE_Y) & parts["shell"], "volume", 0) or 0
+print("  hinge pin: insertion path %.3f mm3, sliding %.3f mm3, press fit at the plate-end knuckle %.1f mm3" % (hit, rub, press))
+if hit > 1e-3 or rub > 1e-3 or press < 1:
     bad += 1
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent),
