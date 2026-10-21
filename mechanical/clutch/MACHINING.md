@@ -67,16 +67,20 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
      a. Press the 3 bushes into the hub from the spring side, the stop face on a flat plate, so they finish flush with it.
         Wax both ends of each bush (clean the wax off after curing).
      b. Hub on the shaft with the shaft end **3.70 inside the stop face** (depth micrometer), then the set screws.
-     c. Armature on its own: a thin film of 638 on the walls of its 3 holes only, keeping the top 1.5 mm of each dry.
-     d. Armature pole face down on PE film on a surface plate; the hub on it (stop face on the armature's front face, bushes
-        over the holes); a **centring sleeve** over both (any tube bored Ø76 H7, ~25 long).
+     c. Armature on its own: a thin film of 638 on the walls of its 3 holes only, keeping the 1.5 mm at the front-face
+        (hub-side) mouth of each dry.
+     d. Armature pole face down on PE film on a surface plate (it stands on its tooth tips, ~0.55 proud: that gap lets
+        the glue out); the hub on it, stop face on the armature's front face, its bush holes lined up over the armature's
+        holes by eye; then a **centring sleeve** over both (any tube bored Ø76 H7, ~25 long). The first pin's chamfer
+        finds the rest of the alignment.
      e. Each pin: a Ø6 shaft collar (OD 12–16: it must bridge the Ø10 bush counterbore and clear the Ø24 boss) set 14.2
         from its chamfered end. Push it, dry, straight **down** through its bush into the hole until the collar lands on the
         hub's spring-side face, and never lift it: the tip then sits 0.5 inside the armature's back face. Excess glue is
-        pushed out of the bottom onto the PE film; air in the hole escapes up round the pin, and the 0.3 mouth chamfer
-        catches the little glue it carries.
-     f. Clamp, let it cure (24 h), collars and sleeve off, scrape the back face flush: nothing may stand proud of it (the
-        engaged pole gap is 0.15). Each pin was set by its own bush, so three pins in three bushes can't bind.
+        pushed out of the open bottom of the hole onto the PE film; the 0.3 mouth chamfer catches any that creeps up.
+     f. Clamp lightly (on the hub boss or the shaft end, never on the teeth), let it cure (24 h), collars and sleeve off,
+        scrape the back face flush: nothing may stand proud of it (the engaged pole gap is 0.15). Each pin was set by its
+        own bush, so three pins in three bushes can't bind. Slide the armature off the bushes, clean the wax off both
+        stop faces and the bush ends, slide it back.
      g. On each pin, from the hub's far side: spring (into the counterbore on the bush), washer, E-clip (compress the
         spring with a slotted tube). Check: the armature slides 1.1+ mm toward the motor by hand, freely, and snaps back.
         Keep the stop faces dry (degrease): oil from the bushes on them can make the armature stick to the hub a little.
