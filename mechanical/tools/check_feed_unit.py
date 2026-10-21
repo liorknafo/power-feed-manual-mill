@@ -7,7 +7,7 @@ import sys, itertools
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "feed_unit"))
 import feed_unit as FU
-from build123d import Pos
+from build123d import Pos, Rot
 parts = FU.build()
 ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pulley_40T"),("stub_shaft","oldham_disc"),
       ("oldham_disc","mill_reference"),("plate","standoffs"),("standoffs","mill_reference"),("plate","encoder_posts"),
@@ -75,7 +75,7 @@ for a, b in (("pcb_placeholder", "controls"), ("controls", "shell"), ("encoder",
 for nm, c in zip(FU.CONTROL_NAMES, FU.controls()):
     d = min(c.distance_to(parts[n]) for n in ("shell", "pcb_placeholder", "encoder", "encoder_disc", "plate"))
     print("  control %-14s nearest %.2f mm" % (nm, d))
-    if d < 1.0:
+    if d < 1.0 and nm != "estop_ring":                # the legend ring lies ON the front face, contact is right
         bad += 1
 # the PCB rests ON its printed rails; it must clear the motor (THT leads ~3 mm) over the whole tension slot
 print("  pcb on rails: overlap %.3f mm3" % (parts["pcb_placeholder"] & parts["shell"]).volume)
@@ -84,12 +84,40 @@ for t in (-FU.f.tension_slot, FU.f.tension_slot):
     print("  pcb <-> motor at t=%+.0f: %.2f mm" % (t, d))
     if d < 3.0:
         bad += 1
-# print-bed fit (Prusa MK3S 250 x 210 x 210)
-for n in ("shell", "hood"):
-    bb = parts[n].bounding_box()
-    dims = sorted([bb.size.X, bb.size.Y, bb.size.Z])
-    ok = dims[0] <= 210 and dims[1] <= 210 and dims[2] <= 250
-    print("  print fit %-5s %.0f x %.0f x %.0f -> %s" % (n, bb.size.X, bb.size.Y, bb.size.Z, "OK" if ok else "TOO BIG"))
+# print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
+#   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent)
+bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
+fits = {"shell": (sorted([bb.size.X, bb.size.Y]), bb.size.Z), "hood": (sorted([hb.size.Y, hb.size.Z]), hb.size.X)}
+for n, (foot, height) in fits.items():
+    ok = foot[0] <= 200 and foot[1] <= 240 and height <= 207
+    print("  print fit %-5s footprint %.0f x %.0f, height %.0f -> %s" % (n, foot[0], foot[1], height, "OK" if ok else "TOO BIG"))
     if not ok:
+        bad += 1
+# overhangs in those orientations: down-facing area steeper than 45 degrees, excluding the bed face and small holes
+import numpy as np, trimesh
+for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0))):
+    m = trimesh.load(os.path.join(FU.OUT, n + ".stl"))
+    upv = np.array(up, float)
+    h = m.vertices @ upv
+    tri_h = m.triangles_center @ upv
+    down = (m.face_normals @ upv) < -0.71
+    above_bed = tri_h > h.min() + 0.3
+    area = m.area_faces[down & above_bed]
+    big = area.sum()
+    print("  overhang >45deg %-5s %.0f mm2 (hole ceilings and bridges included)" % (n, big))
+# tool access with the hood off: straight-down screwdriver (Ø6 shaft) and soldering iron (Ø8) onto each PCB hole
+from build123d import Cylinder as Cy, Align as Al
+for px, py in FU.PCB_HOLES:
+    x, y, w = FU.pcb_to_world(px, py, 1.6 + 3.0)          # above an M3 pan head
+    tool = Pos(x, y + 0.5, w) * Rot(-90, 0, 0) * Cy(4.0, 120, align=(Al.CENTER, Al.CENTER, Al.MIN))
+    hit = (tool & parts["shell"]).volume
+    print("  tool access PCB hole (%2d,%2d): %s" % (px, py, "clear" if hit < 1e-3 else "BLOCKED %.1f mm3" % hit))
+    if hit >= 1e-3:
+        bad += 1
+# plug + wire envelopes (J1/J2/J5) against the housing and the drive
+for n in ("shell", "hood", "motor"):
+    v = (parts["plug_wires"] & parts[n]).volume
+    print("  plug wires vs %-6s overlap %.3f mm3, min dist %.2f" % (n, v, parts["plug_wires"].distance_to(parts[n])))
+    if v > 1e-3:
         bad += 1
 print("bad incl. housing clearances", bad)

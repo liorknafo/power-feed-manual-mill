@@ -11,7 +11,7 @@
 | Centre distance | 70.71 mm, tension slot ±3 mm along the centre line |
 | Module position | 70.7 mm from the leadscrew at -90° (below) |
 | Belt plane | 23.0 mm out from the bracket face |
-| Overall | ≈252 mm out from the table end (housing end panel) |
+| Overall | ≈262 mm out from the table end (housing end panel) |
 
 Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the encoder is on the stub).
 
@@ -63,23 +63,27 @@ strip along the upper front with their bodies reaching back over the PCB.
 
 | | |
 |---|---|
-| Outer size | 116 (front-back) × 190 (high) × 202 mm (along the table), long edges rounded R12, end edges R8; plus the 35 mm belt chamber and the controls proud of the front |
-| `shell` (one print) | back, bottom, end and lower-front walls (3 mm), the PCB rails and the insert rails. **Print standing on the end wall** (open side up), 202 mm tall: fits a Prusa MK3S, no supports. PETG, 4 perimeters, 20 % gyroid; ASA if the motor runs hot (see Heat) |
-| `hood` (one print) | the top and the control strip (y -26 … top) in one L-shaped piece. **Print with the strip face down** (the top stands up): labels engraved 0.6 mm come out crisp on the bed side. Lift it off and the whole PCB is exposed from above |
-| Plate | aluminium, 110 wide, corners rounded R9 to match the housing inside |
-| Fixing | both prints overlap the plate edges by 13 mm and screw into them (14× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
-| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside -33 mm below the leadscrew axis: ≥3 mm above the motor even with the motor raised 3 mm by the belt tensioner. Trim the SWD header's (J3) pins flush underneath: they are the closest point to the motor |
-| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
-| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J7) and a 15 × 9 slot to the USB-C: plug in without opening the box |
-| Vents | intake slots in the bottom under the motor, exhaust slots high in the back wall above the PCB (vertical face, so chips don't fall in) |
+| Outer size | 116 (front-back) × 190 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
+| `shell` (one print) | back, bottom, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre block. **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
+| `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
+| Plate | aluminium, 110 wide, bottom corners R9, both top corners chamfered 10.5 × 45° to sit under the housing's chamfered inside |
+| Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (15× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
+| PCB | on 4 printed bosses (heat-set inserts, M3×6), underside -33 mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
+| Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail (19 mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
+| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
+| End wall | 2× M16 cable glands **low**, beside the motor (36 V on the J1 side, limit switches on the J7 side), and a 14 × 8 slot to the USB-C. The USB-C (J4) mouth is 33 mm inside the outer face: use a slim cable (overmould ≤ 12.4 × 6.6, ≥ 27 mm long) or, better, a short USB-C male-to-female panel-mount extension left plugged into J4 |
+| Vents | intake slots in the bottom under the motor; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
-- **BOOTSEL / RESET / fuse:** lift the hood. USB-C goes through the end-wall slot.
-- **Heat:** the motor is inside and the PCB sits above it, so this matters more than before. Default run current is
-  3 A (~16 W in the coils), 1 A at standstill. PETG softens around 75–80 °C. On the bench, run it closed for
-  30 min: if the motor case passes ~65 °C or the TMC5160 area gets hot, lower `MOTOR mA` in the menu (light feeds
-  need far less), reprint in ASA, or fit a 40 mm fan on the back-wall vents.
-- **Order:** plate (bearings, stub, module, encoder) → slide the shell over the module onto the plate edges, screw
-  it on → PCB onto its rails, wire the motor/clutch/encoder up beside it → glands → hood with its controls last.
+- **BOOTSEL / RESET / fuse:** lift the hood.
+- **Heat:** the motor is inside and the PCB sits above it. Default run current 3 A (~16 W in the coils), 1 A at standstill.
+  PETG's glass transition is ~80 °C; the walls are ≥ 5.8 mm from the motor. On the bench, run it closed for 30 min:
+  if the motor case passes ~60 °C, fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
+  less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
+- **Order:** plate (bearings, stub, module, encoder) → slide the shell over the module onto the plate edges, screw it
+  on → heat-set inserts → PCB onto its bosses → wire the motor, clutch and encoder up behind the motor tail → glands →
+  fan (optional, it covers the H1 hole's tool path: fit it after the PCB) → hood with its controls last.
+- **Possible next size cut:** the floor is set by the belt-tension block under the clutch; behind it (from W ≈ 130)
+  the floor could step up ~35 mm, under the motor. Not done yet.
 
 ## PLACEHOLDERS (measure, then edit `F`)
 - `screw_d`, `screw_end_slot_w`, `screw_end_slot_d`, `screw_end_z`: the left leadscrew end and its drive slot.
