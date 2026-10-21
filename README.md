@@ -25,7 +25,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | `firmware/` | Rust firmware for the RP2040 (Embassy). Core logic is unit-tested on the PC | `firmware/README.md` |
 | `mechanical/clutch/` | Tooth clutch: parametric CAD + machining sheet | `mechanical/clutch/MACHINING.md` |
 | `mechanical/feed_unit/` | The whole power feed in one box at the left table end: plate, 2:1 belt, leadscrew stub, encoder, clutch module, motor, controller PCB and control panel | `mechanical/feed_unit/FEED_UNIT.md` |
-| `mechanical/viewer/` | Interactive 3D view of everything (`sh mechanical/viewer/build.sh`) | `mechanical/README.md` |
+| `mechanical/viewer/` | Interactive 3D view of everything (`sh mechanical/viewer/build.sh` builds and serves it; `sh mechanical/viewer/serve.sh [address]` just serves it, from any folder) | `mechanical/README.md` |
 
 ## Status
 
