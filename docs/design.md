@@ -142,7 +142,8 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
 | Clutch | DIY electromagnetic tooth clutch, coil designed for the 36 V bus (see §7) | to build |
 | Motor | STEPPERONLINE NEMA 23, 3 N·m | owned |
-| PSU | Mean Well LRS-75-36, 36 V / 2.1 A + snap-in IEC C14 inlet with fuse (T 2 A ceramic) and switch + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
+| PSU | Mean Well LRS-75-36, 36 V / 2.1 A + snap-in IEC C14 inlet with fuse (T 2 A ceramic) and switch, **for a 1.5 mm panel** (e.g. Schurter KD), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
+| Programming port | Adafruit #6069 USB-C round panel-mount extension (M12 × 1, Ø12.5 hole) + a 90° USB-C male-to-female adapter ("up/down" type) for J4 | to buy |
 | Fallback driver | DM556 | owned — used for breadboard firmware bring-up |
 | Panel | ON-OFF-ON toggle, rapid push-button, mushroom E-stop (NC), 2× limit switches | to buy |
 

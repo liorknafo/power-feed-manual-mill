@@ -334,6 +334,13 @@ for px, py in FU.PCB_HOLES:
     if hit >= 1e-3:
         bad += 1
 # plug + wire envelopes (J1/J2/J5) against the housing and the drive
+# USB-C path (90-degree adapter in J4, the extension's male plug from above, its panel end behind the end wall)
+for n in ("shell", "hood", "controls", "pcb_placeholder", "plug_wires", "motor", "clutch_cover", "mains_tray_lid"):
+    x = parts["usb_path"] & parts[n]
+    v = x.volume if x is not None else 0.0
+    print("  USB path vs %-15s overlap %.3f mm3, min dist %.2f" % (n, v, parts["usb_path"].distance_to(parts[n])))
+    if v > 1e-3:
+        bad += 1
 for n in ("shell", "hood", "motor"):
     v = (parts["plug_wires"] & parts[n]).volume
     print("  plug wires vs %-6s overlap %.3f mm3, min dist %.2f" % (n, v, parts["plug_wires"].distance_to(parts[n])))

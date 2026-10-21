@@ -555,6 +555,19 @@ def psu_screw_heads():
     return [ycyl(2.85, TRAY_BOT - 1.65, TRAY_BOT, xp, wp) for xp, wp in psu_screws()]
 
 
+def usb_envelopes():
+    """The USB-C path to J4, as space envelopes for the checks and renders. J4's mouth is only 29 mm from the end wall
+    and the #6069's straight male end is ~38 mm long (overmold 30 + strain relief 8), so it can't plug in straight: a
+    90-degree USB-C adapter (male into J4, female facing up; any up/down L adapter works, USB-C is reversible) takes it
+    from above. Plus the panel end behind the end wall: Ø18 x 6 flange, Ø11 x 10 body."""
+    ux, uy = USB_PORT
+    wi = W_END - T
+    return [pcb_box(81.4, 93.9, 100.6, 113.6, 1.6, 19.6),        # 90-degree adapter out of J4's mouth (py 100.6)
+            pcb_box(81.6, 93.7, 103.0, 111.0, 19.6, 57.6),       # the straight male plug, going down into it
+            pcb_box(78.0, 97.0, 99.0, 115.0, 57.6, 70.0),        # its cable bending away at the top
+            wcyl(9.0, wi - 6, wi, ux, uy) + wcyl(5.5, wi - 16, wi - 6, ux, uy)]   # panel end, inside the wall
+
+
 def plug_wires():
     """Wire envelopes out of the J1/J2/J5 plugs: straight run toward the end wall, then a bend down past the board edge.
     Checked against the housing, so the plugs can be wired and unplugged in place."""
@@ -730,11 +743,12 @@ def shell():
     # (run down through the split: the door's end band closes the opening's bottom, instead of a 0.5 mm sliver)
     s = s - bx(-fw / 2 - 1, fw / 2 + 1, SPLIT_Y - 1, INLET_Y + fh / 2 + 1, W_END - T - 1, W_END + 1)
     # programming ports, usable with the box closed (above the plugs, clear of the end rails):
-    #   USB-C: round nut-mount panel extension (e.g. Adafruit #6069, 12-18 mm hole), its male end left in J4
+    #   USB-C: round panel-mount extension (Adafruit #6069: M12x1 thread 15 long, Ø18 x 6 flange inside, nut and dust
+    #          cap outside); its straight male end goes into a 90-degree adapter in J4 (J4 is only 29 mm from the wall)
     #   SWD:   1x3 0.1" pin header pressed into a slot from outside, pins sunk in a recess; 3 wires inside to J3.
     #          A Raspberry Pi Debug Probe flashes and recovers the RP2040 through it whatever the firmware does.
     (ux, uy), (sx, sy) = USB_PORT, SWD_PORT
-    s = s - wcyl(8.0, W_END - T - 1, W_END + 1, ux, uy)
+    s = s - wcyl(6.25, W_END - T - 1, W_END + 1, ux, uy)                          # Ø12.5 for the M12 thread
     wi = W_END - T
     s = s + bx(sx - 8, sx + 8, sy - 5, sy + 5, wi - 8, wi + 0.5)                     # boss behind the port
     s = s - bx(sx - 6, sx + 6, sy - 3, sy + 3, W_END - 7, W_END + 1)                 # recess (pins 6 long: sunk)
@@ -743,7 +757,7 @@ def shell():
     # a 5 mm boss inside leaves a 4 mm panel for the nut. Hold BOOT + tap RESET = RP2040 USB drive, box closed
     for bxx, byy in (BOOT_BTN, RESET_BTN):
         s = s + wcyl(8.0, wi - 5, wi + 0.5, bxx, byy)
-        s = s - wcyl(5.5, W_END - 4, W_END + 1, bxx, byy) - wcyl(3.5, wi - 6, W_END + 1, bxx, byy)
+        s = s - wcyl(5.5, W_END - 4, W_END + 1, bxx, byy) - wcyl(3.6, wi - 6, W_END + 1, bxx, byy)   # Ø7.2 (prints small)
     for txt, x, y in (("SWD", sx, sy + 9), ("USB", ux, uy + 12), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
                       ("RESET", RESET_BTN[0], RESET_BTN[1] - 11)):                      # engraved on the bed face
         try:
@@ -951,6 +965,7 @@ def build():
     parts["pcb_placeholder"] = Compound(children=pcb_placeholder())
     parts["controls"] = Compound(children=controls())
     parts["plug_wires"] = Compound(children=plug_wires())
+    parts["usb_path"] = Compound(children=usb_envelopes())
     parts["psu"], parts["mains_inlet"] = psu_placeholder()
     parts["mains_tray"], parts["mains_tray_lid"] = mains_tray()
     # the door's hinge pin: Ø3 silver steel, pressed into the shell's plate-end knuckle, the door turns on it
@@ -967,7 +982,7 @@ def build():
                    "spring_len_engaged": clutch.SPRING_LEN_RELEASED - CP.stroke, "stroke": CP.stroke}, fh)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet", "door_pin")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet", "door_pin", "usb_")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -1050,7 +1065,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside {f.pcb_y:.0f} mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail ({f.tail_clear:.0f} mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
 | Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
-| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6), **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
+| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø12.5 hole for a round USB-C panel extension (Adafruit #6069: M12×1 thread 15 long, Ø18 × 6 flange on the inside, its nut and dust cap on the outside, so ~12 mm stands proud), **plus a 90° USB-C adapter (male to female, "up/down" type) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is ~38 mm long, so it goes down into the adapter from above (space checked, with the panel end's flange and body); **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
@@ -1061,7 +1076,7 @@ strip along the upper front with their bodies reaching back over the PCB.
     base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
     the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
-    {f.inlet_cut[0]} × {f.inlet_cut[1]}; pick one rated for a 1–2 mm panel). It sits 9 mm behind the printed end wall's opening, so
+    {f.inlet_cut[0]} × {f.inlet_cut[1]}; the common fused + switched module, 47.2–47.5 × 27.7–28.3: **buy the version for a 1.5 mm panel** (the tray is 1.5 mm sheet; most snap-ins are for 2 mm and would rattle), e.g. Schurter KD snap-in 1.5 mm). The C13 cord plug (about 29 × 21) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
   - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
