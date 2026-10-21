@@ -1,0 +1,29 @@
+(version 1)
+
+# 36 V nets (input, bus, motor phases, clutch supply, coil terminals) keep 0.5 mm from every other
+# net on the outer layers. Not 36 V and so not listed: the bridge sense nodes SNS_A/SNS_B and the clutch shunt
+# node CLUTCH_SHUNT (both sit within ~0.3 V of GND).
+# Excluded pairs:
+#  - pad-to-pad (U1 is 1.27 mm pitch, U2 0.5 mm pitch; their 36 V pins sit next to logic pins), and any pad of
+#    the fine-pitch power parts U1 (LM5164), U2 (TMC5160), Q2/Q3/Q4 (clutch FETs and
+#    level shifter, SOT-23), whose pin escapes cannot keep 0.5 mm at that pitch;
+#  - the TMC5160 gate-drive / bootstrap / supply fan-out (TMC_*, G_H*, G_L*, SR*) and the clutch P-FET gate
+#    HS_GATE, which are the drivers' own wiring and sit within 12 V of the 36 V node they drive.
+(rule hv_clearance
+  (layer outer)
+  (condition "(A.NetName == '+36V' || A.NetName == '*/MOT_A?' || A.NetName == '*/MOT_B?' || A.NetName == '*/VIN_RAW' || A.NetName == '*/VIN_F' || A.NetName == '*/CLUTCH_VIN' || A.NetName == '*/COIL_P' || A.NetName == '*/COIL_N') && A.Net != B.Net && !(A.Type == 'Pad' && B.Type == 'Pad') && !(B.NetName == '*TMC_*' || B.NetName == '*/G_H*' || B.NetName == '*/G_L*' || B.NetName == '*/SR?H' || B.NetName == '*/SR?L' || B.NetName == '*/HS_GATE' || B.NetName == '*/CLUTCH_VIN') && !(A.NetName == '*/CLUTCH_VIN' && B.NetName == '+36V') && !(A.memberOfFootprint('U1') || B.memberOfFootprint('U1') || A.memberOfFootprint('U2') || B.memberOfFootprint('U2') || A.memberOfFootprint('Q2') || B.memberOfFootprint('Q2') || A.memberOfFootprint('Q3') || B.memberOfFootprint('Q3') || A.memberOfFootprint('Q4') || B.memberOfFootprint('Q4'))")
+  (constraint clearance (min 0.5mm)))
+
+# Each bridge's 2.2 uF / 100 V cap sits right under its FET's drain pins (the review asked for the cap at the
+# drains). J2's body courtyard leaves 4.0 mm between the FET courtyard and the connector, and the 1210 courtyard
+# is 4.7 mm long, so the two courtyards overlap by 0.6 mm; the bodies themselves are 1 mm apart.
+(rule bridge_cap_under_fet
+  (condition "(A.Reference == 'Q10' && B.Reference == 'C20') || (A.Reference == 'Q11' && B.Reference == 'C22') || (A.Reference == 'Q12' && B.Reference == 'C24') || (A.Reference == 'Q13' && B.Reference == 'C26')")
+  (constraint courtyard_clearance (min -1mm)))
+
+# The USB-C (J4) has to sit on the bottom edge between the panel header J6 and mounting hole H4, which the housing
+# fixes. Only the courtyard margins overlap: the USB shell is 0.3 mm below J6's shroud (and its pads clear the
+# shroud outline), and 1.2 mm from the edge of an M3 pan head in H4.
+(rule usb_c_between_j6_and_h4
+  (condition "A.Reference == 'J4' && (B.Reference == 'J6' || B.Reference == 'H4')")
+  (constraint courtyard_clearance (min -2mm)))

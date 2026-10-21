@@ -104,16 +104,20 @@ schematic parity clean).
   motor current.
 - Minimum track / space **0.15 mm**, minimum via **0.5 mm / 0.25 mm drill**, minimum drill **0.2 mm**
   (TQFP-48 exposed-pad thermal vias). Hole-to-copper 0.25 mm.
-- Surface finish: **HASL lead-free or ENIG** (ENIG preferred for the TQFP-48 and 0402 parts).
+- Surface finish: **HASL lead-free or ENIG** (ENIG preferred for the TQFP-48, QFN-56 and 0402 parts).
 - Solder mask any colour; silkscreen white. Vias tented.
-- Remove order number: yes (or put it under J4).
+- Remove order number: yes (or put it under J6).
 - Castellated holes: no. Impedance control: no.
 
 ## Assembly notes
 
-- Components on the top side only. Through-hole parts: J1, J2, J3 (Phoenix MSTBA 5.08), J4 (2x7 IDC),
-  J5 (JST-XH 7p), C1, C27 (470 uF radial), F1 (5x20 fuse holder) — hand solder or JLC THT assembly.
-- The Raspberry Pi Pico (A1) is the SMD (castellated) variant soldered flat on the board.
+- Components on the top side only. Through-hole parts: J1, J2, J5 (Phoenix MSTBA 5.08), J6 (2x7 IDC),
+  J7 (JST-XH 7p), C1, C27 (470 uF radial), F1 (5x20 fuse holder) — hand solder or JLC THT assembly.
+- J3 (SWD, 1x3 0.1 in pin header, THT) is hand-soldered; it is only needed for debugging (firmware loads over
+  USB-C in BOOTSEL mode).
+- The MCU is a bare RP2040 (U3, QFN-56 0.4 mm pitch, exposed pad on thermal vias) with W25Q128JVS flash (U4),
+  12 MHz crystal (Y1), AP2112K-3.3 LDO (U5) and a USB-C receptacle (J4, SMD pins + THT shell pegs) on the
+  bottom edge: all machine-placed, no module to hand-solder.
 - U2 (TMC5160A) exposed pad and the four CSD88537ND half-bridges need the paste layer as generated.
 
 ## Parts without an LCSC number

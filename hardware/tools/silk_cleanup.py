@@ -3,7 +3,8 @@
 1. Reference designators of small passives (R*, C*, SOD-123 diodes, SOT-23-6 ESD arrays) move from
    F.Silkscreen to F.Fab: there is no room for them between 0402/0603 parts and they only generate
    silk-over-pad / overlap warnings. References stay on silk for ICs, the Pico, connectors, FETs and
-   transistors, the switch, fuses, LEDs, the power diodes/TVS, the inductor and the mounting holes.
+   transistors, the switches, fuses, LEDs, the power diodes/TVS, the crystal, the inductor and the mounting holes.
+   Run it again after rp2040_layout.py so the new parts get the same treatment.
 2. Every reference still on silk is checked against pads, other silk and the board edge; if it collides
    it is moved to the nearest free spot around its footprint courtyard.
 3. Silk labels: connector pin names above the bottom-edge connectors, a "36V MAX" warning next to J1
@@ -23,7 +24,15 @@ import pcbnew
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_pcb import PCB, W, H, mm  # noqa: E402
 
-KEEP_ON_SILK = re.compile(r"^(U\d+|A\d+|J\d+|Q\d+|SW\d+|F\d+|H\d+|L\d+|D2|D3|D6|D7|D8)$")
+KEEP_ON_SILK = re.compile(r"^(U\d+|A\d+|J\d+|Q\d+|SW\d+|F\d+|H\d+|L\d+|Y\d+)$")
+
+
+def keep_on_silk(fp):
+    """ICs, connectors, FETs, switches, fuses, holes, inductor, crystal by reference; LEDs and the power diodes /
+    TVS (SMA / SMB packages) by footprint, so the rule survives the RP2040 renumbering."""
+    name = fp.GetFPID().GetLibItemName().wx_str() if hasattr(fp.GetFPID().GetLibItemName(), "wx_str") \
+        else str(fp.GetFPID().GetLibItemName())
+    return bool(KEEP_ON_SILK.match(fp.GetReference())) or name.startswith(("LED_", "D_SMA", "D_SMB"))
 EDGE_INSET = 0.5   # mm, silk must stay this far inside the outline
 PAD_MARGIN = 0.2   # mm, silk must stay this far from any F.Cu pad (mask opening)
 SILK_MARGIN = 0.15
@@ -138,7 +147,7 @@ def main():
     moved = 0
     for fp in board.GetFootprints():
         r = fp.Reference()
-        if not KEEP_ON_SILK.match(fp.GetReference()) and r.GetLayer() == pcbnew.F_SilkS:
+        if not keep_on_silk(fp) and r.GetLayer() == pcbnew.F_SilkS:
             r.SetLayer(pcbnew.F_Fab)
             moved += 1
     print("references moved to F.Fab:", moved)
