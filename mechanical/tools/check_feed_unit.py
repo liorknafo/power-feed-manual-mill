@@ -15,7 +15,8 @@ ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pu
       ("pulley_20T","clutch_output_shaft"),("belt","pulley_40T"),("belt","pulley_20T"),("plate","tension_block"),
       ("plate","clutch_cover"),("clutch_field_housing","clutch_cover"),("clutch_field_housing","clutch_coil"),
       ("clutch_rotor","motor"),("clutch_field_housing","motor"),("clutch_hub","clutch_output_shaft"),
-      ("clutch_pins","clutch_armature"),("clutch_pins","clutch_springs"),("clutch_springs","clutch_hub"),
+      ("clutch_pins","clutch_armature"),("clutch_pins","clutch_springs"),("clutch_pins","clutch_bushes"),
+      ("clutch_bushes","clutch_hub"),("clutch_springs","clutch_bushes"),
       ("clutch_cover","clutch_output_shaft"),("belt_guard","mill_reference"),("belt_guard","plate"),
       ("plate","module_bolt_heads"),
       ("clutch_rotor","clutch_armature")}  # engaged tooth-flank contact (tessellation-level volume)

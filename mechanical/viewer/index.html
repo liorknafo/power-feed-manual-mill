@@ -102,8 +102,9 @@ const INFO = {
   drive_pins: ["Drive pins", "Ø6 h6 silver steel × 25, 3 pcs", "Pressed into the armature, they slide in the hub's bronze bushes: they carry the torque (≈71 N each at the 4.5 N·m cam-out torque) and keep the armature centred. E-clip groove at the end."],
   return_springs: ["Return springs, washers, E-clips", "0.8 mm wire, OD 9, ≈2.5 N/mm, 3 pcs", "On the pins behind the hub: they pull the armature back onto the hub (≈24 N even when released, ≈32 N engaged), so with no power the clutch is always open."],
   bushes: ["Bronze bushes", "Sintered bronze 6 × 10 × 8, 3 pcs", "Pressed into the hub; the drive pins slide in them."],
-  clutch_pins: ["Clutch drive pins", "Ø6 silver steel, 3 pcs, + washers and E-clips", "Pressed into the armature, they slide in bronze bushes in the hub: they turn the hub and keep the armature centred."],
-  clutch_springs: ["Clutch return springs + bushes", "3 springs on the pins, 3 bronze bushes in the hub", "The springs pull the armature back onto the hub when the coil is off (≈24 N preload)."],
+  clutch_pins: ["Clutch drive pins", "Ø6 silver steel, 3 pcs, + washers and E-clips", "Bonded into the armature, they slide in bronze bushes in the hub: they turn the hub and keep the armature centred. The washer and E-clip at each pin's far end are what the return spring pushes on."],
+  clutch_springs: ["Clutch return springs", "3 pcs, 0.8 mm wire, OD 9, ≈2.5 N/mm", "Behind the hub, between the hub and the washer on each pin's far end. They push the washer away from the hub, so they PULL the pin and the armature back onto the hub, away from the rotor: clutch off. Coil on, the magnet pulls the armature 1.1 mm toward the rotor and the springs get SHORTER (8.7 → 7.6 mm), pushing back harder (8 → 10.7 N each)."],
+  clutch_bushes: ["Bronze bushes", "Sintered bronze 6 × 10 × 8, 3 pcs", "Pressed into the hub; the drive pins slide in them."],
   output_hub: ["Clutch output hub", "6061 + 3 bronze bushes", "On the output shaft; the armature's pins slide in it and its face is the armature's released stop (exploded view)."],
   output_shaft: ["Clutch output shaft", "Ø12 h6", "Exploded view."],
   bearings: ["Clutch bearings", "2× 6001-2RS, spacers, circlips", "Carry the output shaft in the cover (exploded view)."],
@@ -135,7 +136,7 @@ groups.mill.rotation.x = Math.PI / 2;            // feed_unit.py frame (Y up) ->
 groups.clutch.position.set(-300, 0, -60);
 
 const housings = [];
-const tagged = { shell: [], hood: [], millref: [], armature: [] };
+const tagged = { shell: [], hood: [], millref: [], armature: [], springs: [] };
 // the bottom door hangs on a pivot group whose origin is its hinge axis (from feed_unit.py's layout file)
 const doorPivot = new THREE.Group();
 const STROKE = 1.1;   // clutch armature travel (clutch.py p.stroke); the CAD exports it engaged
@@ -183,7 +184,8 @@ part("mill", F + "clutch_rotor.stl", 0xa9b4c2, { metal: 0.7 });
 part("mill", F + "clutch_armature.stl", 0x7d8fa6, { metal: 0.7, tag: "armature" });
 part("mill", F + "clutch_hub.stl", 0x9aa7b5, { metal: 0.7 });
 part("mill", F + "clutch_pins.stl", 0x3b3f46, { metal: 0.8, tag: "armature" });
-part("mill", F + "clutch_springs.stl", 0x2f6fd6, { metal: 0.6 });
+part("mill", F + "clutch_springs.stl", 0x2f6fd6, { metal: 0.6, tag: "springs" });
+part("mill", F + "clutch_bushes.stl", 0xb5823a, { metal: 0.6 });
 part("mill", F + "clutch_output_shaft.stl", 0xcfd6dd, { metal: 0.8, rough: 0.3 });
 part("mill", F + "clutch_coil.stl", 0xc87533, { metal: 0.6 });
 part("mill", F + "motor.stl", 0x3d3f44, { housing: true });
@@ -239,6 +241,11 @@ function applyToggles() {
   for (const o of tagged.millref) o.visible = millref.checked;
   // coil off (the default, as with no power): the springs hold the armature STROKE back toward the output (-W)
   for (const o of tagged.armature) o.position.z = coil.checked ? 0 : -STROKE;
+  // the return springs stay seated on the bushes and follow the washers: released they are STROKE longer (toward -W)
+  if (layout.spring_base_w !== undefined) {
+    const s = coil.checked ? 1 : (layout.spring_len_engaged + STROKE) / layout.spring_len_engaged;
+    for (const o of tagged.springs) { o.scale.z = s; o.position.z = layout.spring_base_w * (1 - s); }
+  }
   // the door swings down about its hinge (along x); negative rotation drops its rim end
   if (doorPivot.userData.ready) {
     for (const m of doorPivot.children) m.position.set(0, -doorPivot.position.y, -doorPivot.position.z);

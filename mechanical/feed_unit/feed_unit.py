@@ -863,7 +863,8 @@ def build():
     # one (booleans on a Compound moved as a whole see the children unmoved)
     springs, washers, clips = clutch.return_springs()
     module["clutch_pins"] = Compound(children=[place_module(x) for x in clutch.drive_pins() + washers + clips])
-    module["clutch_springs"] = Compound(children=[place_module(x) for x in springs + clutch.bushes()])
+    module["clutch_springs"] = Compound(children=[place_module(x) for x in springs])
+    module["clutch_bushes"] = Compound(children=[place_module(x) for x in clutch.bushes()])
     big, small = pulleys()
     enc_body, coupling, posts, disc = encoder()
     a, b = bearing_zs()
@@ -901,7 +902,10 @@ def build():
         parts["control_" + nm] = Compound(children=cs[i0:i1])
     with open(os.path.join(OUT, "viewer_layout.json"), "w") as fh:  # the 3D viewer places the KiCad PCB from this
         json.dump({"pcb_x0": f.pcb_x0, "pcb_y": f.pcb_y, "pcb_w0": f.pcb_w0,
-                   "door_axis_y": DOOR_AXIS_Y, "door_axis_w": DOOR_HINGE_W}, fh)
+                   "door_axis_y": DOOR_AXIS_Y, "door_axis_w": DOOR_HINGE_W,
+                   # clutch return springs (exported engaged): seated at this W, they stretch toward -W when released
+                   "spring_base_w": W0 - (clutch.Z_HUB + CP.bush_len),
+                   "spring_len_engaged": clutch.SPRING_LEN_RELEASED - CP.stroke, "stroke": CP.stroke}, fh)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
         if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet")):
