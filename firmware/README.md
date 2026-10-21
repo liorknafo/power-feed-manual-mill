@@ -23,8 +23,8 @@ python3 ../tools/elf2uf2.py target/thumbv6m-none-eabi/release/feed-app ../power-
 ```
 
 **Flashing options** (all work with the box closed, through the end-wall ports):
-- **UF2 (normal updates):** settings menu → last item **USB FLASH** → hold the dial: the RP2040 reboots into its USB drive. Copy `power-feed.uf2` onto `RPI-RP2` through the end-wall USB-C. On the bare board you can also hold BOOTSEL and tap RESET; a blank board always comes up as the drive.
-- **SWD (recovery, always works):** a blank, crashed or misbehaving firmware can't reach the menu. Plug a Raspberry Pi Debug Probe into the end-wall SWD port (wired to J3) and run `cargo run --release`: probe-rs halts the chip, flashes it and streams `defmt` logs.
+- **UF2 from your Mac, box closed, any firmware state:** USB-C cable from the Mac to the end-wall USB-C. Hold the end-wall **BOOT** button, tap **RESET**, release BOOT: the `RPI-RP2` drive appears; copy `power-feed.uf2` onto it. (36 V off: just hold BOOT while plugging the cable in.) When the firmware runs, the settings menu's last item **USB FLASH** does the same.
+- **SWD (debugging, also recovers anything):** a blank, crashed or misbehaving firmware can't reach the menu. Plug a Raspberry Pi Debug Probe into the end-wall SWD port (wired to J3) and run `cargo run --release`: probe-rs halts the chip, flashes it and streams `defmt` logs.
 
 
 ## Structure

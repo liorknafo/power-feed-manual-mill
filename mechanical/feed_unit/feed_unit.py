@@ -360,6 +360,8 @@ R_IN = f.r_long - T                                 # inside radius of the long 
 W_END_SCREW = W_END - f.r_end - 4.0                 # end hood screws: countersunk heads fully on the flat, not the chamfer
 USB_PORT = (15.0, 10.0)     # (x, y) on the end wall
 SWD_PORT = (-15.0, 10.0)
+BOOT_BTN = (-15.0, -9.0)    # 7 mm momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
+RESET_BTN = (15.0, -9.0)
 FAN = dict(w0=115.0, w1=155.0, y0=-12.0, y1=28.0, x_in=XB + 4.5)   # 40 mm fan / louvre field on the back wall
 
 
@@ -569,7 +571,13 @@ def shell():
     s = s + bx(sx - 8, sx + 8, sy - 5, sy + 5, wi - 8, wi + 0.5)                     # boss behind the port
     s = s - bx(sx - 6, sx + 6, sy - 3, sy + 3, W_END - 7, W_END + 1)                 # recess (pins 6 long: sunk)
     s = s - bx(sx - 3.95, sx + 3.95, sy - 1.4, sy + 1.4, wi - 9, W_END - 6.9)          # slot for the header body
-    for txt, x, y in (("SWD", sx, sy - 11), ("USB", ux, uy - 14)):                      # engraved on the bed face
+    # BOOT and RESET: 7 mm panel pushbuttons, recessed 4 mm (Ø11 counterbore) so they can't be hit by accident;
+    # a 5 mm boss inside leaves a 4 mm panel for the nut. Hold BOOT + tap RESET = RP2040 USB drive, box closed
+    for bxx, byy in (BOOT_BTN, RESET_BTN):
+        s = s + wcyl(8.0, wi - 5, wi + 0.5, bxx, byy)
+        s = s - wcyl(5.5, W_END - 4, W_END + 1, bxx, byy) - wcyl(3.5, wi - 6, W_END + 1, bxx, byy)
+    for txt, x, y in (("SWD", sx, sy - 11), ("USB", ux, uy - 14), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
+                      ("RESET", RESET_BTN[0], RESET_BTN[1] - 11)):                      # engraved on the bed face
         try:
             s = s - extrude(Plane(origin=(x, y, W_END), x_dir=(1, 0, 0), z_dir=(0, 0, 1)) * Text(txt, 4.5), amount=-0.6)
         except Exception as e:  # noqa: BLE001 - a missing font must not stop the build
@@ -800,13 +808,16 @@ strip along the upper front with their bodies reaching back over the PCB.
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside {f.pcb_y:.0f} mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail ({f.tail_clear:.0f} mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
 | Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
-| End wall | 2× M16 cable glands **low**, beside the motor (36 V on the J1 side, limit switches on the J7 side). **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
+| End wall | 2× M16 cable glands **low**, beside the motor (36 V on the J1 side, limit switches on the J7 side). **Programming ports, usable with the box closed:** a Ø16 hole for a round nut-mount USB-C panel extension (e.g. Adafruit #6069; its male end stays in J4, plug body ≤ 12.4 × 6.6), **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake slots in the bottom under the motor; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Programming with the box closed:**
-  - **Normal update:** settings menu (long-press the dial while stopped) → last item **USB FLASH** → hold: the RP2040
-    reboots into its USB drive (`RPI-RP2`); copy `power-feed.uf2` onto it through the end-wall USB-C.
-  - **Recovery, any state (blank, crashed, bad build):** Raspberry Pi Debug Probe on the end-wall SWD port (its
+  - **From your Mac, whatever the firmware does:** USB-C cable from the Mac to the end-wall USB-C. Hold **BOOT**, tap
+    **RESET**, release BOOT: the RP2040 comes up as the `RPI-RP2` drive; copy `power-feed.uf2` onto it. (With the 36 V
+    supply off it's even simpler: hold BOOT while plugging the cable in; USB powers the logic.)
+  - **Same thing from the menu** when the firmware runs: settings (long-press the dial while stopped) → last item
+    **USB FLASH** → hold.
+  - **Debugging:** Raspberry Pi Debug Probe on the end-wall SWD port (its
     JST-to-0.1" cable), then `cargo run --release` in `firmware/feed-app` (probe-rs flashes, resets and shows logs).
     The 36 V supply must be on (the probe doesn't power the board), or USB-C power is enough for the logic.
 - **Fuse:** lift the hood.
