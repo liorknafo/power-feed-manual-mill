@@ -31,7 +31,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 ## Armature (steel) — `armature.step`
 | Feature | Dimension | Tolerance / note |
 |---|---|---|
-| OD × thickness | **Ø76.0 × 6.0** | faces parallel within 0.02 |
+| OD × thickness | **Ø76.0 h7 × 6.0** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth AND centres it on the hub at assembly; faces parallel within 0.02 |
 | Bore | Ø11.5 | clearance over the M3 head |
 | Tooth ring | as the rotor, rotated half a pitch (6.0°) | flanks meet 0.25 behind the pole face, root floor 0.75 behind it (from r 31.0 out), tips truncated 0.1 |
 | Spring holes | 3× M3 blind at r=30.0, 90°/210°/330°, front face | drill Ø2.5 × 4.5, bottoming tap, ≥ 3.3 full threads |
@@ -40,7 +40,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 ## Output hub (steel or 6061) — `output_hub.step`
 | Feature | Dimension | Note |
 |---|---|---|
-| Flange | Ø74.0 × 6.0 | |
+| Flange | **Ø76.0 h7** × 6.0 | same chucking as the Ø12 H7 bore (≤ 0.02 TIR): the same diameter as the armature, so one sleeve over both centres the armature at assembly |
 | Boss | Ø24.0 × 10.0, bore **Ø12 H7** | 2× M5 set screws at 90°, mid-boss: one on the shaft flat, one on the round (+ Loctite 243) |
 | Spring holes | 3× M3 tapped thru at r=30.0, 55° after each armature hole | screws go in from the armature side |
 | Access holes | 3× Ø10 at the armature spring points | screwdriver access, clearance for the armature-end screws |
@@ -63,6 +63,12 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Spacers: 3× Ø7 × 2.40, Ø3.3 hole (steel or brass), between the armature and the strap.
 - Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 12.8 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.6 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
 - Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):
+  0. **Spring pack, armature centred on the hub.** The armature floats: only the three springs hold it (nothing slides,
+     nothing else touches it), so it must be screwed on centred. Hub on the shaft (set screws). Screw the 3 springs to
+     the hub (low-head M3 from the armature side), stand the armature on its 3 spacers under them and start its 3 screws
+     through the hub's access holes. Slide a **centring sleeve** over both (any tube bored Ø76 H7 through, ~25 long;
+     it passes over the shaft end and the hub boss), tighten the 3 armature screws, slide the sleeve off. The armature is
+     now on the shaft's axis within ~0.03, so all 30 teeth bear; the springs, very stiff in their own plane, keep it there.
   1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.
   3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,
      supporting the inner race with a tube from the outer end (Loctite 641 on that seat).

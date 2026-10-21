@@ -76,7 +76,7 @@ class P:
     spacer_h: float = 2.4            # springs are FLAT when released; engaged they bend 1.1 toward the rotor
     arm_pocket: float = 1.5          # Ø8 pockets in the armature front under the hub-end low-head screws
     hub_start: float = 2.2           # rotor hub starts above the motor pilot (1.6) with clearance
-    hub_flange_od: float = 74.0
+    hub_flange_od: float = 76.0      # = armature OD: one Ø76 sleeve over both centres the armature at assembly
     hub_flange_t: float = 6.0
     hub_boss_od: float = 24.0
     hub_boss_len: float = 10.0
@@ -457,14 +457,14 @@ def dimension_sheet(z_front):
     w("| Tooth ring | r %.1f … %.1f, %d teeth (%.1f° pitch), flank %.0f° from axis | flanks meet 0.5 below the pole face; root floor %.1f deeper (%.1f below the pole face, from r %.1f out to the OD); tips %.2f above where the flanks meet; see Teeth |\n" % (p.tooth_r_in, p.tooth_r_out, p.teeth, pitch_deg, p.flank_deg, p.root_relief, 0.5 + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tooth_h - p.tip_trunc))
     w("## Armature (steel) — `armature.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
-    w("| OD × thickness | **Ø%.1f × %.1f** | faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
+    w("| OD × thickness | **Ø%.1f h7 × %.1f** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth AND centres it on the hub at assembly; faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
     w("| Bore | Ø%.1f | clearance over the M3 head |" % p.armature_bore)
     w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | flanks meet %.2f behind the pole face, root floor %.2f behind it (from r %.1f out), tips truncated %.1f |" % (pitch_deg / 2, Z_ARM_ROOT - Z_ARM, Z_ARM_ROOT - Z_ARM + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tip_trunc))
     w("| Spring holes | 3× M3 blind at r=%.1f, 90°/210°/330°, front face | drill Ø2.5 × 4.5, bottoming tap, ≥ 3.3 full threads |" % p.spring_r)
     w("| Screw-head pockets | 3× Ø8 × %.1f deep at r=%.1f, %.0f° after each spring hole, front face | clear the hub-end low-head screws |\n" % (p.arm_pocket, p.spring_r, p.spring_twist_deg))
     w("## Output hub (steel or 6061) — `output_hub.step`")
     w("| Feature | Dimension | Note |\n|---|---|---|")
-    w("| Flange | Ø%.1f × %.1f | |" % (p.hub_flange_od, p.hub_flange_t))
+    w("| Flange | **Ø%.1f h7** × %.1f | same chucking as the Ø%.0f H7 bore (≤ 0.02 TIR): the same diameter as the armature, so one sleeve over both centres the armature at assembly |" % (p.hub_flange_od, p.hub_flange_t, p.out_shaft_d))
     w("| Boss | Ø%.1f × %.1f, bore **Ø%.0f H7** | 2× M5 set screws at 90°, mid-boss: one on the shaft flat, one on the round (+ Loctite 243) |" % (p.hub_boss_od, p.hub_boss_len, p.out_shaft_d))
     w("| Spring holes | 3× M3 tapped thru at r=%.1f, %.0f° after each armature hole | screws go in from the armature side |" % (p.spring_r, p.spring_twist_deg))
     w("| Access holes | 3× Ø10 at the armature spring points | screwdriver access, clearance for the armature-end screws |\n")
@@ -484,6 +484,12 @@ def dimension_sheet(z_front):
     w("- Spacers: 3× Ø7 × %.2f, Ø3.3 hole (steel or brass), between the armature and the strap." % p.spacer_h)
     w("- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × %.1f (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
     w("- Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):")
+    w("  0. **Spring pack, armature centred on the hub.** The armature floats: only the three springs hold it (nothing slides,")
+    w("     nothing else touches it), so it must be screwed on centred. Hub on the shaft (set screws). Screw the 3 springs to")
+    w("     the hub (low-head M3 from the armature side), stand the armature on its 3 spacers under them and start its 3 screws")
+    w("     through the hub's access holes. Slide a **centring sleeve** over both (any tube bored Ø%.0f H7 through, ~25 long;" % p.rotor_od)
+    w("     it passes over the shaft end and the hub boss), tighten the 3 armature screws, slide the sleeve off. The armature is")
+    w("     now on the shaft's axis within ~0.03, so all %d teeth bear; the springs, very stiff in their own plane, keep it there." % p.teeth)
     w("  1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.")
     w("  3. Shaft with hub, springs, armature and stepped spacer already fitted: push it through the inner bearing from the cavity side,")
     w("     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).")
