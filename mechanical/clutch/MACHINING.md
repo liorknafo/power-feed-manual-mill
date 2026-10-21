@@ -62,22 +62,24 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Bushes: 3× sintered (oil-impregnated) bronze plain bush 6 × 10 × 8, ISO 2795 form C.
 - Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 12.8 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.6 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
 - Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):
-  0. **Armature on the hub; the bushes line the pins up.** Press the 3 bushes into the hub from the spring side, with
-     the stop face on a flat plate, so they finish flush with it.
-     Hub on the shaft with the shaft end **3.70 inside the stop face** (depth micrometer), then the set screws.
-     Armature pole face down on PE film on a surface plate, the hub on it (stop face on the armature's front face, bushes
-     over the pin holes), a **centring sleeve** over both (any tube bored Ø76 H7, ~25 long). Glue must never reach a
-     bush (the pin-to-bush gap is 0.01–0.03; 638 would lock it), so: wax the bush ends (clean it off after curing); put a Ø6 shaft collar on each
-     pin's free end, set 14.2 from its chamfered end (it then stops with the collar on the hub's spring-side face and
-     the tip 0.5 inside the armature's back face); a thin film of Loctite 638 on the hole walls only, keeping the top
-     1.5 mm of each hole dry; push each pin straight **down** through its bush until the collar lands, and never lift it.
-     Excess glue leaves through the bottom of the through hole, away from the bushes. Clamp, let it cure, collars and
-     sleeve off, scrape the back face flush: nothing may stand proud of it (the
-     engaged pole gap is 0.15). Each pin is set by its own bush, so three pins in three bushes can't bind. Then on each
-     pin, from the hub's far side: spring (into the counterbore on the bush), washer, E-clip (compress the spring with a
-     slotted tube). Check:
-     the armature slides 1.1+ mm toward the motor by hand, freely, and snaps back. Keep the stop faces dry (degrease):
-     oil from the bushes on them can make the armature stick to the hub a little.
+  0. **Armature on the hub; the bushes line the pins up.** Glue must never reach a bush (the pin-to-bush gap is
+     0.01–0.03; Loctite 638 there would lock the pin), so in this order:
+     a. Press the 3 bushes into the hub from the spring side, the stop face on a flat plate, so they finish flush with it.
+        Wax both ends of each bush (clean the wax off after curing).
+     b. Hub on the shaft with the shaft end **3.70 inside the stop face** (depth micrometer), then the set screws.
+     c. Armature on its own: a thin film of 638 on the walls of its 3 holes only, keeping the top 1.5 mm of each dry.
+     d. Armature pole face down on PE film on a surface plate; the hub on it (stop face on the armature's front face, bushes
+        over the holes); a **centring sleeve** over both (any tube bored Ø76 H7, ~25 long).
+     e. Each pin: a Ø6 shaft collar (OD 12–16: it must bridge the Ø10 bush counterbore and clear the Ø24 boss) set 14.2
+        from its chamfered end. Push it, dry, straight **down** through its bush into the hole until the collar lands on the
+        hub's spring-side face, and never lift it: the tip then sits 0.5 inside the armature's back face. Excess glue is
+        pushed out of the bottom onto the PE film; air in the hole escapes up round the pin, and the 0.3 mouth chamfer
+        catches the little glue it carries.
+     f. Clamp, let it cure (24 h), collars and sleeve off, scrape the back face flush: nothing may stand proud of it (the
+        engaged pole gap is 0.15). Each pin was set by its own bush, so three pins in three bushes can't bind.
+     g. On each pin, from the hub's far side: spring (into the counterbore on the bush), washer, E-clip (compress the
+        spring with a slotted tube). Check: the armature slides 1.1+ mm toward the motor by hand, freely, and snaps back.
+        Keep the stop faces dry (degrease): oil from the bushes on them can make the armature stick to the hub a little.
   1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.
   3. Shaft with hub, armature, pins, springs and stepped spacer already fitted: push it through the inner bearing from the cavity side,
      supporting the inner race with a tube from the outer end (Loctite 641 on that seat).
