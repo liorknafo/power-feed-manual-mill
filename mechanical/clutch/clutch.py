@@ -23,8 +23,8 @@ import os
 import sys
 from dataclasses import dataclass
 
-from build123d import (Align, Axis, Box, Compound, Cylinder, ExportSVG, LineType, GeomType, Location, Plane, Polyline,
-                       Pos, Rot, Solid, Unit, chamfer, export_step, export_stl, extrude, loft, make_face)
+from build123d import (Align, Axis, Box, Circle, Compound, Cylinder, ExportSVG, LineType, GeomType, Helix, Location, Plane,
+                       Polyline, Pos, Rot, Solid, Unit, chamfer, export_step, export_stl, extrude, loft, make_face, sweep)
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 import fasteners as FA  # noqa: E402
@@ -298,11 +298,28 @@ def return_springs(released=False):
     z_wash = z_clip - p.washer_t
     z_hub = Z_HUB + p.bush_len                    # spring seated on the bush end, in the 0.7 counterbore it leaves
     springs, washers, clips = [], [], []
-    for x, y in pin_points():
-        springs.append(Pos(x, y, 0) * ring(p.spring_od / 2, p.spring_od / 2 - p.spring_wire, z_wash - z_hub, z_hub))
+    coil = spring_coil(z_wash - z_hub)
+    for k, (x, y) in enumerate(pin_points()):
+        springs.append(Pos(x, y, z_hub) * coil)
         washers.append(Pos(x, y, 0) * ring(6.0, 3.2, p.washer_t, z_wash))
-        clips.append(Pos(x, y, 0) * ring(5.5, 2.5, p.eclip_t, z_clip))
+        clips.append(Pos(x, y, z_clip) * Rot(0, 0, 90 + 120 * k) * eclip())   # each clip's opening faces outward
     return springs, washers, clips
+
+
+def spring_coil(length, turns=5.0):
+    """Helical compression spring (wire Ø spring_wire, OD spring_od) between two seats `length` apart, from z = 0."""
+    r = (p.spring_od - p.spring_wire) / 2
+    h = length - p.spring_wire
+    path = Pos(0, 0, p.spring_wire / 2) * Helix(pitch=h / turns, height=h, radius=r)
+    section = Plane(origin=path @ 0, z_dir=path % 0) * Circle(p.spring_wire / 2)
+    return sweep(section, path=path, is_frenet=True)
+
+
+def eclip():
+    """DIN 6799 RS5 E-clip (sits in the pin's Ø5 groove, Ø11 outside, 0.7 thick): an open ring that snaps on sideways,
+    its opening toward +X."""
+    c = ring(5.5, 2.5, p.eclip_t)
+    return c - Pos(4.0, 0, -0.1) * Box(8.0, 4.4, p.eclip_t + 0.2, align=MIN)
 
 
 def output_hub():
@@ -451,8 +468,8 @@ def build():
         "rotor": (rotor(), "1018 steel (annealed)"),
         "armature": (armature(), "1018 steel (annealed)"),
         "drive_pins": (Compound(children=drive_pins()), "Ø6 h6 silver steel x 25, 3 pcs"),
-        "return_springs": (Compound(children=springs + washers + clips),
-                           "3x compression spring 0.8 wire OD 9, 3x ISO 7089 M6 washer, 3x DIN 6799 RS5 E-clip"),
+        "return_springs": (Compound(children=springs), "3x compression spring 0.8 wire OD 9, free length ~11.9"),
+        "spring_retainers": (Compound(children=washers + clips), "3x ISO 7089 M6 washer + 3x DIN 6799 RS5 E-clip: they hold the springs on the pins"),
         "bushes": (Compound(children=bushes()), "3x sintered bronze plain bush 6 x 10 x 8"),
         "output_hub": (output_hub(), "6061"),
         "output_shaft": (output_shaft(), "12 mm ground shaft"),

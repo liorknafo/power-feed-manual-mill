@@ -111,7 +111,8 @@ const INFO = {
   rotor: ["Clutch rotor", "Low-carbon steel", "On the motor shaft: toothed face and magnetic poles (exploded view)."],
   armature: ["Clutch armature", "Low-carbon steel", "Moves 1.1 mm to mesh its teeth with the rotor; the 3 drive pins are pressed into it (exploded view)."],
   drive_pins: ["Drive pins", "Ø6 h6 silver steel × 25, 3 pcs", "Pressed into the armature, they slide in the hub's bronze bushes: they carry the torque (≈71 N each at the 4.5 N·m cam-out torque) and keep the armature centred. E-clip groove at the end."],
-  return_springs: ["Return springs, washers, E-clips", "0.8 mm wire, OD 9, ≈2.5 N/mm, 3 pcs", "On the pins behind the hub: they pull the armature back onto the hub (≈24 N even when released, ≈32 N engaged), so with no power the clutch is always open."],
+  return_springs: ["Return springs", "0.8 mm wire, OD 9, ≈2.5 N/mm, 3 pcs", "On the drive pins behind the hub, between the bronze bush (in the hub) and a washer held by an E-clip on the pin's end. They push that washer away from the hub, so they pull the pin and the armature back onto the hub: ≈24 N when released, ≈32 N engaged. No power, clutch open."],
+  spring_retainers: ["Spring retainers", "3× M6 washer (ISO 7089) + 3× E-clip DIN 6799 RS5", "What keeps each spring compressed: the E-clip snaps sideways into the groove 1 mm from the pin's end and holds the washer the spring pushes against. No screws."],
   bushes: ["Bronze bushes", "Sintered bronze 6 × 10 × 8, 3 pcs", "Pressed into the hub; the drive pins slide in them."],
   clutch_pins: ["Clutch drive pins", "Ø6 silver steel, 3 pcs, + washers and E-clips", "Bonded into the armature, they slide in bronze bushes in the hub: they turn the hub and keep the armature centred. The washer and E-clip at each pin's far end are what the return spring pushes on."],
   clutch_springs: ["Clutch return springs", "3 pcs, 0.8 mm wire, OD 9, ≈2.5 N/mm", "Behind the hub, between the hub and the washer on each pin's far end. They push the washer away from the hub, so they PULL the pin and the armature back onto the hub, away from the rotor: clutch off. Coil on, the magnet pulls the armature 1.1 mm toward the rotor and the springs get SHORTER (8.7 → 7.6 mm), pushing back harder (8 → 10.7 N each)."],
@@ -217,7 +218,7 @@ for (const c of ["estop", "toggle", "rapid", "dial", "oled", "adapter"])
 const C = "clutch/out/";
 const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], ["coil_bobbin", 0xc87533, -25],
             ["rotor", 0xa9b4c2, 25], ["armature", 0x7d8fa6, 55], ["drive_pins", 0x3b3f46, 55],
-            ["output_hub", 0x9aa7b5, 100], ["bushes", 0xb5823a, 100], ["return_springs", 0x2f6fd6, 112], ["output_shaft", 0xcfd6dd, 130],
+            ["output_hub", 0x9aa7b5, 100], ["bushes", 0xb5823a, 100], ["return_springs", 0x2f6fd6, 112], ["spring_retainers", 0xd4b24c, 126], ["output_shaft", 0xcfd6dd, 130],
             ["bearings", 0xe0b050, 150], ["cover", 0xc9d1d9, 175]];
 for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 0.6, housing: n === "cover" });
 // each part's own fasteners, exploded with it
