@@ -357,6 +357,7 @@ W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim, on the plate edg
 RAIL = f.rail
 INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5.7 heat-set insert hole
 R_IN = f.r_long - T                                 # inside radius of the long edges
+W_END_SCREW = W_END - f.r_end - 4.0                 # end hood screws: countersunk heads fully on the flat, not the chamfer
 FAN = dict(w0=115.0, w1=155.0, y0=-12.0, y1=28.0, x_in=XB + 4.5)   # 40 mm fan / louvre field on the back wall
 
 
@@ -526,8 +527,8 @@ def shell():
     front = front + xy_prism([(XF + G + 0.5, f.band_y - (XF + G + 0.5 - xf0)), (XF + G + 0.5, f.band_y), (xf0, f.band_y)], *rail_w)
     front = windows(front, XF + G + 0.5, xf0 - 0.5, f.band_y - (XF + G + 0.5 - xf0) - 1, f.band_y + RAIL + 1)
     rails = [back, front,
-             bx(XF - RAIL, XF + G + 0.5, f.band_y - RAIL, Y1 - CHAMFER_IN, W_END - T - RAIL, W_END - T + 0.5),   # end-front
-             bx(xr, XF - RAIL, Y1 - RAIL, Y1, W_END - T - RAIL, W_END - T + 0.5)]                             # end-top
+             bx(XF - RAIL, XF + G + 0.5, f.band_y - RAIL, Y1 - CHAMFER_IN, W_END_SCREW - 5, W_END - T + 0.5),  # end-front
+             bx(xr, XF - RAIL, Y1 - RAIL, Y1, W_END_SCREW - 5, W_END - T + 0.5)]                            # end-top
     for r in rails + pcb_bosses():
         s = s + (r & skin)
     s = s - hood_region()
@@ -629,11 +630,11 @@ def screw_joints():
     for w in (100.0, 165.0, 192.0):                   # back-top rail, clear of the tool windows and their 45° tops
         j.append(("hood", "shell", (xr, Y1 + T, w), (0, -1, 0), "insert"))
     for x in (-20.0, 25.0):
-        j.append(("hood", "shell", (x, Y1 + T, W_END - T - RAIL / 2), (0, -1, 0), "insert"))
+        j.append(("hood", "shell", (x, Y1 + T, W_END_SCREW), (0, -1, 0), "insert"))
     for w in (110.0, 200.0):
         j.append(("hood", "shell", (X_FP, f.band_y + RAIL / 2, w), (-1, 0, 0), "insert"))
     for y in (-10.0, 20.0):
-        j.append(("hood", "shell", (X_FP, y, W_END - T - RAIL / 2), (-1, 0, 0), "insert"))
+        j.append(("hood", "shell", (X_FP, y, W_END_SCREW), (-1, 0, 0), "insert"))
     return j
 
 
