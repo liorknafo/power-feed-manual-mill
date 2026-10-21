@@ -80,7 +80,11 @@ const INFO = {
   clutch_output_shaft: ["Clutch output shaft", "Ø12 h6 ground rod", "Runs in the cover's two 6001 bearings and carries the 20T pulley."],
   clutch_cover: ["Clutch cover", "6061 (non-magnetic), lathe", "Closes the clutch, carries the output bearings and bolts the whole module to the plate."],
   motor: ["Stepper motor", "NEMA 23, 3 N·m, 4.2 A (yours)", "Drives the feed through the clutch and the 2:1 belt; the TMC5160 on the PCB drives it."],
-  shell: ["Housing shell", "3D print (PETG), one piece", "Back, bottom, end and lower-front walls with the PCB rails. Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: cable glands (36 V, limit switches) and the USB-C slot. Vents in the bottom and high on the back."],
+  psu: ["36 V power supply", "Mean Well LRS-75-36, 75 W (buy)", "Mains in, 36 V out for the motor driver, clutch and logic. Sits in the earthed aluminium mains tray under the drive, screwed through the tray floor (2× M3, max 3 mm into the case). Only the 36 V pair leaves the tray, through a grommet to J1 on the PCB."],
+  mains_tray: ["Mains tray", "1.5 mm aluminium, folded, earthed", "Metal box holding the power supply and closing off everything at mains voltage. Bolted to the plate by two tabs (that is also the earth bond); the IEC inlet sits in its end face. Earth test after assembly: ≤ 0.1 Ω from the inlet's earth pin to the plate."],
+  mains_tray_lid: ["Mains tray lid", "1.5 mm aluminium, folded", "Closes the mains zone over the PSU terminals. Its edge folds down so the zone is closed all round; 4× M3 into closed-end rivnuts, so no screw tips stick into the mains zone. Line the inside of the fold with 0.4 mm Nomex/Formex."],
+  mains_inlet: ["AC inlet", "IEC C14 snap-in with fuse + switch (buy)", "Where the mains cord plugs in, in the end wall. Built-in on/off switch and fuse holder: T 2 A ceramic 5×20 for 230 V (T 3.15 A for 120 V). L and N go switched and fused to the PSU; PE goes to the tray."],
+  shell: ["Housing shell", "3D print (PETG), one piece", "Back, bottom, end and lower-front walls with the PCB rails. Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: the AC inlet, a cable gland for the limit switches, USB-C, BOOT/RESET and the SWD port. Vents in the bottom and high on the back."],
   hood: ["Hood", "3D print (PETG), one piece", "Top + control strip in one L-shaped print with engraved labels. Lift it off and the whole PCB is exposed from above."],
   control_estop: ["E-stop", "22 mm mushroom, NC contact (buy)", "Hardware emergency stop: opening its loop cuts the motor-driver enable and the clutch drive in hardware, whatever the firmware does. Latches until released and the switch is centred."],
   control_toggle: ["Direction switch", "ON-OFF-ON toggle (buy)", "LEFT / STOP / RIGHT. Centre: motor stopped and clutch released, so the handwheel turns freely. Left/right: the clutch engages and the table feeds that way."],
@@ -172,6 +176,10 @@ part("mill", F + "clutch_hub.stl", 0x9aa7b5, { metal: 0.7 });
 part("mill", F + "clutch_output_shaft.stl", 0xcfd6dd, { metal: 0.8, rough: 0.3 });
 part("mill", F + "clutch_coil.stl", 0xc87533, { metal: 0.6 });
 part("mill", F + "motor.stl", 0x3d3f44, { housing: true });
+part("mill", F + "psu.stl", 0x5b8fd0, { metal: 0.5, rough: 0.5 });
+part("mill", F + "mains_tray.stl", 0xa7b0ba, { metal: 0.7, rough: 0.4, housing: true });
+part("mill", F + "mains_tray_lid.stl", 0xb9c2cb, { metal: 0.7, rough: 0.4, housing: true });
+part("mill", F + "mains_inlet.stl", 0x1e1e1e, { metal: 0.1, rough: 0.7 });
 part("mill", F + "shell.stl", 0xe8e4da, { metal: 0, rough: 0.7, housing: true, tag: "shell" });
 part("mill", F + "hood.stl", 0xf0ece2, { metal: 0, rough: 0.7, housing: true, tag: "hood" });
 for (const c of ["estop", "toggle", "rapid", "dial", "oled", "adapter"])
