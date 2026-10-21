@@ -49,7 +49,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | OD | Ø88.0 | |
 | Spigot bore (over the housing) | **Ø80.0 H7** × 18.0 | slide fit on the housing OD, same chucking as the bearing bore |
 | Shoulder / inner cavity | Ø78.0 | the step from the spigot sits on the housing rim and locates the cover axially; clears the Ø76 rotor / armature |
-| Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss (≈ 89 mm from the open face) | two setups: (1) grip the spigot OD, turn the boss and the front, rough the bore to Ø26, cut the OUTER circlip groove from the outer end; (2) grip the Ø38 boss (not the 4 mm spigot wall), bore the spigot, the Ø78 cavity, the Ø28 H7 bore and the INNER groove |
+| Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss (≈ 89 mm from the open face) | two setups, no long reach: (1) grip the OD lightly (soft jaws: thin wall), face the front, turn the boss, then drill/rough and **bore Ø28 H7 right through from the boss end (36 deep, ~1.3×D)** and cut **both** circlip grooves from that end; (2) mount it on a Ø28 expanding mandrel (or a Ø28 h6 stub turned in place) in the chuck, boss toward the chuck, and bore the Ø80 H7 spigot and the Ø78 cavity: the spigot is then concentric with the bearing bore to the mandrel's accuracy (≤ 0.01). Boring the Ø28 from the open side instead would mean an ~89 mm reach (4.5×D, chatter) |
 | Circlip grooves | 2× for DIN 472-28: Ø29.4 × 1.3, **2.1 land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |
 | Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end | M4×8 into the housing; drilled together with the housing (see there) |
 | Front wall | 8 thick, 4× M5 tapped thru on r=36 at 40/140/190/350° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |
@@ -126,6 +126,21 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 - Lap the pair together with fine compound after cutting; re-check the gap.
 - `flank_deg = 45` suits a standard 90° chamfer mill, but the cam-out force then rises ~1.8x (expect ~1.3x more hold current;
   re-calibrate per design.md §7.4).
+
+## Tools (lathe + 3-axis CNC mill; no indexer, no 4th axis, no form cutters)
+| Tool | Used for |
+|---|---|
+| Lathe turning tool, nose radius **≤ 0.3** (e.g. DCMT 11T302) | all ODs, faces, the tooth bands, the run-out grooves, the seating corners (see Corners) |
+| Boring bars: min. bore Ø8 (L ≥ 25) and min. bore Ø20 (L ≥ 45) | rotor Ø10 H7 bore with its **flat** bottom; cover Ø28 H7 (from the boss end), Ø78 cavity, Ø80 H7 spigot; housing Ø19.2 pole bore and pilot recess |
+| Internal grooving tool 1.3 wide for ≥ Ø26 bores | cover: 2× DIN 472-28 grooves (Ø29.4) |
+| External grooving tool 1.1 wide; a 0.7–0.75 wide ground HSS blade | output shaft DIN 471-12 groove; drive-pin E-clip grooves (DIN 6799 RS5, 0.74) |
+| Expanding mandrel Ø28 (or a stub turned in place) | cover, 2nd setup |
+| Carbide end mills: Ø2 flat (flute ≥ 2), Ø3 (flute ≥ 6), Ø8–10 (flute ≥ 16), Ø10 | tooth roughing; rotor banana slots; housing coil cavity (15 deep); output-shaft spot face and flats, Ø9 counterbores |
+| **60° chamfer mill**, pointed or ≤ 0.2 flat (e.g. a 60° spot drill) | the 120 tooth flanks (60 per part) |
+| Drills Ø2.5, 3.2, 3.3, 3.4, 4.2, 4.5, 5.5, 6.2, 9.8, 11.8 + reamers Ø10 H7, Ø12 H7 | screw holes; drive-pin holes (Ø6.2 drill = the 6.15–6.20 glue gap); hub bush holes (Ø10 H7); hub bore (Ø12 H7) |
+| Taps M3, M4, M5 | rotor screw (motor shaft end), cover/housing radial M4, cover front-wall M5 and drawbolt M4, hub set screws |
+| Workholding: ER32 collet block; a fixture plate with an Ø11.5 spigot, 3 Ø6 dowels and a centre bolt | rotor teeth (by its Ø18.6 hub); armature teeth (see Teeth) |
+| Measuring: depth micrometer, feeler gauges 0.10–0.20, dial indicator | released-gap check (step 6), tooth-mesh pole gap 0.15 ± 0.05, runout ≤ 0.03 / 0.05 |
 
 ## Corners (what the tools leave, and why it doesn't matter)
 - Every internal corner along a cutter's axis is modelled round (slot ends, pockets) or is a drilled/counterbored hole.
