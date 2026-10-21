@@ -273,9 +273,13 @@ def leaf_springs(released=False):
         (ax, ay), (bx, by) = spring_points(k)
         span = math.hypot(bx - ax, by - ay)
         ang = math.degrees(math.atan2(by - ay, bx - ax))
-        # stadium-shaped strap: flat clamped pads (Ø spring_w) at both screws, straight web between them
-        pad_a = Pos(-span / 2, 0, za) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN)
-        pad_b = Pos(span / 2, 0, zb) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN)
+        # stadium-shaped strap: flat clamped pads at both screws (round outer ends, straight sides on to the web),
+        # straight web between them
+        half = Box(p.spring_w / 2, p.spring_w, p.spring_t, align=MIN)
+        pad_a = Pos(-span / 2, 0, za) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN) + \
+            Pos(-span / 2 + p.spring_w / 4, 0, za) * half
+        pad_b = Pos(span / 2, 0, zb) * Cylinder(p.spring_w / 2, p.spring_t, align=MIN) + \
+            Pos(span / 2 - p.spring_w / 4, 0, zb) * half
         web_len = span - p.spring_w + 0.2
         tilt = math.degrees(math.atan2(zb - za, web_len))
         web = Pos(0, 0, (za + zb) / 2) * Rot(0, -tilt, 0) * Box(math.hypot(web_len, zb - za), p.spring_w, p.spring_t,
