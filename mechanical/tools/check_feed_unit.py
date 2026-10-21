@@ -95,8 +95,12 @@ for n in ("shell", "hood", "door"):
 # nothing pokes through the outer skin (rails trimmed to it)
 skin = FU._rounded(FU.XB - FU.T, FU.X_FP, FU.Y0 - FU.T, FU.Y1 + FU.T, FU.W_SHELL0, FU.W_END, FU.f.r_long, FU.f.r_long, FU.f.r_end,
                   r_bottom=FU.R_BOTTOM)
-hinge_zone = FU.bx(-FU.DOOR_X - 1, FU.DOOR_X + 1, FU.Y0 - FU.T - 6, FU.Y0 - FU.T + 0.01, FU.DOOR_HINGE_W - 5,
-                   FU.DOOR_HINGE_W + 6)                     # the door hinge's knuckles hang below the floor on purpose
+hinge_zone = FU.bx(FU.HINGE_X - 6, FU.XB - FU.T + 2.5, FU.HINGE_Y - 6, FU.HINGE_Y + 4.5, FU.W_SHELL0 - 1,
+                   FU.W_END + 1)                      # the door hinge's knuckles stand outside the back wall on purpose
+for sx in (-1, 1):                                    # and the door's 45-degree printing feet
+    xa = sx * (FU.X_FP - FU.R_BOTTOM)
+    hinge_zone = hinge_zone + FU.bx(min(xa, xa + sx * 9), max(xa, xa + sx * 9), FU.Y0 - FU.T - 0.01, FU.Y0 - FU.T + 2.6,
+                                    FU.W_SHELL0 - 1, FU.W_END + 1)
 for n in ("shell", "hood", "door"):
     v = (parts[n] - (skin + hinge_zone)).volume
     print("  %-5s outside the skin: %.3f mm3" % (n, v))
@@ -114,7 +118,14 @@ for part_, target, pt, d, kind in FU.screw_joints():
     if full < 0.95:
         bad += 1
         print("  insert seat at (%.1f, %.1f, %.1f) only %.0f %% material <- FIX" % (pt[0], pt[1], pt[2], 100 * full))
-print("  insert seats checked: %d" % sum(1 for j in FU.screw_joints() if j[4] == "insert"))
+# the door's far screw: M3 insert going up into the end wall's corner boss
+pl = Plane(origin=(FU.END_SCREW[0], FU.SPLIT_Y + 0.05, FU.END_SCREW[1]), z_dir=(0, 1, 0))
+ring = Solid.make_cylinder(4.0, FU.INSERT_L - 0.1, pl) - Solid.make_cylinder(FU.INSERT_D / 2 + 0.05, FU.INSERT_L - 0.1, pl)
+full = (ring & parts["shell"]).volume / ring.volume
+print("  door end-screw insert seat: %.0f %% material" % (100 * full))
+if full < 0.95:
+    bad += 1
+print("  insert seats checked: %d" % (1 + sum(1 for j in FU.screw_joints() if j[4] == "insert")))
 # mains separation: nothing but the PSU and the inlet may enter the earthed tray's inside, and the wiring zone
 # between the PSU terminals and the inlet body (>= 35 mm) must be empty
 t, hw = FU.f.tray_t, FU.TRAY_HALF
@@ -143,9 +154,9 @@ def _hole(axis, x, y, w, r, depth):
     pl = Plane(origin=(x, y, w), z_dir={"+Y": (0, 1, 0), "-Y": (0, -1, 0), "+X": (1, 0, 0), "-X": (-1, 0, 0)}[axis])
     return Solid.make_cylinder(r, depth, pl)
 holes = []
-for xt in FU.TRAY_BOLTS_X:
-    holes.append(("tray bolt x%+.0f" % xt, _hole("W", xt, FU.TRAY_FLANGE_Y, FU.Z_PLATE_OUT, 1.75, 10)))
-for xt in (-15.0, 15.0):
+for xt in FU.TRAY_TABS_X:
+    holes.append(("tray tab M4 x%+.0f" % xt, _hole("+Y", xt, FU.PLATE_BOT + FU.REBATE_H, FU.TRAY_SCREW_W, 1.75, 10)))
+for xt in FU.TB_SCREWS_X:
     holes.append(("tension-block M5 x%+.0f" % xt, _hole("W", FU.MX + xt, FU.TB_Y, FU.Z_PLATE_OUT, 2.1, 12)))
 for part_, target, pt, d, kind in FU.screw_joints():
     if kind == "tap":
@@ -168,7 +179,7 @@ for n in ("shell", "door"):
         bad += 1
 # the door swings down on its hinge pin (axis along x) without touching the shell, the plate, the tray or the screw heads
 from build123d import Axis as _Ax
-hinge = _Ax((0, FU.DOOR_AXIS_Y, FU.DOOR_HINGE_W), (1, 0, 0))
+hinge = _Ax((FU.HINGE_X, FU.HINGE_Y, 0), (0, 0, 1))
 sign = -1 if parts["door"].rotate(hinge, -10).bounding_box().min.Y < parts["door"].bounding_box().min.Y else 1
 others = ["shell", "plate", "mains_tray", "tension_block", "standoffs", "belt_guard", "mill_reference"]
 worst_sw = 0.0
@@ -210,13 +221,49 @@ for dw in range(0, 205, 5):
         bad += 1
         break
 print("  shell slide-on sweep 0..200 mm: worst overlap %.3f mm3" % worst)
+# loading from below with the door open: the clutch/motor module rises into place (bearing boss and output shaft up the
+# plate's slot; its bolts, the 20T pulley, belt and guard come after, from the chamber side), then the mains tray (the
+# tension block fitted, the inlet not yet clipped in). Solids are moved one by one (a Compound moved as a whole
+# confuses the booleans).
+def _solids(names):
+    return [so for n in names for so in parts[n].solids()]
+def _lift(movers, fixed, d_max, step, label):
+    obst = Compound(children=_solids(fixed))
+    worst_ = 0.0
+    for d in range(0, d_max + 1, step):
+        moved = Compound(children=[Pos(0, -d, 0) * so for so in movers])
+        hit = moved & obst
+        v = hit.volume if hit is not None else 0.0
+        worst_ = max(worst_, v)
+        if v > 1e-2:
+            print("  %s BLOCKED %d mm below home: %.2f mm3" % (label, d, v))
+            return 1
+    print("  %s from below (0..%d mm): worst overlap %.3f mm3" % (label, d_max, worst_))
+    return 0
+from build123d import Compound
+module = ["motor", "clutch_cover", "clutch_field_housing", "clutch_coil", "clutch_rotor", "clutch_armature", "clutch_hub",
+          "clutch_output_shaft", "clutch_pins", "clutch_springs", "clutch_bushes"]
+around = ["shell", "plate", "stub_shaft", "bearings_6002", "oldham_disc", "pulley_40T", "encoder", "encoder_disc",
+          "encoder_posts", "encoder_coupling", "standoffs", "mill_reference", "pcb_placeholder", "hood", "controls"]
+mod_top = max(parts[n].bounding_box().max.Y for n in module)
+bad += _lift(_solids(module), around, int(mod_top - (FU.Y0 - FU.T)) + 2, 4, "module")
+tray = ["mains_tray", "mains_tray_lid", "psu"]
+tray_top = max(parts[n].bounding_box().max.Y for n in tray)
+bad += _lift(_solids(tray), around + module + ["tension_block"], int(tray_top - (FU.Y0 - FU.T)) + 2, 3, "mains tray")
+# the tray's tab screws (M4 ISO 7380, head Ø7.6 x 2.2) under the tabs vs the closed door
+from build123d import Cylinder as _Cyl, Align as _Al2
+tab_heads = [FU.ycyl(3.8, FU.TRAY_BOT - 2.2, FU.TRAY_BOT, xt, FU.TRAY_SCREW_W) for xt in FU.TRAY_TABS_X]
+v = sum(getattr(h & parts["door"], "volume", 0) or 0 for h in tab_heads)
+print("  tray tab screw heads vs door: %.3f mm3" % v)
+if v > 1e-3:
+    bad += 1
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent),
-#   door inner face down (height = y extent)
+#   door outer face down (height = y extent)
 bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
 db = parts["door"].bounding_box()
 fits = {"shell": (sorted([bb.size.X, bb.size.Y]), bb.size.Z), "hood": (sorted([hb.size.Y, hb.size.Z]), hb.size.X),
-        "door": (sorted([db.size.X, db.size.Z]), db.size.Y)}             # the door prints inner face down
+        "door": (sorted([db.size.X, db.size.Z]), db.size.Y)}             # the door prints outer face down
 for n, (foot, height) in fits.items():
     ok = foot[0] <= 200 and foot[1] <= 240 and height <= 207
     print("  print fit %-5s footprint %.0f x %.0f, height %.0f -> %s" % (n, foot[0], foot[1], height, "OK" if ok else "TOO BIG"))
@@ -224,7 +271,7 @@ for n, (foot, height) in fits.items():
         bad += 1
 # overhangs in those orientations: down-facing area steeper than 45 degrees, excluding the bed face and small holes
 import numpy as np, trimesh
-for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, -1, 0))):
+for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
     m = trimesh.load(os.path.join(FU.OUT, n + ".stl"))
     upv = np.array(up, float)
     h = m.vertices @ upv

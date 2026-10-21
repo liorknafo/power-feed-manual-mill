@@ -60,7 +60,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 const INFO = {
   mill_reference: ["Mill table end (stand-in)", "Reference only", "A box standing in for the SIEG X3.5D's left table end, leadscrew bracket and leadscrew. Its numbers are placeholders until you measure the mill (docs/mill.md)."],
   standoffs: ["Standoffs", "Steel or 6061, 4 pcs", "Hold the plate off the table end and form the belt chamber. M6 screws go through them into the table end (positions are placeholders until measured)."],
-  plate: ["Main plate", "6061 aluminium, 28 mm, CNC", "The backbone: carries the leadscrew stub bearings, the clutch/motor module (slotted for belt tension) and the encoder, and closes the back of the housing. Corners rounded to match the printed housing."],
+  plate: ["Main plate", "6061 aluminium, 28 mm, CNC", "The backbone: carries the leadscrew stub bearings, the clutch/motor module (in a slot open to the bottom edge, so the module slides up into it from below; slotted for belt tension) and the encoder, and closes the back of the housing. Corners rounded to match the printed housing."],
   stub_shaft: ["Leadscrew stub", "Steel Ø15, lathe", "Runs in the two 6002 bearings in the plate. Its tongue drives the leadscrew through the Oldham disc; the 40T pulley sits on it and the encoder on its outer end."],
   oldham_disc: ["Oldham disc", "Steel 1045 or bronze, greased", "Couples the stub to the leadscrew's drive slot: a tongue on one face, a cross slot on the other, so the plate doesn't have to sit exactly on the leadscrew axis."],
   pulley_40T: ["40T pulley", "HTD-5M for 15 mm belt (buy, re-bore Ø15)", "Big pulley on the leadscrew stub. With the 20T pulley it gives a 2:1 reduction: twice the torque at the leadscrew."],
@@ -72,7 +72,7 @@ const INFO = {
   encoder_disc: ["Encoder adapter disc", "6061, 5 mm", "Holds the encoder on three posts, outside the bearing bore."],
   encoder_posts: ["Encoder posts", "M3 hex standoffs", "Space the encoder disc off the plate."],
   encoder_coupling: ["Flexible coupling", "6 × 8 mm (buy)", "Connects the stub's Ø8 end to the encoder's Ø6 shaft and absorbs small misalignment."],
-  tension_block: ["Belt-tension block", "Steel", "An M5 drawbolt through it pulls the clutch/motor module away from the leadscrew to tension the belt; then the four module bolts are locked. Reached through a hole in the housing bottom."],
+  tension_block: ["Belt-tension block", "Steel, 72 × 14 × 12", "Bridges the plate's slot under the module (2× M5, one in each leg). An M4 drawbolt through it pulls the clutch/motor module away from the leadscrew to tension the belt; then the four module bolts are locked. Reached through a hole in the bottom door."],
   module_bolt_heads: ["Module bolts", "4× M5×35 SHCS", "Hold the clutch/motor module to the plate through slotted holes (belt-tension adjustment)."],
   clutch_field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body bolted to the motor flange. Holds the coil; its poles pull the armature."],
   clutch_coil: ["Clutch coil", "~850 turns 0.32 mm Cu, ≈24 Ω", "The electromagnet: 1.5 A pull-in, then ≈0.25 A hold from the PCB's clutch driver. No power = clutch released (fail-safe)."],
@@ -83,11 +83,11 @@ const INFO = {
   clutch_cover: ["Clutch cover", "6061 (non-magnetic), lathe", "Closes the clutch, carries the output bearings and bolts the whole module to the plate."],
   motor: ["Stepper motor", "NEMA 23, 3 N·m, 4.2 A (yours)", "Drives the feed through the clutch and the 2:1 belt; the TMC5160 on the PCB drives it."],
   psu: ["36 V power supply", "Mean Well LRS-75-36, 75 W (buy)", "Mains in, 36 V out for the motor driver, clutch and logic. Sits in the earthed aluminium mains tray under the drive, screwed through the tray floor (2× M3, max 3 mm into the case). Only the 36 V pair leaves the tray, through a grommet to J1 on the PCB."],
-  mains_tray: ["Mains tray", "1.5 mm aluminium, folded, earthed", "Metal box holding the power supply and closing off everything at mains voltage. Bolted to the plate by two tabs (that is also the earth bond); the IEC inlet sits in its end face. Earth test after assembly: ≤ 0.1 Ω from the inlet's earth pin to the plate."],
+  mains_tray: ["Mains tray", "1.5 mm aluminium, folded, earthed", "Metal box holding the power supply and closing off everything at mains voltage. It goes in from below: its two floor tabs sit in rebates in the plate's bottom edge and 2× M4 go up into the plate (that is also the earth bond). The IEC inlet clips into its end face from outside. Earth test after assembly: ≤ 0.1 Ω from the inlet's earth pin to the plate."],
   mains_tray_lid: ["Mains tray lid", "1.5 mm aluminium, folded", "Closes the mains zone over the PSU terminals. Its edge folds down so the zone is closed all round; 4× M3 into closed-end rivnuts, so no screw tips stick into the mains zone. Line the inside of the fold with 0.4 mm Nomex/Formex."],
   mains_inlet: ["AC inlet", "IEC C14 snap-in with fuse + switch (buy)", "Where the mains cord plugs in, in the end wall. Built-in on/off switch and fuse holder: T 2 A ceramic 5×20 for 230 V (T 3.15 A for 120 V). L and N go switched and fused to the PSU; PE goes to the tray."],
-  door: ["Bottom service door", "3D print (PETG), one piece", "Opens the floor under the mains tray: the power supply's two mounting screws and the belt-tension drawbolt. Hinged on a Ø3 steel pin along its far edge, it swings down; 2× M3 into the plate's bottom edge hold it shut. Tick 'Open the bottom door' to see it open."],
-  shell: ["Housing shell", "3D print (PETG), one piece", "Back, bottom, end and lower-front walls with the PCB rails. Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: the AC inlet, a cable gland for the limit switches, USB-C, BOOT/RESET and the SWD port. Vents in the bottom and high on the back."],
+  door: ["Bottom door", "3D print (PETG), one piece", "The whole floor of the box, rounded bottom edges included. Open it (2 screws on the front side, it swings down on a Ø3 steel pin hinge along the back edge and hangs beside the box) and the clutch/motor module and the mains tray go in and come out from below; the PCB goes in from the top. Tick 'Open the bottom door' to see it open."],
+  shell: ["Housing shell", "3D print (PETG), one piece", "Back, end and lower-front walls with the PCB rails (no floor: that is the bottom door). Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: the AC inlet, a cable gland for the limit switches, USB-C, BOOT/RESET and the SWD port. Vents in the bottom and high on the back."],
   hood: ["Hood", "3D print (PETG), one piece", "Top + control strip in one L-shaped print with engraved labels. Lift it off and the whole PCB is exposed from above."],
   control_estop: ["E-stop", "22 mm mushroom, NC contact (buy)", "Hardware emergency stop: opening its loop cuts the motor-driver enable and the clutch drive in hardware, whatever the firmware does. Latches until released and the switch is centred."],
   control_toggle: ["Direction switch", "ON-OFF-ON toggle (buy)", "LEFT / STOP / RIGHT. Centre: motor stopped and clutch released, so the handwheel turns freely. Left/right: the clutch engages and the table feeds that way."],
@@ -211,9 +211,8 @@ let layout = { pcb_x0: -50, pcb_y: -33, pcb_w0: 129 }, pcbParts = [];
 pending++; tick();
 (async () => {
   try { layout = await (await fetch(M + F + "viewer_layout.json")).json(); } catch (e) { /* keep the defaults */ }
-  if (layout.door_axis_y !== undefined) {         // pivot on the hinge axis; the door mesh is offset back to its place
-    doorPivot.position.set(0, layout.door_axis_y, layout.door_axis_w);
-    for (const m of doorPivot.children) m.position.set(0, -layout.door_axis_y, -layout.door_axis_w);
+  if (layout.door_axis_x !== undefined) {         // pivot on the hinge axis (along W); the door mesh is offset back
+    doorPivot.position.set(layout.door_axis_x, layout.door_axis_y, 0);
     doorPivot.userData.ready = true;
   }
   groups.mill.add(doorPivot); applyToggles();
@@ -246,10 +245,10 @@ function applyToggles() {
     const s = coil.checked ? 1 : (layout.spring_len_engaged + STROKE) / layout.spring_len_engaged;
     for (const o of tagged.springs) { o.scale.z = s; o.position.z = layout.spring_base_w * (1 - s); }
   }
-  // the door swings down about its hinge (along x); negative rotation drops its rim end
+  // the door swings down about its hinge along the back bottom edge (W); its front side drops, it hangs at the back
   if (doorPivot.userData.ready) {
-    for (const m of doorPivot.children) m.position.set(0, -doorPivot.position.y, -doorPivot.position.z);
-    doorPivot.rotation.x = doorCb.checked ? -THREE.MathUtils.degToRad(95) : 0;
+    for (const m of doorPivot.children) m.position.set(-doorPivot.position.x, -doorPivot.position.y, 0);
+    doorPivot.rotation.z = doorCb.checked ? -THREE.MathUtils.degToRad(95) : 0;
   }
 }
 for (const el of ids) el.addEventListener("change", applyToggles);

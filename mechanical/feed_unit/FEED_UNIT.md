@@ -18,14 +18,14 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 ## Parts to make
 | Part | Material | Notes |
 |---|---|---|
-| Plate | 6061, 28 mm, CNC | **Ø32 H7 straight through**: too big to swing on the lathe (300 mm needed), so bore it on the mill with a boring head. DIN 472-32 grooves (Ø33.7 × 1.3) leaving a **2.6 land** at each face: keyseat cutter (head ≤ Ø28, 1.0–1.2 wide, two passes) by circular interpolation, one face, then flip for the other. Clutch-module hole slotted Ø40 and 4× Ø5.5 slots (±3): 5×D deep, cut them from both faces. 4× Ø6.6 for the standoffs; 3× M3 × 8 deep on r=23 (encoder posts, outer face); 2× M5 × 12 for the tension block. Edge holes (M3 × 8 for the housing): stand the plate in the vise on its edge, or use a drill-guide block. Corners R9 |
+| Plate | 6061, 28 mm, CNC | **Ø32 H7 straight through**: too big to swing on the lathe (300 mm needed), so bore it on the mill with a boring head. DIN 472-32 grooves (Ø33.7 × 1.3) leaving a **2.6 land** at each face: keyseat cutter (head ≤ Ø28, 1.0–1.2 wide, two passes) by circular interpolation, one face, then flip for the other. Clutch-module hole slotted Ø40 **and run on down through the bottom edge** (the module slides up into it from below; the two legs are 35 wide, tied by the tension block) and 4× Ø5.5 slots (±3): 5×D deep, cut them from both faces. Bottom edge: 2 rebates 2.2 deep × 14 wide × 13 in from the outer face at x ±34 (Ø6 end mill from the edge, R3 inner corners) with an M4 × 10 tapped up into each, for the mains tray's tabs. 4× Ø6.6 for the standoffs; 3× M3 × 8 deep on r=23 (encoder posts, outer face); 2× M5 × 12 for the tension block (x ±30). Edge holes (M3 × 8 for the housing): stand the plate in the vise on its edge, or use a drill-guide block. Corners R9 |
 | Standoffs | steel or 6061 | 4× Ø14 × 35, Ø6.6 thru (M6 screws into the table end) |
 | Leadscrew stub | steel, turned from **Ø20** stock | from the table side: tongue 4.8 × 14 × 4 (across the Oldham slot), Ø15 with a 0.6 flat for the 40T set screws, **Ø18 × 2 shoulder** on the inner bearing's inner race (corner radius ≤ 0.3 so the bearing's chamfer clears it), Ø15 h6 at both bearings with **Loctite 641 on the inner one** (as on the clutch; easier than holding k6 and h6 bands on a manual lathe), DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø8 × 10 encoder end |
 | Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 1.8, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø24 × 9: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 4.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, 5 mm | Ø50 with a flat 20 from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r=23 (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
 | Encoder posts | 3× M3 hex standoffs F-F, 21 mm | |
-| Tension block | steel | 44 × 14 × 12 on the plate's outer face below the module, 2× M5 to the plate; M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
+| Tension block | steel | 72 × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±30); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø28 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
 ## Assembly
@@ -64,11 +64,11 @@ strip along the upper front with their bodies reaching back over the PCB.
 | | |
 |---|---|
 | Outer size | 116 (front-back) × 204 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
-| `shell` (one print) | back, bottom, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre block. **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
-| `door` (one print) | **service door** in the floor under the mains tray, 50 × 117 mm from the shell's rim to a pin hinge: it reaches the PSU's two base screws and the belt drawbolt (that hole is in the door, so belt tension is still set with it shut). Hinge: Ø3 × 50 steel pin (silver steel / drill blank) through 5 knuckles that hang 4.25 mm below the floor (the tray is only 0.75 above it, so they can't go inside); press the pin into the shell's two outer knuckles (Ø2.95), it turns in the rest. Shut with 2× M3×8 countersunk into tapped holes in the plate's bottom edge; it swings down 100° (checked). **Print inner face down**, no supports; the shell's knuckles have a 45° drip so they print standing |
+| `shell` (one print) | back, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door). **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
+| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included (116 × 207 mm, up to 8.5 mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; press the pin into the shell's two end knuckles (Ø2.95), it turns in the rest. Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x 44) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips under the knuckles, no supports |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, 110 wide, bottom corners R9, both top corners chamfered 10.5 × 45° to sit under the housing's chamfered inside |
-| Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (15× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
+| Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (12× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside -33 mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail (19 mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
 | Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
@@ -77,8 +77,8 @@ strip along the upper front with their bodies reaching back over the PCB.
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
   motor (104 wide, 32 high over the PSU and 42 over the terminal/inlet zone, W 63…253; 1.5 mm
-  1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two tabs
-  bent up against the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
+  1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two flat floor tabs
+  that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
   - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
     base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
     the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
@@ -92,9 +92,10 @@ strip along the upper front with their bodies reaching back over the PCB.
     PSU, right over its terminal screws: on your PSU check ≥ 3 mm from the fold to the L/N screw heads, and line the
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
-  - **Fixing and earth:** the tray's two tabs bolt to the plate's outer face (2× M4 into tapped holes; checked against
-    every other hole in the plate): that holds it
-    and earths it. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
+  - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
+    2× **M4 × 8 button head (ISO 7380) + star washer** go up through them into the plate (checked against every other
+    hole in the plate); the heads sit in pockets in the door. That holds it and earths it; the 2 ribs on the door
+    carry its far end when the door is shut. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
     leads longer than L/N so they pull out last. Don't anodise the plate or the tray, or scrape the bond faces.
     Through the plate the motor (4 M5), the clutch (cover + housing screws), the encoder posts, the stub and the mill
     table are all on the same earth.
@@ -132,20 +133,26 @@ strip along the upper front with their bodies reaching back over the PCB.
   if the motor case passes ~60 °C or the PSU case passes ~60 °C (the LRS gives full power only up to 50 °C ambient;
   it runs at about half load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
   less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
-- **Order:**
-  1. Plate: bearings, stub, clutch/motor module, encoder.
-  2. Mains tray on the bench: PSU screwed in, inlet clipped in, earth stud, L/N/PE wired and tied, 36 V pair out
-     through the grommet, lid on. Bolt its flange to the plate (2× M4, star washers).
-  3. Slide the shell over the module and the tray onto the plate edges (the door is off: the floor under the PSU screws
-     is open, so nothing catches); screw it on. Heat-set inserts.
-  4. PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.
-  5. Limit-switch cable through the gland; USB-C extension, BOOT/RESET and SWD wires to the PCB.
-  6. Fan (optional; it covers the H1 hole's tool path, so after the PCB); hood with its controls last.
-  7. Door: hold it in its knuckles, push the Ø3 pin through, close it, 2× M3 into the plate.
-  8. Earth test (above) before the first plug-in.
-  - **PSU screws or a look at the tray floor:** 2 screws, the door swings down. Nothing else comes off.
-  - **Removal:** hood off; door open; unplug J1/J2/J5/J7 and the panel wires; PCB off; shell off; then the tray comes off the
-    plate with its two bolts.
+- **Order** (the box goes on first; the module and the tray go in from below, the PCB from above):
+  1. Plate on the bench: stub bearings and stub, encoder. Shell onto the plate edges (back and front screws), heat-set
+     inserts, door on its hinge (pin through the knuckles along the back), hanging open. (Or all of this on the mill.)
+  2. **Clutch/motor module up through the bottom**: its bearing boss and output shaft slide up the plate's slot until the
+     cover's front face is on the plate (checked: nothing in the way on the whole lift). The 4 module bolts from the belt-
+     chamber side, then the 20T pulley, belt and guard in the chamber.
+  3. Tension block onto the plate below the module (2× M5), drawbolt into the cover; tension the belt, lock the 4 bolts.
+  4. Mains tray, wired on the bench (PSU in, earth stud, L/N/PE tied, 36 V pair out through the grommet, lid on; the
+     inlet left loose inside the wiring zone on its leads): **up through the bottom** (checked), tabs into the plate's
+     rebates, 2× M4 + star washers up into the plate. Reach in through the end wall's inlet opening, draw the inlet out
+     through the tray's cut-out and snap it in. Feed the 36 V pair up beside the motor.
+  5. Hood off: PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.
+  6. Limit-switch cable through the gland; USB-C extension, BOOT/RESET and SWD wires to the PCB.
+  7. Fan (optional; it covers the H1 hole's tool path, so after the PCB); hood with its controls.
+  8. Close the door: 2 screws on the front side. Earth test (above) before the first plug-in.
+  - **Service from below:** 2 screws and the door swings down to the back: the PSU's screws, the tray's 2 screws (the tray drops out
+    once the inlet is pushed back in and J1 is unplugged) and, with the tray out, the module's underside, the tension
+    block and the wiring beside the motor.
+  - **Removal of the module:** door open, tray out, J2/J5 unplugged, tension block off, belt off, 4 module bolts out
+    (chamber side): it comes down out of the slot.
 - **Possible next size cut:** the floor is set by the belt-tension block under the clutch; behind it (from W ≈ 130)
   the floor could step up ~35 mm, under the motor. Not done yet.
 

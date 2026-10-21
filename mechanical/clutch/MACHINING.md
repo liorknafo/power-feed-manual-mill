@@ -52,7 +52,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss (≈ 89 mm from the open face) | two setups: (1) grip the spigot OD, turn the boss and the front, rough the bore to Ø26, cut the OUTER circlip groove from the outer end; (2) grip the Ø38 boss (not the 4 mm spigot wall), bore the spigot, the Ø78 cavity, the Ø28 H7 bore and the INNER groove |
 | Circlip grooves | 2× for DIN 472-28: Ø29.4 × 1.3, **2.1 land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |
 | Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end | M4×8 into the housing; drilled together with the housing (see there) |
-| Front wall | 8 thick, 4× M5 tapped thru on r=36 at 55/125/190/350° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |
+| Front wall | 8 thick, 4× M5 tapped thru on r=36 at 40/140/190/350° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |
 | Drawbolt hole | M4 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew |
 
 ## Other parts

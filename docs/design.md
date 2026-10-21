@@ -290,8 +290,10 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
     the floor below the tray has no vents.
   - Only the 36 V pair leaves the tray (grommet in the lid). No low-voltage wire enters it; `check_feed_unit.py` checks
     that nothing else intrudes into the tray and that the wiring zone (≥ 35 mm) is empty.
-  - The tray is bolted to the plate, which fixes it and bonds it to PE; the plate in turn earths the motor, clutch,
-    encoder and the mill table. Earth leads longer than L/N. Inlet fuse in L, T 2 A ceramic.
+  - The tray goes in from below through the bottom door: its two floor tabs screw up into rebates in the plate's bottom
+    edge (2× M4 + star washers), which fixes it and bonds it to PE; the plate in turn earths the motor, clutch, encoder
+    and the mill table. With the door open only the tray's earthed floor and those screw heads are exposed. Earth leads
+    longer than L/N. Inlet fuse in L, T 2 A ceramic.
   - Commissioning: earth-pin to plate / motor / clutch / encoder / PSU case ≤ 0.1 Ω before the first plug-in.
   - The rocker switch on the inlet is the mains switch. The E-stop removes drive enable and clutch, not mains.
 - **E-stop scope:** the E-stop removes the driver enable (TMC5160 outputs float) and the clutch drive (the table becomes mechanically free). It does **not** disconnect the 36 V bus. A mains-side contactor would be a separate addition.

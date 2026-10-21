@@ -62,6 +62,8 @@ def main():
     total = 0
     for name, s in parts.items():
         hits = concave_axial_edges(s)
+        if name == "plate":   # the tray-tab rebates are milled from the bottom edge: their ceiling corners are floor corners
+            hits = [(q, ln) for q, ln in hits if abs(q.Y - (FU.PLATE_BOT + FU.REBATE_H)) > 0.01]
         total += len(hits)
         print("%-22s %3d sharp internal axial corners" % (name, len(hits)))
         for p, ln in hits[:12]:

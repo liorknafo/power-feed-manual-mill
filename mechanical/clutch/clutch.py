@@ -100,9 +100,10 @@ class P:
     cover_front_t: float = 8.0       # front wall carries 4x M5 for bolting the module to the feed-unit plate
     cover_bolt_r: float = 36.0
     # module bolts, local angles. Mounted on the feed unit the module is flipped (local +Y = away from the
-    # leadscrew), so 55/125 are the two low bolts either side of the drawbolt and 190/350 sit just above
-    # the axis, outside the belt-guard outline with their heads.
-    cover_bolt_deg: tuple = (55.0, 125.0, 190.0, 350.0)
+    # leadscrew), so 40/140 are the two low bolts either side of the drawbolt (wide enough apart to clear the plate's
+    # slot, open to its bottom edge, that the module slides up into) and 190/350 sit just above the axis, outside the
+    # belt-guard outline with their heads.
+    cover_bolt_deg: tuple = (40.0, 140.0, 190.0, 350.0)
     cover_spigot_z: float = 2.0      # spigot over the housing OD from here to the housing front (18 mm)
     cover_cavity_d: float = 78.0     # = shoulder on the housing rim; clears the Ø76 rotor/armature by 1 mm
     cover_screws: int = 6
