@@ -954,7 +954,9 @@ strip along the upper front with their bodies reaching back over the PCB.
     can't half-unplug on a vibrating table;
   - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
     (so the zone is closed all round): 4× M3 into **closed-end** M3 rivnuts in the walls' 10 mm folded flanges (no
-    screw tips inside the mains zone); the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
+    screw tips inside the mains zone); the screws also bond the lid to the tray. That folded edge ends 1 mm above the
+    PSU, right over its terminal screws: on your PSU check ≥ 3 mm from the fold to the L/N screw heads, and line the
+    inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
   - **Fixing and earth:** the tray's two tabs bolt to the plate's outer face (2× M4 into tapped holes; checked against
     every other hole in the plate): that holds it
@@ -967,6 +969,8 @@ strip along the upper front with their bodies reaching back over the PCB.
     its spade and its terminal, so one loose wire can't move. Wire the whole tray on the bench, lid on, before it
     goes in: the PSU terminals can't be reached with the motor above them.
   - **Fuse:** T 2 A ceramic (high breaking capacity) 5 × 20 for 230 V; T 3.15 A for 120 V.
+  - **Print note:** the printed floor is 1.5 mm thick along the screw-head groove (about 110 mm): print the shell with
+    at least 4 perimeters so that strip is solid.
   - **Power budget:** about 35–50 W at rapid traverse and about 60 W during the clutch pull-in (54 W for 50 ms with
     the motor at its 1 A hold current); 75 W covers normal use. Only a jam at rapid (motor at full torque, ~100 W) can
     trip the supply before stall detection acts. That is safe: if the LRS trips (overload, or the overvoltage latch,
