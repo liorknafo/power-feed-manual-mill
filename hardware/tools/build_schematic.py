@@ -311,7 +311,8 @@ def build():
     })
     s.row(Part("U", "MCU_RaspberryPi:RP2040", "RP2040", QFN56, mcu, props=P("Raspberry Pi RP2040", "C2040")))
     s.row(*[C("100nF", V3, GND) for _ in range(6)], C("100nF", V3, GND), C("100nF", V3, GND),   # IOVDD x6, AVDD, USB_VDD
-          C("1uF", V3, GND), C("1uF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND))
+          C("1uF", V3, GND), C("1uF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND), C("100nF", "VDD_CORE", GND),
+          C("100nF", "VDD_CORE", GND))                                       # 3rd: right at DVDD pin 23 (layout review)
     s.row(
         Part("U", "Memory_Flash:W25Q128JVS", "W25Q128JVS", SOIC8_208,
              {"1": "QSPI_SS", "2": "QSPI_SD1", "3": "QSPI_SD2", "4": GND, "5": "QSPI_SD0", "6": "QSPI_SCLK",
@@ -342,6 +343,9 @@ def build():
              props=P("HRO TYPE-C-31-M-12", "C165948")),
         R("5.1k", "USB_CC1", GND), R("5.1k", "USB_CC2", GND),
         R("27", "USB_CONN_DP", "USB_DP"), R("27", "USB_CONN_DM", "USB_DM"),
+        Part("U", "Power_Protection:USBLC6-2SC6", "USBLC6-2SC6", SOT23_6,                 # ESD at the connector
+             {"1": "USB_CONN_DP", "6": "USB_CONN_DP", "3": "USB_CONN_DM", "4": "USB_CONN_DM", "5": "VBUS", "2": GND},
+             props=P("STMicroelectronics USBLC6-2SC6", "C7519")),
         D("Device:D_Schottky", "B5819W", "VSYS", V5, SOD123, props=P("Changjing B5819W SL", "C8598")),
         D("Device:D_Schottky", "B5819W", "VSYS", "VBUS", SOD123, props=P("Changjing B5819W SL", "C8598")),
         Part("U", "Regulator_Linear:AP2112K-3.3", "AP2112K-3.3", SOT23_5,
