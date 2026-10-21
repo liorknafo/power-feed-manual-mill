@@ -626,7 +626,7 @@ def screw_joints():
     for y in (0.0, 26.0):
         j.append(("hood", "plate", (X_FP, y, wl), (-1, 0, 0), "tap"))
     xr = XB + CHAMFER_IN + RAIL / 2
-    for w in (100.0, 165.0, 205.0):                   # back-top rail, clear of the tool windows
+    for w in (100.0, 165.0, 192.0):                   # back-top rail, clear of the tool windows and their 45° tops
         j.append(("hood", "shell", (xr, Y1 + T, w), (0, -1, 0), "insert"))
     for x in (-20.0, 25.0):
         j.append(("hood", "shell", (x, Y1 + T, W_END - T - RAIL / 2), (0, -1, 0), "insert"))

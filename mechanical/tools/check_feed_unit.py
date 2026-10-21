@@ -97,6 +97,19 @@ for n in ("shell", "hood"):
     print("  %-5s outside the skin: %.3f mm3" % (n, v))
     if v > 1e-2:
         bad += 1
+# every heat-set insert must sit in solid material: ring Ø4..Ø8 round each insert hole, over its depth, >= 95 % full
+from build123d import Plane, Solid
+for part_, target, pt, d, kind in FU.screw_joints():
+    if kind != "insert":
+        continue
+    start = tuple(pt[i] + d[i] * (FU.T + 0.05) for i in range(3))
+    pl = Plane(origin=start, z_dir=d)
+    ring = Solid.make_cylinder(4.0, FU.INSERT_L - 0.1, pl) - Solid.make_cylinder(FU.INSERT_D / 2 + 0.05, FU.INSERT_L - 0.1, pl)
+    full = (ring & parts[target]).volume / ring.volume
+    if full < 0.95:
+        bad += 1
+        print("  insert seat at (%.1f, %.1f, %.1f) only %.0f %% material <- FIX" % (pt[0], pt[1], pt[2], 100 * full))
+print("  insert seats checked: %d" % sum(1 for j in FU.screw_joints() if j[4] == "insert"))
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent)
 bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
