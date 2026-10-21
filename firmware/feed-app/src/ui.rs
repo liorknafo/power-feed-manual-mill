@@ -81,6 +81,12 @@ pub fn draw<D: DrawTarget<Color = BinaryColor>>(d: &mut D, s: &Status) {
     if let Some((item, value)) = s.menu {
         let _ = Text::with_text_style("SETTINGS", Point::new(64, 0), small, center).draw(d);
         let _ = Text::with_text_style(item.label(), Point::new(64, 16), small, center).draw(d);
+        if item == Item::UsbFlash {
+            let _ = Text::with_text_style("hold: reboot to", Point::new(64, 30), small, center).draw(d);
+            let _ = Text::with_text_style("USB drive RPI-RP2", Point::new(64, 41), small, center).draw(d);
+            let _ = Text::with_text_style("press=next", Point::new(64, 54), small, center).draw(d);
+            return;
+        }
         let mut v: Buf<16> = Buf::new();
         let _ = if value < 20.0 { write!(v, "{:.2}", value) } else { write!(v, "{:.0}", value) };
         let _ = Text::with_text_style(v.as_str(), Point::new(64, 30), big, center).draw(d);

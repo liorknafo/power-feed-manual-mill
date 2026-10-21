@@ -33,7 +33,7 @@ use embassy_rp::watchdog::Watchdog;
 use embassy_time::{Duration, Instant, Ticker, Timer};
 use embedded_hal::pwm::SetDutyCycle;
 use feed_core::clutch::{adc_to_bus_mv, adc_to_ma, ClutchController, DUTY_MAX};
-use feed_core::menu::{Button, Menu, Press};
+use feed_core::menu::{Button, Item, Menu, Press};
 use feed_core::quadrature::{DialAccel, Quadrature};
 use feed_core::state::{Inputs, Mode, State};
 use feed_core::{units, Controller, Settings};
@@ -229,6 +229,15 @@ async fn control(mut hw: ControlHw) {
         let idle = matches!(ctrl.state, State::Idle | State::Interlock | State::Fault(_));
         let mut dial_to_feed = detents;
         match button.update(hw.dial_sw.is_low(), now) {
+            Some(Press::Long) if menu.active && menu.item() == Item::UsbFlash => {
+                // reboot into the ROM's USB bootloader (RPI-RP2 drive) so the box can be flashed closed. Only reachable
+                // while idle; everything is switched off first, and the outputs' pull-downs keep it off during the
+                // reboot. Unsaved menu edits are dropped.
+                hw.drv_en.set_level(Level::Low);
+                hw.clutch_ls.set_level(Level::Low);
+                hw.clutch_pwm.set_duty_cycle_fraction(0, DUTY_MAX).ok();
+                embassy_rp::rom_data::reset_to_usb_boot(0, 0);
+            }
             Some(Press::Long) if menu.active => {
                 menu.active = false;
                 // the save pauses everything for up to ~0.4 s (sector erase): only ever while idle

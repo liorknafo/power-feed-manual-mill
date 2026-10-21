@@ -2,7 +2,8 @@
 //!
 //! * short press while running/idle: toggle fine/coarse dial steps (handled by the app);
 //! * long press while IDLE: enter the settings menu;
-//! * in the menu: turn = change value, short press = next item, long press = save and exit.
+//! * in the menu: turn = change value, short press = next item, long press = save and exit;
+//!   on the last item (USB FLASH) a long press reboots into the RP2040's USB bootloader instead.
 
 use crate::Settings;
 
@@ -70,9 +71,11 @@ pub enum Item {
     Accel,
     MotorReverse,
     EncoderReverse,
+    /// Not a setting: a long press here reboots into the ROM's USB bootloader (UF2 flashing with the box closed).
+    UsbFlash,
 }
 
-pub const ITEMS: [Item; 10] = [
+pub const ITEMS: [Item; 11] = [
     Item::Pitch,
     Item::BeltRatio,
     Item::RunCurrent,
@@ -83,6 +86,7 @@ pub const ITEMS: [Item; 10] = [
     Item::Accel,
     Item::MotorReverse,
     Item::EncoderReverse,
+    Item::UsbFlash,
 ];
 
 impl Item {
@@ -98,6 +102,7 @@ impl Item {
             Item::Accel => "ACCEL mm/s2",
             Item::MotorReverse => "MOTOR REVERSE 0/1",
             Item::EncoderReverse => "ENCODER REVERSE 0/1",
+            Item::UsbFlash => "USB FLASH",
         }
     }
 
@@ -113,6 +118,7 @@ impl Item {
             Item::Accel => s.accel_mm_s2,
             Item::MotorReverse => s.motor_reverse as u8 as f32,
             Item::EncoderReverse => s.encoder_reverse as u8 as f32,
+            Item::UsbFlash => 0.0,
         }
     }
 
@@ -132,6 +138,7 @@ impl Item {
             // any turn of the dial toggles
             Item::MotorReverse => n.motor_reverse ^= detents % 2 != 0,
             Item::EncoderReverse => n.encoder_reverse ^= detents % 2 != 0,
+            Item::UsbFlash => {}
         }
         if n.is_sane() {
             n
@@ -219,5 +226,15 @@ mod tests {
             m.next();
         }
         assert_eq!(m.item(), Item::Pitch);
+    }
+
+    #[test]
+    fn usb_flash_item_changes_nothing() {
+        let s = Settings::default();
+        assert_eq!(ITEMS[ITEMS.len() - 1], Item::UsbFlash);
+        let n = Item::UsbFlash.adjust(&s, 5);
+        assert_eq!(n.leadscrew_pitch_mm, s.leadscrew_pitch_mm);
+        assert_eq!(n.run_current_ma, s.run_current_ma);
+        assert_eq!(n.motor_reverse, s.motor_reverse);
     }
 }

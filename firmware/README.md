@@ -14,7 +14,7 @@ firmware/
 # one-time
 rustup target add thumbv6m-none-eabi
 
-# logic tests on the PC (47 tests: every state-machine rule in docs/design.md §3)
+# logic tests on the PC (48 tests: every state-machine rule in docs/design.md §3, plus menu/units/TMC maths)
 cd firmware/feed-core && cargo test
 
 # firmware
@@ -22,9 +22,10 @@ cd firmware/feed-app && cargo build --release
 python3 ../tools/elf2uf2.py target/thumbv6m-none-eabi/release/feed-app ../power-feed.uf2
 ```
 
-**Flashing options:**
-- **UF2:** connect USB-C, hold the board's BOOTSEL button and tap RESET, then copy `power-feed.uf2` onto the `RPI-RP2` drive. A blank board always comes up this way.
-- **probe-rs:** with a Raspberry Pi Debug Probe on the 3-pin 0.1" SWD header, run `cargo run --release` (uses probe-rs, gives live `defmt` logs).
+**Flashing options** (all work with the box closed, through the end-wall ports):
+- **UF2 (normal updates):** settings menu → last item **USB FLASH** → hold the dial: the RP2040 reboots into its USB drive. Copy `power-feed.uf2` onto `RPI-RP2` through the end-wall USB-C. On the bare board you can also hold BOOTSEL and tap RESET; a blank board always comes up as the drive.
+- **SWD (recovery, always works):** a blank, crashed or misbehaving firmware can't reach the menu. Plug a Raspberry Pi Debug Probe into the end-wall SWD port (wired to J3) and run `cargo run --release`: probe-rs halts the chip, flashes it and streams `defmt` logs.
+
 
 ## Structure
 
@@ -79,7 +80,7 @@ Draws the OLED from a status snapshot. The control loop pre-empts it.
   - turn: change the value;
   - press: next item;
   - long press: save to flash and exit.
-  - Items: screw pitch, belt ratio, motor current, hold current, clutch hold current, rapid speed, max feed, acceleration, motor reverse, encoder reverse.
+  - Items: screw pitch, belt ratio, motor current, hold current, clutch hold current, rapid speed, max feed, acceleration, motor reverse, encoder reverse, **USB FLASH** (hold: reboot into the USB bootloader; driver and clutch switched off first, unsaved edits dropped).
   - Edits go to a working copy that's applied only on save. Leaving the menu any other way drops them.
 
 ## Commissioning (do these in order)
