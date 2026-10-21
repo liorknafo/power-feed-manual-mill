@@ -50,4 +50,4 @@ idempotent and only touch the items they describe.
 
 - **Board:** 100×100 mm, 4 layers: F.Cu signals + GND pour, In1 GND plane, In2 split +36V (power area) / +3V3, B.Cu signals + GND pour.
 - **Autorouter:** Freerouting 2.4.1, run on Java 25. Set `FREEROUTING_JAR` to point at your copy.
-- **Order** with 2 oz outer copper if possible (motor phases ~3.5 A RMS).
+- **Order** with standard 1 oz outer copper: the widths are sized for 1 oz at ~3.5 A RMS motor phases, and 2 oz would break the 0.15 mm fine-pitch spacing.

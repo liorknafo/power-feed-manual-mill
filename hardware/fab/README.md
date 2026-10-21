@@ -15,8 +15,9 @@ schematic parity clean).
 - Size 100 x 100 mm, rectangular, 4 mounting holes M3.
 - **4 layers**, 1.6 mm FR-4, stack-up F.Cu signal / In1 GND / In2 power (+36 V, +3V3) / B.Cu signal.
   JLCPCB standard 4-layer stack (JLC04161H-7628) is fine.
-- **Outer copper 2 oz** recommended (motor phases ~3.5 A RMS); inner 0.5 oz. 1 oz works at reduced
-  motor current.
+- **Outer copper 1 oz**, inner 0.5 oz (JLC standard). The motor-phase / supply widths and pours are sized for
+  1 oz at ~3.5 A RMS; the via counts are the real current limit. Do not order 2 oz: the 0.15 mm spaces and the
+  fine-pitch parts (QFN-56, TQFP-48) are below JLC's 2 oz rules.
 - Minimum track / space **0.15 mm**, minimum via **0.5 mm / 0.25 mm drill**, minimum drill **0.2 mm**
   (TQFP-48 exposed-pad thermal vias). Hole-to-copper 0.25 mm.
 - Surface finish: **HASL lead-free or ENIG** (ENIG preferred for the TQFP-48, QFN-56 and 0402 parts).
@@ -31,13 +32,13 @@ schematic parity clean).
 - J3 (SWD, 1x3 0.1 in pin header, THT) is hand-soldered; it is only needed for debugging (firmware loads over
   USB-C in BOOTSEL mode).
 - The MCU is a bare RP2040 (U3, QFN-56 0.4 mm pitch, exposed pad on thermal vias) with W25Q128JVS flash (U4),
-  12 MHz crystal (Y1), AP2112K-3.3 LDO (U5) and a USB-C receptacle (J4, SMD pins + THT shell pegs) on the
-  bottom edge: all machine-placed, no module to hand-solder.
+  12 MHz crystal (Y1), AP2112K-3.3 LDO (U6), USBLC6-2SC6 USB ESD (U5) and a USB-C receptacle (J4, SMD pins +
+  THT shell pegs) on the bottom edge: all machine-placed, no module to hand-solder.
 - U2 (TMC5160A) exposed pad and the four CSD88537ND half-bridges need the paste layer as generated.
 
 ## Parts without an LCSC number
 
-The schematic carries an `LCSC` field for 188 of 189 parts (72 of 73 BOM lines).
+The schematic carries an `LCSC` field for 190 of 191 parts (73 of 74 BOM lines).
 These BOM lines have no LCSC number yet and must be matched to a JLC basic/extended part (or sourced
 separately) before ordering assembly:
 

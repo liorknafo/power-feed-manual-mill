@@ -3,6 +3,9 @@
 Adding the RP2040 parts to the MCU sheet (commit 2d7a7f7) renumbered every part annotated after it. The schematic is
 the source of truth, so rp2040_layout.py renames the board footprints to match. The earlier hand-fix scripts were
 written against the old numbering; they look parts up through cur() so they stay rerunnable on either board.
+
+Round 2 (commit 62b23bf, PCB review round 2): a VDD_CORE 100 nF (new C40) and the USBLC6-2SC6 ESD array (new U5)
+were added, so C40..C63 -> C41..C64 and U5..U9 -> U6..U10 (OLD2NEW2, applied on top of OLD2NEW).
 """
 
 OLD2NEW = {
@@ -20,11 +23,21 @@ OLD2NEW = {
 }
 
 
+OLD2NEW2 = dict([("C%d" % n, "C%d" % (n + 1)) for n in range(40, 64)] +
+                [("U%d" % n, "U%d" % (n + 1)) for n in range(5, 10)])
+
+
 def renumbered(board):
     """True once rp2040_layout.py has renamed the footprints (the Pico module A1 is gone, the RP2040 U3 is there)."""
     return board.FindFootprintByReference("A1") is None
 
 
+def renumbered2(board):
+    """True once the round-2 renumbering is applied (U10, the TLV9061, exists)."""
+    return board.FindFootprintByReference("U10") is not None
+
+
 def cur(board, old_ref):
     """The current reference of a part known by its pre-RP2040 reference."""
-    return OLD2NEW.get(old_ref, old_ref) if renumbered(board) else old_ref
+    ref = OLD2NEW.get(old_ref, old_ref) if renumbered(board) else old_ref
+    return OLD2NEW2.get(ref, ref) if renumbered2(board) else ref

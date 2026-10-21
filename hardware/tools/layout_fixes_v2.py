@@ -19,24 +19,30 @@ only positions, tracks, vias and zones. The fixes, keyed to the review findings:
 
 8. Plane split. The In2 +36V block under the clutch / op-amp logic (x 47-93, y 28-61) is removed; +36V on
    In2 is now only the input and power stage (x <= 64.5, y 28.5-86 plus the buck input corner) and a
-   4 mm finger up to the clutch PTC F2 (x 64-68, y 31-56) so the PTC keeps a plane feed. The rest of In2
-   is +3V3, one connected polygon.
+   4 mm finger up to the clutch PTC F2 (x 64-68, y 33.5-53) so the PTC keeps a plane feed. The finger stops
+   below the USB pair / I2C_SCL (which run east at y 31.6-32.5 and down at x >= 69.7, over +3V3) and above LIM_R's
+   B.Cu drop at x 66.5, so no signal on B.Cu crosses the split. The rest of In2 is +3V3, one connected polygon.
 
 2. FET decoupling. Each 2.2 uF/100 V cap (C20/C22/C24/C26) moves to directly below its half-bridge's drain
-   island (pins 7/8 of Q10..Q13), +36V pad up against the island, GND pad over two 0.6/0.3 vias. Each
+   island (pins 7/8 of Q10..Q13), +36V pad up against the island, GND pad tied to a column of 0.6/0.3 vias
+   right beside it (three at C20 / C26, two at C22 / C24 where the next J2 pad is close). Each
    drain island is enlarged and gets a column of four 0.6/0.3 vias into In2 beside the cap. The phase
    fingers to J2 are redrawn (2.05 mm, F.Cu + B.Cu, four stitching vias each).
 
 3/4. Sense network. The SNS_A sense line no longer wraps under J2: it leaves the SNS_A pour by a via next
-   to R18 pad 1 and runs on B.Cu under the FET bodies to R19 pad 1. The Kelvin returns for SRAL/SRBL are
-   dedicated B.Cu traces from R18 pad 2 / R21 pad 2 to R20 pad 1 / R23 pad 1, paired with the sense lines;
-   rule areas keep the GND planes and pours off those traces and their vias so they carry no load current,
-   and R20/R23 pad 1 have no pour connection. The 47 ohm filters stay next to U2.
+   to R18 pad 1 and runs on B.Cu under the FET bodies to R19 pad 1. The sense-resistor GND pads (R18 / R21
+   pad 2) sit in solid GND islands with six / seven 0.6/0.3 vias. NOT done: dedicated Kelvin returns for
+   SRAL/SRBL. R20 / R23 pad 1 (the 47 ohm filters next to U2) still drop into the F.Cu GND pour beside U2: they
+   are boxed in by SRAL, SRBL, LIM_L and the LIM_R / ENC_OUT_A / ENC_OUT_N B.Cu diagonals, and neither hand
+   routing nor Freerouting found a corridor back to R18 / R21 pad 2 without rerouting that block.
 
 5. Bridge returns. MOT_A1/MOT_B1/MOT_B2 to U2 pins 40/48/45 attach at the phase pours next to the FET
    source pins instead of at the J2 pins.
 
-6. SNS_A node width: the SNS_A pour outline is redrawn so the Q11 pin 3 -> R18 path is >= 1.2 mm.
+6. SNS_A node width: G_HA2 is rerouted and the SNS_A pour outline redrawn, which widens the Q11 pin 3 -> R18
+   path from 0.8 mm to 0.85 mm at its one pinch (G_HA2 corner (33.4, 73.1) to G_HA1's via (32.99, 74.75), about
+   0.5 mm long; everywhere else >= 1.2 mm). G_HA1's via cannot move further: MOT_A1 and the SNS_A sense line run
+   under it on B.Cu and Q10 pin 1 bounds its F.Cu run.
 
 7. 36 V clearance. power-feed.kicad_dru adds a 0.5 mm clearance rule for the 36 V nets (+36V, VIN_*, MOT_*,
    CLUTCH_VIN, COIL_P/N) on the outer layers; pads of the fine-pitch power parts (U1, U2, Q2-Q4) and the drivers'
@@ -164,6 +170,15 @@ def add_keepout(board, layers, pts, name, pours=True, tracks=False, vias=False):
     return z
 
 
+def remove_zone_named(board, name):
+    n = 0
+    for z in list(board.Zones()):
+        if not z.GetIsRuleArea() and z.GetZoneName() == name:
+            board.Delete(z)
+            n += 1
+    return n
+
+
 def rect(x0, y0, x1, y1):
     return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
 
@@ -266,10 +281,10 @@ def fix1_input_path(board):
 
 # ------------------------------------------------------------------------------- 8. In2 plane split + F2 finger
 
-IN2_36V = [(0.5, 6.5), (21.0, 6.5), (21.0, 28.5), (32.5, 28.5), (32.5, 51.5), (64.0, 51.5), (64.0, 31.0),
-           (68.0, 31.0), (68.0, 56.0), (64.5, 56.0), (64.5, 86.0), (0.5, 86.0)]
-IN2_3V3 = [(0.5, 0.5), (99.5, 0.5), (99.5, 99.5), (0.5, 99.5), (0.5, 86.5), (65.0, 86.5), (65.0, 56.5),
-           (68.5, 56.5), (68.5, 30.5), (63.5, 30.5), (63.5, 51.0), (32.0, 51.0), (32.0, 28.0), (21.5, 28.0),
+IN2_36V = [(0.5, 6.5), (21.0, 6.5), (21.0, 28.5), (32.5, 28.5), (32.5, 51.5), (64.0, 51.5), (64.0, 33.5),
+           (68.0, 33.5), (68.0, 53.0), (64.5, 53.0), (64.5, 86.0), (0.5, 86.0)]
+IN2_3V3 = [(0.5, 0.5), (99.5, 0.5), (99.5, 99.5), (0.5, 99.5), (0.5, 86.5), (65.0, 86.5), (65.0, 52.5),
+           (68.5, 52.5), (68.5, 33.0), (63.5, 33.0), (63.5, 51.0), (32.0, 51.0), (32.0, 28.0), (21.5, 28.0),
            (21.5, 6.0), (0.5, 6.0)]
 
 
@@ -308,11 +323,8 @@ def fix2_bridges(board):
                                         (c + 3.6, 83.5), (c + 0.2, 83.5)], 7, 0.5, 0.3, solid=True,
                       name="island " + cap) is not None
         n += vias(board, "+36V", [(c + 3.25, y) for y in VIA_ROWS], 0.6, 0.3)
-        # cap GND pad (y 84.85-86.0): two vias right beside it, under the island's via column
         for p in ((c + 1.0, 86.0), (c + 2.1, 86.0)):
             n += remove_via(board, "GND", p)
-        n += vias(board, "GND", [(c + 3.25, 84.9), (c + 3.25, 85.8)], 0.6, 0.3)
-        n += add_track(board, "GND", F, (c + 2.5, 85.35), (c + 3.25, 85.35), 0.4)
         # phase pour: pins 1/5/6 band under the body, 2.05 mm finger down to the J2 pad, on F.Cu and B.Cu
         xl, xr = min(c - 2.4, jx - 1.3), max(c - 0.35, jx + 1.3)
         finger = [(c - 0.35, 82.5), (c - 0.35, 87.1), (xr, 87.1), (xr, 90.8), (xl, 90.8), (xl, 87.1),
@@ -325,6 +337,25 @@ def fix2_bridges(board):
         n += vias(board, mot, [(c - 1.9, 82.4), (c - 0.9, 82.4), (c - 1.9, 84.0), (c - 0.9, 84.0)], 0.6, 0.3)
         for pts in ([(c - 2.8, 73.5), (c + 3.7, 73.5), (c + 3.7, 86.6), (c - 2.8, 86.6)], finger):
             n += remove_gnd_vias_in(board, pts, 0.7)
+        # cap GND pad (x c+0.2..c+2.9, y 84.85-86.0): 0.6/0.3 vias in a column right beside it (under the island's
+        # via column, 0.5 mm from the next phase finger): two, plus a third below them where the next J2 pad leaves
+        # room (C20, C26). Added after the stitching-via clean-up above, and every via has a track ending on its
+        # centre, so no clean-up (here, fix 10, rp2040_layout) takes it for a stitching via.
+        n += remove_track(board, "GND", F, (c + 2.5, 85.35), (c + 3.25, 85.35))
+        for y in (84.9, 85.8):
+            n += remove_via(board, "GND", (c + 3.25, y))
+        gv = [(c + 3.25, 84.95), (c + 3.25, 85.8)]
+        third = cap in ("C20", "C26")
+        if third:
+            gv.append((c + 3.25, 86.65))
+        else:
+            n += remove_track(board, "GND", F, (c + 3.25, 85.8), (c + 3.25, 86.65))
+            n += remove_via(board, "GND", (c + 3.25, 86.65))
+        n += vias(board, "GND", gv, 0.6, 0.3)
+        n += add_track(board, "GND", F, (c + 2.5, 84.95), gv[0], 0.4)
+        n += add_track(board, "GND", F, (c + 2.5, 85.8), gv[1], 0.4)
+        if third:
+            n += add_track(board, "GND", F, gv[1], gv[2], 0.4)
     return n
 
 
@@ -371,11 +402,29 @@ def fix345_sense_and_returns(board):
     n += add_path(board, sb, B, [(43.428, 48.979), (44.2, 48.2), (45.0, 48.2), (48.4, 51.6), (50.2, 53.4), (50.2, 61.0),
                                  (48.708, 62.49), (48.708, 66.2), (48.0, 66.908), (48.0, 72.6)], 0.3)
     n += add_via(board, sb, (48.0, 72.6), 0.6, 0.3)
-    # sense-resistor GND pads: dedicated vias with short stubs (the spots are hemmed in by the gate buses)
-    n += vias(board, "GND", [(36.9, 71.2), (37.8, 70.3), (48.7, 67.3)], 0.6, 0.3)
+    # sense-resistor GND pads (the bridge return, ~3.5 A RMS, and 0.6 W of heat each): a solid GND F.Cu island
+    # around each pad, above the SNS pours and the board GND pour, with six (R18) / seven (R21) 0.6/0.3 vias into
+    # In1. R21's island reaches east past the B.Cu G_HB2 / SNS_A / ENC_OUT_A columns, where its via column sits.
+    n += remove_via(board, "GND", (35.716, 67.807))          # was 0.5/0.25
+    r18 = [(35.716, 67.807), (36.9, 71.2), (37.8, 70.3), (38.75, 70.4), (38.75, 71.5), (37.85, 72.15)]
+    r21 = [(48.7, 67.3), (48.8, 72.3)] + [(52.0, y) for y in (67.6, 68.6, 69.6, 70.6, 71.6)]
+    n += vias(board, "GND", r18 + r21, 0.6, 0.3)
     n += add_track(board, "GND", F, (35.712, 71.2), (36.9, 71.2), 0.4)
     n += add_track(board, "GND", F, (35.712, 70.3), (37.8, 70.3), 0.4)
+    n += add_track(board, "GND", F, (35.712, 68.3), (35.716, 67.807), 0.4)
     n += add_track(board, "GND", F, (48.712, 68.3), (48.7, 67.3), 0.4)
+    n += add_track(board, "GND", F, (48.712, 71.7), (48.8, 72.3), 0.4)
+    # the vias away from the pads get tracks ending on their centres too, so the stitching-via clean-ups (fix 10,
+    # rp2040_layout) never drop them
+    n += add_path(board, "GND", F, [(37.8, 70.3), (38.75, 70.4), (38.75, 71.5)], 0.4)
+    n += add_track(board, "GND", F, (36.9, 71.2), (37.85, 72.15), 0.4)
+    n += add_path(board, "GND", F, [(48.712, 69.6), (52.0, 69.6)], 0.4)
+    n += add_path(board, "GND", F, [(52.0, 67.6), (52.0, 68.6), (52.0, 69.6), (52.0, 70.6), (52.0, 71.6)], 0.4)
+    for name, pts in (("R18 GND", [(35.0, 67.45), (35.85, 67.45), (38.15, 69.75), (40.0, 69.75), (40.0, 72.7),
+                                   (35.0, 72.7)]),
+                      ("R21 GND", [(48.3, 66.6), (52.5, 66.6), (52.5, 73.0), (48.3, 73.0)])):
+        n += remove_zone_named(board, name)
+        add_zone(board, "GND", F, pts, 8, 0.2, 0.25, solid=True, name=name)
     # 5. bridge returns to U2 (pins 40/48/45/37) end in the phase pours at the FETs, not at J2
     a1, a2, b1, b2 = (TMC + m for m in ("MOT_A1", "MOT_A2", "MOT_B1", "MOT_B2"))
     n += add_via(board, a1, (37.983, 61.442), 0.6, 0.3)

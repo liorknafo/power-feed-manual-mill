@@ -5,7 +5,8 @@ Run with KiCad's Python after manual_fixes.py, silk_cleanup.py and layout_fixes_
       hardware/tools/rp2040_layout.py
 
 Steps:
-1. Renumber. Adding the RP2040 parts renumbered the schematic (refmap.OLD2NEW); the footprints are renamed to match.
+1. Renumber. Adding the RP2040 parts renumbered the schematic (refmap.OLD2NEW), and so did review round 2
+   (refmap.OLD2NEW2); the footprints are renamed to match.
 2. Sync from the schematic netlist (kicad-cli sch export netlist): every footprint gets the schematic's value, fields,
    symbol path and pad nets; the new parts are loaded from the KiCad libraries; A1 is deleted.
 3. Place the RP2040 group where the Pico was, the USB-C on the bottom edge between J6 and H4, and move the panel
@@ -34,7 +35,7 @@ import pcbnew
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_pcb import FREEROUTING, JAVA, KDIR, PCB, mm  # noqa: E402
-from refmap import OLD2NEW  # noqa: E402
+from refmap import OLD2NEW, OLD2NEW2, renumbered2  # noqa: E402
 
 KCLI = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
 FPLIB = "/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints"
@@ -49,33 +50,36 @@ PLACE = {
     "U3": (60.0, 13.0, 180),
     # decoupling: IOVDD 1 + 10 (east) and 33 + 42 (west) are tied pairwise by +3V3 traces inside the pad ring, with
     # C29 at pin 1, C33 at pin 42 and C30 / C32 just beyond them (out of the signal escapes); IOVDD 22 (north) has a
-    # via inside the pad ring into the +3V3 plane (C31 nearby); USB_VDD 48 + IOVDD 49 -> C45 + C35; ADC_AVDD 43 +
-    # VREG_VIN 44 -> C40 + C36 (1 uF); VDD_CORE: C37 1 uF at VREG_VOUT 45, C38 + C39 at DVDD 50, and DVDD 23 / 50
-    # are tied by a B.Cu spine under the chip
+    # via inside the pad ring into the +3V3 plane (C31 nearby); USB_VDD 48 + IOVDD 49 -> C46 + C35; ADC_AVDD 43 +
+    # VREG_VIN 44 -> C41 + C36 (1 uF); VDD_CORE: C37 1 uF at VREG_VOUT 45, C38 + C39 at DVDD 50, C40 at DVDD 23 (north,
+    # between the SWD fan-out and the crystal), and DVDD 23 / 50 are tied by a B.Cu spine under the chip
     "C29": (65.9, 16.3, 0), "C30": (70.6, 16.3, 0), "C32": (54.6, 18.6, 180), "C33": (54.3, 15.6, 180),
     "C31": (52.6, 7.0, 90), "C39": (62.7, 21.3, 270),
-    "C40": (51.4, 21.3, 270), "C36": (52.9, 21.3, 270), "C37": (54.4, 21.3, 270),
-    "C45": (59.4, 21.3, 270), "C35": (59.4, 24.4, 90), "C38": (61.2, 21.3, 270),
-    # crystal: XIN straight up to pad 1, XOUT through R26 (1k) to pad 3, 15 pF caps at the pads, no vias
-    "Y1": (62.0, 5.4, 90), "R26": (59.4, 5.0, 90), "C41": (65.3, 6.5, 0), "C42": (61.6, 2.2, 0),
+    "C41": (51.4, 21.3, 270), "C36": (52.9, 21.3, 270), "C37": (54.4, 21.3, 270),
+    "C46": (59.4, 21.3, 270), "C35": (59.4, 24.4, 90), "C38": (61.2, 21.3, 270),
+    # crystal: XIN straight up to pad 1, XOUT up beside the crystal through R26 (1k, above C40) to pad 3, 15 pF caps
+    # at the pads, no vias; Y1's two GND pads are tied through the middle of the crystal
+    "Y1": (62.0, 5.4, 90), "R26": (58.5, 2.55, 0), "C42": (65.3, 6.5, 0), "C43": (61.6, 2.2, 0),
+    "C40": (59.2, 6.0, 90),
     # QSPI flash south-east of the chip (rotated so all six lines run without vias), 100 nF at VCC, SS pull-up,
     # BOOTSEL (1k + button), RESET button + RUN pull-up
-    "U4": (69.0, 22.0, 180), "C51": (63.6, 24.6, 270), "R24": (77.0, 24.0, 0), "R25": (76.8, 20.4, 0),
+    "U4": (69.0, 22.0, 180), "C52": (63.6, 24.6, 270), "R24": (77.0, 24.0, 0), "R25": (76.8, 20.4, 0),
     "SW1": (82.0, 8.0, 0), "SW2": (37.5, 4.5, 0), "R27": (44.4, 6.6, 0),
     # SWD header (1x3 THT) and RESET button top left, next to the chip's SWD / RUN pins; status LED
     "J3": (46.0, 3.2, 90), "R28": (43.8, 22.0, 180), "D4": (40.8, 22.0, 180),
-    # USB: 27R right below the chip, then the pair runs to the USB-C on the bottom edge (mouth on the edge, y = 100)
+    # USB: 27R right below the chip, then the pair runs to the USB-C on the bottom edge (mouth on the edge, y = 100);
+    # USBLC6-2SC6 ESD U5 in the pair just before the USB-C (flow-through: D+ pins 1/6, D- pins 3/4)
     "R32": (56.2, 21.3, 90), "R31": (57.7, 21.3, 90),
-    "J4": (87.6, 96.35, 0), "R29": (89.6, 89.6, 0), "R30": (89.6, 88.0, 0),
+    "J4": (87.6, 96.35, 0), "R29": (89.6, 89.6, 0), "R30": (89.6, 88.0, 0), "U5": (79.5, 95.6, 0),
     # supply: +5V -> D5 -> VSYS and VBUS -> D6 -> VSYS, AP2112K-3.3 -> +3V3 (the only +3V3 source, into In2)
-    "D5": (69.0, 28.7, 180), "D6": (90.5, 19.5, 90), "U5": (86.0, 24.6, 180), "C43": (88.9, 24.6, 90),
-    "C44": (82.6, 25.2, 90),
+    "D5": (69.0, 28.7, 180), "D6": (90.5, 19.5, 90), "U6": (86.0, 24.6, 180), "C44": (88.9, 24.6, 90),
+    "C45": (82.6, 25.2, 90),
     # panel input filters moved off the USB-C to the right-edge strip (pull-up 10k, series 1k, cap)
-    "R61": (96.8, 58.0, 90), "R62": (94.8, 58.0, 90), "C55": (96.8, 61.4, 90),
-    "R69": (96.8, 65.0, 90), "R70": (94.8, 65.0, 90), "C59": (94.8, 68.4, 90),
-    "R67": (96.8, 72.0, 90), "R68": (94.8, 72.0, 90), "C58": (96.8, 75.4, 90),
-    "R71": (96.8, 79.0, 90), "R72": (94.8, 79.0, 90), "C60": (96.8, 82.4, 90),
-    "R59": (96.8, 86.0, 90), "R60": (94.8, 86.0, 90), "C54": (94.8, 89.4, 90),
+    "R61": (96.8, 58.0, 90), "R62": (94.8, 58.0, 90), "C56": (96.8, 61.4, 90),
+    "R69": (96.8, 65.0, 90), "R70": (94.8, 65.0, 90), "C60": (94.8, 68.4, 90),
+    "R67": (96.8, 72.0, 90), "R68": (94.8, 72.0, 90), "C59": (96.8, 75.4, 90),
+    "R71": (96.8, 79.0, 90), "R72": (94.8, 79.0, 90), "C61": (96.8, 82.4, 90),
+    "R59": (96.8, 86.0, 90), "R60": (94.8, 86.0, 90), "C55": (94.8, 89.4, 90),
 }
 REDRAW = {"LIM_L", "TMC_DIAG0", "TMC_DIAG1", "CLUTCH_HS_PWM", "CLUTCH_LS_EN"}
 FIXED = {"J1", "J2", "J5", "J6", "J7", "H1", "H2", "H3", "H4"}
@@ -107,9 +111,13 @@ PREROUTE = [
     # north: IOVDD 22 -> via inside the pad ring into the In2 +3V3 plane; crystal without vias
     ("+3V3", "F", 0.2, [(59.8, 9.9), (60.0, 10.7)]),
     ("+3V3", "V", 0.5, [(60.0, 10.7)]),
-    ("XOUT", "F", 0.2, [(60.2, 9.3), (60.2, 8.0), (59.4, 7.2), (59.4, 6.0)]),
+    ("XOUT", "F", 0.2, [(60.2, 9.3), (60.2, 8.0), (60.0, 7.8), (60.0, 3.6), (57.675, 3.6), (57.675, 2.55)]),
+    ("VDD_CORE", "F", 0.2, [(59.4, 9.562), (59.4, 6.775)]),
+    ("GND", "F", 0.3, [(59.2, 5.225), (58.35, 5.225)]),
+    ("GND", "V", 0.6, [(58.35, 5.225)]),
+    ("GND", "F", 0.25, [(61.6, 5.95), (62.4, 4.85)]),
     ("XIN", "F", 0.2, [(60.6, 9.3), (60.6, 7.45), (62.6, 7.45), (62.85, 7.2), (62.85, 6.5), (64.525, 6.5)]),
-    ("XTAL_OUT", "F", 0.2, [(59.4, 4.225), (61.15, 4.225)]),
+    ("XTAL_OUT", "F", 0.2, [(59.325, 2.55), (60.825, 2.55)]),
     ("XTAL_OUT", "F", 0.2, [(60.825, 2.2), (60.825, 3.7)]),
     # IOVDD 1 + 10 and 33 + 42 tied inside the pad ring; pin 1 -> C29, pin 42 -> C33; C32 / C39 on the rails
     ("+3V3", "F", 0.2, [(63.1, 12.0), (62.45, 12.0), (62.45, 15.6), (63.1, 15.6)]),
@@ -168,7 +176,7 @@ PREROUTE = [
     ("ENC_OUT_A", "F", 0.2, [(63.4, 29.9), (53.3, 40.0)]),
     ("ENC_OUT_A", "B", 0.2, [(53.3, 40.0), (53.3, 51.0), (51.17, 53.13)]),
     # QSPI: SD0 / SCLK / SD3 drop straight into the flash's west pins, SS / SD1 / SD2 run over the top and down its
-    # east side; flash VCC -> C51
+    # east side; flash VCC -> C52
     ("QSPI_SS", "F", 0.2, [(62.6, 16.88), (62.6, 17.3), (75.4, 17.3), (75.4, 23.905), (73.2, 23.905)]),
     ("QSPI_SD1", "F", 0.2, [(62.2, 16.88), (62.2, 17.7), (75.0, 17.7), (75.0, 22.635), (73.2, 22.635)]),
     ("QSPI_SD2", "F", 0.2, [(61.8, 16.88), (61.8, 18.1), (74.6, 18.1), (74.6, 21.365), (73.2, 21.365)]),
@@ -181,27 +189,36 @@ PREROUTE = [
     ("GND", "V", 0.6, [(68.5, 16.6)]),
     # a GND via for the F.Cu pour island between the moved filter column and J6
     ("GND", "V", 0.6, [(92.4, 74.4)]),
-    # USB pair, 0.2 / 0.2 mm, D- west / D+ east: down from the 27R, B.Cu diagonal to the corridor between the clutch
-    # driver and J7, down to y 88-91, F.Cu east under J6 to the USB-C (D- pads joined in front of the pad row,
-    # D+ pads behind it)
+    # USB pair, 0.2 / 0.2 mm, D- west / D+ east: down from the 27R, east on B.Cu above the In2 +36V finger (with
+    # I2C_SCL), down the corridor between the clutch driver and J7 to y 88-91, F.Cu through the ESD U5 (flow-through)
+    # to the USB-C (D- pads joined in front of the pad row, D+ pads behind it)
     ("USB_CONN_DM", "F", 0.2, [(56.2, 22.075), (56.2, 23.3)]),
     ("USB_CONN_DM", "V", 0.6, [(56.2, 23.3), (71.402, 91.546)]),
-    ("USB_CONN_DM", "B", 0.2, [(56.2, 23.3), (56.2, 28.5), (69.76, 42.06), (69.76, 45.593), (70.72, 46.553),
+    ("USB_CONN_DM", "B", 0.2, [(56.2, 23.3), (56.2, 32.45), (69.76, 32.45), (69.76, 42.06), (69.76, 45.593), (70.72, 46.553),
                                (70.72, 72.539), (71.802, 73.621), (71.802, 88.0), (71.402, 88.4), (71.402, 91.546)]),
-    ("USB_CONN_DM", "F", 0.2, [(71.402, 91.546), (79.979, 91.546), (83.041, 94.608), (85.422, 94.608),
-                               (86.85, 93.18), (86.85, 92.305)]),
+    ("USB_CONN_DM", "F", 0.2, [(71.402, 91.546), (76.406, 96.55), (80.638, 96.55), (82.2, 96.55), (82.95, 95.8),
+                               (84.23, 95.8), (85.422, 94.608), (86.85, 93.18), (86.85, 92.305)]),
     ("USB_CONN_DM", "F", 0.2, [(86.85, 93.18), (86.95, 93.28)]),
     ("USB_CONN_DM", "F", 0.15, [(86.95, 93.28), (87.85, 93.28)]),
     ("USB_CONN_DM", "F", 0.2, [(87.85, 93.28), (87.85, 92.305)]),
     ("USB_CONN_DP", "F", 0.2, [(57.7, 22.075), (57.7, 23.3)]),
     ("USB_CONN_DP", "V", 0.6, [(57.7, 23.3), (72.202, 88.75), (86.284, 90.614), (87.909, 91.049)]),
-    ("USB_CONN_DP", "B", 0.2, [(57.7, 23.3), (57.7, 29.434), (70.16, 41.894), (70.16, 45.427), (71.12, 46.387),
+    ("USB_CONN_DP", "B", 0.2, [(57.7, 23.3), (57.7, 32.05), (70.16, 32.05), (70.16, 41.894), (70.16, 45.427), (71.12, 46.387),
                                (71.12, 72.373), (72.202, 73.455), (72.202, 88.75)]),
-    ("USB_CONN_DP", "F", 0.2, [(72.202, 88.75), (83.888, 88.75), (84.808, 89.67), (85.763, 89.67),
+    ("USB_CONN_DP", "F", 0.2, [(72.202, 88.75), (78.1, 94.65), (80.638, 94.65), (81.2, 94.65), (81.2, 92.0),
+                               (83.53, 89.67), (84.808, 89.67), (85.763, 89.67),
                                (86.284, 90.191), (86.284, 90.614)]),
     ("USB_CONN_DP", "B", 0.2, [(86.284, 90.614), (86.718, 91.049), (87.909, 91.049)]),
     ("USB_CONN_DP", "F", 0.2, [(87.909, 91.049), (87.909, 91.328)]),
     ("USB_CONN_DP", "F", 0.2, [(87.35, 92.305), (87.35, 91.328), (88.35, 91.328), (88.35, 92.305)]),
+    ("VBUS", "F", 0.2, [(80.638, 95.6), (81.75, 95.6)]),
+    ("VBUS", "V", 0.6, [(81.75, 95.6)]),
+    ("VBUS", "B", 0.2, [(81.75, 95.6), (88.3, 95.6), (88.933, 94.967), (88.933, 93.99)]),
+    ("GND", "F", 0.3, [(78.362, 95.6), (77.4, 95.6)]),
+    ("GND", "V", 0.6, [(77.4, 95.6)]),
+    ("I2C_SCL", "B", 0.2, [(60.233, 18.45), (60.233, 31.65), (72.401, 31.65), (72.401, 54.944)]),
+    # U3 exposed pad: five more 0.6/0.3 vias into In1 beside the footprint's four corner vias
+    ("GND", "V", 0.6, [(60.0, 13.0), (59.25, 12.25), (60.75, 12.25), (59.25, 13.75), (60.75, 13.75)]),
     # +5V: the buck trunk (F.Cu along y 11.3) used to run through the Pico area; it now stops at x 45 (trunk_end),
     # drops to B.Cu, comes back up south of the chip and feeds the U7 / U8 branch and D5 (+5V -> VSYS)
     ("+5V", "V", 0.8, [(45.0, 11.304), (45.0, 27.6)]),
@@ -304,17 +321,26 @@ def get_net(board, name):
     return n
 
 
-def renumber(board):
-    """Old refs -> schematic refs, in two passes so that no two footprints ever share a reference."""
-    if board.FindFootprintByReference("A1") is None:
-        return 0
+def _rename(board, table):
+    """Rename footprints by `table` in two passes so that no two footprints ever share a reference."""
     fps = {f.GetReference(): f for f in board.GetFootprints()}
-    moving = [(fps[o], n) for o, n in OLD2NEW.items() if o in fps]
+    moving = [(fps[o], n) for o, n in table.items() if o in fps]
     for fp, _ in moving:
         fp.SetReference("_tmp_" + fp.GetReference())
     for fp, n in moving:
         fp.SetReference(n)
     return len(moving)
+
+
+def renumber(board):
+    """Old refs -> schematic refs: round 1 (the RP2040 parts, while A1 is still there), then round 2 (the VDD_CORE
+    100 nF C40 and the USB ESD U5 of review round 2, while U10 does not exist yet)."""
+    n = 0
+    if board.FindFootprintByReference("A1") is not None:
+        n += _rename(board, OLD2NEW)
+    if not renumbered2(board):
+        n += _rename(board, OLD2NEW2)
+    return n
 
 
 def rename_nets(board):

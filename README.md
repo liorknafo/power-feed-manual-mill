@@ -49,7 +49,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
    Enter the values in `mechanical/feed_unit/feed_unit.py` (class `F`) and re-run it.
 2. **Measure the motor:** shaft length beyond the flange and the pilot diameter. Set them in `mechanical/clutch/clutch.py` (class `P`).
 3. **Order the PCB:**
-   - upload `hardware/fab/power-feed-gerbers.zip` to JLCPCB: 4 layers, 1.6 mm, 2 oz outer copper if possible;
+   - upload `hardware/fab/power-feed-gerbers.zip` to JLCPCB: 4 layers, 1.6 mm, 1 oz outer copper (standard; 2 oz breaks the fine-pitch spacing);
    - stencil plus the BOM/CPL for assembly, or reflow it yourself;
    - everything is SMD on the top side, including the RP2040 (QFN-56, 0.4 mm pitch: use the stencil).
 4. **Make the clutch** (`MACHINING.md`). Then calibrate it on the bench: pull force and cam-out torque against hold current.
