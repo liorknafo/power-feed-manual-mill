@@ -27,7 +27,9 @@ from build123d import (Align, Axis, Box, Compound, Cylinder, Plane, Polyline, Po
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "clutch"))
+sys.path.insert(0, os.path.join(HERE, ".."))
 import clutch  # noqa: E402
+import fasteners as FA  # noqa: E402
 
 OUT = os.path.join(HERE, "out")
 MIN = (Align.CENTER, Align.CENTER, Align.MIN)
@@ -214,8 +216,8 @@ def module_bolts(t=0.0):
 
 
 def bolt_heads(t=0.0):
-    """M5 SHCS heads (Ø8.5 x 5) on the plate's chamber face; for the interference check and renders."""
-    return [Pos(x, y, Z_PLATE_IN - 5.0) * Cylinder(4.25, 5.0, align=MIN) for x, y in module_bolts(t)]
+    """M5 SHCS heads (Ø8.5 x 5) on Ø10 x 1 washers, on the plate's chamber face; for the tension-range check."""
+    return [Pos(x, y, Z_PLATE_IN - 6.0) * Cylinder(5.0, 6.0, align=MIN) for x, y in module_bolts(t)]
 
 
 CHAMFER_IN = 12.0 - 3.0 * (2 - math.sqrt(2))       # inside legs of the housing's top-front chamfer
@@ -245,8 +247,9 @@ def plate():
     # the slot runs on down through the bottom edge: the module's bearing boss and output shaft slide up into it when
     # the module goes in from below (the tension block bridges the two legs afterwards)
     s = s - bx(MX - boss_r, MX + boss_r, PLATE_BOT - 1, MY, Z_PLATE_IN - 1, Z_PLATE_OUT + 1)
-    for x, y in f.standoffs:
+    for x, y in f.standoffs:   # M6 through, SHCS heads in Ø11 x 6.5 counterbores (flush: the low pair sits by the cover)
         s = s - Pos(x, y, Z_PLATE_IN) * Cylinder(3.3, f.plate_t, align=MIN)
+        s = s - Pos(x, y, Z_PLATE_OUT - STANDOFF_CB) * Cylinder(5.5, STANDOFF_CB + 0.01, align=MIN)
     for k in range(3):  # encoder posts, M3 tapped 8 deep from the outer face
         a = math.radians(90 + 120 * k)
         s = s - Pos(f.enc_post_r * math.cos(a), f.enc_post_r * math.sin(a), Z_PLATE_OUT - 8) * Cylinder(1.25, 8, align=MIN)
@@ -412,7 +415,9 @@ TRAY_W1 = W_END - f.r_end - 1.0   # tray end face (inlet panel): clear of the sh
 TRAY_WALL_W0 = Z_PLATE_OUT + 12.0                # side walls start past the belt-tension block
 TRAY_TABS_X = (-34.0, 34.0)                   # the tray's 2 floor tabs, in rebates in the plate's bottom edge: beside
                                               # the plate's slot (x +-20), clear of the door screws (x +-44)
-REBATE_H = 2.2                                # tab 1.5 thick, 0.5 above the plate's bottom edge, 0.2 clearance above
+REBATE_H = 2.5                                # tab 1.5 thick, 0.5 above the plate's bottom edge, a 0.5 serrated
+                                              # washer between the tab and the plate (the earth bond bites both)
+STANDOFF_CB = 6.5                             # counterbore depth for the M6 standoff screws' heads
 TRAY_TAB_W0 = Z_PLATE_OUT - 11.0
 TRAY_SCREW_W = Z_PLATE_OUT - 6.0              # M4 x 8 button head (ISO 7380) up through each tab into the plate
 GROMMET = (-30.0, TRAY_W1 - 12.0)             # (x, W) of the Ø10 grommet in the tray lid: 36 V leads up to J1
@@ -537,17 +542,21 @@ def mains_tray():
     tray = tray - ycyl(6.0, TRAY_BOT - 1, TRAY_BOT + t + 1, MX, Z_PLATE_OUT + 4)    # drawbolt access (outside the walls)
     for xp, wp in psu_screws():                      # PSU base screws: M3 x 4 button head (ISO 7380) from below
         tray = tray - ycyl(1.7, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
-    for xs in (-hw + LID_FLANGE / 2, hw - LID_FLANGE / 2):   # lid screws: M3 into closed-end rivnuts in the flanges
-        for ws in (wz + 8, TRAY_W1 - 8):
-            tray = tray - ycyl(1.7, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
+    for xs, ws in lid_screws():                      # lid screws: M3 into closed-end rivnuts (Ø5 holes) in the flanges
+        tray = tray - ycyl(2.5, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
     lid = bx(-hw, hw, TERM_TOP, TERM_TOP + t, wz, TRAY_W1)
     # its -W edge is folded down to just above the PSU: closes the step between the low and the raised part
     lid = lid + bx(-hw + t, hw - t, TRAY_TOP, TERM_TOP + t, wz, wz + t)
     lid = lid - ycyl(5.0, TERM_TOP - 1, TERM_TOP + t + 1, GROMMET[0], GROMMET[1])
-    for xs in (-hw + LID_FLANGE / 2, hw - LID_FLANGE / 2):
-        for ws in (wz + 8, TRAY_W1 - 8):
-            lid = lid - ycyl(1.7, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
+    for xs, ws in lid_screws():
+        lid = lid - ycyl(1.7, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
     return tray, lid
+
+
+def lid_screws():
+    """(x, W) of the tray lid's 4 M3 screws, in the walls' folded flanges."""
+    hw = TRAY_HALF
+    return [(xs, ws) for xs in (-hw + LID_FLANGE / 2, hw - LID_FLANGE / 2) for ws in (TERM_W0 + 8, TRAY_W1 - 8)]
 
 
 def psu_screw_heads():
@@ -909,11 +918,105 @@ def housing():
 def apply_screws(parts):
     for part_, target, p, d, kind in screw_joints():
         pl = Plane(origin=p, z_dir=d)
-        parts[part_] = parts[part_] - Solid.make_cylinder(1.7, T + 0.01, pl) - Solid.make_cone(3.25, 1.7, 1.55, pl)
+        # Ø3.4 clearance and a 90-degree countersink for an ISO 10642 M3 head (Ø6.72): Ø6.9 at the surface
+        parts[part_] = parts[part_] - Solid.make_cylinder(1.7, T + 0.01, pl) - Solid.make_cone(3.45, 1.7, 1.75, pl)
         inner = Plane(origin=tuple(p[i] + d[i] * T for i in range(3)), z_dir=d)
         r, depth = (1.25, 8.0) if kind == "tap" else (INSERT_D / 2, INSERT_L)
         parts[target] = parts[target] - Solid.make_cylinder(r, depth, inner)
     return parts
+
+
+def motor_body():
+    """NEMA 23 body behind the flange, its 4 corners relieved like the real motor's: the flange's M5 nuts sit there."""
+    body = Pos(0, 0, -114) * Box(57, 57, 104, align=MIN)
+    return chamfer(body.edges().filter_by(Axis.Z), 17.0)
+
+
+def insert(point, direction, threads):
+    """M3 brass heat-set insert (Ø4 x 5.7) with its thread, mouth at point, going along direction."""
+    loc = Plane(origin=point, z_dir=direction).location
+    sleeve = (Cylinder(2.0, 5.7, align=MIN) - Cylinder(1.6, 5.7, align=MIN)).moved(loc)
+    th = FA.at("thread", 3, 5.7, point, direction, threads)
+    return Compound(children=[sleeve] + (list(th.solids()) if th is not None else []))
+
+
+def rivnut(x, w, threads):
+    """Closed-end M3 rivnut (Ø5 body, 7 long, closed bottom) in a lid flange, its top at the flange's top."""
+    top = TERM_TOP
+    body = ycyl(2.5, top - 7.0, top, x, w) - ycyl(1.25, top - 5.0, top + 0.1, x, w)
+    th = FA.at("thread", 3, 5.0, (x, top, w), (0, -1, 0), threads)
+    return Compound(children=[body] + (list(th.solids()) if th is not None else []))
+
+
+INTO = {"field_housing": "clutch_field_housing", "motor_reference": "motor", "motor": "motor", "output_hub": "clutch_hub",
+        "output_shaft": "clutch_output_shaft", "cover": "clutch_cover", "rotor": "clutch_rotor"}
+
+
+def all_fasteners(threads=True):
+    """Every screw, nut, washer, set screw, circlip, insert and rivnut in the unit, placed, with the threads of the tapped
+    holes: (name, shape, into, group). `into` is the part (or fastener) it threads into or seats in: the checks allow
+    overlap only there. `group` sorts them into the viewer's files."""
+    out = []
+    for name, shape, _, into in clutch.fasteners(threads):        # the clutch module's own, as mounted
+        moved = Compound(children=[place_module(so) for so in shape.solids()])
+        out.append((name, moved, INTO.get(into, into), "clutch"))
+    for x, y in module_bolts(0.0):                                 # module: 4x M5x35 + washers, from the belt chamber
+        out.append(("module bolt washer", FA.at("washer", 5, 0, (x, y, Z_PLATE_IN), (0, 0, -1), threads), "plate", "plate"))
+        out.append(("module bolt M5x35", FA.at("shcs", 5, 35, (x, y, Z_PLATE_IN - 1.0), (0, 0, 1), threads), "clutch_cover",
+                    "plate"))
+    out.append(("drawbolt M4x30", FA.at("shcs", 4, 30, (MX, TB_Y - 7.0, Z_PLATE_OUT + 4), (0, 1, 0), threads),
+                "clutch_cover", "plate"))
+    for x in TB_SCREWS_X:                                          # tension block: 2x M5x20 into the plate's legs
+        out.append(("tension block M5x20", FA.at("shcs", 5, 20, (MX + x, TB_Y, Z_PLATE_OUT + 12), (0, 0, -1), threads),
+                    "plate", "plate"))
+        out.append(("plate thread M5", FA.at("thread", 5, 12, (MX + x, TB_Y, Z_PLATE_OUT), (0, 0, -1), threads), "plate",
+                    "plate"))
+    for x, y in f.standoffs:                                       # 4x M6x70 through plate + standoff into the table end
+        out.append(("standoff M6x70", FA.at("shcs", 6, 70, (x, y, Z_PLATE_OUT - STANDOFF_CB), (0, 0, -1), threads),
+                    "mill_reference", "plate"))
+    zd = Z_PLATE_OUT + f.enc_post_len                              # encoder: disc onto the posts, encoder onto the disc
+    for k in range(3):
+        a = math.radians(90 + 120 * k)
+        xp, yp = f.enc_post_r * math.cos(a), f.enc_post_r * math.sin(a)
+        out.append(("encoder post screw M3x8", FA.at("button", 3, 8, (xp, yp, zd + f.enc_disc_t), (0, 0, -1), threads),
+                    "encoder_posts", "plate"))
+        out.append(("plate thread M3 (post)", FA.at("thread", 3, 8, (xp, yp, Z_PLATE_OUT), (0, 0, -1), threads), "plate",
+                    "plate"))
+        xe, ye = 15 * math.cos(a + math.pi / 3), 15 * math.sin(a + math.pi / 3)
+        out.append(("encoder screw M3x8", FA.at("button", 3, 8, (xe, ye, zd), (0, 0, 1), threads), "encoder", "plate"))
+    a_, b_ = bearing_zs()                                          # stub circlips: DIN 472-32 x2 in the plate, 471-15
+    for zg in (Z_PLATE_IN + f.circlip_land, Z_PLATE_OUT - f.circlip_land - f.circlip_groove):
+        out.append(("circlip DIN 472-32", FA.circlip(13.6, 16.8, 1.2, zg + 0.05), "plate", "plate"))
+    out.append(("circlip DIN 471-15", FA.circlip(7.2, 9.4, 1.0, a_ + f.bearing_w + 0.15), "stub_shaft", "plate"))
+    for part_, target, pt, d, kind in screw_joints():              # housing: countersunk M3x8 into the plate or inserts
+        out.append(("housing screw M3x8", FA.at("csk", 3, 8, pt, d, threads), target, "housing"))
+        inner = tuple(pt[i] + d[i] * T for i in range(3))
+        if kind == "insert":
+            out.append(("heat-set insert M3", insert(inner, d, threads), target, "housing"))
+        else:
+            out.append(("plate thread M3", FA.at("thread", 3, 8, inner, d, threads), "plate", "housing"))
+    for px, py in PCB_HOLES:                                       # PCB: 4x M3x6 button into inserts in the bosses
+        x, y, w = pcb_to_world(px, py, 0)
+        out.append(("PCB screw M3x6", FA.at("button", 3, 6, (x, y + 1.6, w), (0, -1, 0), threads), "pcb_placeholder",
+                    "housing"))
+        out.append(("heat-set insert M3", insert((x, y, w), (0, -1, 0), threads), "shell", "housing"))
+    xe_, we_ = END_SCREW                                           # door: far screw up into the end-wall corner insert
+    out.append(("door screw M3x6", FA.at("shcs", 3, 6, (xe_, Y0 - T + 7.0, we_), (0, 1, 0), threads), "shell", "housing"))
+    out.append(("heat-set insert M3", insert((xe_, SPLIT_Y, we_), (0, 1, 0), threads), "shell", "housing"))
+    for xt in TRAY_TABS_X:                                         # mains tray: 2x M4x8 button up into the plate,
+        out.append(("tray screw M4x8", FA.at("button", 4, 8, (xt, TRAY_BOT, TRAY_SCREW_W), (0, 1, 0), threads), "plate",
+                    "mains"))                                      # a serrated washer between tab and plate
+        out.append(("serrated washer M4", ycyl(4.0, TRAY_BOT + f.tray_t, TRAY_BOT + f.tray_t + 0.5, xt, TRAY_SCREW_W) -
+                    ycyl(2.2, TRAY_BOT, TRAY_BOT + 3, xt, TRAY_SCREW_W), "plate", "mains"))
+        out.append(("plate thread M4", FA.at("thread", 4, 10, (xt, PLATE_BOT + REBATE_H, TRAY_SCREW_W), (0, 1, 0), threads),
+                    "plate", "mains"))
+    for xp, wp in psu_screws():                                    # PSU: 2x M3x4 button up through the tray floor
+        out.append(("PSU screw M3x4", FA.at("button", 3, 4, (xp, TRAY_BOT, wp), (0, 1, 0), threads), "psu", "mains"))
+    for xs, ws in lid_screws():                                    # lid: 4x M3x6 button into closed-end rivnuts
+        out.append(("lid screw M3x6", FA.at("button", 3, 6, (xs, TERM_TOP + f.tray_t, ws), (0, -1, 0), threads), "rivnut",
+                    "mains"))
+        out.append(("rivnut M3 closed-end", rivnut(xs, ws, threads), "mains_tray", "mains"))
+    return [o for o in out if o[1] is not None]
 
 
 def build():
@@ -927,7 +1030,7 @@ def build():
         "clutch_hub": clutch.output_hub(),
         "clutch_output_shaft": clutch.output_shaft(),
         "clutch_cover": cov,
-        "motor": clutch.motor_stub() + Pos(0, 0, -114) * Box(57, 57, 104, align=MIN),
+        "motor": clutch.motor_stub() + motor_body(),
     }
     module = {k: place_module(v) for k, v in module.items()}
     # drive pins (+ washers, E-clips: they move with the armature) and return springs + bushes; children placed one by
@@ -945,7 +1048,6 @@ def build():
         "stub_shaft": stub_shaft(),
         "oldham_disc": oldham(),
         "tension_block": tension_block(),
-        "module_bolt_heads": Compound(children=bolt_heads()),
         "encoder_disc": disc,
         "pulley_40T": big,
         "pulley_20T": small,
@@ -966,6 +1068,11 @@ def build():
     parts["controls"] = Compound(children=controls())
     parts["plug_wires"] = Compound(children=plug_wires())
     parts["usb_path"] = Compound(children=usb_envelopes())
+    groups_fx = {}                                     # every fastener, threaded, one file per group (viewer)
+    for _, shape, _, grp in all_fasteners(threads=True):
+        groups_fx.setdefault(grp, []).extend(shape.solids())
+    for grp, sols in groups_fx.items():
+        export_stl(Compound(children=sols), os.path.join(OUT, "fx_" + grp + ".stl"), tolerance=0.05, angular_tolerance=0.5)
     parts["psu"], parts["mains_inlet"] = psu_placeholder()
     parts["mains_tray"], parts["mains_tray_lid"] = mains_tray()
     # the door's hinge pin: Ø3 silver steel, pressed into the shell's plate-end knuckle, the door turns on it
@@ -1011,7 +1118,7 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
 ## Parts to make
 | Part | Material | Notes |
 |---|---|---|
-| Plate | 6061, {f.plate_t:.0f} mm, CNC | **Ø{f.bearing_od:.0f} H7 straight through**: too big to swing on the lathe (300 mm needed), so bore it on the mill with a boring head. DIN 472-32 grooves (Ø33.7 × {f.circlip_groove}) leaving a **{f.circlip_land} land** at each face: keyseat cutter (head ≤ Ø28, 1.0–1.2 wide, two passes) by circular interpolation, one face, then flip for the other. Clutch-module hole slotted Ø{2 * (CP.bearing_od / 2 + 6):.0f} **and run on down through the bottom edge** (the module slides up into it from below; the two legs are {f.x_half - (CP.bearing_od / 2 + 6):.0f} wide, tied by the tension block) and 4× Ø5.5 slots (±{f.tension_slot:.0f}): 5×D deep, cut them from both faces. Bottom edge: 2 rebates {REBATE_H} deep × 14 wide × 13 in from the outer face at x ±{TRAY_TABS_X[1]:.0f} (Ø6 end mill from the edge, R3 inner corners) with an M4 × 10 tapped up into each, for the mains tray's tabs. {len(f.standoffs)}× Ø6.6 for the standoffs; 3× M3 × 8 deep on r={f.enc_post_r:.0f} (encoder posts, outer face); 2× M5 × 12 for the tension block (x ±{TB_SCREWS_X[1]:.0f}). Edge holes (M3 × 8 for the housing): stand the plate in the vise on its edge, or use a drill-guide block. Corners R{f.r_long - f.panel_t:.0f} |
+| Plate | 6061, {f.plate_t:.0f} mm, CNC | **Ø{f.bearing_od:.0f} H7 straight through**: too big to swing on the lathe (300 mm needed), so bore it on the mill with a boring head. DIN 472-32 grooves (Ø33.7 × {f.circlip_groove}) leaving a **{f.circlip_land} land** at each face: keyseat cutter (head ≤ Ø28, 1.0–1.2 wide, two passes) by circular interpolation, one face, then flip for the other. Clutch-module hole slotted Ø{2 * (CP.bearing_od / 2 + 6):.0f} **and run on down through the bottom edge** (the module slides up into it from below; the two legs are {f.x_half - (CP.bearing_od / 2 + 6):.0f} wide, tied by the tension block) and 4× Ø5.5 slots (±{f.tension_slot:.0f}): 5×D deep, cut them from both faces. Bottom edge: 2 rebates {REBATE_H} deep × 14 wide × 13 in from the outer face at x ±{TRAY_TABS_X[1]:.0f} (Ø6 end mill from the edge, R3 inner corners) with an M4 × 10 tapped up into each, for the mains tray's tabs. {len(f.standoffs)}× Ø6.6 for the standoffs, each with an Ø11 × {STANDOFF_CB} counterbore in the outer face (M6×70 SHCS heads flush: the low pair sits beside the clutch cover); 3× M3 × 8 deep on r={f.enc_post_r:.0f} (encoder posts, outer face); 2× M5 × 12 for the tension block (x ±{TB_SCREWS_X[1]:.0f}). Edge holes (M3 × 8 for the housing): stand the plate in the vise on its edge, or use a drill-guide block. Corners R{f.r_long - f.panel_t:.0f} |
 | Standoffs | steel or 6061 | {len(f.standoffs)}× Ø{f.standoff_d:.0f} × {f.chamber:.0f}, Ø6.6 thru (M6 screws into the table end) |
 | Leadscrew stub | steel, turned from **Ø20** stock | from the table side: tongue {f.stub_tongue_w} × {f.screw_d - 2:.0f} × {f.stub_tongue_h:.0f} (across the Oldham slot), Ø{f.stub_d:.0f} with a 0.6 flat for the 40T set screws, **Ø{f.stub_shoulder_d:.0f} × 2 shoulder** on the inner bearing's inner race (corner radius ≤ 0.3 so the bearing's chamfer clears it), Ø{f.stub_d:.0f} h6 at both bearings with **Loctite 641 on the inner one** (as on the clutch; easier than holding k6 and h6 bands on a manual lathe), DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø{f.stub_enc_d:.0f} × 10 encoder end |
 | Bearing spacer tube | steel or 6061 | Ø{f.bearing_od - 0.05:.2f} / Ø28 × {bearing_zs()[1] - bearing_zs()[0] - f.bearing_w:.1f}, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
@@ -1058,7 +1165,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 |---|---|
 | Outer size | {X_FP - (XB - T):.0f} (front-back) × {Y1 - Y0 + 2 * T:.0f} (high) × {W_END - W_SHELL0:.0f} mm (along the table); long edges R{f.r_long:.0f}, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the {f.chamber:.0f} mm belt chamber and the controls proud of the front |
 | `shell` (one print) | back, end and lower-front walls ({T:.0f} mm), the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door). **Print standing on the end wall**, {W_END - W_SHELL0:.0f} mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
-| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; push the pin in **from the end-wall end** (that line runs just outside the box; from the plate end it would hit the mill): it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95, a drop of CA). To take the door off, punch the pin out from the plate end (there is room under the belt guard). Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×8 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
+| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; push the pin in **from the end-wall end** (that line runs just outside the box; from the plate end it would hit the mill): it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95, a drop of CA). To take the door off, punch the pin out from the plate end (there is room under the belt guard). Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×6 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, {2 * f.x_half:.0f} wide, bottom corners R{f.r_long - f.panel_t:.0f}, both top corners chamfered {CHAMFER_IN + 0.3:.1f} × 45° to sit under the housing's chamfered inside |
 | Fixing | both prints overlap the plate edges by {f.lap:.0f} mm with {f.fit_gap} mm clearance per side, and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
@@ -1086,7 +1193,8 @@ strip along the upper front with their bodies reaching back over the PCB.
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
   - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
-    2× **M4 × 8 button head (ISO 7380) + star washer** go up through them into the plate (checked against every other
+    2× **M4 × 8 button head (ISO 7380)** go up through them into the plate, with a **serrated lock washer (DIN 6798 J
+    M4, 0.5 thick) between each tab and the plate**, in the rebate: it bites both bare metals (checked against every other
     hole in the plate); the heads sit in pockets in the door. That holds it and earths it; the 2 ribs on the door
     carry its far end when the door is shut. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
     leads longer than L/N so they pull out last. Don't anodise the plate or the tray, or scrape the bond faces.
@@ -1139,7 +1247,7 @@ strip along the upper front with their bodies reaching back over the PCB.
      drawbolt into the cover. Tension the belt, lock the 4 module bolts.
   4. Mains tray, fully built on the bench (PSU in, **inlet clipped into its end face**, earth stud, L/N/PE tied, 36 V pair
      out through the grommet, lid on): **up through the bottom** with the inlet in place (checked, flange included),
-     tabs into the plate's rebates, 2× M4 + star washers up into the plate. Feed the 36 V pair up beside the motor.
+     tabs into the plate's rebates (a serrated washer on each tab's M4 hole first), 2× M4 up into the plate. Feed the 36 V pair up beside the motor.
      Recommended extra: a green/yellow lead from the tray's earth stud to an M4 tapped hole in the plate's outer face,
      so the tray stays bonded even with its two screws loose.
   5. Hood off: PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.

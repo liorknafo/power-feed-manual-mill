@@ -73,7 +73,6 @@ const INFO = {
   encoder_posts: ["Encoder posts", "M3 hex standoffs", "Space the encoder disc off the plate."],
   encoder_coupling: ["Flexible coupling", "6 × 8 mm (buy)", "Connects the stub's Ø8 end to the encoder's Ø6 shaft and absorbs small misalignment."],
   tension_block: ["Belt-tension block", "Steel, 72 × 14 × 12", "Bridges the plate's slot under the module (2× M5, one in each leg). An M4 drawbolt through it pulls the clutch/motor module away from the leadscrew to tension the belt; then the four module bolts are locked. Reached through a hole in the bottom door."],
-  module_bolt_heads: ["Module bolts", "4× M5×35 SHCS", "Hold the clutch/motor module to the plate through slotted holes (belt-tension adjustment)."],
   clutch_field_housing: ["Clutch field housing", "Low-carbon steel, lathe", "Stationary magnet body bolted to the motor flange. Holds the coil; its poles pull the armature."],
   clutch_coil: ["Clutch coil", "~850 turns 0.32 mm Cu, ≈24 Ω", "The electromagnet: 1.5 A pull-in, then ≈0.25 A hold from the PCB's clutch driver. No power = clutch released (fail-safe)."],
   clutch_rotor: ["Clutch rotor", "Low-carbon steel, lathe + CNC teeth", "Glued (Loctite 641) onto the motor shaft. Its face carries 30 radial teeth and the magnetic poles."],
@@ -87,6 +86,16 @@ const INFO = {
   mains_tray_lid: ["Mains tray lid", "1.5 mm aluminium, folded", "Closes the mains zone over the PSU terminals. Its edge folds down so the zone is closed all round; 4× M3 into closed-end rivnuts, so no screw tips stick into the mains zone. Line the inside of the fold with 0.4 mm Nomex/Formex."],
   mains_inlet: ["AC inlet", "IEC C14 snap-in with fuse + switch (buy)", "Where the mains cord plugs in, in the end wall. Built-in on/off switch and fuse holder: T 2 A ceramic 5×20 for 230 V (T 3.15 A for 120 V). L and N go switched and fused to the PSU; PE goes to the tray."],
   usb_path: ["USB-C to J4", "Adafruit #6069 panel extension + 90° USB-C adapter", "The programming port's way to the PCB: the panel end (M12 thread, Ø18 flange) in the end wall, and at the board a 90° adapter in J4 that takes the extension's straight 38 mm male plug from above (J4 is only 29 mm from the wall, too close for the plug to go in straight)."],
+  fx_clutch: ["Clutch fasteners", "ISO screws, nuts, set screws, circlips; threads shown", "4× M5×30 SHCS + nuts (housing to the motor flange), M3×8 SHCS (rotor onto the motor shaft), 6× M4×8 countersunk ISO 10642 (cover to housing, flush), 2× M5×6 set screws (hub), 2× DIN 472-28 and 1× DIN 471-12 circlips, and the threads of every tapped hole."],
+  fx_plate: ["Plate fasteners", "ISO screws, washers, circlips; threads shown", "4× M5×35 SHCS + washers from the belt chamber into the clutch cover (module), M4×30 SHCS drawbolt (belt tension), 2× M5×20 (tension block), 4× M6×70 SHCS in counterbores through the standoffs into the table end, encoder M3 screws, 2× DIN 472-32 + DIN 471-15 circlips (stub bearings), and the plate's tapped-hole threads."],
+  fx_housing: ["Housing fasteners", "ISO 10642 M3×8, M3 heat-set inserts, M3 button heads", "Every countersunk M3×8 holding the shell and hood to the plate (tapped) or to heat-set inserts in the shell's rails, the 4 PCB screws into inserts in the bosses, and the bottom door's 2 screws."],
+  fx_mains: ["Mains tray fasteners", "ISO 7380 button heads, serrated washers, closed-end rivnuts", "2× M4×8 up through the tray's tabs into the plate with a serrated lock washer between tab and plate (the earth bond), 2× M3×4 (power supply), 4× M3×6 lid screws into closed-end M3 rivnuts."],
+  fx_motor_reference: ["Motor-side fasteners", "M5 nuts, motor shaft thread", "The 4 M5 nuts behind the motor flange and the M3 thread in the motor shaft end (exploded view)."],
+  fx_field_housing: ["Housing fasteners (clutch)", "4× M5×30 SHCS, 6 tapped M4", "Motor screws and the housing's radial M4 threads (exploded view)."],
+  fx_rotor: ["Rotor screw", "M3×8 SHCS", "Holds the rotor's shoulder on the motor shaft end (exploded view)."],
+  fx_output_hub: ["Hub set screws", "2× M5×6 ISO 4026", "On the output shaft, one on its flat (exploded view)."],
+  fx_output_shaft: ["Shaft circlip", "DIN 471-12", "Locates the output shaft against the inner bearing (exploded view)."],
+  fx_cover: ["Cover fasteners", "6× M4×8 countersunk, circlips, tapped M5/M4", "Radial screws into the housing, DIN 472-28 circlips, the front wall's M5 and drawbolt M4 threads (exploded view)."],
   door_pin: ["Door hinge pin", "Ø3 × 180 silver steel rod (or a drill blank)", "The bottom door's axis, along the back bottom edge. Push it in from the end-wall end: it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95). The door's knuckles turn on it. Punch it out from the plate end to take the door off."],
   door: ["Bottom door", "3D print (PETG), one piece", "The whole floor of the box, rounded bottom edges included. Open it (2 screws on the front side, it swings down on a Ø3 steel pin hinge along the back edge and hangs beside the box) and the clutch/motor module and the mains tray go in and come out from below; the PCB goes in from the top. Tick 'Open the bottom door' to see it open."],
   shell: ["Housing shell", "3D print (PETG), one piece", "Back, end and lower-front walls with the PCB rails (no floor: that is the bottom door). Prints standing on its end wall on a Prusa MK3S, and overlaps and screws onto the plate edges. End wall: the AC inlet, a cable gland for the limit switches, USB-C, BOOT/RESET and the SWD port. Vents in the bottom and high on the back."],
@@ -179,7 +188,6 @@ part("mill", F + "encoder_disc.stl", 0x9fb4c8);
 part("mill", F + "encoder_posts.stl", 0xd4b24c, { metal: 0.8 });
 part("mill", F + "encoder_coupling.stl", 0x3a6fb0);
 part("mill", F + "tension_block.stl", 0x707880);
-part("mill", F + "module_bolt_heads.stl", 0x202020);
 part("mill", F + "clutch_field_housing.stl", 0x8a8f99, { housing: true });
 part("mill", F + "clutch_cover.stl", 0xc9d1d9, { housing: true });
 part("mill", F + "clutch_rotor.stl", 0xa9b4c2, { metal: 0.7 });
@@ -195,6 +203,9 @@ part("mill", F + "psu.stl", 0x5b8fd0, { metal: 0.5, rough: 0.5 });
 part("mill", F + "mains_tray.stl", 0xa7b0ba, { metal: 0.7, rough: 0.4, housing: true });
 part("mill", F + "mains_tray_lid.stl", 0xb9c2cb, { metal: 0.7, rough: 0.4, housing: true });
 part("mill", F + "mains_inlet.stl", 0x1e1e1e, { metal: 0.1, rough: 0.7 });
+// every screw, nut, washer, set screw, circlip, insert and rivnut, with real ISO threads (also in the tapped holes)
+for (const g of ["clutch", "plate", "housing", "mains"])
+  part("mill", F + "fx_" + g + ".stl", 0x8c939b, { metal: 0.9, rough: 0.35 });
 part("mill", F + "usb_path.stl", 0x3a3a3a, { metal: 0.2, rough: 0.6 });
 part("mill", F + "door_pin.stl", 0x9aa0a6, { metal: 0.9, rough: 0.3 });
 part("mill", F + "door.stl", 0xe0dccf, { metal: 0, rough: 0.7, housing: true, tag: "shell", pivot: doorPivot });
@@ -209,6 +220,9 @@ const ex = [["motor_reference", 0x555555, -40], ["field_housing", 0x8a8f99, 0], 
             ["output_hub", 0x9aa7b5, 100], ["bushes", 0xb5823a, 100], ["return_springs", 0x2f6fd6, 112], ["output_shaft", 0xcfd6dd, 130],
             ["bearings", 0xe0b050, 150], ["cover", 0xc9d1d9, 175]];
 for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 0.6, housing: n === "cover" });
+// each part's own fasteners, exploded with it
+for (const [n, , dz] of ex.filter(e => ["motor_reference", "field_housing", "rotor", "output_hub", "output_shaft", "cover"].includes(e[0])))
+  part("clutch", C + "fx_" + n + ".stl", 0x8c939b, { dz, metal: 0.9, rough: 0.35 });
 
 // ---------------------------------------------------------------- the KiCad PCB, placed from feed_unit.py's layout file
 let layout = { pcb_x0: -50, pcb_y: -33, pcb_w0: 129 }, pcbParts = [];

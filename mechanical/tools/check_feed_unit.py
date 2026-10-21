@@ -19,7 +19,6 @@ ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pu
       ("clutch_pins","clutch_armature"),("clutch_pins","clutch_springs"),("clutch_pins","clutch_bushes"),
       ("clutch_bushes","clutch_hub"),("clutch_springs","clutch_bushes"),
       ("clutch_cover","clutch_output_shaft"),("belt_guard","mill_reference"),("belt_guard","plate"),
-      ("plate","module_bolt_heads"),
       ("clutch_rotor","clutch_armature")}  # engaged tooth-flank contact (tessellation-level volume)
 names = [n for n in parts if not n.startswith("control_")]   # control_* are per-control copies of "controls" for the viewer
 bad = 0
@@ -210,7 +209,7 @@ if cov / win.volume < 0.95:
     bad += 1
 # slide-on: the shell goes on along -W over the bolted tray, module and PSU screw heads (PCB/hood not fitted yet)
 inner = ["mains_tray", "mains_tray_lid", "psu", "mains_inlet", "motor", "clutch_cover", "clutch_field_housing",
-         "tension_block", "module_bolt_heads", "encoder", "encoder_disc", "encoder_posts", "encoder_coupling"]
+         "tension_block", "encoder", "encoder_disc", "encoder_posts", "encoder_coupling"]
 heads_c = FU.psu_screw_heads()
 worst = 0.0
 for dw in range(0, 205, 5):
@@ -279,6 +278,26 @@ press = getattr(FU.wcyl(1.5, w_a, FU.SHELL_KNUCKLES[0][1], FU.HINGE_X, FU.HINGE_
 print("  hinge pin: insertion path %.3f mm3, sliding %.3f mm3, press fit at the plate-end knuckle %.1f mm3" % (hit, rub, press))
 if hit > 1e-3 or rub > 1e-3 or press < 1:
     bad += 1
+# every fastener (plain shanks: screws, nuts, washers, inserts, rivnuts, circlips) may overlap only what it threads
+# into or seats in; heads, nuts and washers must clear everything else (e.g. the clutch cover's radial screws vs the tray)
+fx = FU.all_fasteners(threads=False)
+fx_parts = [n for n in parts if not n.startswith("control_") and n not in ("plug_wires", "usb_path")]
+fx_bb = {n: parts[n].bounding_box() for n in fx_parts}
+stray = 0
+for name, shape, into, grp in fx:
+    bb = shape.bounding_box()
+    for n in fx_parts:
+        pb = fx_bb[n]
+        if n == into or bb.max.X < pb.min.X or bb.min.X > pb.max.X or bb.max.Y < pb.min.Y or bb.min.Y > pb.max.Y \
+                or bb.max.Z < pb.min.Z or bb.min.Z > pb.max.Z:
+            continue
+        x = shape & parts[n]
+        v = x.volume if x is not None else 0.0
+        if v > 1e-2:
+            stray += 1
+            print("  FASTENER %s x %s: %.3f mm3" % (name, n, v))
+print("  fasteners checked: %d, stray overlaps %d" % (len(fx), stray))
+bad += stray
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent),
 #   door outer face down (height = y extent)

@@ -2,7 +2,10 @@
 
 All models are parametric Python (a dataclass `P` of parameters, one function per part). Run them with the
 bundled venv; each writes STEP + STL per part and shaded renders into its own `out/` folder
-(`out/` is git-ignored except `render_*.png`).
+(`out/` is git-ignored except `render_*.png`). The venv needs build123d 0.13 and bd_warehouse 0.4
+(`mechanical/.venv/bin/pip install build123d==0.13.0 bd_warehouse==0.4.0`): every screw, nut, washer, insert and
+tapped-hole thread is an ISO part from bd_warehouse (`mechanical/fasteners.py`), placed in the models with real threads
+for the viewer and as plain shanks for the checks.
 
 ```
 mechanical/.venv/bin/python mechanical/clutch/clutch.py        # tooth clutch (+ MACHINING.md)

@@ -63,4 +63,20 @@ for a in C.SET_SCREW_DEG:
     hit = key & around
     v = hit.volume if hit is not None else 0.0
     print("set screw at %.0f deg: hex-key path %s" % (a, "clear" if v < 1e-3 else "BLOCKED %.1f mm3" % v))
+# every fastener (plain shanks) may overlap only the part it threads into or seats in, nothing else
+alias = {"field_housing": "housing", "motor_reference": "motor", "output_hub": "hub", "output_shaft": "shaft",
+         "cover": "cover", "rotor": "rotor", "motor": "motor"}
+allp = dict(static); allp.update(moving(True))
+fx = C.fasteners(threads=False)
+worst_fx = 0.0
+for name, shape, host, into in fx:
+    for pn, ps in allp.items():
+        if alias.get(into) == pn:
+            continue
+        x = shape & ps
+        v = x.volume if x is not None else 0.0
+        if v > 1e-2:
+            worst_fx = max(worst_fx, v)
+            print("  FASTENER %s x %s: %.3f mm3" % (name, pn, v))
+print("fasteners checked: %d, worst stray overlap %.3f mm3" % (len(fx), worst_fx))
 

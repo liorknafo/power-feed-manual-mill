@@ -20,10 +20,14 @@ Stack (see docs/design.md §7):
 
 import math
 import os
+import sys
 from dataclasses import dataclass
 
 from build123d import (Align, Axis, Box, Compound, Cylinder, ExportSVG, LineType, GeomType, Location, Plane, Polyline,
                        Pos, Rot, Solid, Unit, chamfer, export_step, export_stl, extrude, loft, make_face)
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+import fasteners as FA  # noqa: E402
 
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out")
 MIN = (Align.CENTER, Align.CENTER, Align.MIN)
@@ -203,6 +207,8 @@ SPRING_LEN_RELEASED = Z_PIN_END + p.stroke - p.eclip_t - 1.0 - p.washer_t - (Z_H
 
 
 Z_COVER_SCREW = (p.cover_spigot_z + p.housing_len) / 2 + 1.0
+COVER_CSK_D = 9.2                                    # 90-degree countersink for the cover's M4 (ISO 10642 head Ø8.96)
+MOTOR_BOLT_R = p.bolt_square / math.sqrt(2)
 
 
 # ------------------------------------------------------------------ parts
@@ -354,13 +360,17 @@ def cover():
     s = s - Pos(0, 0, z_front) * Cylinder(p.bearing_od / 2, z_bore1 - z_front, align=MIN)
     for zg in (z_front + p.circlip_land, z_bore1 - p.circlip_land - p.circlip_groove):
         s = s - Pos(0, 0, zg) * Cylinder(29.4 / 2, p.circlip_groove, align=MIN)
-    for k in range(p.cover_screws):
-        s = s - Rot(0, 0, 360 / p.cover_screws * k + 30) * Pos(r_out - 1, 0, Z_COVER_SCREW) * Rot(0, 90, 0) * Cylinder(2.25, 10)
+    for k in range(p.cover_screws):   # M4 countersunk (ISO 10642, head Ø8.96): flush, nothing stands out of the cover
+        a = math.radians(360 / p.cover_screws * k + 30)
+        s = s - Rot(0, 0, math.degrees(a)) * Pos(r_out - 1, 0, Z_COVER_SCREW) * Rot(0, 90, 0) * Cylinder(2.25, 10)
+        pl = Plane(origin=(r_out * math.cos(a), r_out * math.sin(a), Z_COVER_SCREW), z_dir=(-math.cos(a), -math.sin(a), 0))
+        s = s - Solid.make_cone(COVER_CSK_D / 2, 2.25, (COVER_CSK_D - 4.5) / 2, pl)
     for deg in p.cover_bolt_deg:  # M5 tapped (Ø4.2) into the front wall, for the feed-unit plate
         a = math.radians(deg)
         s = s - Pos(p.cover_bolt_r * math.cos(a), p.cover_bolt_r * math.sin(a), z_front) * Cylinder(2.1, p.cover_front_t, align=MIN)
     # radial M5 at +Y for the feed unit's belt-tension drawbolt (+Y = away from the leadscrew when mounted)
-    s = s - Pos(0, r_out - 7, z_front + p.cover_front_t / 2) * Rot(-90, 0, 0) * Cylinder(1.65, 8, align=MIN)   # M4
+    # M4 tapped 14 deep: the module moves 6 mm along it over the belt-tension range, so an M4x30 never bottoms out
+    s = s - Pos(0, r_out - 15, z_front + p.cover_front_t / 2) * Rot(-90, 0, 0) * Cylinder(1.65, 16, align=MIN)
     return s, z_front
 
 
@@ -374,12 +384,60 @@ def bearings(z_front):
 
 
 def motor_stub():
-    """Reference geometry only: NEMA 23 flange, pilot and shaft."""
+    """Reference geometry only: NEMA 23 flange (with its 4 through holes), pilot and shaft."""
     flange = Pos(0, 0, -10) * Box(57, 57, 10, align=MIN)
+    for k in range(4):
+        a = math.radians(45 + 90 * k)
+        flange = flange - Pos(MOTOR_BOLT_R * math.cos(a), MOTOR_BOLT_R * math.sin(a), -10) * Cylinder(2.75, 10, align=MIN)
     pilot = Cylinder(p.pilot_d / 2, p.pilot_h, align=MIN)
     shaft = Cylinder(p.shaft_d / 2, p.shaft_len, align=MIN)
     shaft = shaft - Pos(p.shaft_flat - p.shaft_d / 2 + 5, 0, 3) * Box(10, 20, 60, align=(Align.CENTER, Align.CENTER, Align.MIN))
     return flange + pilot + shaft
+
+
+def fasteners(threads=True):
+    """Every screw, nut, set screw, circlip and tapped-hole thread of the clutch, placed in the clutch frame, as
+    (name, shape, host, into): `host` is the part it goes with (the exploded view), `into` the part it threads into or
+    seats in (the checks allow overlap only there)."""
+    out = []
+    z_front = Z_FRONT
+    for k in range(4):                         # motor: M5x30 SHCS from the housing's counterbores, nuts behind the flange
+        a = math.radians(45 + 90 * k)
+        x, y = MOTOR_BOLT_R * math.cos(a), MOTOR_BOLT_R * math.sin(a)
+        out.append(("motor screw", FA.at("shcs", 5, 30, (x, y, 6.0), (0, 0, -1), threads), "field_housing", "motor nut"))
+        out.append(("motor nut", FA.at("nut", 5, 0, (x, y, -10.0), (0, 0, -1), threads), "motor_reference", "motor screw"))
+    # rotor: M3x8 SHCS in its counterbore (head 0.2 below the pole face) into the tapped motor shaft end
+    out.append(("rotor screw", FA.at("shcs", 3, 8, (0, 0, Z_POLE - 3.2), (0, 0, -1), threads), "rotor", "motor"))
+    out.append(("shaft thread M3", FA.at("thread", 3, 8, (0, 0, p.shaft_len), (0, 0, -1), threads), "motor_reference", "motor"))
+    r_out = p.housing_od / 2 + p.cover_wall
+    for k in range(p.cover_screws):            # cover: 6x M4x8 countersunk, radial, into the housing
+        a = math.radians(360 / p.cover_screws * k + 30)
+        c, s_ = math.cos(a), math.sin(a)
+        out.append(("cover screw", FA.at("csk", 4, 8, (r_out * c, r_out * s_, Z_COVER_SCREW), (-c, -s_, 0), threads),
+                    "cover", "field_housing"))
+        r_h = p.housing_od / 2
+        out.append(("housing thread M4", FA.at("thread", 4, 8, (r_h * c, r_h * s_, Z_COVER_SCREW), (-c, -s_, 0), threads),
+                    "field_housing", "field_housing"))
+    for deg in p.cover_bolt_deg:               # cover front wall: 4x M5 through, for the feed-unit plate's bolts
+        a = math.radians(deg)
+        out.append(("cover thread M5", FA.at("thread", 5, p.cover_front_t, (p.cover_bolt_r * math.cos(a), p.cover_bolt_r *
+                    math.sin(a), z_front), (0, 0, 1), threads), "cover", "cover"))
+    out.append(("cover thread M4 (drawbolt)", FA.at("thread", 4, 14, (0, r_out, z_front + p.cover_front_t / 2), (0, -1, 0),
+                threads), "cover", "cover"))
+    zs = Z_HUB + p.hub_flange_t + p.hub_boss_len / 2
+    for i, deg in enumerate(SET_SCREW_DEG):    # hub: 2x M5x6 set screws, the first on the shaft's flat
+        a = math.radians(deg)
+        c, s_ = math.cos(a), math.sin(a)
+        r0 = p.hub_boss_od / 2 - (0.6 if i == 0 else 0.0)
+        out.append(("hub set screw", FA.at("set", 5, 6, (r0 * c, r0 * s_, zs), (-c, -s_, 0), threads), "output_hub", "output_hub"))
+        out.append(("hub thread M5", FA.at("thread", 5, 6, (p.hub_boss_od / 2 * c, p.hub_boss_od / 2 * s_, zs), (-c, -s_, 0),
+                    threads), "output_hub", "output_hub"))
+    z_bore1 = z_front + p.cover_front_t + BOSS_LEN   # circlips: 2x DIN 472-28 in the cover's bore, DIN 471-12 on the shaft
+    for zg in (z_front + p.circlip_land, z_bore1 - p.circlip_land - p.circlip_groove):
+        out.append(("circlip DIN 472-28", FA.circlip(12.3, 14.65, 1.2, zg + 0.05), "cover", "cover"))
+    zg = bearing_zs()[0] + p.bearing_w + 0.1
+    out.append(("circlip DIN 471-12", FA.circlip(5.8, 7.6, 1.0, zg + 0.05), "output_shaft", "output_shaft"))
+    return [f for f in out if f[1] is not None]
 
 
 # ------------------------------------------------------------------ build + export
@@ -408,6 +466,11 @@ def build():
     motor = motor_stub()
     motor.label = "motor_reference"
     export_stl(motor, os.path.join(OUT, "motor_reference.stl"))
+    fx = {}                                    # fasteners, threaded, one file per host part (for the exploded view)
+    for _, shape, host, _ in fasteners(threads=True):
+        fx.setdefault(host, []).extend(shape.solids())
+    for host, sols in fx.items():
+        export_stl(Compound(children=sols), os.path.join(OUT, "fx_" + host + ".stl"), tolerance=0.05, angular_tolerance=0.5)
     assy = Compound(children=[s for s, _ in parts.values()] + [motor])
     assy.label = "clutch_assembly"
     export_step(assy, os.path.join(OUT, "clutch_assembly.step"))
@@ -486,9 +549,9 @@ def dimension_sheet(z_front):
     w("| Shoulder / inner cavity | Ø%.1f | the step from the spigot sits on the housing rim and locates the cover axially; clears the Ø%.0f rotor / armature |" % (p.cover_cavity_d, p.rotor_od))
     w("| Bearing bore | **Ø%.0f H7**, straight through the %.0f wall + %.0f boss (≈ 89 mm from the open face) | two setups, no long reach: (1) grip the OD lightly (soft jaws: thin wall), face the front, turn the boss, then drill/rough and **bore Ø28 H7 right through from the boss end (%.0f deep, ~1.3×D)** and cut **both** circlip grooves from that end; (2) mount it on a Ø28 expanding mandrel (or a Ø28 h6 stub turned in place) in the chuck, boss toward the chuck, and bore the Ø80 H7 spigot and the Ø78 cavity: the spigot is then concentric with the bearing bore to the mandrel's accuracy (≤ 0.01). Boring the Ø28 from the open side instead would mean an ~89 mm reach (4.5×D, chatter) |" % (p.bearing_od, p.cover_front_t, BOSS_LEN, p.cover_front_t + BOSS_LEN))
     w("| Circlip grooves | 2× for DIN 472-28: Ø29.4 × %.1f, **%.1f land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |" % (p.circlip_groove, p.circlip_land))
-    w("| Radial screws | %d× Ø4.5 every %.0f°, %.1f from the open end | M4×8 into the housing; drilled together with the housing (see there) |" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW - p.cover_spigot_z))
+    w("| Radial screws | %d× Ø4.5 every %.0f°, %.1f from the open end, **90° countersink Ø9.2** | M4×8 countersunk (ISO 10642) into the housing, flush: a socket head would stand 4 mm proud, and the one at the bottom would hit the mains tray; drilled together with the housing (see there) |" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW - p.cover_spigot_z))
     w("| Front wall | %.0f thick, 4× M5 tapped thru on r=%.0f at %s° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |" % (p.cover_front_t, p.cover_bolt_r, "/".join("%.0f" % a for a in p.cover_bolt_deg)))
-    w("| Drawbolt hole | M4 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew |\n")
+    w("| Drawbolt hole | M4 tapped **14** deep (drill Ø3.3 × 16), radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew. 14 deep because the module moves 6 mm along the M4×30 drawbolt over the tension range |\n")
     w("## Other parts")
     w("- Output shaft: Ø%.0f h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × %.0f. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø%.0f spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - Z_SHAFT0))
     f_rel = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED)
@@ -536,7 +599,7 @@ def dimension_sheet(z_front):
     w("     turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to")
     w("     the motor, coil off it frees at once.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
+    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
     w("## Teeth")
     w("- %d radial teeth, flanks **flat planes** at %.0f° from the axis: every flank is the plane through a radial line at the pitch" % (p.teeth, p.flank_deg))

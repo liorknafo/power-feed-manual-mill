@@ -51,9 +51,9 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Shoulder / inner cavity | Ø78.0 | the step from the spigot sits on the housing rim and locates the cover axially; clears the Ø76 rotor / armature |
 | Bearing bore | **Ø28 H7**, straight through the 8 wall + 28 boss (≈ 89 mm from the open face) | two setups, no long reach: (1) grip the OD lightly (soft jaws: thin wall), face the front, turn the boss, then drill/rough and **bore Ø28 H7 right through from the boss end (36 deep, ~1.3×D)** and cut **both** circlip grooves from that end; (2) mount it on a Ø28 expanding mandrel (or a Ø28 h6 stub turned in place) in the chuck, boss toward the chuck, and bore the Ø80 H7 spigot and the Ø78 cavity: the spigot is then concentric with the bearing bore to the mandrel's accuracy (≤ 0.01). Boring the Ø28 from the open side instead would mean an ~89 mm reach (4.5×D, chatter) |
 | Circlip grooves | 2× for DIN 472-28: Ø29.4 × 1.3, **2.1 land** from each end of the bore | the land takes the circlip load: keep the entry chamfer smaller than it |
-| Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end | M4×8 into the housing; drilled together with the housing (see there) |
+| Radial screws | 6× Ø4.5 every 60°, 10.0 from the open end, **90° countersink Ø9.2** | M4×8 countersunk (ISO 10642) into the housing, flush: a socket head would stand 4 mm proud, and the one at the bottom would hit the mains tray; drilled together with the housing (see there) |
 | Front wall | 8 thick, 4× M5 tapped thru on r=36 at 40/140/190/350° (0° = +X, 90° = drawbolt) | bolts the module to the feed-unit plate |
-| Drawbolt hole | M4 tapped 7 deep, radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew |
+| Drawbolt hole | M4 tapped **14** deep (drill Ø3.3 × 16), radial, in the front wall at mid-thickness, between two of the M5 (M4 leaves 2 mm of wall each side in the 8 mm wall) | feed-unit belt tension; it points away from the leadscrew. 14 deep because the module moves 6 mm along the M4×30 drawbolt over the tension range |
 
 ## Other parts
 - Output shaft: Ø12 h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × 78. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø10 spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at 29.7 from its motor-side end, just outboard of the inner bearing.
@@ -98,7 +98,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
      turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to
      the motor, coil off it frees at once.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
-- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
+- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
 ## Teeth
 - 30 radial teeth, flanks **flat planes** at 30° from the axis: every flank is the plane through a radial line at the pitch
