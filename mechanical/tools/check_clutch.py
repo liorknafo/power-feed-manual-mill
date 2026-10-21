@@ -47,7 +47,7 @@ for released in (False, True):
     tips = Compound(children=[allp["pin%d" % k] for k in range(3)] + [allp["clip%d" % k] for k in range(3)])
     print("  pins+clips<->cover %.2f, <->bearings %.2f, <->rotor %.2f" % (tips.distance_to(allp["cover"]),
           min(tips.distance_to(allp["brg%d" % i]) for i in range(4)), tips.distance_to(allp["rotor"])))
-    sl = allp["washer0"].bounding_box().min.Z - allp["hub"].bounding_box().min.Z - p.hub_flange_t
+    sl = allp["washer0"].bounding_box().min.Z - allp["hub"].bounding_box().min.Z - p.bush_len
     print("  spring length %.2f mm (solid <= 5), force %.1f N each" % (sl, p.spring_rate * (p.spring_free - sl)))
 from build123d import Box, Cylinder as Cyl, Align as Al
 pilot_flange = Pos(0, 0, -10) * Box(57, 57, 10, align=(Al.CENTER, Al.CENTER, Al.MIN)) + Cyl(p.pilot_d / 2, p.pilot_h, align=(Al.CENTER, Al.CENTER, Al.MIN))

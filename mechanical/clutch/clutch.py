@@ -72,14 +72,15 @@ class P:
     armature_bore: float = 11.5
     pin_r: float = 21.0              # between the pole rings (r 15 / r 27): there the armature only carries flux radially
     pin_d: float = 6.0               # Ø6 h6 silver steel (unhardened), bonded (Loctite 638) into the armature with the
-    pin_glue: float = 0.04           # pins set through the hub's bushes, so the bushes line them up (no binding)
-    pin_press: float = 5.0           # blind, 1 mm short of the armature's back face
-    pin_len: float = 25.0
+    pin_glue: float = 0.12           # pins set through the hub's bushes, so the bushes line them up (no binding); the glue
+                                     # gap (638 fills up to 0.25) takes the hole-pattern and sleeve tolerances
+    pin_press: float = 5.5           # through holes; the pin ends 0.5 inside the armature's back face (excess glue exits there)
+    pin_len: float = 25.5
     bush_od: float = 10.0            # sintered bronze plain bush 6 x 10 x 8 (ISO 2795), pressed into the hub flange
     bush_len: float = 8.0
     spring_od: float = 9.0           # return spring: 0.8 wire, OD 9, free length ~11.2, ~2.5 N/mm
     spring_wire: float = 0.8
-    spring_free: float = 11.2
+    spring_free: float = 11.9
     spring_rate: float = 2.5
     washer_t: float = 1.6            # ISO 7089 M6 washer Ø6.4 / Ø12
     eclip_t: float = 0.7             # DIN 6799 RS5 E-clip, groove Ø5 x 0.74
@@ -197,7 +198,7 @@ Z_HUB = Z_ARM_FRONT + p.stroke                       # hub underside = the relea
 Z_SHAFT0 = Z_HUB + p.hub_flange_t - 5.0              # output shaft's motor-side end, inside the hub bore
 Z_PIN_END = Z_ARM_FRONT - p.pin_press + p.pin_len    # drive pins' free end (engaged)
 SET_SCREW_DEG = (30.0, 150.0)                        # hub set screws, midway between the pins at 90/210/330
-SPRING_LEN_RELEASED = Z_PIN_END + p.stroke - p.eclip_t - 1.0 - p.washer_t - (Z_HUB + p.hub_flange_t)
+SPRING_LEN_RELEASED = Z_PIN_END + p.stroke - p.eclip_t - 1.0 - p.washer_t - (Z_HUB + p.bush_len)   # seated on the bush
 
 
 Z_COVER_SCREW = (p.cover_spigot_z + p.housing_len) / 2 + 1.0
@@ -261,7 +262,7 @@ def armature():
     s = s - ring(p.tooth_r_out + 1, p.tooth_r_in - p.tooth_runout, Z_ARM_ROOT + p.root_relief - Z_ARM + 0.01, Z_ARM - 0.01)
     s = s + tooth_ring(Z_ARM_ROOT, -1, math.pi / p.teeth)                  # half a pitch out of phase
     for x, y in pin_points():                                              # drive pins, bonded in
-        s = s - Pos(x, y, Z_ARM_FRONT - p.pin_press) * Cylinder((p.pin_d + p.pin_glue) / 2, p.pin_press + 0.01, align=MIN)
+        s = s - Pos(x, y, Z_ARM - 0.01) * Cylinder((p.pin_d + p.pin_glue) / 2, p.armature_t + 0.02, align=MIN)  # through
     return s
 
 
@@ -288,7 +289,7 @@ def return_springs(released=False):
     dz = p.stroke if released else 0.0
     z_clip = Z_PIN_END + dz - 1.0 - p.eclip_t
     z_wash = z_clip - p.washer_t
-    z_hub = Z_HUB + p.hub_flange_t
+    z_hub = Z_HUB + p.bush_len                    # spring seated on the bush end, in the 0.7 counterbore it leaves
     springs, washers, clips = [], [], []
     for x, y in pin_points():
         springs.append(Pos(x, y, 0) * ring(p.spring_od / 2, p.spring_od / 2 - p.spring_wire, z_wash - z_hub, z_hub))
@@ -309,8 +310,9 @@ def output_hub():
 
 
 def bushes():
-    """Sintered bronze plain bushes, pressed into the hub flange flush with its spring-side face."""
-    z0 = Z_HUB + p.hub_flange_t - p.bush_len
+    """Sintered bronze plain bushes, pressed into the hub flange flush with its stop face (armature side); the 0.7 left
+    on the spring side is a counterbore that locates each spring."""
+    z0 = Z_HUB
     return [Pos(x, y, 0) * ring(p.bush_od / 2, p.pin_d / 2, p.bush_len, z0) for x, y in pin_points()]
 
 
@@ -470,12 +472,12 @@ def dimension_sheet(z_front):
     w("| OD × thickness | **Ø%.1f h7 × %.1f** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth and the pin holes; faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
     w("| Bore | Ø%.1f | clearance over the rotor's M3 head |" % p.armature_bore)
     w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | flanks meet %.2f behind the pole face, root floor %.2f behind it (from r %.1f out), tips truncated %.1f |" % (pitch_deg / 2, Z_ARM_ROOT - Z_ARM, Z_ARM_ROOT - Z_ARM + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tip_trunc))
-    w("| Drive-pin holes | 3× **Ø%.2f–%.2f** (glue clearance for Loctite 638) blind %.1f deep at r=%.1f, 90°/210°/330°, front face, position ±0.02 from the bore | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up. Blind: %.1f left to the back face (between the poles, no pole face there) |\n" % (p.pin_d + 0.03, p.pin_d + 0.06, p.pin_press, p.pin_r, p.armature_t - p.pin_press))
+    w("| Drive-pin holes | 3× **Ø%.2f–%.2f through** (glue gap for Loctite 638) at r=%.1f, 90°/210°/330°, position ±0.02 from the bore | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r %.0f faces the rotor's slot ring, between the poles) |\n" % (p.pin_d + 0.10, p.pin_d + 0.15, p.pin_r, p.pin_r))
     w("## Output hub (6061) — `output_hub.step`")
     w("| Feature | Dimension | Note |\n|---|---|---|")
     w("| Flange | **Ø%.1f h7** × **%.1f** | its armature-side face is the **released stop** the springs pull the armature against: face it flat and square to the bore within 0.02, and turn the OD, in the same chucking as the bore (the OD, = the armature's, centres the armature when its pins are bonded) |" % (p.hub_flange_od, p.hub_flange_t))
     w("| Boss | Ø%.1f × %.1f, bore **Ø%.0f H7** | 2× M5 set screws, mid-boss, at %.0f° and %.0f° (midway between the pins, so a hex key reaches them past the springs): one on the shaft flat, one on the round (+ Loctite 243) |" % (p.hub_boss_od, p.hub_boss_len, p.out_shaft_d, SET_SCREW_DEG[0], SET_SCREW_DEG[1]))
-    w("| Bush holes | 3× **Ø%.0f H7** through at r=%.1f, 90°/210°/330°, position ±0.02 from the bore | same program and zero as the armature's pin holes; press the bronze bushes in flush with the spring-side face (the bush bore closes to about F7 on the pins) |\n" % (p.bush_od, p.pin_r))
+    w("| Bush holes | 3× **Ø%.0f H7** through at r=%.1f, 90°/210°/330°, position ±0.02 from the bore | same program and zero as the armature's pin holes; press the bronze bushes in flush with the **stop face** (the bush bore closes to about F7 on the pins); the %.1f left on the spring side locates the springs |\n" % (p.bush_od, p.pin_r, p.hub_flange_t - p.bush_len))
     w("## Cover (6061 — must be non-magnetic) — `cover.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
     w("| OD | Ø%.1f | |" % (p.housing_od + 2 * p.cover_wall))
@@ -490,17 +492,21 @@ def dimension_sheet(z_front):
     w("- Output shaft: Ø%.0f h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × %.0f. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø%.0f spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - Z_SHAFT0))
     f_rel = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED)
     f_eng = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED + p.stroke)
-    w("- Drive pins: 3× Ø%.0f h6 silver steel (unhardened ground rod) × %.0f, bonded %.0f deep into the armature with Loctite 638. E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ %.0f N per pin at the 4.5 N·m cam-out torque) and keep the armature centred." % (p.pin_d, p.pin_len, p.pin_press, 4.5e3 / (3 * p.pin_r)))
+    w("- Drive pins: 3× Ø%.0f h6 silver steel (unhardened ground rod) × %.1f, 0.5 × 45° lead chamfer at the armature end, bonded %.1f deep into the armature with Loctite 638 (0.5 short of its back face). E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ %.0f N per pin at the 4.5 N·m cam-out torque) and keep the armature centred." % (p.pin_d, p.pin_len, p.pin_press, 4.5e3 / (3 * p.pin_r)))
     w("- Return springs: 3× compression spring, music wire %.1f, OD %.0f (ID %.1f: clears the pin, sits on the bush end), free length ≈ %.1f, rate ≈ %.1f N/mm, solid ≤ 5. Installed %.1f long released (≈ %.0f N each, %.0f N total: the armature is pulled firmly against the hub) and %.1f long engaged (≈ %.0f N each, %.0f N total). Any catalogue spring near this works; the coil current is calibrated afterwards. On each pin: spring, M6 washer (ISO 7089, Ø6.4/12 × 1.6), E-clip." % (p.spring_wire, p.spring_od, p.spring_od - 2 * p.spring_wire, p.spring_free, p.spring_rate, SPRING_LEN_RELEASED, f_rel, 3 * f_rel, SPRING_LEN_RELEASED - p.stroke, f_eng, 3 * f_eng))
     w("- Bushes: 3× sintered (oil-impregnated) bronze plain bush %.0f × %.0f × %.0f, ISO 2795 form C." % (p.pin_d, p.bush_od, p.bush_len))
     w("- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × %.1f (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
     w("- Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):")
-    w("  0. **Armature on the hub; the bushes line the pins up.** Press the 3 bushes into the hub, flush with its spring side.")
-    w("     Hub on the shaft (set screws). Armature face down on a surface plate, the hub on it (stop face on the armature's front")
-    w("     face, bush holes over the pin holes), a **centring sleeve** over both (any tube bored Ø%.0f H7, ~25 long). Loctite 638" % p.rotor_od)
-    w("     in the armature's 3 holes, push the 3 pins down through the bushes to the bottom of the holes, clamp and let it cure")
-    w("     (keep glue off the stop face). Each pin is now set by its own bush, so three pins in three bushes can't bind. Sleeve")
-    w("     off; on each pin, from the hub's far side: spring, washer, E-clip (compress the spring with a slotted tube). Check:")
+    w("  0. **Armature on the hub; the bushes line the pins up.** Press the 3 bushes into the hub, flush with its stop face.")
+    w("     Hub on the shaft with the shaft end **%.2f inside the stop face** (depth micrometer), then the set screws." % (Z_SHAFT0 - Z_HUB))
+    w("     Armature pole face down on PE film on a surface plate, the hub on it (stop face on the armature's front face, bushes")
+    w("     over the pin holes), a **centring sleeve** over both (any tube bored Ø%.0f H7, ~25 long). A thin film of Loctite 638 on" % p.rotor_od)
+    w("     the armature holes' walls only (not the pins), push each pin down through its bush until it stops on the film-covered")
+    w("     plate, then lift it 0.5 (a 0.5 shim under a stop collar). Excess glue leaves through the bottom of the through hole,")
+    w("     away from the bushes. Clamp, let it cure, sleeve off, scrape the back face flush: nothing may stand proud of it (the")
+    w("     engaged pole gap is 0.15). Each pin is set by its own bush, so three pins in three bushes can't bind. Then on each")
+    w("     pin, from the hub's far side: spring (into the counterbore on the bush), washer, E-clip (compress the spring with a")
+    w("     slotted tube). Check:")
     w("     the armature slides 1.1+ mm toward the motor by hand, freely, and snaps back. Keep the stop faces dry (degrease):")
     w("     oil from the bushes on them can make the armature stick to the hub a little.")
     w("  1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.")
