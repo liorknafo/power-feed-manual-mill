@@ -217,8 +217,10 @@ PREROUTE = [
     ("GND", "F", 0.3, [(78.362, 95.6), (77.4, 95.6)]),
     ("GND", "V", 0.6, [(77.4, 95.6)]),
     ("I2C_SCL", "B", 0.2, [(60.233, 18.45), (60.233, 31.65), (72.401, 31.65), (72.401, 54.944)]),
-    # U3 exposed pad: five more 0.6/0.3 vias into In1 beside the footprint's four corner vias
-    ("GND", "V", 0.6, [(60.0, 13.0), (59.25, 12.25), (60.75, 12.25), (59.25, 13.75), (60.75, 13.75)]),
+    # U3 exposed pad: one more 0.6/0.3 via into In1, in the gap between the four paste windows (the footprint's own
+    # four vias sit at the corners). NO vias inside the paste windows (centres 59.2/60.8, 12.2/13.8): an open hole
+    # there wicks the solder away from the RP2040's only GND joint (PCB review round 3).
+    ("GND", "V", 0.6, [(60.0, 13.0)]),
     # +5V: the buck trunk (F.Cu along y 11.3) used to run through the Pico area; it now stops at x 45 (trunk_end),
     # drops to B.Cu, comes back up south of the chip and feeds the U7 / U8 branch and D5 (+5V -> VSYS)
     ("+5V", "V", 0.8, [(45.0, 11.304), (45.0, 27.6)]),
