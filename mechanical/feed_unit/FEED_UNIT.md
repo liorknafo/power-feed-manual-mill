@@ -79,14 +79,15 @@ strip along the upper front with their bodies reaching back over the PCB.
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two tabs
   bent up against the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
   - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
-    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads sit in
-    Ø7 pockets in the printed floor. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
+    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads run in
+    a 7 mm groove in the printed floor (open to the shell's rim, so the shell slides on over them). Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
     47.5 × 27.8; pick one rated for a 1–2 mm panel). It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
-  - a separate aluminium **lid** over the terminal/inlet zone: 4× M3 into M3 rivnuts (or press nuts) in the walls'
-    folded flanges; the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
+  - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
+    (so the zone is closed all round): 4× M3 into **closed-end** M3 rivnuts in the walls' 10 mm folded flanges (no
+    screw tips inside the mains zone); the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
   - **Fixing and earth:** the tray's two tabs bolt to the plate's outer face (2× M4 into tapped holes; checked against
     every other hole in the plate): that holds it

@@ -383,6 +383,8 @@ R_IN = f.r_long - T                                 # inside radius of the long 
 R_BOTTOM = 8.5                                      # the two bottom long edges: tighter, so the mains tray fits the corners
 W_END_SCREW = W_END - f.r_end - 4.0                 # end hood screws: countersunk heads fully on the flat, not the chamfer
 TERM_TOP = TRAY_TOP + f.term_zone_rise     # tray top over the terminal/inlet zone (the motor is >= 7 mm above)
+TERM_W0 = f.psu_w0 + f.psu_l - 6           # where the raised terminal/inlet zone starts (over the PSU's terminal end)
+LID_FLANGE = 10.0                          # inward-folded wall flanges carrying the lid's M3 rivnuts
 INLET_Y = (PSU_BOT + TERM_TOP) / 2         # IEC inlet centre, in the tray's end face
 TRAY_HALF = f.psu_w / 2 + f.tray_side_gap + f.tray_t
 TRAY_W1 = W_END - f.r_end - 1.0   # tray end face (inlet panel): clear of the shell's inside end chamfer; the inlet
@@ -479,14 +481,14 @@ def mains_tray():
     the 36 V leads leave, through a grommet in the lid. No vents in the floor."""
     t, hw = f.tray_t, TRAY_HALF
     w0 = Z_PLATE_OUT
-    wz = f.psu_w0 + f.psu_l - 6                      # start of the raised terminal/inlet zone
+    wz = TERM_W0                                      # start of the raised terminal/inlet zone
     floor = bx(-hw, hw, TRAY_BOT, TRAY_BOT + t, w0, TRAY_W1)
     walls = None
     for sx in (-1, 1):
         x0, x1 = (-hw, -hw + t) if sx < 0 else (hw - t, hw)
         wall = bx(x0, x1, TRAY_BOT, TRAY_TOP, TRAY_WALL_W0, wz) + bx(x0, x1, TRAY_BOT, TERM_TOP, wz, TRAY_W1)
-        lx0, lx1 = (-hw, -hw + 8) if sx < 0 else (hw - 8, hw)          # flange folded inward at the top (lid screws)
-        lip = bx(lx0, lx1, TERM_TOP - t, TERM_TOP, wz, TRAY_W1 - t)
+        lx0, lx1 = (-hw, -hw + LID_FLANGE) if sx < 0 else (hw - LID_FLANGE, hw)   # folded inward at the top (lid screws)
+        lip = bx(lx0, lx1, TERM_TOP - t, TERM_TOP, wz + t, TRAY_W1 - t)   # starts past the lid's folded-down edge
         walls = wall + lip if walls is None else walls + wall + lip
     end = bx(-hw, hw, TRAY_BOT, TERM_TOP, TRAY_W1 - t, TRAY_W1)
     tray = floor + walls + end
@@ -498,12 +500,14 @@ def mains_tray():
     tray = tray - ycyl(6.0, TRAY_BOT - 1, TRAY_BOT + t + 1, MX, Z_PLATE_OUT + 4)    # drawbolt access (outside the walls)
     for xp, wp in psu_screws():                      # PSU base screws: M3 x 4 button head (ISO 7380) from below
         tray = tray - ycyl(1.7, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
-    for xs in (-hw + 4, hw - 4):                     # lid screws: M3 into rivnuts in the folded lid flanges
+    for xs in (-hw + LID_FLANGE / 2, hw - LID_FLANGE / 2):   # lid screws: M3 into closed-end rivnuts in the flanges
         for ws in (wz + 8, TRAY_W1 - 8):
             tray = tray - ycyl(1.7, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
     lid = bx(-hw, hw, TERM_TOP, TERM_TOP + t, wz, TRAY_W1)
+    # its -W edge is folded down to just above the PSU: closes the step between the low and the raised part
+    lid = lid + bx(-hw + t, hw - t, TRAY_TOP, TERM_TOP + t, wz, wz + t)
     lid = lid - ycyl(5.0, TERM_TOP - 1, TERM_TOP + t + 1, GROMMET[0], GROMMET[1])
-    for xs in (-hw + 4, hw - 4):
+    for xs in (-hw + LID_FLANGE / 2, hw - LID_FLANGE / 2):
         for ws in (wz + 8, TRAY_W1 - 8):
             lid = lid - ycyl(1.7, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
     return tray, lid
@@ -676,9 +680,11 @@ def shell():
     fw, fh = f.inlet_flange
     s = s - bx(-fw / 2 - 1, fw / 2 + 1, INLET_Y - fh / 2 - 1, INLET_Y + fh / 2 + 1, W_END - T - 1, W_END + 1)
     for xr_ in (-30.0, 30.0):
-        s = s + bx(xr_ - 1.5, xr_ + 1.5, Y0 - G - 0.5, TRAY_BOT, TRAY_W1 - 60, TRAY_W1 - 6)
-    for xp, wp in psu_screws():                      # pockets for the PSU's M3 button heads under the tray floor
-        s = s - ycyl(3.5, Y0 - G - 1.5, Y0 + 0.1, xp, wp)
+        s = s + bx(xr_ - 1.5, xr_ + 1.5, Y0 - G - 0.5, TRAY_BOT - 0.3, TRAY_W1 - 60, TRAY_W1 - 6)
+    # groove for the PSU's M3 button heads under the tray floor, open to the shell's rim: the heads run along it
+    # while the shell slides on over the (already bolted) tray
+    xg = psu_screws()[0][0]
+    s = s - bx(xg - 3.5, xg + 3.5, Y0 - G - 1.5, Y0 + 0.1, W_SHELL0 - 1, max(w for _, w in psu_screws()) + 4)
     for xd in (-15.0, 15.0):                         # drains: coolant that gets in behind the inlet runs out
         s = s - ycyl(2.0, Y0 - T - 8, Y0 + 6, xd, W_END - T - 2.5)
     # programming ports, usable with the box closed (above the plugs, clear of the end rails):
@@ -940,14 +946,15 @@ strip along the upper front with their bodies reaching back over the PCB.
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two tabs
   bent up against the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
   - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
-    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads sit in
-    Ø7 pockets in the printed floor. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
+    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — whose heads run in
+    a 7 mm groove in the printed floor (open to the shell's rim, so the shell slides on over them). Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
     {f.inlet_cut[0]} × {f.inlet_cut[1]}; pick one rated for a 1–2 mm panel). It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
-  - a separate aluminium **lid** over the terminal/inlet zone: 4× M3 into M3 rivnuts (or press nuts) in the walls'
-    folded flanges; the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
+  - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
+    (so the zone is closed all round): 4× M3 into **closed-end** M3 rivnuts in the walls' 10 mm folded flanges (no
+    screw tips inside the mains zone); the screws also bond the lid to the tray. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
   - **Fixing and earth:** the tray's two tabs bolt to the plate's outer face (2× M4 into tapped holes; checked against
     every other hole in the plate): that holds it

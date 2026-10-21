@@ -114,7 +114,8 @@ print("  insert seats checked: %d" % sum(1 for j in FU.screw_joints() if j[4] ==
 # mains separation: nothing but the PSU and the inlet may enter the earthed tray's inside, and the wiring zone
 # between the PSU terminals and the inlet body (>= 35 mm) must be empty
 t, hw = FU.f.tray_t, FU.TRAY_HALF
-inside = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, FU.TRAY_WALL_W0, FU.TRAY_W1 - t)   # the walled part
+inside = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, FU.TRAY_WALL_W0, FU.TRAY_W1 - t) + \
+    FU.bx(-hw + t, hw - t, FU.TRAY_TOP, FU.TERM_TOP, FU.TERM_W0, FU.TRAY_W1 - t)                     # + raised zone
 mains_ok = ("mains_tray", "mains_tray_lid", "psu", "mains_inlet", "shell", "plate")
 for n in parts:
     if n in mains_ok or n.startswith("control_"):
@@ -167,6 +168,27 @@ m_top = (FU.TERM_TOP - t_) - (FU.INLET_Y + fh / 2)
 print("  inlet flange flat margin: bottom %.1f, top %.1f mm (need >= %.1f)" % (m_low, m_top, t_ + 1.5))
 if min(m_low, m_top) < t_ + 1.5:
     bad += 1
+# the raised terminal zone must be closed toward the PSU (lid's folded edge): the window between TRAY_TOP and TERM_TOP
+# at TERM_W0 must be >= 95 % metal
+win = FU.bx(-hw + t, hw - t, FU.TRAY_TOP, FU.TERM_TOP, FU.TERM_W0, FU.TERM_W0 + t)
+cov = (getattr(win & parts["mains_tray_lid"], "volume", 0) or 0) + (getattr(win & parts["mains_tray"], "volume", 0) or 0)
+print("  mains zone closed toward the PSU: %.0f %% metal" % (100 * cov / win.volume))
+if cov / win.volume < 0.95:
+    bad += 1
+# slide-on: the shell goes on along -W over the bolted tray, module and PSU screw heads (PCB/hood not fitted yet)
+inner = ["mains_tray", "mains_tray_lid", "psu", "mains_inlet", "motor", "clutch_cover", "clutch_field_housing",
+         "tension_block", "module_bolt_heads", "encoder", "encoder_disc", "encoder_posts", "encoder_coupling"]
+heads_c = FU.psu_screw_heads()
+worst = 0.0
+for dw in range(0, 205, 5):
+    sh = Pos(0, 0, dw) * parts["shell"]
+    v = sum(getattr(sh & parts[n], "volume", 0) or 0 for n in inner) + sum(getattr(sh & h, "volume", 0) or 0 for h in heads_c)
+    worst = max(worst, v)
+    if v > 1e-2:
+        print("  SLIDE-ON blocked %d mm from home: %.2f mm3" % (dw, v))
+        bad += 1
+        break
+print("  shell slide-on sweep 0..200 mm: worst overlap %.3f mm3" % worst)
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
 #   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent)
 bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
