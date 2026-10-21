@@ -68,9 +68,9 @@ strip along the upper front with their bodies reaching back over the PCB.
 | `hood` (one print) | the top and the control strip (y -26 … top) in one L-shaped piece. **Print with the strip face down** (the top stands up): labels engraved 0.6 mm come out crisp on the bed side. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, 110 wide, corners rounded R9 to match the housing inside |
 | Fixing | both prints overlap the plate edges by 13 mm and screw into them (14× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
-| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside -33 mm below the leadscrew axis: ≥3 mm above the motor's THT-lead line even with the motor raised 3 mm by the belt tensioner |
-| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J4 so the hood can be lifted and set beside the unit |
-| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J5) and a 15 × 9 slot to the USB-C: plug in without opening the box |
+| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside -33 mm below the leadscrew axis: ≥3 mm above the motor even with the motor raised 3 mm by the belt tensioner. Trim the SWD header's (J3) pins flush underneath: they are the closest point to the motor |
+| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
+| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J7) and a 15 × 9 slot to the USB-C: plug in without opening the box |
 | Vents | intake slots in the bottom under the motor, exhaust slots high in the back wall above the PCB (vertical face, so chips don't fall in) |
 
 - **BOOTSEL / RESET / fuse:** lift the hood. USB-C goes through the end-wall slot.

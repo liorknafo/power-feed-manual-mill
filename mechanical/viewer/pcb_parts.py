@@ -45,8 +45,10 @@ ROLES = {
 KIND = {"R": "Resistor", "C": "Capacitor", "D": "Diode / LED", "L": "Inductor", "Q": "Transistor", "U": "IC",
         "J": "Connector", "F": "Fuse / PTC", "SW": "Button", "Y": "Crystal", "A": "Module", "TP": "Test point"}
 CONNECTORS = {"J1": "36 V input from the power supply.", "J2": "Stepper motor (A+ A- B+ B-).",
-              "J3": "Clutch coil.", "J4": "Ribbon to the control panel (E-stop, switch, rapid, dial, OLED).",
-              "J5": "Output encoder and the two limit switches."}
+              "J3": "SWD debug header (SWCLK, GND, SWDIO) for the Raspberry Pi Debug Probe. Hand-soldered.",
+              "J4": "USB-C: flashing (hold BOOTSEL, tap RESET) and logic power on the bench.",
+              "J5": "Clutch coil.", "J6": "Ribbon to the control panel (E-stop, switch, rapid, dial, OLED).",
+              "J7": "Output encoder and the two limit switches."}
 
 
 def schematic_info():

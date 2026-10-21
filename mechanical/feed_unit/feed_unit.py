@@ -377,8 +377,8 @@ def pcb_box(px0, px1, py0, py1, h0, h1):
     return bx(min(a[0], b[0]), max(a[0], b[0]), min(a[1], b[1]), max(a[1], b[1]), min(a[2], b[2]), max(a[2], b[2]))
 
 
-# PCB bodies from the KiCad layout; heights are assumptions. The MCU group is the bare RP2040 (QFN + flash + crystal)
-# where the Pico module used to be; the USB-C sits on the connector edge at PCB x 84..100.
+# PCB bodies from the KiCad layout (positions from the routed board, 7d76d3e); heights are assumptions.
+# Connectors: J1 36 V, J2 motor, J3 SWD header, J4 USB-C, J5 clutch, J6 panel IDC, J7 encoder + limit switches.
 PCB_HOLES = ((4, 4), (96, 4), (4, 96), (96, 96))
 
 
@@ -387,14 +387,17 @@ def pcb_placeholder():
     for cx, cy in ((15.5, 37.0), (19.0, 74.0)):                                   # 12.5 x 25 bulk caps
         x, y, w = pcb_to_world(cx, cy, 1.6)
         parts.append(ycyl(6.25, y, y + 25.0, x, w))
-    parts.append(pcb_box(50, 75, 5, 25, 1.6, 3.0))                                # RP2040 + flash + crystal
-    parts.append(pcb_box(86.5, 95.5, 92.5, 100.0, 1.6, 4.9))                      # USB-C
-    for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1..J3
+    parts.append(pcb_box(55.8, 73.7, 3.3, 25.0, 1.6, 3.0))                        # RP2040 U3, flash U4, crystal Y1
+    for x0, x1, y0, y1 in ((32.5, 42.5, 0.8, 8.2), (77.0, 87.0, 4.3, 11.7)):       # RESET SW2, BOOTSEL SW1
+        parts.append(pcb_box(x0, x1, y0, y1, 1.6, 5.1))
+    parts.append(pcb_box(44.6, 52.5, 1.9, 4.5, -3.0, 10.1))                       # SWD header J3 (THT: pins below too)
+    parts.append(pcb_box(83.1, 92.1, 92.9, 100.0, 1.6, 4.8))                      # USB-C J4, mouth at the edge
+    for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1 J2 J5
         parts.append(pcb_box(x0, x1, 89, 100, 1.6, 13.6))
-    parts.append(pcb_box(65.6, 72.4, 77, 98, 1.6, 10.1))                          # J5
-    parts.append(pcb_box(73.0, 83.9, 66.4, 92.9, 1.6, 11.6))                      # J4
+    parts.append(pcb_box(65.6, 72.4, 77, 98, 1.6, 10.1))                          # J7
+    parts.append(pcb_box(73.0, 83.9, 66.4, 92.9, 1.6, 11.6))                      # J6
     parts.append(pcb_box(0.0, 11.0, 59, 87, 1.6, 14.6))                           # fuse holder
-    for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1..J3 plugs + wire bend
+    for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1 J2 J5 plugs + wire bend
         parts.append(pcb_box(x0, x1, 100, 112, 1.6, 13.6))
     return parts
 
@@ -450,10 +453,10 @@ def shell():
     # back wall: exhaust vents high up, above the PCB (chimney flow; vertical face, so chips don't fall in)
     for i in range(4):
         s = s - bx(XB - T - 1, XB + 1, 4 + 7 * i, 7 + 7 * i, 140, 230)
-    # end wall: 2x M16 cable glands (36 V next to J1, limit switches next to J5) and the USB-C access slot
+    # end wall: 2x M16 cable glands (36 V next to J1, limit switches next to J7) and the USB-C access slot
     for xg in (pcb_to_world(18.6, 0, 0)[0], pcb_to_world(69.0, 0, 0)[0]):
         s = s - wcyl(8.1, W_END - T - 1, W_END + 1, xg, 10.0)
-    ux, uy, _ = pcb_to_world(91.0, 100, 1.6 + 1.6)
+    ux, uy, _ = pcb_to_world(87.6, 100, 1.6 + 1.6)                                # USB-C J4 centre
     s = s - bx(ux - 7.5, ux + 7.5, uy - 4.5, uy + 4.5, W_END - T - 1, W_END + 1)
     return s
 
@@ -674,9 +677,9 @@ strip along the upper front with their bodies reaching back over the PCB.
 | `hood` (one print) | the top and the control strip (y {f.band_y:.0f} … top) in one L-shaped piece. **Print with the strip face down** (the top stands up): labels engraved 0.6 mm come out crisp on the bed side. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, {2 * f.x_half:.0f} wide, corners rounded R{f.r_long - T:.0f} to match the housing inside |
 | Fixing | both prints overlap the plate edges by {f.lap:.0f} mm and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
-| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside {f.pcb_y:.0f} mm below the leadscrew axis: ≥3 mm above the motor's THT-lead line even with the motor raised 3 mm by the belt tensioner |
-| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J4 so the hood can be lifted and set beside the unit |
-| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J5) and a 15 × 9 slot to the USB-C: plug in without opening the box |
+| PCB | flat on two printed rails, 4× M3×6 into heat-set inserts, underside {f.pcb_y:.0f} mm below the leadscrew axis: ≥3 mm above the motor even with the motor raised 3 mm by the belt tensioner. Trim the SWD header's (J3) pins flush underneath: they are the closest point to the motor |
+| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
+| End wall | 2× M16 cable glands (36 V next to J1, limit switches next to J7) and a 15 × 9 slot to the USB-C: plug in without opening the box |
 | Vents | intake slots in the bottom under the motor, exhaust slots high in the back wall above the PCB (vertical face, so chips don't fall in) |
 
 - **BOOTSEL / RESET / fuse:** lift the hood. USB-C goes through the end-wall slot.
