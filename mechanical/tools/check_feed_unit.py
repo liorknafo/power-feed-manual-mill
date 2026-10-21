@@ -300,8 +300,8 @@ for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
     prev, floating = None, []
     for z in np.arange(h.min() + 0.1, h.max(), 0.2):
         sec = m.section(plane_origin=upv * z, plane_normal=upv)
-        if sec is None:
-            prev = None
+        if sec is None:             # an empty layer: whatever starts above it starts in mid-air
+            prev = []
             continue
         p2, _ = sec.to_2D(to_2D=plane_transform(upv * z, upv))
         polys = [pg for pg in p2.polygons_full if pg.area > 0.3]

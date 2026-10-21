@@ -292,8 +292,10 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
     that nothing else intrudes into the tray and that the wiring zone (≥ 35 mm) is empty.
   - The tray goes in from below through the bottom door: its two floor tabs screw up into rebates in the plate's bottom
     edge (2× M4 + star washers), which fixes it and bonds it to PE; the plate in turn earths the motor, clutch, encoder
-    and the mill table. With the door open only the tray's earthed floor and those screw heads are exposed. Earth leads
-    longer than L/N. Inlet fuse in L, T 2 A ceramic.
+    and the mill table. With the door open only the tray's earthed floor and those screw heads are exposed. The inlet's
+    PE goes straight to the tray's earth stud; a green/yellow lead from that stud to the plate is recommended, so the
+    bond doesn't rely on the two screws. Unplug the cord before opening the door, and repeat the earth test every time
+    the tray has been out. Earth leads longer than L/N. Inlet fuse in L, T 2 A ceramic.
   - Commissioning: earth-pin to plate / motor / clutch / encoder / PSU case ≤ 0.1 Ω before the first plug-in.
   - The rocker switch on the inlet is the mains switch. The E-stop removes drive enable and clutch, not mains.
 - **E-stop scope:** the E-stop removes the driver enable (TMC5160 outputs float) and the clutch drive (the table becomes mechanically free). It does **not** disconnect the 36 V bus. A mains-side contactor would be a separate addition.
