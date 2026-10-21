@@ -68,6 +68,11 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
      supporting the inner race with a tube from the outer end (Loctite 641 on that seat).
   4. DIN 471-12 down the bore into its groove (~24 deep from the outer end) with a cone on the shaft end and a push tube.
   5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.
+  6. **Release check** (the springs are what disengage the clutch, so this decides fail-safe): bolt the module to the
+     motor, coil OFF. Feeler-gauge the pole gap round the armature: 1.25 ± 0.10 everywhere, and turning the output by hand
+     must not tick (no tooth contact). A smaller gap means the springs are preloaded TOWARD the rotor (stepped spacer too
+     short): shim it until they are flat. Then coil on (1.5 A): the armature must snap in and the output lock to the motor;
+     coil off: it must snap back out at once.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
 - Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.

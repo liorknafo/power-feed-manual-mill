@@ -489,6 +489,12 @@ def dimension_sheet(z_front):
     w("     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).")
     w("  4. DIN 471-12 down the bore into its groove (~%.0f deep from the outer end) with a cone on the shaft end and a push tube." % (Z_FRONT + p.cover_front_t + BOSS_LEN - (zb[0] + p.bearing_w + 0.1)))
     w("  5. Spacer tube, outer 6001 (slides on), outer circlip. Grind or shim the stepped spacer so the springs are flat with the armature resting on them.")
+    w("  6. **Release check** (the springs are what disengage the clutch, so this decides fail-safe): bolt the module to the")
+    w("     motor, coil OFF. Feeler-gauge the pole gap round the armature: %.2f ± 0.10 everywhere, and turning the output by hand"
+      % (p.engaged_gap + p.stroke))
+    w("     must not tick (no tooth contact). A smaller gap means the springs are preloaded TOWARD the rotor (stepped spacer too")
+    w("     short): shim it until they are flat. Then coil on (1.5 A): the armature must snap in and the output lock to the motor;")
+    w("     coil off: it must snap back out at once.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
     w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 (cover), 3× M3×6 low-head DIN 7984 (hub end, from the armature side), 3× M3×6 SHCS (armature end, through the hub access holes), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
