@@ -97,7 +97,7 @@ for row, st in enumerate(("off", "on")):
     ax.set_title("teeth apart" if st == "off" else "teeth meshed: flanks pressed together, the motor turns the output", fontsize=10)
 from matplotlib.patches import Patch
 names = {"motor": "motor (shaft + flange)", "field_housing": "field housing (fixed, steel)", "coil": "coil", "rotor": "rotor (on motor shaft)",
-         "armature": "armature (moves 1.1 mm)", "pins": "drive pins (pressed in the armature)", "springs": "return springs", "clips": "washer + E-clip", "bushes": "bronze bushes", "hub": "output hub",
+         "armature": "armature (moves 1.1 mm)", "pins": "drive pins (bonded in the armature)", "springs": "return springs", "clips": "washer + E-clip", "bushes": "bronze bushes", "hub": "output hub",
          "shaft": "output shaft -> 20T pulley", "cover": "cover (aluminium)", "bearings": "bearings"}
 fig.legend(handles=[Patch(fc=COL[k], ec="k", label=v) for k, v in names.items()], loc="lower center", ncol=6, fontsize=10)
 fig.suptitle("Left: clutch cut through its axis (motor left, output right; upper half only). Right: the tooth ring unrolled flat.", fontsize=12)
