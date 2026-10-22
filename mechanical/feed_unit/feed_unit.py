@@ -354,14 +354,19 @@ def guard():
 
 
 def encoder():
-    """LPD3806-600BM: Ø38 x 35 body, Ø6 shaft x 13. Screwed to an adapter disc (3x M3 on r=15), the disc
-    sits on 3 posts at r=23 (outside the bearing bore); flexible coupling 6-8 between them."""
+    """Aideepen 600P/R encoder (B.lpd3806). Screwed to an adapter disc (3x M3 on r=15), the disc sits on 3 posts
+    at r=23 (outside the bearing bore); flexible coupling 6-8 between them. Posts: priaolker M3 x 30 F-F brass hex
+    standoffs, 6 across flats (Amazon B09NDJFLG7), a flat toward the axis."""
     zd = Z_PLATE_OUT + f.enc_post_len
     z0 = zd + f.enc_disc_t
     body = Pos(0, 0, z0) * B.lpd3806()
     coupling = Pos(0, 0, Z_PLATE_OUT + 2) * Cylinder(9.5, 25.0, align=MIN)     # uxcell 6x8 beam coupling Ø19 x 25 (B0FN786WNM)
+    hexagon = make_face(Polyline(*[(2 * 3.0 / math.sqrt(3) * math.cos(math.radians(60 * i + 30)),
+                                    2 * 3.0 / math.sqrt(3) * math.sin(math.radians(60 * i + 30))) for i in range(6)],
+                                  close=True))                                  # 6 AF, flats on +-x
+    post = extrude(hexagon, amount=f.enc_post_len)
     posts = [Pos(f.enc_post_r * math.cos(math.radians(90 + 120 * k)), f.enc_post_r * math.sin(math.radians(90 + 120 * k)),
-                 Z_PLATE_OUT) * Cylinder(3.0, f.enc_post_len, align=MIN) for k in range(3)]
+                 Z_PLATE_OUT) * Rot(0, 0, 90 + 120 * k) * post for k in range(3)]
     disc = Pos(0, 0, zd) * Cylinder(f.enc_disc_d / 2, f.enc_disc_t, align=MIN)
     disc = disc - Pos(0, -f.enc_disc_flat - 20, zd) * Box(80, 40, f.enc_disc_t, align=MIN)
     disc = disc - Pos(0, 0, zd) * Cylinder(11.0, f.enc_disc_t, align=MIN)                   # encoder pilot + coupling access
@@ -1195,7 +1200,7 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
 | Bearing spacer tube | steel or 6061 | Ø{f.bearing_od - 0.05:.2f} / Ø28 × {bearing_zs()[1] - bearing_zs()[0] - f.bearing_w:.1f}, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø{f.oldham_d:.0f} × {f.oldham_t:.0f}: tongue {f.screw_d - 2:.0f} × {f.screw_end_slot_w - 0.2:.1f} on one face (into the leadscrew slot), cross slot {f.stub_tongue_w + 0.2:.1f} wide × {f.stub_tongue_h + 0.5:.1f} deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, {f.enc_disc_t:.0f} mm | Ø{f.enc_disc_d:.0f} with a flat {f.enc_disc_flat:.0f} from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r={f.enc_post_r:.0f} (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
-| Encoder posts | 3× M3 hex standoffs F-F, {f.enc_post_len:.0f} mm | |
+| Encoder posts | 3× M3 hex standoffs F-F, {f.enc_post_len:.0f} mm, 6 across flats (priaolker brass, Amazon B09NDJFLG7) | |
 | Tension block | 6061 | {2 * TB_HALF:.0f} × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±{TB_SCREWS_X[1]:.0f}), **with a {2 * (CP.bearing_od / 2 + 6 - 0.1):.1f} × {Z_PLATE_OUT - Z_PLATE_IN:.0f} tongue that fills the slot** from the plate's bottom edge up to {KEY_TOP - PLATE_BOT:.0f} (just under the clutch boss): it seals the belt chamber off from the box (chips, coolant) and ties the plate's legs (checked); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø{f.oldham_d + 4:.0f} pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 

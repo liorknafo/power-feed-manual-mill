@@ -24,7 +24,7 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 | Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 1.8, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø24 × 9: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 4.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, 5 mm | Ø50 with a flat 20 from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r=23 (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
-| Encoder posts | 3× M3 hex standoffs F-F, 30 mm | |
+| Encoder posts | 3× M3 hex standoffs F-F, 30 mm, 6 across flats (priaolker brass, Amazon B09NDJFLG7) | |
 | Tension block | 6061 | 72 × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±30), **with a 39.8 × 28 tongue that fills the slot** from the plate's bottom edge up to 60 (just under the clutch boss): it seals the belt chamber off from the box (chips, coolant) and ties the plate's legs (checked); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø28 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
