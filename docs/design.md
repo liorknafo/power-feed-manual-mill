@@ -137,15 +137,17 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | 5 V buck | TI LM5164DDAR (6–100 V in, 1 A), LCSC C477928. Fallback: LMR51610XDBVR (4–65 V), C20539658 | to buy |
 | Clutch driver | 60 V P-FET (high side) + 60 V logic-level N-FET (low side), 2× SS210 diodes, 0.1 Ω shunt + TLV9061, ≥60 V PTC (see §7.6) | to pick |
 | Controller | RP2040 + W25Q128JV flash + 12 MHz crystal, on the PCB (a Pico is still handy for breadboard bring-up) | on the BOM |
-| Dial | rotary encoder with push button (Cylewet CYT1100) | owned |
+| Dial | rotary encoder with push button (Cylewet CYT1100, an EC11-type clone with an M7 bushing; no datasheet, so the CAD uses the Bourns PEC11R drawing. If yours has an anti-rotation lug, snip it or file a 1 mm notch in the panel's back) | owned |
 | Display | 1.3" 128×64 I²C OLED — confirm SH1106 vs SSD1306 with the seller. Power it from **3.3 V**, because its on-board I²C pull-ups go to its supply | to buy |
 | Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
 | Clutch | DIY electromagnetic tooth clutch, coil designed for the 36 V bus (see §7) | to build |
 | Motor | STEPPERONLINE NEMA 23, 3 N·m | owned |
-| PSU | Mean Well LRS-75-36, 36 V / 2.1 A + snap-in IEC C14 inlet with fuse (T 2 A ceramic) and switch, **for a 1.5 mm panel** (e.g. Schurter KD), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
+| PSU | Mean Well LRS-75-36, 36 V / 2.1 A + snap-in 3-in-1 IEC C14 inlet with 5×20 fuse (T 2 A ceramic) and rocker, C14 and rocker side by side, cut-out 47.2 × 28.3, **for a 1.5 mm panel** (modelled on the Switch Electronics SE-AS-303 drawing; check the panel range of the one you buy), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
 | Programming port | Adafruit #6069 USB-C round panel-mount extension (M12 × 1, Ø12.5 hole) + a 90° USB-C male-to-female adapter ("up/down" type) for J4 | to buy |
 | Fallback driver | DM556 | owned — used for breadboard firmware bring-up |
-| Panel | ON-OFF-ON toggle, rapid push-button, mushroom E-stop (NC), 2× limit switches | to buy |
+| Panel | E-stop IDEC XA1E-BV302R (Ø16.2 hole, Ø29 mushroom, 2 NC, only 27.9 mm behind the panel); ON-OFF-ON toggle with M12 bushing (Micros KN3C type, Ø12.4 hole + key notch); Ø16 metal momentary for RAPID (Onpow GQ16 type); Ø30 skirted knob (Ø17 grip, Ø6 bore ≥ 15 deep) for the dial; 2× PBS-110 7 mm pushbuttons (Ø7.2 holes) for BOOT/RESET; M16 cable gland (Lapp ST-M type); 2× limit switches | to buy |
+| Belt drive | HTD 295-5M-15 belt (59 T); HTD-5M 15 mm pulleys 40T + 20T (HPC 40-5M-15 / 20-5M-15 type; turn the hubs off, re-bore Ø15 / Ø12, set screws through a tooth root) | to buy |
+| Fan (optional) | 40 × 40 × 10 (Sunon MF40100V2 type) | to buy |
 
 ## 6. Plan
 

@@ -24,7 +24,7 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 | Bearing spacer tube | steel or 6061 | Ø31.95 / Ø28 × 1.8, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø24 × 9: tongue 14 × 3.8 on one face (into the leadscrew slot), cross slot 5.0 wide × 4.5 deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, 5 mm | Ø50 with a flat 20 from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r=23 (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
-| Encoder posts | 3× M3 hex standoffs F-F, 21 mm | |
+| Encoder posts | 3× M3 hex standoffs F-F, 25 mm | |
 | Tension block | 6061 | 72 × 14 × 12 on the plate's outer face below the module, bridging the plate's slot, 2× M5 into the plate's legs (x ±30), **with a 39.8 × 28 tongue that fills the slot** from the plate's bottom edge up to 60 (just under the clutch boss): it seals the belt chamber off from the box (chips, coolant) and ties the plate's legs (checked); M4 drawbolt through it into a radial M4 tapped 7 deep in the cover's front wall (bottom, between two module bolts). Tighten the drawbolt to tension the belt, then lock the 4 module bolts |
 | Belt guard | PETG print | a cup: closed back against the table end (Ø28 pass-through for the leadscrew and Oldham disc), open face covered by the plate; captured between the two |
 
@@ -33,18 +33,23 @@ Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the e
 2. Stub: inner 6002 against the shoulder, DIN 471-15 behind it. Push the stub through the outer bearing from the
    chamber side (support the outer bearing's inner race) until the inner bearing seats, then the inner circlip.
 3. Encoder to its disc, coupling on the encoder shaft, disc onto the posts, coupling onto the stub end.
-4. 40T pulley on the stub (set screws on the flat), Oldham disc on the stub tongue, guard into the chamber, then
+4. 40T pulley on the stub (set screws: one on the flat, one on the round), Oldham disc on the stub tongue, guard into the chamber, then
    the plate onto the standoffs: the Oldham tongue goes into the leadscrew slot.
-5. Clutch module through the plate's slotted hole, 20T pulley and belt, 4 module bolts finger-tight, drawbolt to tension, lock.
+5. Clutch module through the plate's slotted hole (motor bolted to the clutch with its leads toward the front wall, not up
+   toward the PCB: checked), 20T pulley and belt, 4 module bolts finger-tight, drawbolt to tension, lock.
    The bolt heads are on the chamber side, outside the guard outline: reach them from the side with a ball-end key.
 
 ## Buy
-- HTD 5M pulleys 20 T and 40 T for 15 mm belt (re-bore to Ø12 / Ø15 H7).
+- HTD 5M pulleys 20 T and 40 T for 15 mm belt (HPC 20-5M-15 / 40-5M-15 type, drawing HTD5M_15.pdf):
+  turn the hubs off (the CAD has the 20.5 teeth + 2 × 1.5 flanges only), re-bore to Ø12 / Ø15 H7, then drill and tap
+  2 set screws 90° apart through a tooth root (2× M4×6 on the 20T, 2× M5×20 on the 40T): one on the shaft's flat, one on the round,
+  like the clutch hub. The tap drills (Ø3.3 / Ø4.2) are wider than the 3 mm groove and nick the flanks of the teeth
+  either side; harmless, deburr them.
 - Belt 295-5M-15.
 - 2× 6002-2RS, 2× DIN 472-32, 1× DIN 471-15.
 - Flexible coupling 6 × 8 mm (encoder).
 - LPD3806-600BM-G5-24C encoder.
-- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module (28 plate + 8 wall: the tips stop clear of the hub); 2× M5×20 (tension block) + 1× M4×30 (drawbolt); 3× M3 hex standoffs 21 mm and 6× M3×8.
+- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module (28 plate + 8 wall: the tips stop clear of the hub); 2× M5×20 (tension block) + 1× M4×30 (drawbolt); 3× M3 hex standoffs 25 mm and 6× M3×8.
 
 ## Notes
 - The module hangs ≈177 mm off the plate on 4 M5 into the cover. The cover's spigot over the clutch housing is
@@ -71,8 +76,8 @@ strip along the upper front with their bodies reaching back over the PCB.
 | Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (12× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside -33 mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail (19 mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
-| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
-| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø12.5 hole for a round USB-C panel extension (Adafruit #6069: M12×1 thread 15 long, Ø18 × 6 flange on the inside, its nut and dust cap on the outside, so ~12 mm stands proud), **plus a 90° USB-C adapter (male to female, "up/down" type) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is ~38 mm long, so it goes down into the adapter from above (space checked, with the panel end's flange and body); **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
+| Controls (strip, left → right as you face it) | E-stop **IDEC XA1E-BV302R** (Ø16.2 hole, Ø29 mushroom 20.6 proud, 27.9 deep behind the strip, so it clears the J6 ribbon plug; two printed ribs either side of its contact block stop it turning more than ~16°, so it can't swing into the plug (they leave 0.2 mm per side round its lock ring, modelled Ø24 from photos: measure yours before printing and move ESTOP_RIB out if it is bigger); yellow Ø45 legend plate under its bezel), LEFT/STOP/RIGHT toggle (M12 bushing, Micros KN3C type: Ø12.4 hole + key notch) over RAPID (Ø16 metal momentary, Onpow GQ16 type), SPEED dial (EC11-type encoder; CAD = Bourns PEC11R: M7 bushing, nut in front, no lug hole; snip the lug if yours has one: two printed ribs either side of its body stop it turning into the OLED) with a Ø30 skirted knob (Ø17 grip), the 1.3" SH1106 OLED on 4 M2 posts behind its window; adapter board 40 × 28 (2×7 IDC) on 4 posts on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit. All shapes from the datasheets (`bought.py`), checked against the strip, the PCB, its plugs and each other |
+| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø12.5 hole for a round USB-C panel extension (Adafruit #6069: M12×1 thread 15 long, Ø18 × 6 flange on the inside, its nut and dust cap on the outside, so ~15 mm stands proud with the cap on), **plus a 90° USB-C adapter (male to female, "up/down" type) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is ~38 mm long, so it goes down into the adapter from above (space checked, with the panel end's flange and body); **BOOT and RESET** buttons (PBS-110 type 7 mm momentary NO in Ø7.2 holes, recessed in Ø16.5 × 8.5 counterbores (room for a 1/4" 10 mm socket, ≤ 16 OD, on the nut) so the caps stay 0.3 mm below the wall face and can't be pressed by a bump or a palm; a fingertip still reaches them; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
@@ -83,13 +88,14 @@ strip along the upper front with their bodies reaching back over the PCB.
     base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
     the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
-    47.5 × 27.8; the common fused + switched module, 47.2–47.5 × 27.7–28.3: **buy the version for a 1.5 mm panel** (the tray is 1.5 mm sheet; most snap-ins are for 2 mm and would rattle), e.g. Schurter KD snap-in 1.5 mm). The C13 cord plug (about 29 × 21) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
+    47.3 × 28.4; the common fused + switched module, 47.2–47.5 × 27.7–28.3: **buy the version for a 1.5 mm panel** (the tray is 1.5 mm sheet; most snap-ins are for 2 mm and would rattle), modelled on the Switch Electronics SE-AS-303 drawing: C14 bay left, rocker right, fuse drawer under the bay). The C13 cord plug (LS-13 type: body 24.6 × 17, nose 23 × 15) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
   - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
     (so the zone is closed all round): 4× M3 into **closed-end** M3 rivnuts in the walls' 10 mm folded flanges (no
-    screw tips inside the mains zone); the screws also bond the lid to the tray. That folded edge ends 1 mm above the
-    PSU, right over its terminal screws: on your PSU check ≥ 3 mm from the fold to the L/N screw heads, and line the
+    screw tips inside the mains zone); the screws also bond the lid to the tray. Its flat part lies 1 mm above the
+    PSU case; over the terminals it rises with the terminal zone (checked: ≥ 3 mm to the modelled screw heads; the head
+    height is inferred from the drawing, so check it on your PSU), and line the
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
   - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
@@ -169,6 +175,6 @@ strip along the upper front with their bodies reaching back over the PCB.
   - If there is no slot, use a pinned sleeve coupling instead of the tongue.
 - `standoffs`: where M6 can go into the table end or the left bracket.
 - `motor_angle_deg`: rotate the module if it hits the saddle, the base or the DRO cable at full travel.
-- The housing reaches -6 mm in front of the table's front edge (E-stop head included) and 157 mm below the
+- The housing reaches -10 mm in front of the table's front edge (the dial knob, 22 proud, included) and 157 mm below the
   leadscrew: check both against the saddle, the DRO reader and the base at full right travel.
 - `chamber`: the minimum is set by the clutch output shaft; the script asserts it fits.

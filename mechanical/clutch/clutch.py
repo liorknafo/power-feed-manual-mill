@@ -38,10 +38,11 @@ class P:
     # motor (STEPPERONLINE 23HS45, NEMA 23)
     shaft_d: float = 10.0
     shaft_flat: float = 9.5          # across-flat of the motor's D-cut (the rotor bore is round; see below)
-    shaft_len: float = 21.0          # shaft length beyond the flange face (measure yours!)
+    shaft_len: float = 21.0          # shaft beyond the flange face: the 23HS45-4204S's is 24 (drawing) -> cut to 21
     pilot_d: float = 38.1
     pilot_h: float = 1.6
-    bolt_square: float = 47.14
+    bolt_square: float = 47.0        # 23HS45-4204S drawing: 4x Ø5.1 through on 47.0 (not the generic 47.14)
+    flange_t: float = 4.8            # its flange (the M5 nuts sit behind it, in the body's corner relief)
     # field housing
     housing_od: float = 80.0
     housing_len: float = 20.0
@@ -402,10 +403,10 @@ def bearings(z_front):
 
 def motor_stub():
     """Reference geometry only: NEMA 23 flange (with its 4 through holes), pilot and shaft."""
-    flange = Pos(0, 0, -10) * Box(57, 57, 10, align=MIN)
+    flange = Pos(0, 0, -p.flange_t) * Box(57, 57, p.flange_t, align=MIN)
     for k in range(4):
         a = math.radians(45 + 90 * k)
-        flange = flange - Pos(MOTOR_BOLT_R * math.cos(a), MOTOR_BOLT_R * math.sin(a), -10) * Cylinder(2.75, 10, align=MIN)
+        flange = flange - Pos(MOTOR_BOLT_R * math.cos(a), MOTOR_BOLT_R * math.sin(a), -p.flange_t) * Cylinder(2.55, p.flange_t, align=MIN)
     pilot = Cylinder(p.pilot_d / 2, p.pilot_h, align=MIN)
     shaft = Cylinder(p.shaft_d / 2, p.shaft_len, align=MIN)
     shaft = shaft - Pos(p.shaft_flat - p.shaft_d / 2 + 5, 0, 3) * Box(10, 20, 60, align=(Align.CENTER, Align.CENTER, Align.MIN))
@@ -418,11 +419,11 @@ def fasteners(threads=True):
     seats in (the checks allow overlap only there)."""
     out = []
     z_front = Z_FRONT
-    for k in range(4):                         # motor: M5x30 SHCS from the housing's counterbores, nuts behind the flange
+    for k in range(4):                         # motor: M5x20 SHCS from the housing's counterbores, nuts behind the flange
         a = math.radians(45 + 90 * k)
         x, y = MOTOR_BOLT_R * math.cos(a), MOTOR_BOLT_R * math.sin(a)
-        out.append(("motor screw", FA.at("shcs", 5, 30, (x, y, 6.0), (0, 0, -1), threads), "field_housing", "motor nut"))
-        out.append(("motor nut", FA.at("nut", 5, 0, (x, y, -10.0), (0, 0, -1), threads), "motor_reference", "motor screw"))
+        out.append(("motor screw", FA.at("shcs", 5, 20, (x, y, 6.0), (0, 0, -1), threads), "field_housing", "motor nut"))
+        out.append(("motor nut", FA.at("nut", 5, 0, (x, y, -p.flange_t), (0, 0, -1), threads), "motor_reference", "motor screw"))
     # rotor: M3x8 SHCS in its counterbore (head 0.2 below the pole face) into the tapped motor shaft end
     out.append(("rotor screw", FA.at("shcs", 3, 8, (0, 0, Z_POLE - 3.2), (0, 0, -1), threads), "rotor", "motor"))
     out.append(("shaft thread M3", FA.at("thread", 3, 8, (0, 0, p.shaft_len), (0, 0, -1), threads), "motor_reference", "motor"))
@@ -537,13 +538,13 @@ def dimension_sheet(z_front):
     w("| Inner pole bore | **Ø%.1f** through | concentric with OD and pilot within 0.03 |" % p.bore_d)
     w("| Coil cavity | Ø%.1f … Ø%.1f, %.1f deep from the front | **CNC:** circular pocket with a Ø8–10 end mill round the inner pole (a boring bar can't reach the inner wall), or a face-grooving tool on the lathe. Cut the 4 Ø9 counterbores FIRST: only 1.8 mm of wall is left between each and the cavity |" % (2 * p.coil_r_in, 2 * p.coil_r_out, p.housing_len - p.back_plate))
     w("| Back plate | %.1f thick | |" % p.back_plate)
-    w("| Motor screws | 4× Ø5.5 thru on %.2f square, c'bore Ø9 from front to z=6 | M5×30 SHCS + nuts behind the motor flange |" % p.bolt_square)
+    w("| Motor screws | 4× Ø5.5 thru on %.2f square, c'bore Ø9 from front to z=6 | M5×20 SHCS + nuts behind the motor flange |" % p.bolt_square)
     w("| Coil leads | Ø3.2 thru at r=20.5 + 3.2×1.5 groove on the back face | |")
     w("| Cover screws | %d× M4 tapped radial, every %.0f°, %.1f from the back face (motor side) | no 4th axis needed: fit the cover, then drill Ø3.3 through the cover's holes into the housing, and tap |\n" % (p.cover_screws, 360 / p.cover_screws, Z_COVER_SCREW))
     w("## Rotor (steel) — `rotor.step`")
     w("| Feature | Dimension | Tolerance / note |\n|---|---|---|")
     w("| Hub OD | **Ø%.1f** × %.1f long | runs in the Ø%.1f bore: 0.3 radial gap, keep runout < 0.05. Starts %.1f above the motor flange, clear of the %.1f pilot |" % (p.hub_od, Z_FACE_BACK - p.hub_start, p.bore_d, p.hub_start, p.pilot_h))
-    w("| Shaft bore | **Ø%.0f H7**, **flat bottom %.2f ± 0.03 in front of the face disc's back face** (that is what sets the 0.3 face gap); depth from the hub end ≈ %.1f with the model's shaft length | finish the bottom with a boring bar (a reamer can't reach it); measure your motor's shaft length beyond the flange, the bottom must sit at that length + %.1f from the housing back. Loctite 641 on the D-shaft |" % (p.shaft_d, p.shaft_len - Z_FACE_BACK, p.shaft_len - p.hub_start, p.face_gap + p.housing_len - p.housing_len))
+    w("| Shaft bore | **Ø%.0f H7**, **flat bottom %.2f ± 0.03 in front of the face disc's back face** (that is what sets the 0.3 face gap); depth from the hub end ≈ %.1f with the model's shaft length | finish the bottom with a boring bar (a reamer can't reach it); **the 23HS45-4204S's shaft is 24 long: cut it to %.1f from the flange face** (face it square, drill Ø2.5 × 8, tap M3 in its end), then the bottom sits at that length + %.1f from the housing back. Loctite 641 on the D-shaft |" % (p.shaft_d, p.shaft_len - Z_FACE_BACK, p.shaft_len - p.hub_start, p.shaft_len, p.face_gap + p.housing_len - p.housing_len))
     w("| Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 3.2 from the front | M3×8 SHCS (3.0 head, sits 0.2 below the pole face) into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |")
     w("| Face disc | **Ø%.1f** × %.1f thick | back face sits %.1f from the housing front; front face = pole face |" % (p.rotor_od, p.face_t, p.face_gap))
     w("| Banana slots | %d × %.0f° arcs, r %.1f … %.1f, through (%.0f° bridges), full-round ends | CNC, Ø3 end mill on the r 20.5 arc (slot = tool width) |" % (p.slot_count, p.slot_span_deg, p.slot_r_in, p.slot_r_out, 360 / p.slot_count - p.slot_span_deg))
@@ -616,7 +617,7 @@ def dimension_sheet(z_front):
     w("     turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to")
     w("     the motor, coil off it frees at once.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), %d× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
+    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×20 + nuts (motor; the nuts sit behind the 4.8 mm flange in the body's corner relief: check yours has room, else use M5 screws from the motor side into M5 tapped in the housing), %d× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
     w("## Teeth")
     w("- %d radial teeth, flanks **flat planes** at %.0f° from the axis: every flank is the plane through a radial line at the pitch" % (p.teeth, p.flank_deg))

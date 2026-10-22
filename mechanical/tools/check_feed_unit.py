@@ -3,16 +3,16 @@ Expected: only the clutch flank contact (rotor x armature). Re-run after changin
 
 usage: mechanical/.venv/bin/python mechanical/tools/check_feed_unit.py
 """
-import sys, itertools
+import sys, itertools, math
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "feed_unit"))
 import feed_unit as FU
-from build123d import Pos, Rot
+from build123d import Axis, Compound, Pos, Rot
 parts = FU.build()
 ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pulley_40T"),("stub_shaft","oldham_disc"),
       ("oldham_disc","mill_reference"),("plate","standoffs"),("standoffs","mill_reference"),("plate","encoder_posts"),
       ("encoder_posts","encoder_disc"),("encoder","encoder_disc"),("encoder","encoder_coupling"),("stub_shaft","encoder_coupling"),
-      ("pulley_20T","clutch_output_shaft"),("belt","pulley_40T"),("belt","pulley_20T"),("plate","tension_block"),
+      ("pulley_20T","clutch_output_shaft"),("plate","tension_block"),
       ("plate","clutch_cover"),("clutch_field_housing","clutch_cover"),("clutch_field_housing","clutch_coil"),
       ("clutch_rotor","motor"),("clutch_field_housing","motor"),("clutch_hub","clutch_output_shaft"),
       ("door_pin","shell"),   # pressed into the shell's plate-end knuckle (Ø2.95 on a Ø3 pin)
@@ -22,16 +22,24 @@ ok = {("stub_shaft","bearings_6002"),("plate","bearings_6002"),("stub_shaft","pu
       ("clutch_rotor","clutch_armature")}  # engaged tooth-flank contact (tessellation-level volume)
 names = [n for n in parts if not n.startswith("control_")]   # control_* are per-control copies of "controls" for the viewer
 bad = 0
+
+
+def iv(a, b):
+    """Overlap volume; a Solid & X with nothing in common is None, not an empty shape."""
+    x = a & b
+    return 0.0 if x is None else x.volume
+
+
 for a, b in itertools.combinations(names, 2):
     if (a, b) in ok or (b, a) in ok: continue
     try:
-        v = (parts[a] & parts[b]).volume
+        v = iv(parts[a], parts[b])
     except Exception:
         v = -1
     if abs(v) > 1e-2:
         bad += 1; print("  %-22s x %-22s %.3f mm3" % (a, b, v))
 for a, b in (("belt_guard","mill_reference"),("belt_guard","plate"),("oldham_disc","mill_reference"),("belt","plate")):
-    try: v = (parts[a] & parts[b]).volume
+    try: v = iv(parts[a], parts[b])
     except Exception: v = -1
     print("  [contact] %s x %s %.3f" % (a, b, v))
 print("pulley40 <-> oldham", parts["pulley_40T"].distance_to(parts["oldham_disc"]))
@@ -73,12 +81,86 @@ for a, b in (("pcb_placeholder", "controls"), ("controls", "shell"), ("encoder",
              ("tension_block", "shell"), ("clutch_cover", "shell"), ("motor", "shell"), ("encoder_disc", "hood"),
              ("pcb_placeholder", "hood"), ("pcb_placeholder", "clutch_field_housing")):
     print("  clearance %-16s <-> %-20s %.2f mm" % (a, b, parts[a].distance_to(parts[b])))
-# each control body against everything around it
-for nm, c in zip(FU.CONTROL_NAMES, FU.controls()):
-    d = min(c.distance_to(parts[n]) for n in ("shell", "pcb_placeholder", "encoder", "encoder_disc", "plate"))
-    print("  control %-14s nearest %.2f mm" % (nm, d))
-    if d < 1.0 and nm != "estop_ring":                # the legend ring lies ON the front face, contact is right
+# each real panel part against everything around it (contact with the strip it is mounted on is fine, overlap is not),
+# at every angle it can end up at: a part with nothing to key it (RAPID: round hole) is swept through 0..180 (its
+# body repeats every 180, the nut every 60); keyed ones (toggle: lock-washer tab; dial, E-stop: ribs) through their play
+ctl = FU.controls()
+around_c = ["shell", "hood", "pcb_placeholder", "usb_path", "plug_wires", "encoder", "encoder_disc", "plate", "motor",
+            "clutch_cover", "end_wall_parts", "fan"]
+CTRL_OF = {"estop": "estop", "estop_plate": "estop", "toggle": "toggle", "rapid": "rapid", "dial": "dial"}
+ANGLES = {"rapid": range(0, 180, 15),                                 # free (round hole)
+          "estop": (-16, -10, -5, 0, 5, 10, 16),     # ribs 2.7 off its 19 x 22 contact block: ~16 deg
+          "toggle": (-1, 0, 1), "dial": (-1, 0, 1)}   # play: tab 0.15 per side at r 6.9, ribs 0.15 per side at 6.25: ~1.2 deg
+
+
+def turned(shape, key, deg):
+    """A placed panel part turned about its own hole axis (solid by solid: a moved Compound confuses booleans)."""
+    if deg == 0:
+        return shape
+    w_, y_ = FU.CTRL[key]
+    ax = Axis((0, y_, w_), (1, 0, 0))
+    return Compound(children=[so.rotate(ax, deg) for so in shape.solids()])
+
+
+def boxes_meet(a, b_):
+    p, q = a.bounding_box(), b_.bounding_box()
+    return (p.min.X <= q.max.X and q.min.X <= p.max.X and p.min.Y <= q.max.Y and q.min.Y <= p.max.Y
+            and p.min.Z <= q.max.Z and q.min.Z <= p.max.Z)
+
+
+for i, (nm, c) in enumerate(zip(FU.CONTROL_NAMES, ctl)):
+    worst_v, worst_n = 0.0, ""
+    for deg in ANGLES.get(nm, (0,)):
+        cr = turned(c, CTRL_OF[nm], deg) if nm in CTRL_OF else c
+        for n in around_c + [FU.CONTROL_NAMES[k] for k in range(len(ctl)) if k != i]:
+            if {nm, n} in ({"adapter_board", "adapter_header"}, {"estop", "estop_plate"}):
+                continue                                   # parts of one assembly, touching by design
+            other = parts[n] if n in parts else ctl[FU.CONTROL_NAMES.index(n)]
+            if not boxes_meet(cr, other):
+                continue
+            v = sum(iv(so, other) for so in cr.solids())
+            if v > worst_v:
+                worst_v, worst_n = v, "%s at %+d deg" % (n, deg)
+    d = min(c.distance_to(parts[n]) for n in ("shell", "pcb_placeholder", "usb_path", "plug_wires"))
+    print("  control %-14s overlap %.3f mm3 %s, nearest (shell/pcb/usb/wires) %.2f mm, angles %s" % (
+        nm, worst_v, worst_n, d, "0" if nm not in ANGLES else "%+d..%+d" % (min(ANGLES[nm]), max(ANGLES[nm]))))
+    if worst_v > 1e-2:
         bad += 1
+# the toggle is keyed but its back nut (14 AF) can stop at any angle: its across-corners circle must be clear
+w_, y_ = FU.CTRL["toggle"]
+nut_env = FU.xcyl(14.0 / math.sqrt(3), FU.X_FP - FU.STRIP_T - 3.0, FU.X_FP - FU.STRIP_T, y_, w_)
+v_nut = sum(iv(nut_env, parts[n]) for n in around_c) + sum(
+    iv(nut_env, so) for k, cc in enumerate(ctl) if FU.CONTROL_NAMES[k] != "toggle" for so in cc.solids())
+print("  toggle back nut, any angle (Ø%.2f): overlap %.3f mm3" % (2 * 14.0 / math.sqrt(3), v_nut))
+if v_nut > 1e-2:
+    bad += 1
+# the ribs really stop them: turned past their play the bodies must hit the ribs
+for nm, deg in (("dial", 5), ("estop", 20)):
+    v_rib = sum(iv(so, parts["hood"]) for so in turned(ctl[FU.CONTROL_NAMES.index(nm)], nm, deg).solids())
+    print("  %s turned %d deg runs into its ribs: %.3f mm3 (must be > 0)" % (nm, deg, v_rib))
+    if v_rib < 1e-2:
+        bad += 1
+# the end wall's parts and the fan against the rest
+for nm in ("end_wall_parts", "fan", "mains_cord_plug"):
+    worst_v, worst_n = 0.0, ""
+    for n in ("shell", "hood", "pcb_placeholder", "usb_path", "plug_wires", "motor", "mains_tray", "mains_tray_lid",
+              "psu", "encoder", "controls"):
+        if n == nm:
+            continue
+        x = parts[nm] & parts[n]
+        v = x.volume if x is not None else 0.0
+        if v > worst_v:
+            worst_v, worst_n = v, n
+    print("  %-15s overlap %.3f mm3 %s" % (nm, worst_v, worst_n))
+    if worst_v > 1e-2:
+        bad += 1
+# the tray lid vs the LRS-75's terminal screw heads (the reviewer's >= 3 mm; the flat lid lies 1 mm over the case by
+# design, the heads sit under the raised terminal zone; head height INFERRED - measure your PSU)
+heads = Compound(children=[FU.PSU_LOC * h for h in FU.B.lrs75_terminal_heads()])   # the same solids as the PSU model
+d_heads = parts["mains_tray_lid"].distance_to(heads)
+print("  lid <-> PSU terminal screw heads: %.2f mm (need >= 3)" % d_heads)
+if d_heads < 3.0:
+    bad += 1
 # the PCB rests ON its printed rails; it must clear the motor (THT leads ~3 mm) over the whole tension slot
 print("  pcb on rails: overlap %.3f mm3" % (parts["pcb_placeholder"] & parts["shell"]).volume)
 for t in (-FU.f.tension_slot, FU.f.tension_slot):
@@ -131,18 +213,18 @@ print("  insert seats checked: %d" % (1 + sum(1 for j in FU.screw_joints() if j[
 t, hw = FU.f.tray_t, FU.TRAY_HALF
 inside = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, FU.TRAY_WALL_W0, FU.TRAY_W1 - t) + \
     FU.bx(-hw + t, hw - t, FU.TRAY_TOP, FU.TERM_TOP, FU.TERM_W0, FU.TRAY_W1 - t)                     # + raised zone
-mains_ok = ("mains_tray", "mains_tray_lid", "psu", "mains_inlet", "shell", "plate")
+mains_ok = ("mains_tray", "mains_tray_lid", "psu", "mains_inlet", "mains_cord_plug", "shell", "plate")
 for n in parts:
     if n in mains_ok or n.startswith("control_"):
         continue
-    v = (parts[n] & inside).volume
+    v = iv(parts[n], inside)
     if v > 1e-3:
         bad += 1
         print("  MAINS ZONE INTRUSION: %s %.2f mm3" % (n, v))
 w_term = FU.f.psu_w0 + FU.f.psu_l
 w_inlet = FU.TRAY_W1 - t - FU.f.inlet_depth
 zone = FU.bx(-hw + t, hw - t, FU.TRAY_BOT + t, FU.TRAY_TOP, w_term, w_inlet)
-occ = sum((zone & parts[n]).volume for n in parts if n not in ("mains_tray", "mains_tray_lid") and not n.startswith("control_"))
+occ = sum(iv(zone, parts[n]) for n in parts if n not in ("mains_tray", "mains_tray_lid") and not n.startswith("control_"))
 print("  mains wiring zone %.1f mm long, occupied %.3f mm3" % (w_inlet - w_term, occ))
 if w_inlet - w_term < 35 or occ > 1e-3:
     bad += 1

@@ -1,7 +1,7 @@
 """X-axis feed unit for the SIEG X3.5D: mount plate, 2:1 belt drive, leadscrew stub, encoder.
 
 Run:  mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py
-Out:  mechanical/feed_unit/out/*.step|*.stl, renders; FEED_UNIT.md (parts, placeholders).
+Out:  mechanical/feed_unit/out/*.step|*.stl; FEED_UNIT.md (parts, placeholders). Renders: tools/render_feed_unit.py.
 
 Layout (docs/mill.md: the feed goes on the LEFT table end, where SIEG's own SX3.5P feeder mounts):
   World Z = leadscrew axis, pointing OUT of the table (away from the mill). Z = 0 is the face of the
@@ -28,6 +28,7 @@ from build123d import (Align, Axis, Box, Compound, Cylinder, Plane, Polyline, Po
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "clutch"))
 sys.path.insert(0, os.path.join(HERE, ".."))
+import bought as B  # noqa: E402
 import clutch  # noqa: E402
 import fasteners as FA  # noqa: E402
 
@@ -80,9 +81,9 @@ class F:
     tray_side_gap: float = 2.0       # PSU side -> tray wall
     psu_holes: tuple = ((20.5, 45.5), (75.5, 45.5))   # base M3 (max 3 mm deep): from the terminal end, from one long edge
     term_zone_rise: float = 10.0     # tray walls, end face and lid are this much higher over the terminal/inlet zone
-    inlet_cut: tuple = (47.5, 27.8)  # snap-in IEC C14 + fuse + rocker switch, rated for 1-2 mm panels (check yours)
-    inlet_flange: tuple = (50.0, 31.0)
-    inlet_depth: float = 35.0        # its body behind the panel
+    inlet_cut: tuple = (47.3, 28.4)  # SE-AS-303 type snap-in C14 + fuse + rocker (cut-out 47.2 x 28.3), 1.5 mm panel
+    inlet_flange: tuple = (50.0, 30.8)
+    inlet_depth: float = 28.0        # its body (17.2) + tabs (10.5) behind the panel
     # --- Oldham coupling (steel/bronze disc): tongue into the leadscrew slot, cross slot for the stub tongue
     oldham_d: float = 24.0           # outside the bracket, so not tied to the leadscrew diameter
     oldham_t: float = 9.0
@@ -91,7 +92,7 @@ class F:
     stub_tongue_h: float = 4.0       # 14 x 4 bearing faces: ~45 MPa at 9 N·m cam-out -> steel or bronze disc
     # --- encoder (LPD3806: 3x M3 on r=15 in its front face) on an adapter disc
     enc_post_r: float = 23.0         # outside the Ø32 bearing bore
-    enc_post_len: float = 21.0
+    enc_post_len: float = 25.0       # M3 hex standoffs; the encoder's 5 mm face boss puts its shaft this far out
     enc_disc_d: float = 50.0
     enc_disc_t: float = 5.0
     enc_disc_flat: float = 20.0      # flat toward the clutch module (its cover top is ~27 below the stub)
@@ -322,21 +323,21 @@ def stub_shaft():
 
 
 def pulleys():
-    small_od = pd(f.teeth_small) - 1.14
-    big_od = pd(f.teeth_big) - 1.14
-    z0 = W_PULLEY - f.pulley_w / 2
-    big = ring(big_od / 2, f.stub_d / 2, f.pulley_w, z0) + ring(big_od / 2 + 2, f.stub_d / 2, 1.0, z0 - 1.0) + \
-        ring(big_od / 2 + 2, f.stub_d / 2, 1.0, z0 + f.pulley_w)
-    small = Pos(MX, MY, 0) * (ring(small_od / 2, CP.out_shaft_d / 2, f.pulley_w, z0)
-                              + ring(small_od / 2 + 2, CP.out_shaft_d / 2, 1.0, z0 - 1.0)
-                              + ring(small_od / 2 + 2, CP.out_shaft_d / 2, 1.0, z0 + f.pulley_w))
+    """HTD 5M 40T (on the stub, Ø15 bore) and 20T (on the clutch shaft, Ø12 bore), hubs turned off (bought.py)."""
+    big = Pos(0, 0, W_PULLEY) * B.htd5m_pulley(f.teeth_big, f.stub_d, 5)
+    small = Pos(MX, MY, W_PULLEY) * B.htd5m_pulley(f.teeth_small, CP.out_shaft_d, 4)
     return big, small
 
 
 def belt():
+    """HTD 5M toothed belt: backing from the land (0.57 inside the pitch line) to the back (+1.17), teeth in the
+    pulley grooves on the wraps and at 5 mm pitch on the spans (bought.py)."""
     r1, r2 = pd(f.teeth_big) / 2, pd(f.teeth_small) / 2
     z0 = W_PULLEY - f.belt_w / 2
-    return stadium(r1 + 1.2, r2 + 1.2, z0, f.belt_w) - stadium(r1 - 0.6, r2 - 0.6, z0 - 1, f.belt_w + 2)
+    k = 1 / math.cos(math.pi / 144)                  # the inner hull's flats must not dip inside the pulley tips
+    back = stadium(r1 + 1.17, r2 + 1.17, z0, f.belt_w) - stadium((r1 - 0.55) * k, (r2 - 0.55) * k, z0 - 1, f.belt_w + 2, n=144)
+    teeth = B.htd5m_belt_teeth((0.0, 0.0), f.teeth_big, (MX, MY), f.teeth_small, f.belt_w, z0)
+    return back + teeth                                # a Part (a bare Solid & X gives None when apart)
 
 
 def guard():
@@ -353,12 +354,11 @@ def guard():
 
 
 def encoder():
-    """LPD3806-600BM: Ø38 x 36 body, Ø6 shaft x 13. Screwed to an adapter disc (3x M3 on r=15), the disc
+    """LPD3806-600BM: Ø38 x 35 body, Ø6 shaft x 13. Screwed to an adapter disc (3x M3 on r=15), the disc
     sits on 3 posts at r=23 (outside the bearing bore); flexible coupling 6-8 between them."""
     zd = Z_PLATE_OUT + f.enc_post_len
     z0 = zd + f.enc_disc_t
-    body = Pos(0, 0, z0) * Cylinder(19.0, 36.0, align=MIN)
-    shaft = Pos(0, 0, z0 - 13) * Cylinder(3.0, 13.0, align=MIN)
+    body = Pos(0, 0, z0) * B.lpd3806()
     coupling = Pos(0, 0, Z_PLATE_OUT + 3) * Cylinder(9.5, 20.0, align=MIN)
     posts = [Pos(f.enc_post_r * math.cos(math.radians(90 + 120 * k)), f.enc_post_r * math.sin(math.radians(90 + 120 * k)),
                  Z_PLATE_OUT) * Cylinder(3.0, f.enc_post_len, align=MIN) for k in range(3)]
@@ -369,7 +369,7 @@ def encoder():
         a = math.radians(90 + 120 * k)
         disc = disc - Pos(f.enc_post_r * math.cos(a), f.enc_post_r * math.sin(a), zd) * Cylinder(1.7, f.enc_disc_t, align=MIN)
         disc = disc - Pos(15 * math.cos(a + math.pi / 3), 15 * math.sin(a + math.pi / 3), zd) * Cylinder(1.7, f.enc_disc_t, align=MIN)
-    return body + shaft, coupling, posts, disc
+    return body, coupling, posts, disc
 
 
 def mill_reference():
@@ -397,7 +397,7 @@ Y0, Y1 = PLATE_BOT, PLATE_TOP
 XB, XF = -f.x_half, f.x_half                        # inside faces of the back and front walls
 X_FRONT, X_FP = XF, XF + T                          # control strip: inner and outer face
 G = f.fit_gap
-W_TAIL = W0 + 114.0                                 # motor tail (motor_stub flange + 104 body)
+W_TAIL = W0 + 114.0                                 # motor tail (23HS45: 113 MAX behind the flange face, + 1)
 W_END = W_TAIL + f.tail_clear + T                   # outer face of the end wall
 W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim, on the plate edges
 RAIL = f.rail
@@ -423,8 +423,12 @@ TRAY_SCREW_W = Z_PLATE_OUT - 6.0              # M4 x 8 button head (ISO 7380) up
 GROMMET = (-30.0, TRAY_W1 - 12.0)             # (x, W) of the Ø10 grommet in the tray lid: 36 V leads up to J1
 USB_PORT = (15.0, 10.0)     # (x, y) on the end wall
 SWD_PORT = (-15.0, 10.0)
-BOOT_BTN = (-15.0, -9.0)    # 7 mm momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
-RESET_BTN = (15.0, -9.0)
+BOOT_BTN = (-15.0, -11.0)   # 7 mm PBS-110 momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
+RESET_BTN = (15.0, -11.0)
+BTN_RECESS = (8.25, 8.5)    # (radius, depth) of the recess in front of each: its nut (11.55 across corners), a 1/4"
+                            # 10 mm socket (<= 16 OD) on it, and the cap,
+                            # deep enough that the cap (8.2 above the floor) stays 0.3 below the wall face
+BTN_FLOOR = 3.0             # the recess floor the button mounts in (PBS-110 thread: panel <= ~3.4)
 INTAKE = dict(w0=145.0, w1=225.0, y0=-100.0, y1=-72.0)    # motor-air louvres, back and front walls
 FAN = dict(w0=115.0, w1=155.0, y0=-12.0, y1=28.0, x_in=XB + 4.5)   # 40 mm fan / louvre field on the back wall
 # the bottom door: everything below the bottom fillets' tops, the whole length (end-wall band included), so the
@@ -490,6 +494,7 @@ def pcb_placeholder():
         parts.append(pcb_box(x0, x1, 89, 100, 1.6, 13.6))
     parts.append(pcb_box(65.6, 72.4, 77, 98, 1.6, 10.1))                          # J7
     parts.append(pcb_box(73.0, 83.9, 66.4, 92.9, 1.6, 11.6))                      # J6
+    parts.append(pcb_box(72.0, 84.9, 64.4, 94.9, 11.6, 20.6))                     # its IDC ribbon plug
     parts.append(pcb_box(0.0, 11.0, 59, 87, 1.6, 14.6))                           # fuse holder
     for x0, x1 in ((12.0, 25.3), (26.5, 49.9), (50.9, 64.2)):                      # J1 J2 J5: MSTB plugs
         parts.append(pcb_box(x0, x1, 99.3, 99.3 + MSTB_PLUG, 1.6, 16.6))
@@ -501,13 +506,20 @@ WIRE_RUN = 10.0           # ferrule (8) + 2 straight before the bend
 WIRE_BEND = 7.0           # bend radius, 1.5 mm2 wire turning down past the board edge
 
 
+PSU_LOC = Pos(-f.psu_w / 2, PSU_BOT, f.psu_w0 + f.psu_l) * Rot(-90, 0, 0)   # the LRS-75's frame in the unit
+
+
 def psu_placeholder():
-    """LRS-75-36 body and the IEC inlet module's body behind the tray's end face (for the checks and renders)."""
-    psu = bx(-f.psu_w / 2, f.psu_w / 2, PSU_BOT, PSU_TOP, f.psu_w0, f.psu_w0 + f.psu_l)
-    iw, ih = f.inlet_cut
-    inlet = bx(-iw / 2 + 1, iw / 2 - 1, INLET_Y - ih / 2 + 1, INLET_Y + ih / 2 - 1, TRAY_W1 - f.tray_t - f.inlet_depth,
-               TRAY_W1 - f.tray_t)
+    """The LRS-75-36 (bought.py, terminal end toward the inlet, its 97 width across x) and the IEC inlet module clipped
+    into the tray's end face (front face at TRAY_W1, flange toward the end wall)."""
+    psu = PSU_LOC * B.lrs75()
+    inlet = Pos(0, INLET_Y, TRAY_W1) * B.iec_inlet_se_as_303()
     return psu, inlet
+
+
+def cord_plug():
+    """A moulded C13 cord connector plugged into the inlet's C14 bay (to show how it sits in the end wall's opening)."""
+    return Pos(-10.5, INLET_Y + 4.7, TRAY_W1 + 3.3) * B.c13_plug()
 
 
 def psu_screws():
@@ -571,9 +583,9 @@ def usb_envelopes():
     from above. Plus the panel end behind the end wall: Ø18 x 6 flange, Ø11 x 10 body."""
     ux, uy = USB_PORT
     wi = W_END - T
-    return [pcb_box(81.4, 93.9, 100.6, 113.6, 1.6, 19.6),        # 90-degree adapter out of J4's mouth (py 100.6)
-            pcb_box(81.6, 93.7, 103.0, 111.0, 19.6, 57.6),       # the straight male plug, going down into it
-            pcb_box(78.0, 97.0, 99.0, 115.0, 57.6, 70.0),        # its cable bending away at the top
+    return [pcb_box(81.4, 93.9, 100.6, 114.6, 1.6, 21.6),        # 90-degree adapter (~24 x 19 x 6, Adafruit 4432 size)
+            pcb_box(81.6, 93.7, 104.0, 112.0, 21.6, 59.6),       # the straight male plug, going down into it
+            pcb_box(78.0, 97.0, 100.0, 115.0, 59.6, 72.0),       # its cable bending away at the top
             wcyl(9.0, wi - 6, wi, ux, uy) + wcyl(5.5, wi - 16, wi - 6, ux, uy)]   # panel end, inside the wall
 
 
@@ -591,11 +603,15 @@ def plug_wires():
 
 # control strip layout, (W, y) on the strip's outer face; as the operator sees it, W increases to the LEFT
 CTRL = {
-    "estop": (214.0, 2.0), "toggle": (160.0, 18.0), "rapid": (160.0, -6.0),
-    "oled": (85.0, 20.0), "dial": (88.0, -6.0), "adapter": (128.0, 20.0),
+    "estop": (214.0, 2.0), "toggle": (160.0, 18.0), "rapid": (160.0, -4.0),
+    "oled": (85.0, 20.0), "dial": (85.0, -6.0), "adapter": (124.5, 20.0),
 }
 LABELS = (("LEFT", 175.0, 28.0), ("STOP", 160.0, 28.0), ("RIGHT", 145.0, 28.0),
-          ("RAPID", 140.0, -6.0), ("SPEED", 113.0, -6.0))
+          ("RAPID", 140.0, -4.0), ("SPEED", 113.0, -6.0))
+STRIP_T = X_FP - X_FRONT - G     # the control strip's real thickness (its back is G off the shell): the panel parts' panel
+DIAL_RIB = (6.4, 7.6, 3.0)       # PEC11R anti-rotation ribs either side of its 12.5 body: (inner, outer) offset, depth
+ESTOP_RIB = (12.2, 13.4, 9.0)    # E-stop anti-rotation ribs either side of its 19-wide contact block, outside the Ø24
+                                 # lock ring: it can turn ~16 deg, not far enough to reach the PCB or the hood
 
 
 def _rounded(x0, x1, y0, y1, w0, w1, r, c_tf, c_end, chamfer_back_top=False, r_bottom=None):
@@ -762,11 +778,12 @@ def shell():
     s = s + bx(sx - 8, sx + 8, sy - 5, sy + 5, wi - 8, wi + 0.5)                     # boss behind the port
     s = s - bx(sx - 6, sx + 6, sy - 3, sy + 3, W_END - 7, W_END + 1)                 # recess (pins 6 long: sunk)
     s = s - bx(sx - 3.95, sx + 3.95, sy - 1.4, sy + 1.4, wi - 9, W_END - 6.9)          # slot for the header body
-    # BOOT and RESET: 7 mm panel pushbuttons, recessed 4 mm (Ø11 counterbore) so they can't be hit by accident;
-    # a 5 mm boss inside leaves a 4 mm panel for the nut. Hold BOOT + tap RESET = RP2040 USB drive, box closed
-    for bxx, byy in (BOOT_BTN, RESET_BTN):
-        s = s + wcyl(8.0, wi - 5, wi + 0.5, bxx, byy)
-        s = s - wcyl(5.5, W_END - 4, W_END + 1, bxx, byy) - wcyl(3.6, wi - 6, W_END + 1, bxx, byy)   # Ø7.2 (prints small)
+    # BOOT and RESET: PBS-110 panel pushbuttons in recesses (BTN_RECESS) so they can't be hit by accident;
+    # hold BOOT + tap RESET = RP2040 USB drive, box closed
+    for bxx, byy in (BOOT_BTN, RESET_BTN):   # PBS-110 mounts from behind, nut in front: a boss carries a 3 mm floor
+        floor = W_END - BTN_RECESS[1] - BTN_FLOOR
+        s = s + wcyl(9.6, floor, wi + 0.5, bxx, byy)
+        s = s - wcyl(BTN_RECESS[0], W_END - BTN_RECESS[1], W_END + 1, bxx, byy) - wcyl(3.6, floor - 1, W_END + 1, bxx, byy)
     for txt, x, y in (("SWD", sx, sy + 9), ("USB", ux, uy + 12), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
                       ("RESET", RESET_BTN[0], RESET_BTN[1] - 11)):                      # engraved on the bed face
         try:
@@ -843,15 +860,22 @@ def hood():
 
 
 def control_cutouts(fp):
-    w, y = CTRL["estop"]; fp = fp - xcyl(11.25, X_FRONT - 1, X_FP + 1, y, w)
-    w, y = CTRL["toggle"]; fp = fp - xcyl(6.2, X_FRONT - 1, X_FP + 1, y, w)
+    w, y = CTRL["estop"]; fp = fp - xcyl(8.1, X_FRONT - 1, X_FP + 1, y, w)       # IDEC XA E-stop: Ø16.2, no notch,
+    for s_ in (-1, 1):                     # so two ribs key its contact block
+        w_in, w_out = sorted((w + s_ * ESTOP_RIB[0], w + s_ * ESTOP_RIB[1]))
+        fp = fp + bx(X_FRONT + G - ESTOP_RIB[2], X_FRONT + G + 0.5, y - 11.0, y + 11.0, w_in, w_out)
+    w, y = CTRL["toggle"]; fp = fp - xcyl(6.2, X_FRONT - 1, X_FP + 1, y, w)      # Ø12.4 (M12) + 1.9 key notch
+    fp = fp - bx(X_FRONT - 1, X_FP + 1, y + 5.5, y + 7.1, w - 1.05, w + 1.05)
     w, y = CTRL["rapid"]; fp = fp - xcyl(8.15, X_FRONT - 1, X_FP + 1, y, w)
-    w, y = CTRL["dial"]; fp = fp - xcyl(3.7, X_FRONT - 1, X_FP + 1, y, w) - xcyl(1.6, X_FRONT - 1, X_FRONT + 1.0, y + 7.8, w)
+    w, y = CTRL["dial"]; fp = fp - xcyl(3.7, X_FRONT - 1, X_FP + 1, y, w)      # PEC11R: M7 bushing, nut in front, no lug
+    for s_ in (-1, 1):                     # so two ribs either side of its body key it: it can't turn into the OLED
+        w_in, w_out = sorted((w + s_ * DIAL_RIB[0], w + s_ * DIAL_RIB[1]))
+        fp = fp + bx(X_FRONT + G - DIAL_RIB[2], X_FRONT + G + 0.5, y - 6.7, y + 6.7, w_in, w_out)
     w, y = CTRL["oled"]; fp = fp - bx(X_FRONT - 1, X_FP + 1, y - 8, y + 8, w - 15, w + 15)
     for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):   # OLED M2 posts
         fp = fp + xcyl(2.5, X_FRONT - 2.5, XF + G + 0.5, y - 2 + dy, w + dw) - xcyl(0.8, X_FRONT - 2.6, X_FRONT + 1.0, y - 2 + dy, w + dw)
     w, y = CTRL["adapter"]
-    for dw, dy in ((-19.5, -11), (19.5, -11), (-19.5, 11), (19.5, 11)):              # adapter board posts, M3 inserts
+    for dw, dy in ((-16.0, -11), (16.0, -11), (-16.0, 11), (16.0, 11)):              # adapter board posts, M3 inserts
         fp = fp + xcyl(4.0, X_FRONT - 5, XF + G + 0.5, y + dy, w + dw) - xcyl(INSERT_D / 2, X_FRONT - 5.1, X_FRONT - 5 + INSERT_L, y + dy, w + dw)
     for txt, w, y in LABELS:                                                       # engraved 0.6 deep (3 layers)
         pl = Plane(origin=(X_FP, y, w), x_dir=(0, 0, -1), z_dir=(1, 0, 0))
@@ -862,26 +886,57 @@ def control_cutouts(fp):
     return fp
 
 
+def panel_part(shape, w, y, x=X_FP):
+    """A bought panel part (bought.py frame: panel front at z = 0, z out of the panel) on the control strip at (W, y):
+    its z along +x, its x along -W (so its long axis follows LEFT/RIGHT)."""
+    loc = Plane(origin=(x, y, w), x_dir=(0, 0, -1), z_dir=(1, 0, 0)).location
+    return Compound(children=[so.moved(loc) for so in shape.solids()])
+
+
 def controls():
-    """Placeholder bodies for the checks and renders (not machined). Same order as CONTROL_NAMES."""
+    """The real panel parts, placed (bought.py). Same order as CONTROL_NAMES."""
     c = []
     w, y = CTRL["estop"]
-    c += [xcyl(11.0, X_FRONT - 50, X_FRONT, y, w), xcyl(20.0, X_FP + 1, X_FP + 26, y, w), xcyl(30.0, X_FP, X_FP + 1, y, w)]
+    c.append(panel_part(B.estop_idec_xa(STRIP_T), w, y))
+    c.append(panel_part(B.estop_legend_plate(), w, y))
     w, y = CTRL["toggle"]
-    c += [bx(X_FRONT - 25, X_FRONT, y - 6.5, y + 6.5, w - 6.5, w + 6.5), xcyl(2.0, X_FP, X_FP + 20, y, w)]
+    c.append(panel_part(B.toggle_kn3c(STRIP_T), w, y))
     w, y = CTRL["rapid"]
-    c += [xcyl(8.0, X_FRONT - 25, X_FRONT, y, w), xcyl(10.0, X_FP, X_FP + 10, y, w)]
+    c.append(panel_part(B.pushbutton_gq16(STRIP_T), w, y))
     w, y = CTRL["dial"]
-    c += [bx(X_FRONT - 15, X_FRONT, y - 6, y + 6, w - 6, w + 6), xcyl(15.0, X_FP + 2, X_FP + 17, y, w)]
-    w, y = CTRL["oled"]
-    c += [bx(X_FRONT - 7.5, X_FRONT - 2.5, y - 2 - 17, y - 2 + 17, w - 18, w + 18)]
+    c.append(panel_part(B.encoder_pec11r(STRIP_T), w, y))
+    w, y = CTRL["oled"]                                  # on its 2.5 mm M2 posts behind the window
+    c.append(panel_part(B.oled_sh1106(), w, y, x=X_FRONT - 2.5))
     w, y = CTRL["adapter"]
-    c += [bx(X_FRONT - 6.6, X_FRONT - 5, y - 14, y + 14, w - 22.5, w + 22.5), bx(X_FRONT - 15.6, X_FRONT - 6.6, y - 5, y + 5, w - 18, w + 18)]
+    c += [bx(X_FRONT - 6.6, X_FRONT - 5, y - 14, y + 14, w - 20.0, w + 20.0), bx(X_FRONT - 15.6, X_FRONT - 6.6, y - 5, y + 5, w - 16, w + 16)]
     return c
 
 
-CONTROL_NAMES = ["estop_body", "estop_head", "estop_ring", "toggle_body", "toggle_lever", "rapid_body", "rapid_cap",
-                 "dial_body", "dial_knob", "oled", "adapter_board", "adapter_header"]
+CONTROL_NAMES = ["estop", "estop_plate", "toggle", "rapid", "dial", "oled", "adapter_board", "adapter_header"]
+
+
+def end_wall_parts(threads=True):
+    """BOOT/RESET pushbuttons, the SWD header, the USB-C panel end outside (thread, nut, dust cap) and the cable gland,
+    placed on the end wall (bought.py frames: z along +W)."""
+    out = []
+    for bxx, byy in (BOOT_BTN, RESET_BTN):               # mounted from behind on the recess floor, nut in front
+        out.append(Pos(bxx, byy, W_END - BTN_RECESS[1]) * B.pushbutton_pbs110(BTN_FLOOR))
+    sx, sy = SWD_PORT                                    # 1x3 header pressed into its slot, pins sunk in the recess
+    hdr = bx(sx - 3.81, sx + 3.81, sy - 1.27, sy + 1.27, W_END - 9.4, W_END - 6.9)
+    for k in (-1, 0, 1):
+        hdr = hdr + bx(sx + 2.54 * k - 0.32, sx + 2.54 * k + 0.32, sy - 0.32, sy + 0.32, W_END - 12.4, W_END - 1.0)
+    out.append(hdr)
+    ux, uy = USB_PORT                                    # #6069: thread 12 proud, nut (~17 AF) and dust cap outside
+    out.append(Pos(ux, uy, W_END) * B.usb_c_panel_6069())
+    out.append(Pos(36.0, -62.0, W_END) * B.gland_m16(T))
+    return out
+
+
+def fan():
+    """The optional 40 mm fan on the louvre block's inside, blowing out through the back wall."""
+    yc, wc = (FAN["y0"] + FAN["y1"]) / 2, (FAN["w0"] + FAN["w1"]) / 2
+    loc = Plane(origin=(FAN["x_in"] + 10.0, yc, wc), x_dir=(0, 0, 1), z_dir=(-1, 0, 0)).location
+    return Compound(children=[so.moved(loc) for so in B.fan_40x10().solids()])
 
 
 def screw_joints():
@@ -924,12 +979,6 @@ def apply_screws(parts):
         r, depth = (1.25, 8.0) if kind == "tap" else (INSERT_D / 2, INSERT_L)
         parts[target] = parts[target] - Solid.make_cylinder(r, depth, inner)
     return parts
-
-
-def motor_body():
-    """NEMA 23 body behind the flange, its 4 corners relieved like the real motor's: the flange's M5 nuts sit there."""
-    body = Pos(0, 0, -114) * Box(57, 57, 104, align=MIN)
-    return chamfer(body.edges().filter_by(Axis.Z), 17.0)
 
 
 def insert(point, direction, threads):
@@ -984,6 +1033,14 @@ def all_fasteners(threads=True):
                     "plate"))
         xe, ye = 15 * math.cos(a + math.pi / 3), 15 * math.sin(a + math.pi / 3)
         out.append(("encoder screw M3x8", FA.at("button", 3, 8, (xe, ye, zd), (0, 0, 1), threads), "encoder", "plate"))
+    for (cx, cy), teeth, bore, d in (((0.0, 0.0), f.teeth_big, f.stub_d, 5), ((MX, MY), f.teeth_small, CP.out_shaft_d, 4)):
+        r_root = (teeth * 5.0 / math.pi - 1.14) / 2 - 2.06       # pulley set screws, radial through a tooth root, onto
+        ln = 20 if d == 5 else 6                                  # the shaft's flat / round (sunk below the root)
+        for a_deg in B.pulley_set_screw_angles(teeth):
+            c_, s_ = math.cos(math.radians(a_deg)), math.sin(math.radians(a_deg))
+            r0 = bore / 2 + ln
+            out.append(("pulley set screw M%dx%d" % (d, ln), FA.at("set", d, ln, (cx + r0 * c_, cy + r0 * s_, W_PULLEY),
+                        (-c_, -s_, 0), threads), "pulley_40T" if teeth == f.teeth_big else "pulley_20T", "plate"))
     a_, b_ = bearing_zs()                                          # stub circlips: DIN 472-32 x2 in the plate, 471-15
     for zg in (Z_PLATE_IN + f.circlip_land, Z_PLATE_OUT - f.circlip_land - f.circlip_groove):
         out.append(("circlip DIN 472-32", FA.circlip(13.6, 16.8, 1.2, zg + 0.05), "plate", "plate"))
@@ -1030,7 +1087,7 @@ def build():
         "clutch_hub": clutch.output_hub(),
         "clutch_output_shaft": clutch.output_shaft(),
         "clutch_cover": cov,
-        "motor": clutch.motor_stub() + motor_body(),
+        "motor": B.nema23_23hs45() + B.nema23_shaft(CP.shaft_len),
     }
     module = {k: place_module(v) for k, v in module.items()}
     # drive pins (+ washers, E-clips: they move with the armature) and return springs + bushes; children placed one by
@@ -1074,10 +1131,14 @@ def build():
     for grp, sols in groups_fx.items():
         export_stl(Compound(children=sols), os.path.join(OUT, "fx_" + grp + ".stl"), tolerance=0.05, angular_tolerance=0.5)
     parts["psu"], parts["mains_inlet"] = psu_placeholder()
+    parts["mains_cord_plug"] = cord_plug()
+    parts["end_wall_parts"] = Compound(children=[so for p_ in end_wall_parts() for so in p_.solids()])
+    parts["fan"] = fan()
     parts["mains_tray"], parts["mains_tray_lid"] = mains_tray()
     # the door's hinge pin: Ø3 silver steel, pressed into the shell's plate-end knuckle, the door turns on it
     parts["door_pin"] = wcyl(1.5, SHELL_KNUCKLES[0][0], SHELL_KNUCKLES[-1][1], HINGE_X, HINGE_Y)
-    groups = {"estop": (0, 3), "toggle": (3, 5), "rapid": (5, 7), "dial": (7, 9), "oled": (9, 10), "adapter": (10, 12)}
+    groups = {"estop": (0, 1), "estop_plate": (1, 2), "toggle": (2, 3), "rapid": (3, 4), "dial": (4, 5), "oled": (5, 6),
+              "adapter": (6, 8)}
     cs = controls()
     for nm, (i0, i1) in groups.items():                       # one STL per control, so the viewer can name them
         parts["control_" + nm] = Compound(children=cs[i0:i1])
@@ -1089,7 +1150,7 @@ def build():
                    "spring_len_engaged": clutch.SPRING_LEN_RELEASED - CP.stroke, "stroke": CP.stroke}, fh)
     for name, shape in parts.items():
         export_stl(shape, os.path.join(OUT, name + ".stl"))
-        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet", "door_pin", "usb_")):
+        if not name.startswith(("mill_reference", "motor", "clutch_", "belt", "bearings", "module_bolt", "pcb_", "control", "plug_", "psu", "mains_inlet", "door_pin", "usb_", "mains_cord", "end_wall_parts", "fan")):
             export_step(shape, os.path.join(OUT, name + ".step"))
     export_step(Compound(children=list(parts.values())), os.path.join(OUT, "feed_unit_assembly.step"))
     return parts
@@ -1133,13 +1194,18 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
 2. Stub: inner 6002 against the shoulder, DIN 471-15 behind it. Push the stub through the outer bearing from the
    chamber side (support the outer bearing's inner race) until the inner bearing seats, then the inner circlip.
 3. Encoder to its disc, coupling on the encoder shaft, disc onto the posts, coupling onto the stub end.
-4. 40T pulley on the stub (set screws on the flat), Oldham disc on the stub tongue, guard into the chamber, then
+4. 40T pulley on the stub (set screws: one on the flat, one on the round), Oldham disc on the stub tongue, guard into the chamber, then
    the plate onto the standoffs: the Oldham tongue goes into the leadscrew slot.
-5. Clutch module through the plate's slotted hole, 20T pulley and belt, 4 module bolts finger-tight, drawbolt to tension, lock.
+5. Clutch module through the plate's slotted hole (motor bolted to the clutch with its leads toward the front wall, not up
+   toward the PCB: checked), 20T pulley and belt, 4 module bolts finger-tight, drawbolt to tension, lock.
    The bolt heads are on the chamber side, outside the guard outline: reach them from the side with a ball-end key.
 
 ## Buy
-- HTD 5M pulleys {f.teeth_small} T and {f.teeth_big} T for {f.belt_w:.0f} mm belt (re-bore to Ø{CP.out_shaft_d:.0f} / Ø{f.stub_d:.0f} H7).
+- HTD 5M pulleys {f.teeth_small} T and {f.teeth_big} T for {f.belt_w:.0f} mm belt (HPC 20-5M-15 / 40-5M-15 type, drawing HTD5M_15.pdf):
+  turn the hubs off (the CAD has the 20.5 teeth + 2 × 1.5 flanges only), re-bore to Ø{CP.out_shaft_d:.0f} / Ø{f.stub_d:.0f} H7, then drill and tap
+  2 set screws 90° apart through a tooth root (2× M4×6 on the 20T, 2× M5×20 on the 40T): one on the shaft's flat, one on the round,
+  like the clutch hub. The tap drills (Ø3.3 / Ø4.2) are wider than the 3 mm groove and nick the flanks of the teeth
+  either side; harmless, deburr them.
 - Belt {f.belt_len:.0f}-5M-{f.belt_w:.0f}.
 - 2× 6002-2RS, 2× DIN 472-32, 1× DIN 471-15.
 - Flexible coupling 6 × 8 mm (encoder).
@@ -1171,8 +1237,8 @@ strip along the upper front with their bodies reaching back over the PCB.
 | Fixing | both prints overlap the plate edges by {f.lap:.0f} mm with {f.fit_gap} mm clearance per side, and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside {f.pcb_y:.0f} mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail ({f.tail_clear:.0f} mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
-| Controls (strip, left → right as you face it) | E-stop (Ø60 legend ring fits on the flat face), LEFT/STOP/RIGHT toggle over RAPID, SPEED dial with the OLED above it; adapter board (2×7 IDC) on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit |
-| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø12.5 hole for a round USB-C panel extension (Adafruit #6069: M12×1 thread 15 long, Ø18 × 6 flange on the inside, its nut and dust cap on the outside, so ~12 mm stands proud), **plus a 90° USB-C adapter (male to female, "up/down" type) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is ~38 mm long, so it goes down into the adapter from above (space checked, with the panel end's flange and body); **BOOT and RESET** buttons (7 mm momentary NO, recessed in Ø11 × 4 counterbores; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
+| Controls (strip, left → right as you face it) | E-stop **IDEC XA1E-BV302R** (Ø16.2 hole, Ø29 mushroom 20.6 proud, 27.9 deep behind the strip, so it clears the J6 ribbon plug; two printed ribs either side of its contact block stop it turning more than ~16°, so it can't swing into the plug (they leave 0.2 mm per side round its lock ring, modelled Ø24 from photos: measure yours before printing and move ESTOP_RIB out if it is bigger); yellow Ø45 legend plate under its bezel), LEFT/STOP/RIGHT toggle (M12 bushing, Micros KN3C type: Ø12.4 hole + key notch) over RAPID (Ø16 metal momentary, Onpow GQ16 type), SPEED dial (EC11-type encoder; CAD = Bourns PEC11R: M7 bushing, nut in front, no lug hole; snip the lug if yours has one: two printed ribs either side of its body stop it turning into the OLED) with a Ø30 skirted knob (Ø17 grip), the 1.3" SH1106 OLED on 4 M2 posts behind its window; adapter board 40 × 28 (2×7 IDC) on 4 posts on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit. All shapes from the datasheets (`bought.py`), checked against the strip, the PCB, its plugs and each other |
+| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø12.5 hole for a round USB-C panel extension (Adafruit #6069: M12×1 thread 15 long, Ø18 × 6 flange on the inside, its nut and dust cap on the outside, so ~15 mm stands proud with the cap on), **plus a 90° USB-C adapter (male to female, "up/down" type) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is ~38 mm long, so it goes down into the adapter from above (space checked, with the panel end's flange and body); **BOOT and RESET** buttons (PBS-110 type 7 mm momentary NO in Ø7.2 holes, recessed in Ø16.5 × 8.5 counterbores (room for a 1/4" 10 mm socket, ≤ 16 OD, on the nut) so the caps stay 0.3 mm below the wall face and can't be pressed by a bump or a palm; a fingertip still reaches them; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
@@ -1183,13 +1249,14 @@ strip along the upper front with their bodies reaching back over the PCB.
     base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
     the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
-    {f.inlet_cut[0]} × {f.inlet_cut[1]}; the common fused + switched module, 47.2–47.5 × 27.7–28.3: **buy the version for a 1.5 mm panel** (the tray is 1.5 mm sheet; most snap-ins are for 2 mm and would rattle), e.g. Schurter KD snap-in 1.5 mm). The C13 cord plug (about 29 × 21) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
+    {f.inlet_cut[0]} × {f.inlet_cut[1]}; the common fused + switched module, 47.2–47.5 × 27.7–28.3: **buy the version for a 1.5 mm panel** (the tray is 1.5 mm sheet; most snap-ins are for 2 mm and would rattle), modelled on the Switch Electronics SE-AS-303 drawing: C14 bay left, rocker right, fuse drawer under the bay). The C13 cord plug (LS-13 type: body 24.6 × 17, nose 23 × 15) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
   - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
     (so the zone is closed all round): 4× M3 into **closed-end** M3 rivnuts in the walls' 10 mm folded flanges (no
-    screw tips inside the mains zone); the screws also bond the lid to the tray. That folded edge ends 1 mm above the
-    PSU, right over its terminal screws: on your PSU check ≥ 3 mm from the fold to the L/N screw heads, and line the
+    screw tips inside the mains zone); the screws also bond the lid to the tray. Its flat part lies 1 mm above the
+    PSU case; over the terminals it rises with the terminal zone (checked: ≥ 3 mm to the modelled screw heads; the head
+    height is inferred from the drawing, so check it on your PSU), and line the
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
   - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
@@ -1269,7 +1336,7 @@ strip along the upper front with their bodies reaching back over the PCB.
   - If there is no slot, use a pinned sleeve coupling instead of the tongue.
 - `standoffs`: where M6 can go into the table end or the left bracket.
 - `motor_angle_deg`: rotate the module if it hits the saddle, the base or the DRO cable at full travel.
-- The housing reaches {X_FP + 26 - 90:.0f} mm in front of the table's front edge (E-stop head included) and {-(Y0 - T):.0f} mm below the
+- The housing reaches {X_FP + 22 - 90:.0f} mm in front of the table's front edge (the dial knob, 22 proud, included) and {-(Y0 - T):.0f} mm below the
   leadscrew: check both against the saddle, the DRO reader and the base at full right travel.
 - `chamber`: the minimum is set by the clutch output shaft; the script asserts it fits.
 """

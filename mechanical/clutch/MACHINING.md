@@ -14,7 +14,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Inner pole bore | **Ø19.2** through | concentric with OD and pilot within 0.03 |
 | Coil cavity | Ø28.0 … Ø54.0, 15.0 deep from the front | **CNC:** circular pocket with a Ø8–10 end mill round the inner pole (a boring bar can't reach the inner wall), or a face-grooving tool on the lathe. Cut the 4 Ø9 counterbores FIRST: only 1.8 mm of wall is left between each and the cavity |
 | Back plate | 5.0 thick | |
-| Motor screws | 4× Ø5.5 thru on 47.14 square, c'bore Ø9 from front to z=6 | M5×30 SHCS + nuts behind the motor flange |
+| Motor screws | 4× Ø5.5 thru on 47.00 square, c'bore Ø9 from front to z=6 | M5×20 SHCS + nuts behind the motor flange |
 | Coil leads | Ø3.2 thru at r=20.5 + 3.2×1.5 groove on the back face | |
 | Cover screws | 6× M4 tapped radial, every 60°, 12.0 from the back face (motor side) | no 4th axis needed: fit the cover, then drill Ø3.3 through the cover's holes into the housing, and tap |
 
@@ -22,7 +22,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | Feature | Dimension | Tolerance / note |
 |---|---|---|
 | Hub OD | **Ø18.6** × 18.1 long | runs in the Ø19.2 bore: 0.3 radial gap, keep runout < 0.05. Starts 2.2 above the motor flange, clear of the 1.6 pilot |
-| Shaft bore | **Ø10 H7**, **flat bottom 0.70 ± 0.03 in front of the face disc's back face** (that is what sets the 0.3 face gap); depth from the hub end ≈ 18.8 with the model's shaft length | finish the bottom with a boring bar (a reamer can't reach it); measure your motor's shaft length beyond the flange, the bottom must sit at that length + 0.3 from the housing back. Loctite 641 on the D-shaft |
+| Shaft bore | **Ø10 H7**, **flat bottom 0.70 ± 0.03 in front of the face disc's back face** (that is what sets the 0.3 face gap); depth from the hub end ≈ 18.8 with the model's shaft length | finish the bottom with a boring bar (a reamer can't reach it); **the 23HS45-4204S's shaft is 24 long: cut it to 21.0 from the flange face** (face it square, drill Ø2.5 × 8, tap M3 in its end), then the bottom sits at that length + 0.3 from the housing back. Loctite 641 on the D-shaft |
 | Retaining screw | Ø3.4 thru + c'bore Ø5.8 × 3.2 from the front | M3×8 SHCS (3.0 head, sits 0.2 below the pole face) into the tapped motor shaft end (drill Ø2.5 × 8, tap M3) |
 | Face disc | **Ø76.0** × 5.6 thick | back face sits 0.3 from the housing front; front face = pole face |
 | Banana slots | 3 × 112° arcs, r 19.0 … 22.0, through (8° bridges), full-round ends | CNC, Ø3 end mill on the r 20.5 arc (slot = tool width) |
@@ -98,7 +98,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
      turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to
      the motor, coil off it frees at once.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
-- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×30 + nuts (motor), 6× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
+- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×20 + nuts (motor; the nuts sit behind the 4.8 mm flange in the body's corner relief: check yours has room, else use M5 screws from the motor side into M5 tapped in the housing), 6× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
 ## Teeth
 - 30 radial teeth, flanks **flat planes** at 30° from the axis: every flank is the plane through a radial line at the pitch

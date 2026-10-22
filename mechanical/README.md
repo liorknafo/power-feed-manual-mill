@@ -5,7 +5,9 @@ bundled venv; each writes STEP + STL per part and shaded renders into its own `o
 (`out/` is git-ignored except `render_*.png`). The venv needs build123d 0.13 and bd_warehouse 0.4
 (`mechanical/.venv/bin/pip install build123d==0.13.0 bd_warehouse==0.4.0`): every screw, nut, washer, insert and
 tapped-hole thread is an ISO part from bd_warehouse (`mechanical/fasteners.py`), placed in the models with real threads
-for the viewer and as plain shanks for the checks.
+for the viewer and as plain shanks for the checks. Every bought part (motor, pulleys, toothed belt, encoder, PSU,
+inlet, cord plug, E-stop, toggle, buttons, dial, OLED, gland, fan, USB-C panel end) is modelled from its datasheet
+drawing in `mechanical/bought.py`; each function names its source and marks the dimensions it had to infer.
 
 ```
 mechanical/.venv/bin/python mechanical/clutch/clutch.py        # tooth clutch (+ MACHINING.md)
@@ -41,7 +43,8 @@ The mount for the left table end of the SIEG X3.5D:
 `mechanical/tools/check_clutch.py` (engaged and released) and `mechanical/tools/check_feed_unit.py`; re-run them after
 changing `P` or `F`.
 
-**Run:** `mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py`. It writes STEP/STL, renders and `FEED_UNIT.md`.
+**Run:** `mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py`. It writes STEP/STL and `FEED_UNIT.md`; then
+`mechanical/.venv/bin/python mechanical/tools/render_feed_unit.py` writes the renders (`out/render_*.png`).
 
 **The mill-side dimensions are PLACEHOLDERS:** the leadscrew-end slot, the standoff positions on the table end, and the motor angle. See `FEED_UNIT.md` and docs/mill.md.
 
