@@ -129,6 +129,8 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 
 ## 5. Bill of materials (draft)
 
+Every bought part must ship to Israel from Amazon.com (the Amazon list "Mill power feed (SIEG X3.5D)" has them); raw stock is bought locally, the PCB and its parts come from JLCPCB/LCSC.
+
 | Block | Part | Status |
 |---|---|---|
 | Stepper driver | TMC5160A-TA (eTQFP-48 7×7), LCSC C516354 | to buy |
@@ -138,16 +140,16 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 | Clutch driver | 60 V P-FET (high side) + 60 V logic-level N-FET (low side), 2× SS210 diodes, 0.1 Ω shunt + TLV9061, ≥60 V PTC (see §7.6) | to pick |
 | Controller | RP2040 + W25Q128JV flash + 12 MHz crystal, on the PCB (a Pico is still handy for breadboard bring-up) | on the BOM |
 | Dial | rotary encoder with push button (Cylewet CYT1100, an EC11-type clone with an M7 bushing; no datasheet, so the CAD uses the Bourns PEC11R drawing. If yours has an anti-rotation lug, snip it or file a 1 mm notch in the panel's back) | owned |
-| Display | 1.3" 128×64 I²C OLED — confirm SH1106 vs SSD1306 with the seller. Power it from **3.3 V**, because its on-board I²C pull-ups go to its supply | to buy |
-| Clutch-side encoder | LPD3806-600BM-G5-24C (600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
+| Display | Hosyond 1.3" 128×64 I²C SH1106 OLED, white (Amazon B0C3L7N917). Power it from **3.3 V**, because its on-board I²C pull-ups go to its supply | to buy |
+| Clutch-side encoder | Aideepen LPD3806-600BM-G5-24C (Amazon B01MZ4V1XP; 600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
 | Clutch | DIY electromagnetic tooth clutch, coil designed for the 36 V bus (see §7) | to build |
 | Motor | STEPPERONLINE NEMA 23, 3 N·m | owned |
-| PSU | Mean Well LRS-75-36, 36 V / 2.1 A + snap-in 3-in-1 IEC C14 inlet with 5×20 fuse (T 2 A ceramic) and rocker, C14 and rocker side by side, cut-out 47.2 × 28.3, **for a 1.5 mm panel** (modelled on the Switch Electronics SE-AS-303 drawing; check the panel range of the one you buy), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
-| Programming port | Adafruit #6069 USB-C round panel-mount extension (M12 × 1, Ø12.5 hole) + a 90° USB-C male-to-female adapter ("up/down" type) for J4 | to buy |
+| PSU | Mean Well LRS-75-36, 36 V / 2.1 A (Amazon B019GYOJCU, from a third-party seller that ships to Israel) + 3-in-1 IEC C14 inlet with 5×20 fuse (T 2 A ceramic) and rocker (see FEED_UNIT.md → Power for the model chosen), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
+| Programming port | QIANRENON USB-C threaded panel-mount extension (Amazon B0FX2MZDTS: M21, Ø21.5 hole, Ø27.5 flange, 30 cm cable) + a 90° USB-C male-to-female adapter ("up/down" type, B08P5HRH3Z) for J4 | to buy |
 | Fallback driver | DM556 | owned — used for breadboard firmware bring-up |
-| Panel | E-stop IDEC XA1E-BV302R (Ø16.2 hole, Ø29 mushroom, 2 NC, only 27.9 mm behind the panel); ON-OFF-ON toggle with M12 bushing (Micros KN3C type, Ø12.4 hole + key notch); Ø16 metal momentary for RAPID (Onpow GQ16 type); Ø30 skirted knob (Ø17 grip, Ø6 bore ≥ 15 deep) for the dial; 2× PBS-110 7 mm pushbuttons (Ø7.2 holes) for BOOT/RESET; M16 cable gland (Lapp ST-M type); 2× limit switches | to buy |
-| Belt drive | HTD 295-5M-15 belt (59 T); HTD-5M 15 mm pulleys 40T + 20T (HPC 40-5M-15 / 20-5M-15 type; turn the hubs off, re-bore Ø15 / Ø12, set screws through a tooth root) | to buy |
-| Fan (optional) | 40 × 40 × 10 (Sunon MF40100V2 type) | to buy |
+| Panel | E-stop ZGSZJHF 22 mm ultra-short (Amazon B0FZCN2HCP: Ø22 keyed hole, Ø32 mushroom, 1 NO + 1 NC, only 18.3 mm behind the panel; the NC is the E-stop loop) on a printed yellow legend plate; ON-OFF-ON latching toggle, DMWD (B0BTSPYM34, Ø12 hole + key notch); Gebildet Ø16 stainless momentary for RAPID (B081JJBN4G); uxcell Ø30 knurled handwheel, Ø6 bore (B0DGFB1K9F) for the dial; 2× Twidec PBS-110 7 mm pushbuttons (B07RPS2ZY3, Ø7.2 holes) for BOOT/RESET; uxcell M16 nylon cable gland (B08K8HPHGM); 2× HiLetgo KW12-3 roller limit switches (B07X142VGC) | to buy |
+| Belt drive | HTD 295-5M-15 belt (59 T, uxcell B0D5R5Y6VL); HTD-5M 15 mm hubless pulleys: 40T uxcell 5M-40T-1/2B (B0G5YDQS1N) + 20T Saelno 20-5M-15-8mm (B0FNQTJZMX); re-bore Ø15 / Ø12, set screws through a tooth root | to buy |
+| Fan (optional) | Noctua NF-A4x10 5V, 40 × 40 × 10 (Amazon B00NEMGCIA) | to buy |
 
 ## 6. Plan
 
@@ -260,7 +262,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 - **Magnetic parts:** rotor, field housing and armature in low-carbon steel (1018/1020 or 12L14). Anneal them if possible. Avoid 300-series stainless, which is non-magnetic.
 - **Pole separation:** a non-magnetic ring between the inner and outer pole on the rotor (brass, bronze or aluminium, or machined slots). It forces the flux through the armature.
 - **Mating tooth rings:** cut them as a pair with the same setup (same cutter and indexing) so all 30 teeth bear evenly. A CNC with a V/chamfer cutter or the mill with an indexer both work.
-- **What holds the armature:** three Ø6 drive pins bonded into it (Loctite 638, set in place through the bushes so they line up) slide in sintered-bronze bushes in the hub flange, with 0.01–0.03 clearance. They do everything a solid connection would:
+- **What holds the armature:** three Ø6 drive pins bonded into it (Loctite 680, Amazon B00KC541DA, set in place through the bushes so they line up) slide in sintered-bronze bushes in the hub flange, with 0.01–0.03 clearance. They do everything a solid connection would:
   - **rotation:** the armature can't turn without the hub, it drives the hub through the pins;
   - **centring and squareness:** three pins at 120° in 8 mm long bushes; when engaged the 30° teeth centre it the last hundredths;
   - **axially:** three compression springs on the pins, behind the hub (each held by a washer and an E-clip), pull the armature back onto the hub's face when the coil is off: a hard, preloaded stop (≈ 24 N), not a balance of forces. The magnet pulls it 1.1 mm off that stop onto the rotor.
@@ -269,7 +271,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
   - bush pressure 71 N / (6 × 8 mm) ≈ 1.5 MPa (sintered bronze takes ~10 MPa);
   - the pin bends over at most the 1.1 mm gap between armature and hub: negligible for Ø6 steel;
   - backlash: the 0.01–0.03 pin clearance at r 21 is ≤ 0.1° at the motor, ≤ 0.05° at the leadscrew; the leadscrew nut's own backlash is far larger.
-- **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 641 onto the motor's D-shaft. That holds >10 N·m against the motor's 3 N·m, avoids broaching a D-bore, and comes off with moderate heat (648 would need the whole motor heated). An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
+- **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 243 (Amazon B004L439FE) onto the motor's D-shaft (medium strength, ~7.5 N/mm² on the round part of the bore, ~370 mm² once the D-flat's too-wide gap is left out: ~14 N·m against the motor's 3 N·m). It avoids broaching a D-bore and comes off with hand tools or moderate heat; a high-strength retainer (680, 648) would need the whole motor heated. (Loctite 641, the usual bearing retainer here, doesn't ship to Israel from Amazon; 243 does.) An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
 - **Model and machining data:** `mechanical/clutch/clutch.py` holds the parametric model; `mechanical/clutch/MACHINING.md` has the dimension tables, fits and tooth-cutting notes, generated from the same parameters.
 - **Shimming:** the rotor's axial position comes from its bore depth (measured shaft length − 2.2 mm). The released gap (1.25) is set by where the hub sits, which the stepped spacer between the hub boss and the inner bearing sets: grind it shorter or shim it (MACHINING.md, step 6).
 

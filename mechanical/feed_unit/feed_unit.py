@@ -81,9 +81,9 @@ class F:
     tray_side_gap: float = 2.0       # PSU side -> tray wall
     psu_holes: tuple = ((20.5, 45.5), (75.5, 45.5))   # base M3 (max 3 mm deep): from the terminal end, from one long edge
     term_zone_rise: float = 10.0     # tray walls, end face and lid are this much higher over the terminal/inlet zone
-    inlet_cut: tuple = (47.3, 28.4)  # SE-AS-303 type snap-in C14 + fuse + rocker (cut-out 47.2 x 28.3), 1.5 mm panel
+    inlet_cut: tuple = (47.2, 28.2)  # JOYNANO snap-in C14 + fuse + rocker for 0.8-1.5 mm panels (cut-out 47 x 28)
     inlet_flange: tuple = (50.0, 30.8)
-    inlet_depth: float = 28.0        # its body (17.2) + tabs (10.5) behind the panel
+    inlet_depth: float = 29.0        # behind the panel (32 overall - the 3 mm flange)
     # --- Oldham coupling (steel/bronze disc): tongue into the leadscrew slot, cross slot for the stub tongue
     oldham_d: float = 24.0           # outside the bracket, so not tied to the leadscrew diameter
     oldham_t: float = 9.0
@@ -92,7 +92,7 @@ class F:
     stub_tongue_h: float = 4.0       # 14 x 4 bearing faces: ~45 MPa at 9 N·m cam-out -> steel or bronze disc
     # --- encoder (LPD3806: 3x M3 on r=15 in its front face) on an adapter disc
     enc_post_r: float = 23.0         # outside the Ø32 bearing bore
-    enc_post_len: float = 25.0       # M3 hex standoffs; the encoder's 5 mm face boss puts its shaft this far out
+    enc_post_len: float = 30.0       # M3 x 30 hex standoffs: room for the 25 long coupling between the stub and the encoder
     enc_disc_d: float = 50.0
     enc_disc_t: float = 5.0
     enc_disc_flat: float = 20.0      # flat toward the clutch module (its cover top is ~27 below the stub)
@@ -323,9 +323,9 @@ def stub_shaft():
 
 
 def pulleys():
-    """HTD 5M 40T (on the stub, Ø15 bore) and 20T (on the clutch shaft, Ø12 bore), hubs turned off (bought.py)."""
+    """HTD 5M 40T (on the stub, Ø15 bore) and 20T (on the clutch shaft, Ø12 bore), both hubless (bought.py)."""
     big = Pos(0, 0, W_PULLEY) * B.htd5m_pulley(f.teeth_big, f.stub_d, 5)
-    small = Pos(MX, MY, W_PULLEY) * B.htd5m_pulley(f.teeth_small, CP.out_shaft_d, 4)
+    small = Pos(MX, MY, W_PULLEY) * B.htd5m_pulley(f.teeth_small, CP.out_shaft_d, 5)
     return big, small
 
 
@@ -359,7 +359,7 @@ def encoder():
     zd = Z_PLATE_OUT + f.enc_post_len
     z0 = zd + f.enc_disc_t
     body = Pos(0, 0, z0) * B.lpd3806()
-    coupling = Pos(0, 0, Z_PLATE_OUT + 3) * Cylinder(9.5, 20.0, align=MIN)
+    coupling = Pos(0, 0, Z_PLATE_OUT + 2) * Cylinder(9.5, 25.0, align=MIN)     # uxcell 6x8 beam coupling Ø19 x 25 (B0FN786WNM)
     posts = [Pos(f.enc_post_r * math.cos(math.radians(90 + 120 * k)), f.enc_post_r * math.sin(math.radians(90 + 120 * k)),
                  Z_PLATE_OUT) * Cylinder(3.0, f.enc_post_len, align=MIN) for k in range(3)]
     disc = Pos(0, 0, zd) * Cylinder(f.enc_disc_d / 2, f.enc_disc_t, align=MIN)
@@ -401,7 +401,7 @@ W_TAIL = W0 + 114.0                                 # motor tail (23HS45: 113 MA
 W_END = W_TAIL + f.tail_clear + T                   # outer face of the end wall
 W_SHELL0 = Z_PLATE_OUT - f.lap                      # open rim, on the plate edges
 RAIL = f.rail
-INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5.7 heat-set insert hole
+INSERT_D, INSERT_L = 4.0, 6.0                       # M3 x 5 heat-set insert hole (Kadrick: Ø4.0, insert + 1 deep)
 R_IN = f.r_long - T                                 # inside radius of the long edges
 R_BOTTOM = 8.5                                      # the two bottom long edges: tighter, so the mains tray fits the corners
 W_END_SCREW = W_END - f.r_end - 4.0                 # end hood screws: countersunk heads fully on the flat, not the chamfer
@@ -421,7 +421,7 @@ STANDOFF_CB = 6.5                             # counterbore depth for the M6 sta
 TRAY_TAB_W0 = Z_PLATE_OUT - 11.0
 TRAY_SCREW_W = Z_PLATE_OUT - 6.0              # M4 x 8 button head (ISO 7380) up through each tab into the plate
 GROMMET = (-30.0, TRAY_W1 - 12.0)             # (x, W) of the Ø10 grommet in the tray lid: 36 V leads up to J1
-USB_PORT = (15.0, 10.0)     # (x, y) on the end wall
+USB_PORT = (15.0, 13.0)     # (x, y) on the end wall: its Ø27.5 flange clears RESET's recess
 SWD_PORT = (-15.0, 10.0)
 BOOT_BTN = (-15.0, -11.0)   # 7 mm PBS-110 momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
 RESET_BTN = (15.0, -11.0)
@@ -513,13 +513,13 @@ def psu_placeholder():
     """The LRS-75-36 (bought.py, terminal end toward the inlet, its 97 width across x) and the IEC inlet module clipped
     into the tray's end face (front face at TRAY_W1, flange toward the end wall)."""
     psu = PSU_LOC * B.lrs75()
-    inlet = Pos(0, INLET_Y, TRAY_W1) * B.iec_inlet_se_as_303()
+    inlet = Pos(0, INLET_Y, TRAY_W1) * B.iec_inlet_snapin()
     return psu, inlet
 
 
 def cord_plug():
     """A moulded C13 cord connector plugged into the inlet's C14 bay (to show how it sits in the end wall's opening)."""
-    return Pos(-10.5, INLET_Y + 4.7, TRAY_W1 + 3.3) * B.c13_plug()
+    return Pos(-10.5, INLET_Y + 4.7, TRAY_W1 + 3.0) * B.c13_plug()
 
 
 def psu_screws():
@@ -554,14 +554,14 @@ def mains_tray():
     tray = tray - ycyl(6.0, TRAY_BOT - 1, TRAY_BOT + t + 1, MX, Z_PLATE_OUT + 4)    # drawbolt access (outside the walls)
     for xp, wp in psu_screws():                      # PSU base screws: M3 x 4 button head (ISO 7380) from below
         tray = tray - ycyl(1.7, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
-    for xs, ws in lid_screws():                      # lid screws: M3 into closed-end rivnuts (Ø5 holes) in the flanges
+    for xs, ws in lid_screws():                      # lid screws: M3 into open-end rivnuts (Ø5 holes) in the flanges
         tray = tray - ycyl(2.5, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
     lid = bx(-hw, hw, TERM_TOP, TERM_TOP + t, wz, TRAY_W1)
     # its -W edge is folded down to just above the PSU: closes the step between the low and the raised part
     lid = lid + bx(-hw + t, hw - t, TRAY_TOP, TERM_TOP + t, wz, wz + t)
     lid = lid - ycyl(5.0, TERM_TOP - 1, TERM_TOP + t + 1, GROMMET[0], GROMMET[1])
-    for xs, ws in lid_screws():
-        lid = lid - ycyl(1.7, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
+    for xs, ws in lid_screws():                      # Ø8.5: clears the rivnuts' Ø8 x 0.8 flanges, so the lid lies flat
+        lid = lid - ycyl(4.25, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
     return tray, lid
 
 
@@ -578,15 +578,15 @@ def psu_screw_heads():
 
 def usb_envelopes():
     """The USB-C path to J4, as space envelopes for the checks and renders. J4's mouth is only 29 mm from the end wall
-    and the #6069's straight male end is ~38 mm long (overmold 30 + strain relief 8), so it can't plug in straight: a
-    90-degree USB-C adapter (male into J4, female facing up; any up/down L adapter works, USB-C is reversible) takes it
-    from above. Plus the panel end behind the end wall: Ø18 x 6 flange, Ø11 x 10 body."""
+    and the extension's straight male end is long (not on the listing: 38 allowed, overmold 30 + strain relief 8), so
+    it can't plug in straight: a 90-degree USB-C adapter (rgzhihuifz up/down, Amazon B08P5HRH3Z: 25.6 x 14.1; male into
+    J4, female facing up; USB-C is reversible) takes it from above. Plus the panel end's cable turning away behind its
+    strain relief (the panel end itself is in end_wall_parts)."""
     ux, uy = USB_PORT
-    wi = W_END - T
-    return [pcb_box(81.4, 93.9, 100.6, 114.6, 1.6, 21.6),        # 90-degree adapter (~24 x 19 x 6, Adafruit 4432 size)
+    return [pcb_box(81.4, 93.9, 100.6, 114.6, 1.6, 21.6),        # 90-degree adapter (25.6 x 14.1 x ~6)
             pcb_box(81.6, 93.7, 104.0, 112.0, 21.6, 59.6),       # the straight male plug, going down into it
             pcb_box(78.0, 97.0, 100.0, 115.0, 59.6, 72.0),       # its cable bending away at the top
-            wcyl(9.0, wi - 6, wi, ux, uy) + wcyl(5.5, wi - 16, wi - 6, ux, uy)]   # panel end, inside the wall
+            wcyl(7.0, W_END - 34.5 - 14.0, W_END - 34.5, ux, uy)]   # panel end's cable turning away (Ø4.5, R ~10)
 
 
 def plug_wires():
@@ -610,8 +610,7 @@ LABELS = (("LEFT", 175.0, 28.0), ("STOP", 160.0, 28.0), ("RIGHT", 145.0, 28.0),
           ("RAPID", 140.0, -4.0), ("SPEED", 113.0, -6.0))
 STRIP_T = X_FP - X_FRONT - G     # the control strip's real thickness (its back is G off the shell): the panel parts' panel
 DIAL_RIB = (6.4, 7.6, 3.0)       # PEC11R anti-rotation ribs either side of its 12.5 body: (inner, outer) offset, depth
-ESTOP_RIB = (12.2, 13.4, 9.0)    # E-stop anti-rotation ribs either side of its 19-wide contact block, outside the Ø24
-                                 # lock ring: it can turn ~16 deg, not far enough to reach the PCB or the hood
+ESTOP_PLATE_T = 1.0              # the printed yellow legend plate under the E-stop's collar
 
 
 def _rounded(x0, x1, y0, y1, w0, w1, r, c_tf, c_end, chamfer_back_top=False, r_bottom=None):
@@ -768,12 +767,12 @@ def shell():
     # (run down through the split: the door's end band closes the opening's bottom, instead of a 0.5 mm sliver)
     s = s - bx(-fw / 2 - 1, fw / 2 + 1, SPLIT_Y - 1, INLET_Y + fh / 2 + 1, W_END - T - 1, W_END + 1)
     # programming ports, usable with the box closed (above the plugs, clear of the end rails):
-    #   USB-C: round panel-mount extension (Adafruit #6069: M12x1 thread 15 long, Ø18 x 6 flange inside, nut and dust
-    #          cap outside); its straight male end goes into a 90-degree adapter in J4 (J4 is only 29 mm from the wall)
+    #   USB-C: round threaded panel-mount extension (QIANRENON, M21: Ø27.5 flange outside, nut and body inside); its
+    #          straight male end goes into a 90-degree adapter in J4 (J4 is only 29 mm from the wall)
     #   SWD:   1x3 0.1" pin header pressed into a slot from outside, pins sunk in a recess; 3 wires inside to J3.
     #          A Raspberry Pi Debug Probe flashes and recovers the RP2040 through it whatever the firmware does.
     (ux, uy), (sx, sy) = USB_PORT, SWD_PORT
-    s = s - wcyl(6.25, W_END - T - 1, W_END + 1, ux, uy)                          # Ø12.5 for the M12 thread
+    s = s - wcyl(10.8, W_END - T - 1, W_END + 1, ux, uy)                          # Ø21.6 for the M21 thread
     wi = W_END - T
     s = s + bx(sx - 8, sx + 8, sy - 5, sy + 5, wi - 8, wi + 0.5)                     # boss behind the port
     s = s - bx(sx - 6, sx + 6, sy - 3, sy + 3, W_END - 7, W_END + 1)                 # recess (pins 6 long: sunk)
@@ -784,7 +783,7 @@ def shell():
         floor = W_END - BTN_RECESS[1] - BTN_FLOOR
         s = s + wcyl(9.6, floor, wi + 0.5, bxx, byy)
         s = s - wcyl(BTN_RECESS[0], W_END - BTN_RECESS[1], W_END + 1, bxx, byy) - wcyl(3.6, floor - 1, W_END + 1, bxx, byy)
-    for txt, x, y in (("SWD", sx, sy + 9), ("USB", ux, uy + 12), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
+    for txt, x, y in (("SWD", sx, sy + 9), ("USB", ux, uy + 17), ("BOOT", BOOT_BTN[0], BOOT_BTN[1] - 11),
                       ("RESET", RESET_BTN[0], RESET_BTN[1] - 11)):                      # engraved on the bed face
         try:
             s = s - extrude(Plane(origin=(x, y, W_END), x_dir=(1, 0, 0), z_dir=(0, 0, 1)) * Text(txt, 4.5), amount=-0.6)
@@ -860,11 +859,10 @@ def hood():
 
 
 def control_cutouts(fp):
-    w, y = CTRL["estop"]; fp = fp - xcyl(8.1, X_FRONT - 1, X_FP + 1, y, w)       # IDEC XA E-stop: Ø16.2, no notch,
-    for s_ in (-1, 1):                     # so two ribs key its contact block
-        w_in, w_out = sorted((w + s_ * ESTOP_RIB[0], w + s_ * ESTOP_RIB[1]))
-        fp = fp + bx(X_FRONT + G - ESTOP_RIB[2], X_FRONT + G + 0.5, y - 11.0, y + 11.0, w_in, w_out)
-    w, y = CTRL["toggle"]; fp = fp - xcyl(6.2, X_FRONT - 1, X_FP + 1, y, w)      # Ø12.4 (M12) + 1.9 key notch
+    w, y = CTRL["estop"]; fp = fp - xcyl(11.175, X_FRONT - 1, X_FP + 1, y, w)     # 22 mm E-stop: Ø22.35 + its key
+    kw, kext = B.ESTOP_KEY                                                         # notch (3.5 wide, 24.1 over it), up
+    fp = fp - bx(X_FRONT - 1, X_FP + 1, y, y - 11.175 + kext, w - kw / 2, w + kw / 2)
+    w, y = CTRL["toggle"]; fp = fp - xcyl(6.1, X_FRONT - 1, X_FP + 1, y, w)      # Ø12.2 (M12, drawing: Ø12) + 1.9 key notch
     fp = fp - bx(X_FRONT - 1, X_FP + 1, y + 5.5, y + 7.1, w - 1.05, w + 1.05)
     w, y = CTRL["rapid"]; fp = fp - xcyl(8.15, X_FRONT - 1, X_FP + 1, y, w)
     w, y = CTRL["dial"]; fp = fp - xcyl(3.7, X_FRONT - 1, X_FP + 1, y, w)      # PEC11R: M7 bushing, nut in front, no lug
@@ -872,8 +870,10 @@ def control_cutouts(fp):
         w_in, w_out = sorted((w + s_ * DIAL_RIB[0], w + s_ * DIAL_RIB[1]))
         fp = fp + bx(X_FRONT + G - DIAL_RIB[2], X_FRONT + G + 0.5, y - 6.7, y + 6.7, w_in, w_out)
     w, y = CTRL["oled"]; fp = fp - bx(X_FRONT - 1, X_FP + 1, y - 8, y + 8, w - 15, w + 15)
-    for dw, dy in ((-15.2, -14.25), (15.2, -14.25), (-15.2, 14.25), (15.2, 14.25)):   # OLED M2 posts
-        fp = fp + xcyl(2.5, X_FRONT - 2.5, XF + G + 0.5, y - 2 + dy, w + dw) - xcyl(0.8, X_FRONT - 2.6, X_FRONT + 1.0, y - 2 + dy, w + dw)
+    hx, hy = B.OLED_HOLES[0] / 2, B.OLED_HOLES[1] / 2
+    for dw, dy in ((-hx, -hy), (hx, -hy), (-hx, hy), (hx, hy)):                    # OLED M2 posts (Ø4.4: clear of its
+        yp = y + B.OLED_YC + dy                                                    # glass, which ends ~2.4 from the holes)
+        fp = fp + xcyl(2.2, X_FRONT - 2.5, XF + G + 0.5, yp, w + dw) - xcyl(0.8, X_FRONT - 2.6, X_FRONT + 1.0, yp, w + dw)
     w, y = CTRL["adapter"]
     for dw, dy in ((-16.0, -11), (16.0, -11), (-16.0, 11), (16.0, 11)):              # adapter board posts, M3 inserts
         fp = fp + xcyl(4.0, X_FRONT - 5, XF + G + 0.5, y + dy, w + dw) - xcyl(INSERT_D / 2, X_FRONT - 5.1, X_FRONT - 5 + INSERT_L, y + dy, w + dw)
@@ -897,12 +897,12 @@ def controls():
     """The real panel parts, placed (bought.py). Same order as CONTROL_NAMES."""
     c = []
     w, y = CTRL["estop"]
-    c.append(panel_part(B.estop_idec_xa(STRIP_T), w, y))
+    c.append(panel_part(B.estop_zgszjhf22(STRIP_T + ESTOP_PLATE_T), w, y, x=X_FP + ESTOP_PLATE_T))   # on its plate
     c.append(panel_part(B.estop_legend_plate(), w, y))
     w, y = CTRL["toggle"]
-    c.append(panel_part(B.toggle_kn3c(STRIP_T), w, y))
+    c.append(panel_part(B.toggle_eten1322(STRIP_T), w, y))
     w, y = CTRL["rapid"]
-    c.append(panel_part(B.pushbutton_gq16(STRIP_T), w, y))
+    c.append(panel_part(B.pushbutton_16mm(STRIP_T), w, y))
     w, y = CTRL["dial"]
     c.append(panel_part(B.encoder_pec11r(STRIP_T), w, y))
     w, y = CTRL["oled"]                                  # on its 2.5 mm M2 posts behind the window
@@ -926,8 +926,8 @@ def end_wall_parts(threads=True):
     for k in (-1, 0, 1):
         hdr = hdr + bx(sx + 2.54 * k - 0.32, sx + 2.54 * k + 0.32, sy - 0.32, sy + 0.32, W_END - 12.4, W_END - 1.0)
     out.append(hdr)
-    ux, uy = USB_PORT                                    # #6069: thread 12 proud, nut (~17 AF) and dust cap outside
-    out.append(Pos(ux, uy, W_END) * B.usb_c_panel_6069())
+    ux, uy = USB_PORT                                    # flange outside, nut and body inside
+    out.append(Pos(ux, uy, W_END) * B.usb_c_panel(T))
     out.append(Pos(36.0, -62.0, W_END) * B.gland_m16(T))
     return out
 
@@ -982,18 +982,26 @@ def apply_screws(parts):
 
 
 def insert(point, direction, threads):
-    """M3 brass heat-set insert (Ø4 x 5.7) with its thread, mouth at point, going along direction."""
+    """M3 brass heat-set insert, Kadrick M3 x 5 (Amazon B0FD88XTV4: knurl Ø4.5, lead-in Ø3.9; hole Ø4.0 x >= 6, wall
+    >= 1.6), with its thread, mouth at point, going along direction (modelled at the hole's Ø4)."""
     loc = Plane(origin=point, z_dir=direction).location
-    sleeve = (Cylinder(2.0, 5.7, align=MIN) - Cylinder(1.6, 5.7, align=MIN)).moved(loc)
-    th = FA.at("thread", 3, 5.7, point, direction, threads)
+    sleeve = (Cylinder(2.0, 5.0, align=MIN) - Cylinder(1.6, 5.0, align=MIN)).moved(loc)
+    th = FA.at("thread", 3, 5.0, point, direction, threads)
     return Compound(children=[sleeve] + (list(th.solids()) if th is not None else []))
 
 
+RIVNUT = (8.0, 0.8, 4.9, 9.0)   # HANGLIFE M3 flat-head rivnut (B0DF72LHVP): flange Ø, flange t, body Ø, overall length
+
+
 def rivnut(x, w, threads):
-    """Closed-end M3 rivnut (Ø5 body, 7 long, closed bottom) in a lid flange, its top at the flange's top."""
+    """Open-end M3 rivnut (HANGLIFE HLRN-M3-001, Amazon B0DF72LHVP drawing: Ø5 hole, body Ø4.9, flange Ø8 x 0.8, 9
+    overall, grip 0.5-1.5; no closed-end M3 ships to Israel) in a lid flange: its flange on the flange's top, inside
+    the lid's Ø8.5 clearance hole. The M3 x 8 lid screw ends 2.7 short of its open end, so no screw tip reaches into
+    the mains zone."""
     top = TERM_TOP
-    body = ycyl(2.5, top - 7.0, top, x, w) - ycyl(1.25, top - 5.0, top + 0.1, x, w)
-    th = FA.at("thread", 3, 5.0, (x, top, w), (0, -1, 0), threads)
+    fd, ft, bd, ln = RIVNUT
+    body = ycyl(fd / 2, top, top + ft, x, w) + ycyl(bd / 2, top + ft - ln, top, x, w) - ycyl(1.25, top + ft - ln - 0.1, top + ft + 0.1, x, w)
+    th = FA.at("thread", 3, ln - ft - 1.0, (x, top + ft, w), (0, -1, 0), threads)
     return Compound(children=[body] + (list(th.solids()) if th is not None else []))
 
 
@@ -1033,9 +1041,9 @@ def all_fasteners(threads=True):
                     "plate"))
         xe, ye = 15 * math.cos(a + math.pi / 3), 15 * math.sin(a + math.pi / 3)
         out.append(("encoder screw M3x8", FA.at("button", 3, 8, (xe, ye, zd), (0, 0, 1), threads), "encoder", "plate"))
-    for (cx, cy), teeth, bore, d in (((0.0, 0.0), f.teeth_big, f.stub_d, 5), ((MX, MY), f.teeth_small, CP.out_shaft_d, 4)):
-        r_root = (teeth * 5.0 / math.pi - 1.14) / 2 - 2.06       # pulley set screws, radial through a tooth root, onto
-        ln = 20 if d == 5 else 6                                  # the shaft's flat / round (sunk below the root)
+    for (cx, cy), teeth, bore, d, ln in (((0.0, 0.0), f.teeth_big, f.stub_d, 5, 20),           # pulley set screws, radial
+                                         ((MX, MY), f.teeth_small, CP.out_shaft_d, 5, 6)):   # through a tooth root onto
+                                                                  # the shaft's flat / round (sunk below the root)
         for a_deg in B.pulley_set_screw_angles(teeth):
             c_, s_ = math.cos(math.radians(a_deg)), math.sin(math.radians(a_deg))
             r0 = bore / 2 + ln
@@ -1069,10 +1077,12 @@ def all_fasteners(threads=True):
                     "plate", "mains"))
     for xp, wp in psu_screws():                                    # PSU: 2x M3x4 button up through the tray floor
         out.append(("PSU screw M3x4", FA.at("button", 3, 4, (xp, TRAY_BOT, wp), (0, 1, 0), threads), "psu", "mains"))
-    for xs, ws in lid_screws():                                    # lid: 4x M3x6 button into closed-end rivnuts
-        out.append(("lid screw M3x6", FA.at("button", 3, 6, (xs, TERM_TOP + f.tray_t, ws), (0, -1, 0), threads), "rivnut",
-                    "mains"))
-        out.append(("rivnut M3 closed-end", rivnut(xs, ws, threads), "mains_tray", "mains"))
+    for xs, ws in lid_screws():                                    # lid: 4x M3x8 button + a Ø12 washer over the
+        top = TERM_TOP + f.tray_t                                  # lid's Ø8.5 hole, into open-end rivnuts
+        out.append(("lid washer M3x12", ycyl(6.0, top, top + 1.0, xs, ws) - ycyl(1.6, top - 0.1, top + 1.1, xs, ws),
+                    "mains_tray_lid", "mains"))
+        out.append(("lid screw M3x8", FA.at("button", 3, 8, (xs, top + 1.0, ws), (0, -1, 0), threads), "rivnut", "mains"))
+        out.append(("rivnut M3", rivnut(xs, ws, threads), "mains_tray", "mains"))
     return [o for o in out if o[1] is not None]
 
 
@@ -1181,7 +1191,7 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
 |---|---|---|
 | Plate | 6061, {f.plate_t:.0f} mm, CNC | **Ø{f.bearing_od:.0f} H7 straight through**: too big to swing on the lathe (300 mm needed), so bore it on the mill with a boring head. DIN 472-32 grooves (Ø33.7 × {f.circlip_groove}) leaving a **{f.circlip_land} land** at each face: keyseat cutter (head ≤ Ø28, 1.0–1.2 wide, two passes) by circular interpolation, one face, then flip for the other. Clutch-module hole slotted Ø{2 * (CP.bearing_od / 2 + 6):.0f} **and run on down through the bottom edge** (the module slides up into it from below; the two legs are {f.x_half - (CP.bearing_od / 2 + 6):.0f} wide, tied by the tension block) and 4× Ø5.5 slots (±{f.tension_slot:.0f}): 5×D deep, cut them from both faces. Bottom edge: 2 rebates {REBATE_H} deep × 14 wide × 13 in from the outer face at x ±{TRAY_TABS_X[1]:.0f} (Ø6 end mill from the edge, R3 inner corners) with an M4 × 10 tapped up into each, for the mains tray's tabs. {len(f.standoffs)}× Ø6.6 for the standoffs, each with an Ø11 × {STANDOFF_CB} counterbore in the outer face (M6×70 SHCS heads flush: the low pair sits beside the clutch cover); 3× M3 × 8 deep on r={f.enc_post_r:.0f} (encoder posts, outer face); 2× M5 × 12 for the tension block (x ±{TB_SCREWS_X[1]:.0f}). Edge holes (M3 × 8 for the housing): stand the plate in the vise on its edge, or use a drill-guide block. Corners R{f.r_long - f.panel_t:.0f} |
 | Standoffs | steel or 6061 | {len(f.standoffs)}× Ø{f.standoff_d:.0f} × {f.chamber:.0f}, Ø6.6 thru (M6 screws into the table end) |
-| Leadscrew stub | steel, turned from **Ø20** stock | from the table side: tongue {f.stub_tongue_w} × {f.screw_d - 2:.0f} × {f.stub_tongue_h:.0f} (across the Oldham slot), Ø{f.stub_d:.0f} with a 0.6 flat for the 40T set screws, **Ø{f.stub_shoulder_d:.0f} × 2 shoulder** on the inner bearing's inner race (corner radius ≤ 0.3 so the bearing's chamfer clears it), Ø{f.stub_d:.0f} h6 at both bearings with **Loctite 641 on the inner one** (as on the clutch; easier than holding k6 and h6 bands on a manual lathe), DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø{f.stub_enc_d:.0f} × 10 encoder end |
+| Leadscrew stub | steel, turned from **Ø20** stock | from the table side: tongue {f.stub_tongue_w} × {f.screw_d - 2:.0f} × {f.stub_tongue_h:.0f} (across the Oldham slot), Ø{f.stub_d:.0f} with a 0.6 flat for the 40T set screws, **Ø{f.stub_shoulder_d:.0f} × 2 shoulder** on the inner bearing's inner race (corner radius ≤ 0.3 so the bearing's chamfer clears it), Ø{f.stub_d:.0f} h6 at both bearings with **Loctite 243 on the inner one** (as on the clutch; easier than holding k6 and h6 bands on a manual lathe), DIN 471-15 groove (Ø14.3 × 1.1) just outboard of the inner bearing, Ø{f.stub_enc_d:.0f} × 10 encoder end |
 | Bearing spacer tube | steel or 6061 | Ø{f.bearing_od - 0.05:.2f} / Ø28 × {bearing_zs()[1] - bearing_zs()[0] - f.bearing_w:.1f}, between the outer races. The inner bearing locates the stub (shoulder + DIN 471-15 either side of it); the outer one floats on the stub |
 | Oldham disc | steel (1045) or bronze (CuSn12), greased — acetal creeps at the ~45 MPa of a stall/cam-out | Ø{f.oldham_d:.0f} × {f.oldham_t:.0f}: tongue {f.screw_d - 2:.0f} × {f.screw_end_slot_w - 0.2:.1f} on one face (into the leadscrew slot), cross slot {f.stub_tongue_w + 0.2:.1f} wide × {f.stub_tongue_h + 0.5:.1f} deep on the other. Takes up to ~1 mm offset between the plate and the leadscrew, and end float |
 | Encoder disc | 6061, {f.enc_disc_t:.0f} mm | Ø{f.enc_disc_d:.0f} with a flat {f.enc_disc_flat:.0f} from centre toward the clutch module; Ø22 centre hole; 3× Ø3.4 on r={f.enc_post_r:.0f} (posts) and 3× Ø3.4 on r=15, 60° offset (encoder, **check your encoder's hole circle**) |
@@ -1201,16 +1211,22 @@ Firmware: `belt_ratio = {f.teeth_big / f.teeth_small:.1f}`, `encoder_counts = 24
    The bolt heads are on the chamber side, outside the guard outline: reach them from the side with a ball-end key.
 
 ## Buy
-- HTD 5M pulleys {f.teeth_small} T and {f.teeth_big} T for {f.belt_w:.0f} mm belt (HPC 20-5M-15 / 40-5M-15 type, drawing HTD5M_15.pdf):
-  turn the hubs off (the CAD has the 20.5 teeth + 2 × 1.5 flanges only), re-bore to Ø{CP.out_shaft_d:.0f} / Ø{f.stub_d:.0f} H7, then drill and tap
-  2 set screws 90° apart through a tooth root (2× M4×6 on the 20T, 2× M5×20 on the 40T): one on the shaft's flat, one on the round,
-  like the clutch hub. The tap drills (Ø3.3 / Ø4.2) are wider than the 3 mm groove and nick the flanks of the teeth
-  either side; harmless, deburr them.
-- Belt {f.belt_len:.0f}-5M-{f.belt_w:.0f}.
+Every bought part ships to Israel from Amazon.com (checked with an Israeli address); the Amazon list "Mill power feed
+(SIEG X3.5D)" has them all, and `bought.py` models each from its listing's drawing.
+- HTD 5M pulleys, both hubless (flange, teeth, flange): **{f.teeth_small} T Saelno 20-5M-15-8mm** (Amazon B0FNQTJZMX: Ø35 flanges, 16
+  between them, 20 overall, Ø8 bore, 2× M5 through the teeth 90° apart) and **{f.teeth_big} T uxcell 5M-40T-1/2B** (B0G5YDQS1N:
+  Ø67 flanges, 22 overall, Ø12.7 bore with a keyway). Re-bore to Ø{CP.out_shaft_d:.0f} / Ø{f.stub_d:.0f} H7 (the 40T's keyway leaves a 0.25
+  trace: harmless). Set screws 90° apart through a tooth root, one on the shaft's flat, one on the round, like the
+  clutch hub: the 20T's own 2× M5 (M5×6), on the 40T 2× M5×20 (use its own holes if they are in a tooth root, else
+  drill Ø4.2 and tap; the drill nicks the teeth either side: harmless, deburr).
+- Belt {f.belt_len:.0f}-5M-{f.belt_w:.0f} (uxcell B0D5R5Y6VL).
 - 2× 6002-2RS, 2× DIN 472-32, 1× DIN 471-15.
-- Flexible coupling 6 × 8 mm (encoder).
-- LPD3806-600BM-G5-24C encoder.
-- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module ({f.plate_t:.0f} plate + 8 wall: the tips stop clear of the hub); 2× M5×20 (tension block) + 1× M4×30 (drawbolt); 3× M3 hex standoffs {f.enc_post_len:.0f} mm and 6× M3×8.
+- Flexible coupling 6 × 8 mm, uxcell Ø19 × 25 beam type with set screws (B0FN786WNM).
+- Encoder: Aideepen LPD3806-600BM-G5-24C, 600 P/R, NPN open collector (B01MZ4V1XP).
+- Retaining compounds (Loctite 641 and 638 don't ship to Israel): **Loctite 243** (Amazon B004L439FE) on the bearing
+  seats and the motor shaft (medium strength, comes off with hand tools), **Loctite 680** (B00KC541DA, seller ACTOOLS)
+  for the clutch's drive pins. Both checked shipping to Israel.
+- 4× M6 for the standoffs; 4× M5×35 + washers for the clutch module ({f.plate_t:.0f} plate + 8 wall: the tips stop clear of the hub); 2× M5×20 (tension block) + 1× M4×30 (drawbolt); 3× M3 hex standoffs {f.enc_post_len:.0f} mm F-F (room for the 25 mm coupling) and 6× M3×8.
 
 ## Notes
 - The module hangs ≈{out_len - Z_PLATE_OUT:.0f} mm off the plate on 4 M5 into the cover. The cover's spigot over the clutch housing is
@@ -1234,27 +1250,36 @@ strip along the upper front with their bodies reaching back over the PCB.
 | `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included ({X_FP - XB + T:.0f} × {W_END - W_SHELL0:.0f} mm, up to {SPLIT_Y - (Y0 - T):.1f} mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; push the pin in **from the end-wall end** (that line runs just outside the box; from the plate end it would hit the mill): it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95, a drop of CA). To take the door off, punch the pin out from the plate end (there is room under the belt guard). Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x {DOOR_SCREWS_X[0]:.0f}) and M3×6 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
 | `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, {2 * f.x_half:.0f} wide, bottom corners R{f.r_long - f.panel_t:.0f}, both top corners chamfered {CHAMFER_IN + 0.3:.1f} × 45° to sit under the housing's chamfered inside |
-| Fixing | both prints overlap the plate edges by {f.lap:.0f} mm with {f.fit_gap} mm clearance per side, and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (M3 × 5.7, Ø4.0 holes) in the shell's rails |
+| Fixing | both prints overlap the plate edges by {f.lap:.0f} mm with {f.fit_gap} mm clearance per side, and screw into them ({sum(1 for j in screw_joints() if j[4] == "tap")}× M3×8 countersunk into tapped holes); the hood also takes {sum(1 for j in screw_joints() if j[4] == "insert")}× M3×8 into heat-set inserts (Kadrick M3 × 5, B0FD88XTV4: Ø4.0 × 6 holes) in the shell's rails |
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside {f.pcb_y:.0f} mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
 | Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail ({f.tail_clear:.0f} mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
-| Controls (strip, left → right as you face it) | E-stop **IDEC XA1E-BV302R** (Ø16.2 hole, Ø29 mushroom 20.6 proud, 27.9 deep behind the strip, so it clears the J6 ribbon plug; two printed ribs either side of its contact block stop it turning more than ~16°, so it can't swing into the plug (they leave 0.2 mm per side round its lock ring, modelled Ø24 from photos: measure yours before printing and move ESTOP_RIB out if it is bigger); yellow Ø45 legend plate under its bezel), LEFT/STOP/RIGHT toggle (M12 bushing, Micros KN3C type: Ø12.4 hole + key notch) over RAPID (Ø16 metal momentary, Onpow GQ16 type), SPEED dial (EC11-type encoder; CAD = Bourns PEC11R: M7 bushing, nut in front, no lug hole; snip the lug if yours has one: two printed ribs either side of its body stop it turning into the OLED) with a Ø30 skirted knob (Ø17 grip), the 1.3" SH1106 OLED on 4 M2 posts behind its window; adapter board 40 × 28 (2×7 IDC) on 4 posts on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit. All shapes from the datasheets (`bought.py`), checked against the strip, the PCB, its plugs and each other |
-| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches, low beside the motor. **Programming ports, usable with the box closed:** a Ø12.5 hole for a round USB-C panel extension (Adafruit #6069: M12×1 thread 15 long, Ø18 × 6 flange on the inside, its nut and dust cap on the outside, so ~15 mm stands proud with the cap on), **plus a 90° USB-C adapter (male to female, "up/down" type) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is ~38 mm long, so it goes down into the adapter from above (space checked, with the panel end's flange and body); **BOOT and RESET** buttons (PBS-110 type 7 mm momentary NO in Ø7.2 holes, recessed in Ø16.5 × 8.5 counterbores (room for a 1/4" 10 mm socket, ≤ 16 OD, on the nut) so the caps stay 0.3 mm below the wall face and can't be pressed by a bump or a palm; a fingertip still reaches them; solder 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
+| Controls (strip, left → right as you face it) | E-stop **ZGSZJHF 22 mm ultra-short** (Amazon B0FZCN2HCP; 1 NO + 1 NC: the NC is the E-stop loop, ESTOP_SRC–ESTOP_RET; Ø22.35 hole with its key notch, 3.5 wide (its drawing: 3.3 +0.2), so it can't turn; Ø32.3 mushroom 25.7 proud, only 18.3 behind the panel to its pin tips, so it clears the J6 ribbon plug with room to spare; its ring nut is drawn but not dimensioned, modelled Ø30) on a **printed yellow Ø45 legend plate** (1 mm, keyed the same), LEFT/STOP/RIGHT toggle (DMWD ON-OFF-ON latching DPDT, B0BTSPYM34: Ø12 hole (Ø12.2 here) + key notch for its lock washer, body 29.7 × 19.8 × 28.7) over RAPID (Gebildet Ø16 stainless momentary, B081JJBN4G: 22 behind the panel), SPEED dial (EC11-type encoder; CAD = Bourns PEC11R: M7 bushing, nut in front, no lug hole; snip the lug if yours has one: two printed ribs either side of its body stop it turning into the OLED) with the uxcell Ø30 knurled aluminium handwheel (B0DGFB1K9F, hub toward the panel, its 2 set screws on the shaft), the Hosyond 1.3" SH1106 OLED (B0C3L7N917, holes on 30.3 × 28) on 4 M2 posts behind its window; adapter board 40 × 28 (2×7 IDC) on 4 posts on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit. All shapes from the Amazon listings' drawings (`bought.py`), checked against the strip, the PCB, its plugs and each other, the E-stop and toggle through their key play |
+| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches (uxcell nylon M16×1.5, B08K8HPHGM), low beside the motor. **Programming ports, usable with the box closed:** a Ø21.6 hole for a round threaded USB-C panel extension (QIANRENON 5 Gbps, B0FX2MZDTS: M21 thread, Ø27.5 flange outside, its nut inside; body and strain relief reach 34.5 in, 30 cm cable to a male plug; the Adafruit #6069 with its M12 thread doesn't ship to Israel), **plus a 90° USB-C adapter (male to female, "up/down" type, rgzhihuifz B08P5HRH3Z) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is long (~38 mm allowed: the listing doesn't give it), so it goes down into the adapter from above (space checked, with the panel end's body and its cable turning away); **BOOT and RESET** buttons (Twidec PBS-110 7 mm momentary NO, pre-wired, B07RPS2ZY3, in Ø7.2 holes, recessed in Ø16.5 × 8.5 counterbores (room for a 1/4" 10 mm socket, ≤ 16 OD, on the 10 AF nut) so the caps stay 0.3 mm below the wall face and can't be pressed by a bump or a palm; a fingertip still reaches them; solder their 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
   motor ({2 * TRAY_HALF:.0f} wide, {TRAY_TOP - TRAY_BOT:.0f} high over the PSU and {TERM_TOP - TRAY_BOT:.0f} over the terminal/inlet zone, W {Z_PLATE_OUT:.0f}…{TRAY_W1:.0f}; 1.5 mm
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two flat floor tabs
   that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
-  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A), screwed through the tray floor into its two
+  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A; Amazon B019GYOJCU: pick a third-party seller that ships to Israel), screwed through the tray floor into its two
     base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
     the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
-    {f.inlet_cut[0]} × {f.inlet_cut[1]}; the common fused + switched module, 47.2–47.5 × 27.7–28.3: **buy the version for a 1.5 mm panel** (the tray is 1.5 mm sheet; most snap-ins are for 2 mm and would rattle), modelled on the Switch Electronics SE-AS-303 drawing: C14 bay left, rocker right, fuse drawer under the bay). The C13 cord plug (LS-13 type: body 24.6 × 17, nose 23 × 15) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
+    {f.inlet_cut[0]} × {f.inlet_cut[1]}): the **JOYNANO 3-in-1** (Amazon B071VLCTPB), sold for 0.8–1.5 mm panels, so it grips the 1.5 mm
+    tray sheet (most snap-ins are for 2 mm and would rattle); its listing has no drawing, so the CAD uses the same generic
+    module's drawing (SINORS, B0H5TNSZ7L: flange 50 × 30.8 × 3, cut-out 47 × 27.5 R2, body 20.5 + tabs 10): C14 bay left,
+    rocker right, fuse drawer under the bay. Swap its 5 A fuse for a T 2 A ceramic. The cord: a C13 → Schuko cord
+    (Cable Leader, B0CK55JJ5P) and an earthed Schuko → Israel (SI 32) adapter (Ceptics GP-14, B00E0O0BS8): no C13
+    cord with an Israeli plug ships from Amazon; check earth continuity through the adapter before first use. The C13
+    plug (LS-13 type: body 24.6 × 17, nose 23 × 15) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
   - a separate aluminium **lid** over the terminal/inlet zone, its plate-side edge folded down to just above the PSU
-    (so the zone is closed all round): 4× M3 into **closed-end** M3 rivnuts in the walls' 10 mm folded flanges (no
-    screw tips inside the mains zone); the screws also bond the lid to the tray. Its flat part lies 1 mm above the
+    (so the zone is closed all round): 4× M3×8 button head + Ø12 washer into **open-end M3 rivnuts** (HANGLIFE, B0DF72LHVP: Ø5 hole,
+    grip 0.5–1.5, 9 long; no closed-end M3 rivnut ships to Israel) in the walls' 10 mm folded flanges: the lid's holes
+    are Ø8.5 so it lies flat over the rivnuts' Ø8 × 0.8 flanges, the washer clamps it, and each M3×8 ends inside its
+    rivnut (2.7 mm short of the open end as bought; setting shortens the body, so check with the screw in that the
+    tip stays inside, else use M3×6), so no screw tip reaches into the mains zone; the screws also bond the lid to the tray. Its flat part lies 1 mm above the
     PSU case; over the terminals it rises with the terminal zone (checked: ≥ 3 mm to the modelled screw heads; the head
     height is inferred from the drawing, so check it on your PSU), and line the
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the

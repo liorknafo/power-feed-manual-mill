@@ -1,6 +1,9 @@
 """Bought parts, modelled from their datasheets (sources in each docstring), each in its own frame. The feed unit places
 them; the checks and the viewer use these shapes instead of stand-in blocks.
 
+Every part here is one that Amazon.com delivers to Israel (checked with an Israeli address, 2026-10-22); the docstring names
+the listing (ASIN) and the drawing the dimensions come from. Where the listing gives no number, it says INFERRED.
+
 Frames: a panel part has the panel's OUTER face at z = 0, its front (what you see and press) toward +z and its body
 behind the panel toward -z.
 """
@@ -47,20 +50,25 @@ def nema23_shaft(length=21.0):
 
 
 # ------------------------------------------------------------------ pulleys, belt
+PULLEYS = {   # teeth: (flange Ø, flange thickness, tooth width), both hubless (flange, teeth, flange)
+    20: (35.0, 2.0, 16.0),   # Saelno 20-5M-15-8mm, B0FNQTJZMX: tooth OD 30.69, flanges Ø35, 16 between them, 20 overall
+    40: (67.0, 3.0, 16.0),   # uxcell 5M-40T-1/2B, B0G5YDQS1N: flanges Ø67, 22 overall (16 + 2 x 3 INFERRED)
+}
+
+
 def htd5m_pulley(teeth, bore, set_d):
-    """HTD 5M pulley for a 15 mm belt (HPC 20HTD5M-15F / 40HTD5M-15F: shop.hpceurope.com/pdf/frPDFauto/HTD5M_15.pdf),
-    HUB TURNED OFF to fit the 24 mm belt chamber: flange, 20.5 mm of teeth, flange (23.5 overall), centred on z = 0.
-    OD = PD - 1.14; flanges Ø36 (20T) / Ø71 (40T) x 1.5. Teeth modelled as grooves, 2 set screws (90 deg apart)
-    drilled and tapped radially through a tooth root at mid-width."""
+    """HTD 5M pulley for a 15 mm belt, both bought hubless (PULLEYS: flange, teeth, flange), centred on z = 0, re-bored
+    to the shaft (the 20T comes Ø8, the 40T Ø12.7 with a keyway: Ø15 leaves a 0.25 trace of it). OD = PD - 1.14
+    (30.69 for the 20T, as its drawing). Teeth modelled as grooves, 2 set screws (90 deg apart) radially through a
+    tooth root at mid-width (the 20T comes with 2x M5 there)."""
     pd = teeth * 5.0 / math.pi
     od = pd - 1.14
-    fl = 36.0 if teeth <= 20 else 71.0
-    w = 20.5
+    fl, ft, w = PULLEYS[teeth]
     body = cyl(od / 2, -w / 2, w / 2)
     groove = Pos(od / 2, 0, -w / 2 - 1) * Box(4.12, 3.0, w + 2, align=MIN)          # HTD groove 2.06 deep, ~3 wide
     for k in range(teeth):
         body = body - Rot(0, 0, 360.0 / teeth * (k + 0.5)) * groove
-    body = body + cyl(fl / 2, -w / 2 - 1.5, -w / 2) + cyl(fl / 2, w / 2, w / 2 + 1.5)
+    body = body + cyl(fl / 2, -w / 2 - ft, -w / 2) + cyl(fl / 2, w / 2, w / 2 + ft)
     body = body - cyl(bore / 2, -20, 20)
     for a in pulley_set_screw_angles(teeth):               # set-screw holes through a tooth root, at mid-width
         body = body - Rot(0, 0, a) * Rot(0, 90, 0) * Cylinder(set_d * 0.4, od, align=MIN)
@@ -127,8 +135,9 @@ def htd5m_belt_teeth(c1, n1, c2, n2, w, z0):
 
 # ------------------------------------------------------------------ encoder
 def lpd3806():
-    """LPD3806-600BM-G5-24C (rcscomponents.kiev.ua/datasheets/lpd-ab-english2020.pdf): Ø38 x 35 body, Ø20 x 5 face boss,
-    Ø6 shaft 13 beyond the boss with a 0.6 flat 10 long, 3x M3 on Ø30 and 3x M3 on Ø28 in the face, radial cable exit.
+    """Aideepen LPD3806-600BM-G5-24C, 600 P/R, NPN open collector, 5-24 V (Amazon B01MZ4V1XP drawing): Ø38 x 35 body,
+    Ø20 x 5 face boss, Ø6 shaft 13 beyond the boss with a flat (5.5 across) 10 long, 3x M3 x 8 deep on Ø30 and 3x on
+    Ø28 (30 deg apart) in the face, radial cable exit, 1.5 m cable (green A, white B, red +V, black 0 V).
     Face (with the boss and shaft) toward -z; the body's front face at z = 0."""
     body = cyl(19.0, 0.0, 35.0)
     for k in range(3):
@@ -136,14 +145,16 @@ def lpd3806():
             a = math.radians(90 + 120 * k + 60 + off)
             body = body - cyl(1.25, -0.1, 6.0, rr * math.cos(a), rr * math.sin(a))
     boss = cyl(10.0, -5.0, 0.0)
-    shaft = cyl(3.0, -18.0, -5.0) - Pos(3.0 - 0.6 + 5, 0, -18.0) * Box(10, 10, 10, align=MIN)
+    shaft = cyl(3.0, -18.0, -5.0) - Pos(3.0 - 0.5 + 5, 0, -18.0) * Box(10, 10, 10, align=MIN)
     cable = Pos(0, 19.0, 28.5) * Rot(-90, 0, 0) * Cylinder(3.0, 8.0, align=MIN)
     return body + boss + shaft + cable
 
 
 # ------------------------------------------------------------------ power supply
 def lrs75():
-    """Mean Well LRS-75-36 (meanwell.com/Upload/PDF/LRS-75/LRS-75-SPEC.PDF): 99 x 97 x 30, case 240A. Frame: base at
+    """Mean Well LRS-75-36 (Amazon B019GYOJCU: buy it from a third-party seller that ships to Israel, e.g. Yisung
+    Electronics or SKOLY, not the default offer; meanwell.com/Upload/PDF/LRS-75/LRS-75-SPEC.PDF, and the LRS-75 case
+    drawing on Amazon B019GYOHGI: base holes 2x M3 L=3 at (20.5, 45.5) and (75.5, 45.5)): 99 x 97 x 30, case 240A. Frame: base at
     z = 0, the 99 length along +y from the terminal end at y = 0, the 97 width along x from x = 0. The 5-pole terminal
     block (1 L, 2 N, 3 FG, 4 -V, 5 +V, pitch 9.5, M3.5 screws facing up) sits in a recess at the terminal end, first
     pole 10 from the x = 0 edge, screw heads ~3.5 below the top (INFERRED from the drawing). Side vent slots."""
@@ -171,57 +182,80 @@ def hexagon(af, z0, z1, x=0.0, y=0.0):
     return extrude(Pos(0, 0, z0) * make_face(Polyline(*pts, close=True)), amount=z1 - z0)
 
 
-def estop_idec_xa(panel_t):
-    """IDEC XA1E-BV302R E-stop, Ø29 mushroom, twist/pull to reset, 2 NC, locks from behind (IDEC X-series E-stop catalog,
-    files.valinonline.com/userfiles/documents/idec-e-stop-catalog.pdf; DigiKey XA1E-BV302-R): Ø16.2 hole, 20.6 above the
-    panel, 27.9 behind it. M16 threaded body (Ø15.8) through the panel, ~Ø24 lock ring + ~19 x 22 contact block behind
-    it (INFERRED); the bezel sits on the yellow legend plate (estop_legend_plate), 1 above the panel."""
-    body = cyl(7.9, -panel_t, 1.0)
-    bezel = cyl(11.0, 1.0, 6.0)
-    stem = cyl(7.0, 6.0, 12.0)
-    head = cyl(14.5, 12.0, 18.6) + cyl(12.0, 18.6, 20.6)
-    lock = cyl(12.0, -panel_t - 4.0, -panel_t)
-    block = box(-9.5, 9.5, -11.0, 11.0, -27.9, -panel_t - 4.0)
-    return body + bezel + stem + head + lock + block
+ESTOP_KEY = (3.5, 24.1)      # the 22 mm E-stop's notch: width (3.3 +0.2 on its drawing: cut at the top), extent over Ø22.35
+
+
+def estop_zgszjhf22(panel_t):
+    """ZGSZJHF 22 mm ultra-short E-stop, 1 NO + 1 NC, latching, twist to release (Amazon B0FZCN2HCP drawing): Ø22.35
+    hole with a 3.3 wide anti-rotation notch (24.1 over the notch), panel 1-4 mm; Ø32.3 mushroom (16.8 tall) whose top
+    is 25.7 above the panel face; the body ends 10.2 behind the panel face and its 4 pins (14.2 x 8.6 apart) 18.3
+    behind it. Its ring nut and the key in the notch are drawn but not dimensioned: nut Ø30 x 4, key 3 wide (INFERRED);
+    collar Ø28 x 2.5 and neck Ø24 between the head and the panel (INFERRED from the drawing's proportions). Wires
+    soldered to the pins and bent sideways: an 18 x 12 x 8 envelope behind them. Panel face at z = 0 (here the top of
+    the legend plate the collar sits on); the notch toward +y."""
+    h0 = 25.65 - 16.76
+    collar = cyl(14.0, 0.0, 2.5)
+    neck = cyl(12.0, 2.5, h0)
+    head = cyl(16.13, h0, 25.65)
+    body = cyl(11.0, -10.15, 0.0)
+    key = box(-1.5, 1.5, 10.5, 11.9, -panel_t, 0.0)
+    nut = cyl(15.0, -panel_t - 4.0, -panel_t)
+    pins = None
+    for px in (-7.1, 7.1):
+        for py in (-4.3, 4.3):
+            p = box(px - 0.6, px + 0.6, py - 0.3, py + 0.3, -18.3, -10.15)
+            pins = p if pins is None else pins + p
+    wires = box(-9.0, 9.0, -6.0, 6.0, -26.3, -18.3)
+    return collar + neck + head + body + key + nut + pins + wires
 
 
 def estop_legend_plate():
-    """Yellow Ø45 'EMERGENCY STOP' legend plate under the E-stop's bezel (~1 thick, INFERRED)."""
-    return cyl(22.5, 0.0, 1.0) - cyl(8.2, -0.1, 1.1)
+    """Yellow Ø45 'EMERGENCY STOP' legend plate under the E-stop's collar, 1 thick: PRINT it (yellow PETG), with the
+    E-stop's Ø22.35 hole and key notch."""
+    w, ext = ESTOP_KEY
+    return cyl(22.5, 0.0, 1.0) - cyl(11.2, -0.1, 1.1) - box(-w / 2, w / 2, 0.0, ext - 11.2, -0.1, 1.1)
 
 
-def toggle_kn3c(panel_t):
-    """KN3(C)-103 type ON-OFF-ON toggle (Micros / NINIGI drawings), M12x0.75 bushing (Ø12.2-12.5 hole, a 1.9 wide key
-    notch toward +y for the lock washer's tab, ~1.8 x 1.3 x panel deep, INFERRED), lever Ø6 17.5 above
-    the bushing top, body 29 (along the throw, x) x 15.8 x 19 behind the panel, M3 screw terminals 7 below it. Two
-    nuts (~14 AF x 3, INFERRED): one behind, one in front on a washer."""
-    bushing = cyl(6.0, -panel_t - 3.0, 9.5 - panel_t - 3.0)
+def toggle_eten1322(panel_t):
+    """DMWD ON-OFF-ON latching DPDT toggle, E-TEN1322 type, 6 screw terminals (Amazon B0BTSPYM34 drawing): Ø12 hole;
+    bushing Ø11.7 with a 1.0 deep x 2.0 wide key slot (thread pitch and length not given: M12, ~9.5 long, INFERRED),
+    lever 17.3 above the bushing; body with its terminals 29.7 along the throw (x) x 19.8, 28.7 from the body's top to
+    the ends of the terminal screws (body 22 + screws, INFERRED from the photo). Two nuts ~14 AF x 3 (INFERRED), one
+    behind, one in front on a washer; a keyed washer's tab in a notch at +y (INFERRED)."""
+    bushing = cyl(5.85, -panel_t - 3.0, 9.5 - panel_t - 3.0)
     front_nut = hexagon(14.0, 0.0, 3.0)
     back_nut = hexagon(14.0, -panel_t - 3.0, -panel_t)
-    lever = Pos(0, 0, 9.5 - panel_t - 3.0) * Rot(0, 12, 0) * Cylinder(3.0, 17.5, align=MIN)   # thrown to one side
-    body = box(-14.5, 14.5, -7.9, 7.9, -panel_t - 3.0 - 19.0, -panel_t - 3.0)
-    terms = box(-10.0, 10.0, -4.0, 4.0, -panel_t - 3.0 - 26.0, -panel_t - 3.0 - 19.0)
+    lever = Pos(0, 0, 9.5 - panel_t - 3.0) * Rot(0, 12, 0) * Cylinder(3.0, 17.3, align=MIN)   # thrown to one side
+    z_top = -panel_t - 3.0
+    body = box(-14.85, 14.85, -9.9, 9.9, z_top - 22.0, z_top)
+    terms = None
+    for tx in (-10.2, 0.0, 10.2):                          # 3 x 2 screw terminals (tabs 7.1 wide)
+        for ty in (-5.5, 5.5):
+            t_ = box(tx - 3.55, tx + 3.55, ty - 3.5, ty + 3.5, z_top - 28.7, z_top - 22.0)
+            terms = t_ if terms is None else terms + t_
     tab = box(-0.9, 0.9, 5.6, 6.9, -panel_t, 0.0)         # lock-washer tab in the key notch
     return bushing + front_nut + back_nut + lever + body + terms + tab
 
 
-def pushbutton_gq16(panel_t):
-    """Onpow GQ16F-10 16 mm metal pushbutton, momentary NO (Ø16 hole, M16x1, panel <= 6): Ø18 flat head 1.5 proud,
-    Ø11.8 button, 23 max behind the panel with the screw-terminal block; nut ~21.8 (INFERRED) behind the panel."""
-    head = cyl(9.0, 0.0, 1.5) + cyl(5.9, 1.5, 2.0)
-    thread = cyl(8.0, -18.0, 0.0)
-    nut = hexagon(19.0, -panel_t - 3.0, -panel_t)
-    term = box(-3.1, 3.1, -6.0, 6.0, -23.0, -18.0)
-    return head + thread + nut + term
+def pushbutton_16mm(panel_t):
+    """Gebildet 16 mm stainless momentary NO pushbutton, screw terminals (Amazon B081JJBN4G drawing): Ø16 hole, M16x1;
+    Ø18 head 1.9 proud, Ø11.6 button; threaded body 11.7 and the terminal block to 22 behind the head (screws 5.9
+    apart). Nut ~20 AF x 3 (INFERRED: not dimensioned) behind the panel."""
+    head = cyl(9.0, 0.0, 1.9) + cyl(5.8, 1.9, 2.3)
+    thread = cyl(8.0, -11.7, 0.0)
+    block = box(-6.5, 6.5, -8.0, 8.0, -20.0, -11.7)
+    term = box(-3.0, 3.0, -5.2, 5.2, -22.0, -20.0)
+    nut = hexagon(20.0, -panel_t - 3.0, -panel_t)
+    return head + thread + block + term + nut
 
 
 def encoder_pec11r(panel_t, knob=True):
     """Bourns PEC11R-4220F-S0024 (bourns.com/docs/Product-Datasheets/PEC11R.pdf): 12.5 x 13.4 body 6.5 deep behind its
     mounting face, M7x0.75 bushing 7 long (nut and washer on the front, no anti-rotation lug), Ø6 D shaft 20 from the
-    mounting face, push switch; pins 3.7 below the body. With a Ø30 skirted knob (Ø17.2 grip, 17 high, Ø6 bore 15
-    deep, grub screw; INFERRED), 1 mm above the bushing's top (which stands 1.5 above the nut): the shaft
-    goes 12 into the bore and ends 3 short of its bottom. The knob is
-    returned as a separate solid so its fit on the shaft is checked."""
+    mounting face, push switch; pins 3.7 below the body. With the uxcell Ø30 knurled aluminium handwheel (Amazon
+    B0DGFB1K9F drawing: Ø30 x 10 knurled rim, Ø18 x 10 hub with 2 set screws, Ø6 bore through, 20 overall), hub toward
+    the panel, 1 mm above the bushing's top (which stands 1.5 above the nut): the shaft goes 12 into the hub, past its
+    set screws. The knob is returned as a separate solid so its fit on the shaft is checked."""
     body = box(-6.25, 6.25, -6.7, 6.7, -panel_t - 6.5, -panel_t)
     pins = box(-5.0, 5.0, -0.5, 0.5, -panel_t - 10.2, -panel_t - 6.5)
     bushing = cyl(3.5, -panel_t, 7.0 - panel_t)
@@ -230,30 +264,38 @@ def encoder_pec11r(panel_t, knob=True):
     s = body + pins + bushing + nut + shaft
     if knob:
         z0 = 7.0 - panel_t + 1.0                               # 1 above the bushing's top
-        k = (cyl(15.0, z0, z0 + 2.0) + cyl(8.6, z0 + 2.0, z0 + 17.0)) - cyl(3.05, z0 - 0.1, z0 + 15.0)
+        k = (cyl(9.0, z0, z0 + 10.0) + cyl(15.0, z0 + 10.0, z0 + 20.0)) - cyl(3.05, z0 - 0.1, z0 + 20.1)
         return Compound(children=[s, k])
     return s
 
 
+OLED_HOLES = (30.3, 28.0)    # hole centres of the Hosyond board (its photo callouts)
+OLED_YC = -(33.7 / 2 - 7.35 - 14.7 / 2)   # its PCB centre relative to the active area's centre (2.15 below it)
+
+
 def oled_sh1106():
-    """1.3" SH1106 128x64 OLED module (Pololu 3760 drawing as the proxy for the generic 4-pin board): PCB 35.4 x 33.5 x
-    1.2 with 4x Ø3.05 holes on 30.4 x 28.5, glass ~34.5 x 23 x 1.5 on its front (+z), active area 29.42 x 14.7 whose
-    centre is the frame's origin; 4-pin header along the top edge. PCB front face at z = 0."""
-    yc = -(33.5 / 2 - 7.35 - 14.7 / 2)        # PCB centre relative to the active area's centre (2.05 below it)
-    pcb = box(-17.7, 17.7, yc - 16.75, yc + 16.75, -1.2, 0.0)
-    for dx in (-15.2, 15.2):
-        for dy in (-14.25, 14.25):
-            pcb = pcb - cyl(1.525, -1.3, 0.1, dx, yc + dy)
-    glass_top = yc + 16.75 - 5.25
+    """Hosyond 1.3" SH1106 128x64 I2C OLED, white (Amazon B0C3L7N917: PCB 35.5 x 33.7, holes on 30.3 x 28, active area
+    29.42 x 14.7, 4-pin header GND VCC SCL SDA along the top edge). The listing gives no glass, hole or thickness
+    numbers: glass ~34.5 x 23 x 1.5, holes Ø3, PCB 1.2 and the glass position are from the Pololu 3760 drawing of the
+    same generic board (INFERRED). The active area's centre is the frame's origin; PCB front face at z = 0."""
+    yc = OLED_YC
+    pcb = box(-17.75, 17.75, yc - 16.85, yc + 16.85, -1.2, 0.0)
+    hx, hy = OLED_HOLES[0] / 2, OLED_HOLES[1] / 2
+    for dx in (-hx, hx):
+        for dy in (-hy, hy):
+            pcb = pcb - cyl(1.5, -1.3, 0.1, dx, yc + dy)
+    glass_top = yc + 16.85 - 5.25
     glass = box(-17.25, 17.25, glass_top - 23.0, glass_top, 0.0, 1.5)
-    header = box(-5.1, 5.1, yc + 16.75 - 3.3, yc + 16.75 - 0.7, -1.2 - 8.5, -1.2)
+    header = box(-5.1, 5.1, yc + 16.85 - 3.3, yc + 16.85 - 0.7, -1.2 - 8.5, -1.2)
     return pcb + glass + header
 
 
 def pushbutton_pbs110(panel_t):
-    """PBS-110 7 mm momentary NO (Ø7 hole, M7; mounts from BEHIND with the nut in front): Ø6 cap whose top sits
-    ~11.2 - t above the panel front, nut 10 AF x 1.5, rear flange Ø9.8 x 1.6, Ø7.2 body 14.5 below the flange to the
-    terminal tips; thread above the flange ~4.9 (panel <= ~3.4)."""
+    """Twidec PBS-110 7 mm momentary NO, pre-wired (Amazon B07RPS2ZY3 drawing: Ø7 thread, Ø6 cap, nut 10 AF / 11 AC,
+    8.6 body below the flange, 28 from the cap's top to the heat-shrunk wire joints, 120 mm wires). Mounts from BEHIND
+    with the nut in front: cap top ~11.2 - t above the panel front, nut 10 AF x 1.5, rear flange Ø9.8 x 1.6, body and
+    wire joints 14.5 below the flange; thread above the flange ~4.9 (panel <= ~3.4). Cap height, flange and nut
+    thickness are not on the listing (INFERRED from the PBS-110 standard part)."""
     flange = cyl(4.9, -panel_t - 1.6, -panel_t)
     thread = cyl(3.5, -panel_t, 4.9 - panel_t)
     nut = hexagon(10.0, 0.0, 1.5)
@@ -263,34 +305,43 @@ def pushbutton_pbs110(panel_t):
     return flange + thread + nut + cap + body + terms
 
 
-def usb_c_panel_6069():
-    """Adafruit #6069 USB-C round panel-mount extension, panel end (adafruit.com/product/6069 and its fab drawing):
-    M12x1 thread through a Ø12.5 hole, ~12 proud of the panel with its nut (~17 AF x 4.5, INFERRED from photos) and a
-    tethered dust cap (Ø16 x 9, INFERRED) screwed on; Ø18 x 6 flange on the inside (modelled by the caller's USB
-    path). Panel outer face at z = 0, front toward +z."""
-    return cyl(5.7, 0.0, 12.0) + hexagon(17.0, 0.0, 4.5) + cyl(8.0, 6.0, 15.0)
+def usb_c_panel(panel_t):
+    """QIANRENON USB-C 5 Gbps threaded panel-mount extension, female in the panel, 30 cm cable to a male plug (Amazon
+    B0FX2MZDTS drawing): Ø21.5 hole, M21 thread, panel <= 8, Ø27.5 flange outside, 37 from the flange's face to the
+    end of the strain relief. Not dimensioned (INFERRED from the photo): flange 2.5 thick, hex nut 24 AF x 3 inside,
+    body Ø18 to 27 behind the panel face, strain relief Ø8 to 34.5. The male plug's length isn't given either: the
+    caller's USB path allows 38. Panel outer face at z = 0, front toward +z."""
+    flange = cyl(13.75, 0.0, 2.5)
+    thread = cyl(10.5, -11.0, 0.0)
+    nut = hexagon(24.0, -panel_t - 3.0, -panel_t)
+    body = cyl(9.0, -27.0, -11.0)
+    relief = cyl(4.0, -34.5, -27.0)
+    return flange + thread + nut + body + relief
 
 
 # ------------------------------------------------------------------ end-wall and box parts
-def iec_inlet_se_as_303():
-    """Switch Electronics SE-AS-303 type snap-in C14 + 5x20 fuse + rocker (cdn.shopify.com/.../489596.pdf): cut-out
-    47.2 x 28.3, flange 50 x 30.8 standing 3.3 proud of the panel, body 47 x 27.5, 20.5 deep from the front with
-    4.8 mm tabs 10.5 further. C14 bay 24 x 16 left, fuse drawer under it,
-    rocker 19 x 13 in a 21.2 x 15.2 bezel right (the side-by-side 3-in-1 layout; positions within the face INFERRED).
+def iec_inlet_snapin():
+    """JOYNANO 3-in-1 snap-in C14 inlet + 5x20 fuse + lit rocker, for 0.8-1.5 mm panels (Amazon B071VLCTPB: cut-out
+    47 x 28, 50 x 30 x 32 overall, 5 A fuse supplied: fit T 2 A). Its listing has no drawing, so the shape is the same
+    generic module's drawing on Amazon B0H5TNSZ7L (SINORS): flange 50 x 30.8 x 3, cut-out 47 x 27.5 R2, body 20.5 from
+    the flange's face, tabs 10 further; tabs taken to 29 behind the panel (32 overall). C14 bay 24 x 16 left, fuse
+    drawer under it, rocker 19 x 13 in a 21.2 x 15.2 bezel right (positions within the face INFERRED).
     Width along x, height along y, the panel's front face at z = 0 (front +z)."""
-    flange = box(-25.0, 25.0, -15.4, 15.4, 0.0, 3.3)
-    body = box(-23.5, 23.5, -13.75, 13.75, 3.3 - 20.5, 0.0)
-    tabs = box(-15.0, 15.0, -10.0, 10.0, 3.3 - 31.0, 3.3 - 20.5)
+    flange = box(-25.0, 25.0, -15.4, 15.4, 0.0, 3.0)
+    body = box(-23.5, 23.5, -13.75, 13.75, 3.0 - 20.5, 0.0)
+    tabs = box(-15.0, 15.0, -10.0, 10.0, -29.0, 3.0 - 20.5)
     s = flange + body + tabs
-    s = s - box(-22.5, 1.5, 15.4 - 2.7 - 16.0, 15.4 - 2.7, 3.3 - 18.6, 3.4)     # C14 bay, left (1 mm walls; C13 nose 18.5 in)
-    s = s + box(2.5, 23.7, -7.6, 7.6, 3.3, 4.3) + box(3.6, 22.6, -6.5, 6.5, 4.3, 7.0)   # rocker bezel + rocker, right
-    s = s - box(-21.5, -0.5, -14.5, -5.0, 2.0, 3.4)                               # fuse drawer, under the bay
+    s = s - box(-22.5, 1.5, 15.4 - 2.7 - 16.0, 15.4 - 2.7, 3.0 - 18.6, 3.1)     # C14 bay, left (1 mm walls; C13 nose 18.5 in)
+    s = s + box(2.5, 23.7, -7.6, 7.6, 3.0, 4.0) + box(3.6, 22.6, -6.5, 6.5, 4.0, 6.7)   # rocker bezel + rocker, right
+    s = s - box(-21.5, -0.5, -14.5, -5.0, 1.7, 3.1)                               # fuse drawer, under the bay
     return s
 
 
 def c13_plug():
-    """Moulded C13 cord connector (Linetek LS-13, temflexcontrols.com/pdf/power-cord-cat.pdf): nose 23 x ~15 x 18.5
-    (into the inlet's C14 bay), body 24.6 x 17 x 19, strain relief Ø13.6 x 17. Mating face at z = 0, cord toward +z."""
+    """The C13 end of the mains cord (Cable Leader Schuko-C13, Amazon B0CK55JJ5P: its listing gives no plug
+    dimensions, so the shape is the Linetek LS-13 catalogue's, temflexcontrols.com/pdf/power-cord-cat.pdf, INFERRED):
+    nose 23 x ~15 x 18.5 (into the inlet's C14 bay), body 24.6 x 17 x 19, strain relief Ø13.6 x 17. Mating face at
+    z = 0, cord toward +z."""
     nose = box(-11.5, 11.5, -7.5, 7.5, -18.5, 0.0)
     body = box(-12.3, 12.3, -8.5, 8.5, 0.0, 19.0)
     relief = cyl(6.8, 19.0, 36.0) + cyl(7.2, 30.0, 33.5)
@@ -298,17 +349,19 @@ def c13_plug():
 
 
 def gland_m16(panel_t):
-    """Lapp SKINTOP ST-M 16x1.5 (Ø16.2 hole): hex 19 AF, dome ~21 above the panel, thread 8; SKINDICHT SM-M locknut
-    19 AF x 3 inside."""
+    """uxcell M16x1.5 nylon cable gland, cable 4-8 (Amazon B08K8HPHGM: thread 9 long; Ø16.2 hole). Its hex, dome and
+    locknut aren't on the listing: hex 19 AF, dome ~21 above the panel, locknut 19 AF x 3 inside, as the Lapp SKINTOP
+    ST-M 16x1.5 of the same size (INFERRED)."""
     out = hexagon(19.0, 0.0, 6.0) + cyl(8.5, 6.0, 15.0) + cyl(6.0, 15.0, 21.0)
-    thread = cyl(8.0, -8.0, 0.0)
+    thread = cyl(8.0, -9.0, 0.0)
     nut = hexagon(19.0, -panel_t - 3.0, -panel_t)
     return out + thread + nut
 
 
 def fan_40x10():
-    """Sunon MF40100V2-1000U-A99 40 x 40 x 10 fan (Sunon MF40100V2 drawing, sunon.com product page / DigiKey
-    259-1580-ND: 4x Ø4.3 on 32, Ø38 venturi, hub ~Ø21 INFERRED), blowing toward +z; inlet face at z = 0."""
+    """Noctua NF-A4x10 5V, 40 x 40 x 10, 3-pin (Amazon B00NEMGCIA; Noctua's NF-A4x10 drawing: 4 holes on 32 for the
+    supplied self-tapping screws; hole Ø, venturi and hub INFERRED as the usual 40 mm frame), blowing toward +z;
+    inlet face at z = 0."""
     frame = box(-20.0, 20.0, -20.0, 20.0, 0.0, 10.0) - cyl(19.0, -0.1, 10.1)
     for dx in (-16.0, 16.0):
         for dy in (-16.0, 16.0):

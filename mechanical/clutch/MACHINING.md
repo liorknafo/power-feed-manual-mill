@@ -34,7 +34,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 | OD × thickness | **Ø76.0 h7 × 6.0** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth and the pin holes; faces parallel within 0.02 |
 | Bore | Ø11.5 | clearance over the rotor's M3 head |
 | Tooth ring | as the rotor, rotated half a pitch (6.0°) | flanks meet 0.25 behind the pole face, root floor 0.75 behind it (from r 31.0 out), tips truncated 0.1 |
-| Drive-pin holes | 3× **Ø6.15–6.20 through** (glue gap for Loctite 638) at r=21.0, 90°/210°/330°, position ±0.02 from the bore, 0.3 × 45° chamfer at the front-face mouth (glue trap) | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r 21 faces the rotor's slot ring, between the poles) |
+| Drive-pin holes | 3× **Ø6.15–6.20 through** (glue gap for Loctite 680) at r=21.0, 90°/210°/330°, position ±0.02 from the bore, 0.3 × 45° chamfer at the front-face mouth (glue trap) | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r 21 faces the rotor's slot ring, between the poles) |
 
 ## Output hub (6061) — `output_hub.step`
 | Feature | Dimension | Note |
@@ -57,17 +57,17 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
 
 ## Other parts
 - Output shaft: Ø12 h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × 78. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø10 spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at 29.7 from its motor-side end, just outboard of the inner bearing.
-- Drive pins: 3× Ø6 h6 silver steel (unhardened ground rod) × 25.5, 0.5 × 45° lead chamfer at the armature end, bonded 5.5 deep into the armature with Loctite 638 (0.5 short of its back face). E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ 71 N per pin at the 4.5 N·m cam-out torque) and keep the armature centred.
+- Drive pins: 3× Ø6 h6 silver steel (unhardened ground rod) × 25.5, 0.5 × 45° lead chamfer at the armature end, bonded 5.5 deep into the armature with Loctite 680 (Amazon B00KC541DA; 0.5 short of its back face). E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ 71 N per pin at the 4.5 N·m cam-out torque) and keep the armature centred.
 - Return springs: 3× compression spring, music wire 0.8, OD 9 (ID 7.4: clears the pin, sits on the bush end), free length ≈ 11.9, rate ≈ 2.5 N/mm, solid ≤ 5. Installed 8.7 long released (≈ 8 N each, 24 N total: the armature is pulled firmly against the hub) and 7.6 long engaged (≈ 11 N each, 32 N total). Any catalogue spring near this works; the coil current is calibrated afterwards. On each pin: spring, M6 washer (ISO 7089, Ø6.4/12 × 1.6), E-clip.
 - Bushes: 3× sintered (oil-impregnated) bronze plain bush 6 × 10 × 8, ISO 2795 form C.
 - Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × 12.8 (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × 6.6 (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft.
 - Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):
   0. **Armature on the hub; the bushes line the pins up.** Glue must never reach a bush (the pin-to-bush gap is
-     0.01–0.03; Loctite 638 there would lock the pin), so in this order:
+     0.01–0.03; Loctite 680 there would lock the pin), so in this order:
      a. Press the 3 bushes into the hub from the spring side, the stop face on a flat plate, so they finish flush with it.
         Wax both ends of each bush (clean the wax off after curing).
      b. Hub on the shaft with the shaft end **3.70 inside the stop face** (depth micrometer), then the set screws.
-     c. Armature on its own: a thin film of 638 on the walls of its 3 holes only, keeping the 1.5 mm at the front-face
+     c. Armature on its own: a thin film of 680 on the walls of its 3 holes only, keeping the 1.5 mm at the front-face
         (hub-side) mouth of each dry.
      d. Armature pole face down on PE film on a surface plate (it stands on its tooth tips, ~0.55 proud: that gap lets
         the glue out); the hub on it, stop face on the armature's front face, its bush holes lined up over the armature's
@@ -86,7 +86,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
         Keep the stop faces dry (degrease): oil from the bushes on them can make the armature stick to the hub a little.
   1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.
   3. Shaft with hub, armature, pins, springs and stepped spacer already fitted: push it through the inner bearing from the cavity side,
-     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).
+     supporting the inner race with a tube from the outer end (Loctite 243 on that seat).
   4. DIN 471-12 down the bore into its groove (~24 deep from the outer end) with a cone on the shaft end and a push tube.
   5. Spacer tube, outer 6001 (slides on), outer circlip.
   6. **Released-gap check.** The springs hold the armature against the hub, so the released gap is set by where the hub
@@ -98,7 +98,7 @@ Magnetic parts: low-carbon steel (1018/1020/12L14), anneal after machining if po
      turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to
      the motor, coil off it frees at once.
 - Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø28.6…Ø53.4 × 14.5; ≈24 Ω. Leads out through the back plate.
-- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×20 + nuts (motor; the nuts sit behind the 4.8 mm flange in the body's corner relief: check yours has room, else use M5 screws from the motor side into M5 tapped in the housing), 6× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
+- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 243 (Amazon B004L439FE; medium strength, comes off with hand tools: Loctite 641 doesn't ship to Israel), the outer one is a slip fit so it can float. Screws: 4× M5×20 + nuts (motor; the nuts sit behind the 4.8 mm flange in the body's corner relief: check yours has room, else use M5 screws from the motor side into M5 tapped in the housing), 6× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt.
 - Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.
 ## Teeth
 - 30 radial teeth, flanks **flat planes** at 30° from the axis: every flank is the plane through a radial line at the pitch

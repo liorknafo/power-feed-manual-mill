@@ -6,8 +6,9 @@ bundled venv; each writes STEP + STL per part and shaded renders into its own `o
 (`mechanical/.venv/bin/pip install build123d==0.13.0 bd_warehouse==0.4.0`): every screw, nut, washer, insert and
 tapped-hole thread is an ISO part from bd_warehouse (`mechanical/fasteners.py`), placed in the models with real threads
 for the viewer and as plain shanks for the checks. Every bought part (motor, pulleys, toothed belt, encoder, PSU,
-inlet, cord plug, E-stop, toggle, buttons, dial, OLED, gland, fan, USB-C panel end) is modelled from its datasheet
-drawing in `mechanical/bought.py`; each function names its source and marks the dimensions it had to infer.
+inlet, cord plug, E-stop, toggle, buttons, dial, OLED, gland, fan, USB-C panel end) is one that Amazon.com ships to
+Israel, modelled from its listing's drawing in `mechanical/bought.py`; each function names the listing (ASIN) and marks
+the dimensions it had to infer. The Amazon list "Mill power feed (SIEG X3.5D)" holds them all.
 
 ```
 mechanical/.venv/bin/python mechanical/clutch/clutch.py        # tooth clutch (+ MACHINING.md)

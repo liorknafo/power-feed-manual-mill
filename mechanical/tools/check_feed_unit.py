@@ -83,13 +83,14 @@ for a, b in (("pcb_placeholder", "controls"), ("controls", "shell"), ("encoder",
     print("  clearance %-16s <-> %-20s %.2f mm" % (a, b, parts[a].distance_to(parts[b])))
 # each real panel part against everything around it (contact with the strip it is mounted on is fine, overlap is not),
 # at every angle it can end up at: a part with nothing to key it (RAPID: round hole) is swept through 0..180 (its
-# body repeats every 180, the nut every 60); keyed ones (toggle: lock-washer tab; dial, E-stop: ribs) through their play
+# body repeats every 180, the nut every 60); keyed ones (toggle: lock-washer tab; E-stop: key in its notch; dial: ribs)
+# through their play
 ctl = FU.controls()
 around_c = ["shell", "hood", "pcb_placeholder", "usb_path", "plug_wires", "encoder", "encoder_disc", "plate", "motor",
             "clutch_cover", "end_wall_parts", "fan"]
 CTRL_OF = {"estop": "estop", "estop_plate": "estop", "toggle": "toggle", "rapid": "rapid", "dial": "dial"}
 ANGLES = {"rapid": range(0, 180, 15),                                 # free (round hole)
-          "estop": (-16, -10, -5, 0, 5, 10, 16),     # ribs 2.7 off its 19 x 22 contact block: ~16 deg
+          "estop": (-1, 0, 1),                       # 3.0 key in a 3.5 notch at r <= 11.9: ~1.2 deg
           "toggle": (-1, 0, 1), "dial": (-1, 0, 1)}   # play: tab 0.15 per side at r 6.9, ribs 0.15 per side at 6.25: ~1.2 deg
 
 
@@ -134,10 +135,10 @@ v_nut = sum(iv(nut_env, parts[n]) for n in around_c) + sum(
 print("  toggle back nut, any angle (Ø%.2f): overlap %.3f mm3" % (2 * 14.0 / math.sqrt(3), v_nut))
 if v_nut > 1e-2:
     bad += 1
-# the ribs really stop them: turned past their play the bodies must hit the ribs
-for nm, deg in (("dial", 5), ("estop", 20)):
+# the keys really stop them: turned past their play the dial's body must hit its ribs, the E-stop's key its notch
+for nm, deg, what in (("dial", 5, "its ribs"), ("estop", 5, "its notch")):
     v_rib = sum(iv(so, parts["hood"]) for so in turned(ctl[FU.CONTROL_NAMES.index(nm)], nm, deg).solids())
-    print("  %s turned %d deg runs into its ribs: %.3f mm3 (must be > 0)" % (nm, deg, v_rib))
+    print("  %s turned %d deg runs into %s: %.3f mm3 (must be > 0)" % (nm, deg, what, v_rib))
     if v_rib < 1e-2:
         bad += 1
 # the end wall's parts and the fan against the rest
@@ -160,6 +161,20 @@ heads = Compound(children=[FU.PSU_LOC * h for h in FU.B.lrs75_terminal_heads()])
 d_heads = parts["mains_tray_lid"].distance_to(heads)
 print("  lid <-> PSU terminal screw heads: %.2f mm (need >= 3)" % d_heads)
 if d_heads < 3.0:
+    bad += 1
+# the lid screws (M3x8 on a 1 mm washer) must end inside their open-end rivnuts: no screw tip in the mains zone
+fd_, ft_, bd_, ln_ = FU.RIVNUT
+tip = FU.TERM_TOP + FU.f.tray_t + 1.0 - 8.0
+rn_end = FU.TERM_TOP + ft_ - ln_
+print("  lid screw tip %.2f mm inside its rivnut's open end (need >= 0.5; as bought, before setting)" % (tip - rn_end))
+if tip - rn_end < 0.5:
+    bad += 1
+# the encoder coupling (allowed to hold both shafts) must stay clear of the encoder's face boss and the stub's shoulder
+enc_body, enc_cpl, _, _ = FU.encoder()
+zc0, zc1 = enc_cpl.bounding_box().min.Z, enc_cpl.bounding_box().max.Z
+gap_boss = FU.Z_PLATE_OUT + FU.f.enc_post_len - zc1                # the boss starts at the disc's bottom face
+print("  encoder coupling -> face boss %.2f mm, -> plate face %.2f mm (need >= 1 / >= 0.5)" % (gap_boss, zc0 - FU.Z_PLATE_OUT))
+if gap_boss < 1.0 or zc0 - FU.Z_PLATE_OUT < 0.5:
     bad += 1
 # the PCB rests ON its printed rails; it must clear the motor (THT leads ~3 mm) over the whole tension slot
 print("  pcb on rails: overlap %.3f mm3" % (parts["pcb_placeholder"] & parts["shell"]).volume)

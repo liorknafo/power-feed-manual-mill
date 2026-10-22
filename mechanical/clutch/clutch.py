@@ -76,9 +76,9 @@ class P:
     armature_t: float = 6.0
     armature_bore: float = 11.5
     pin_r: float = 21.0              # between the pole rings (r 15 / r 27): there the armature only carries flux radially
-    pin_d: float = 6.0               # Ø6 h6 silver steel (unhardened), bonded (Loctite 638) into the armature with the
+    pin_d: float = 6.0               # Ø6 h6 silver steel (unhardened), bonded (Loctite 680) into the armature with the
     pin_glue: float = 0.17           # pins set through the hub's bushes, so the bushes line them up (no binding); the glue
-                                     # gap (638 fills up to 0.25) takes the hole-pattern and sleeve tolerances
+                                     # gap (680 fills up to 0.38) takes the hole-pattern and sleeve tolerances
     pin_press: float = 5.5           # through holes; the pin ends 0.5 inside the armature's back face (excess glue exits there)
     pin_len: float = 25.5
     bush_od: float = 10.0            # sintered bronze plain bush 6 x 10 x 8 (ISO 2795), pressed into the hub flange
@@ -255,7 +255,7 @@ def rotor():
     for k in range(p.slot_count):                                           # banana slots
         a0 = math.radians(k * 360 / p.slot_count)
         s = s - arc_slot(p.slot_r_in, p.slot_r_out, a0, a0 + math.radians(p.slot_span_deg), Z_FACE_BACK - 0.1, Z_POLE + 0.1)
-    # bore: plain round Ø10 H7 to the shaft end (Loctite 641 on the motor's D-shaft: >10 N·m vs 3 N·m,
+    # bore: plain round Ø10 H7 to the shaft end (Loctite 243 on the motor's D-shaft: ~14 N·m vs 3 N·m,
     # and removable without heating the whole motor), then M3 clearance + counterbore for the axial
     # screw that pulls the rotor's shoulder onto the shaft end. Bore depth = MEASURED shaft length -
     # hub_start: that is what sets the 0.3 mm face gap.
@@ -554,7 +554,7 @@ def dimension_sheet(z_front):
     w("| OD × thickness | **Ø%.1f h7 × %.1f** | OD, bore and the tooth-ring face in one chucking (≤ 0.02 TIR): the OD centres the part for milling the teeth and the pin holes; faces parallel within 0.02 |" % (p.rotor_od, p.armature_t))
     w("| Bore | Ø%.1f | clearance over the rotor's M3 head |" % p.armature_bore)
     w("| Tooth ring | as the rotor, rotated half a pitch (%.1f°) | flanks meet %.2f behind the pole face, root floor %.2f behind it (from r %.1f out), tips truncated %.1f |" % (pitch_deg / 2, Z_ARM_ROOT - Z_ARM, Z_ARM_ROOT - Z_ARM + p.root_relief, p.tooth_r_in - p.tooth_runout, p.tip_trunc))
-    w("| Drive-pin holes | 3× **Ø%.2f–%.2f through** (glue gap for Loctite 638) at r=%.1f, 90°/210°/330°, position ±0.02 from the bore, 0.3 × 45° chamfer at the front-face mouth (glue trap) | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r %.0f faces the rotor's slot ring, between the poles) |\n" % (p.pin_d + 0.15, p.pin_d + 0.20, p.pin_r, p.pin_r))
+    w("| Drive-pin holes | 3× **Ø%.2f–%.2f through** (glue gap for Loctite 680) at r=%.1f, 90°/210°/330°, position ±0.02 from the bore, 0.3 × 45° chamfer at the front-face mouth (glue trap) | same program and zero as the hub's bush holes. The pins are bonded in place through the bushes (assembly step 0), so the bushes line them up; through, so excess glue leaves at the back face (r %.0f faces the rotor's slot ring, between the poles) |\n" % (p.pin_d + 0.15, p.pin_d + 0.20, p.pin_r, p.pin_r))
     w("## Output hub (6061) — `output_hub.step`")
     w("| Feature | Dimension | Note |\n|---|---|---|")
     w("| Flange | **Ø%.1f h7** × **%.1f** | its armature-side face is the **released stop** the springs pull the armature against: face it flat and square to the bore within 0.02, and turn the OD, in the same chucking as the bore (the OD, = the armature's, centres the armature when its pins are bonded) |" % (p.hub_flange_od, p.hub_flange_t))
@@ -574,17 +574,17 @@ def dimension_sheet(z_front):
     w("- Output shaft: Ø%.0f h6 **unhardened** ground rod (NOT hardened linear shaft: the flats and groove can't be cut in it) × %.0f. Flats 0.6 deep: × 22 at the pulley end; under the hub boss a Ø%.0f spot face (plunge a Ø10 end mill). DIN 471-12 groove (Ø11.5 × 1.1) at %.1f from its motor-side end, just outboard of the inner bearing." % (p.out_shaft_d, p.out_shaft_len, p.hub_boss_len, zb[0] + p.bearing_w + 0.1 - Z_SHAFT0))
     f_rel = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED)
     f_eng = p.spring_rate * (p.spring_free - SPRING_LEN_RELEASED + p.stroke)
-    w("- Drive pins: 3× Ø%.0f h6 silver steel (unhardened ground rod) × %.1f, 0.5 × 45° lead chamfer at the armature end, bonded %.1f deep into the armature with Loctite 638 (0.5 short of its back face). E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ %.0f N per pin at the 4.5 N·m cam-out torque) and keep the armature centred." % (p.pin_d, p.pin_len, p.pin_press, 4.5e3 / (3 * p.pin_r)))
+    w("- Drive pins: 3× Ø%.0f h6 silver steel (unhardened ground rod) × %.1f, 0.5 × 45° lead chamfer at the armature end, bonded %.1f deep into the armature with Loctite 680 (Amazon B00KC541DA; 0.5 short of its back face). E-clip groove Ø5 × 0.74 (DIN 6799 RS5), 1.0 from the free end. They slide in the hub's bronze bushes, carry the torque (≈ %.0f N per pin at the 4.5 N·m cam-out torque) and keep the armature centred." % (p.pin_d, p.pin_len, p.pin_press, 4.5e3 / (3 * p.pin_r)))
     w("- Return springs: 3× compression spring, music wire %.1f, OD %.0f (ID %.1f: clears the pin, sits on the bush end), free length ≈ %.1f, rate ≈ %.1f N/mm, solid ≤ 5. Installed %.1f long released (≈ %.0f N each, %.0f N total: the armature is pulled firmly against the hub) and %.1f long engaged (≈ %.0f N each, %.0f N total). Any catalogue spring near this works; the coil current is calibrated afterwards. On each pin: spring, M6 washer (ISO 7089, Ø6.4/12 × 1.6), E-clip." % (p.spring_wire, p.spring_od, p.spring_od - 2 * p.spring_wire, p.spring_free, p.spring_rate, SPRING_LEN_RELEASED, f_rel, 3 * f_rel, SPRING_LEN_RELEASED - p.stroke, f_eng, 3 * f_eng))
     w("- Bushes: 3× sintered (oil-impregnated) bronze plain bush %.0f × %.0f × %.0f, ISO 2795 form C." % (p.pin_d, p.bush_od, p.bush_len))
     w("- Bearing stack (cavity side → outer end): circlip, inner 6001, spacer tube Ø27.95/Ø25 × %.1f (outer races), outer 6001, circlip. The INNER bearing locates the shaft both ways: the stepped spacer Ø15/Ø12 × %.1f (hub boss → inner race) on one side, the DIN 471-12 on the shaft on the other (inside the spacer tube); the outer bearing floats on the shaft." % (zb[1] - zb[0] - p.bearing_w, zb[0] - (Z_HUB + p.hub_flange_t + p.hub_boss_len)))
     w("- Assembly (the hub and armature must go on the shaft first: once inside the cover nothing on them is reachable):")
     w("  0. **Armature on the hub; the bushes line the pins up.** Glue must never reach a bush (the pin-to-bush gap is")
-    w("     0.01–0.03; Loctite 638 there would lock the pin), so in this order:")
+    w("     0.01–0.03; Loctite 680 there would lock the pin), so in this order:")
     w("     a. Press the 3 bushes into the hub from the spring side, the stop face on a flat plate, so they finish flush with it.")
     w("        Wax both ends of each bush (clean the wax off after curing).")
     w("     b. Hub on the shaft with the shaft end **%.2f inside the stop face** (depth micrometer), then the set screws." % (Z_SHAFT0 - Z_HUB))
-    w("     c. Armature on its own: a thin film of 638 on the walls of its 3 holes only, keeping the 1.5 mm at the front-face")
+    w("     c. Armature on its own: a thin film of 680 on the walls of its 3 holes only, keeping the 1.5 mm at the front-face")
     w("        (hub-side) mouth of each dry.")
     w("     d. Armature pole face down on PE film on a surface plate (it stands on its tooth tips, ~0.55 proud: that gap lets")
     w("        the glue out); the hub on it, stop face on the armature's front face, its bush holes lined up over the armature's")
@@ -603,7 +603,7 @@ def dimension_sheet(z_front):
     w("        Keep the stop faces dry (degrease): oil from the bushes on them can make the armature stick to the hub a little.")
     w("  1. Inner circlip into the empty cover. 2. Inner 6001 in from the outer end until it seats on that circlip.")
     w("  3. Shaft with hub, armature, pins, springs and stepped spacer already fitted: push it through the inner bearing from the cavity side,")
-    w("     supporting the inner race with a tube from the outer end (Loctite 641 on that seat).")
+    w("     supporting the inner race with a tube from the outer end (Loctite 243 on that seat).")
     w("  4. DIN 471-12 down the bore into its groove (~%.0f deep from the outer end) with a cone on the shaft end and a push tube." % (Z_FRONT + p.cover_front_t + BOSS_LEN - (zb[0] + p.bearing_w + 0.1)))
     w("  5. Spacer tube, outer 6001 (slides on), outer circlip.")
     a_rot, b_arm = Z_POLE - p.housing_len, Z_ARM + p.stroke - p.housing_len
@@ -617,7 +617,7 @@ def dimension_sheet(z_front):
     w("     turning the output by hand with the coil off must not tick (no tooth contact); coil on (1.5 A) the output locks to")
     w("     the motor, coil off it frees at once.")
     w("- Coil: ~850 turns 0.32 mm (AWG 28) enamelled Cu on a bobbin Ø%.1f…Ø%.1f × %.1f; ≈24 Ω. Leads out through the back plate." % (2 * p.coil_r_in + 0.6, 2 * p.coil_r_out - 0.6, p.housing_len - p.back_plate - 0.5))
-    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 641, the outer one is a slip fit so it can float. Screws: 4× M5×20 + nuts (motor; the nuts sit behind the 4.8 mm flange in the body's corner relief: check yours has room, else use M5 screws from the motor side into M5 tapped in the housing), %d× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
+    w("- Bearings: 2× 6001-2RS in an H7 bore. Shaft is h6 ground rod: the inner (locating) bearing is retained with Loctite 243 (Amazon B004L439FE; medium strength, comes off with hand tools: Loctite 641 doesn't ship to Israel), the outer one is a slip fit so it can float. Screws: 4× M5×20 + nuts (motor; the nuts sit behind the 4.8 mm flange in the body's corner relief: check yours has room, else use M5 screws from the motor side into M5 tapped in the housing), %d× M4×8 countersunk ISO 10642 (cover), 1× M3×8 (rotor), 2× M5×6 set screws (hub), 4× M5×35 + washers (module to the 28 mm feed-unit plate), 1× M4×30 drawbolt." % p.cover_screws)
     w("- Coil leads: sleeve them through the back plate, and pot the winding in the cavity (epoxy) so it cannot chafe or move.")
     w("## Teeth")
     w("- %d radial teeth, flanks **flat planes** at %.0f° from the axis: every flank is the plane through a radial line at the pitch" % (p.teeth, p.flank_deg))
