@@ -1161,6 +1161,18 @@ def all_fasteners(threads=True):
     return [o for o in out if o[1] is not None]
 
 
+MODULE_MOUNT = ("module bolt washer", "module bolt M5x35", "drawbolt M4x30")
+
+
+def export_module_mount():
+    """The screws that go into the clutch cover from outside the module (4x M5x35 + washers through the plate, the M4x30
+    drawbolt), moved back into the clutch's own frame, so the viewer's exploded clutch shows them with the cover."""
+    to_clutch = Rot(180, 0, 0) * Pos(-MX, -MY, -W0)                # the inverse of place_module
+    sols = [to_clutch * so for name, shape, _, _ in all_fasteners(threads=True) if name in MODULE_MOUNT
+            for so in shape.solids()]
+    export_stl(Compound(children=sols), os.path.join(OUT, "fx_module_mount.stl"), tolerance=0.05, angular_tolerance=0.5)
+
+
 def build():
     os.makedirs(OUT, exist_ok=True)
     cov, _ = clutch.cover()
@@ -1215,6 +1227,7 @@ def build():
         groups_fx.setdefault(grp, []).extend(shape.solids())
     for grp, sols in groups_fx.items():
         export_stl(Compound(children=sols), os.path.join(OUT, "fx_" + grp + ".stl"), tolerance=0.05, angular_tolerance=0.5)
+    export_module_mount()
     parts["psu"], parts["mains_inlet"] = psu_placeholder()
     parts["mains_cord_plug"] = cord_plug()
     parts["end_wall_parts"] = Compound(children=[so for p_ in end_wall_parts() for so in p_.solids()])

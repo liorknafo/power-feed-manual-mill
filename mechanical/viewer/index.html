@@ -95,6 +95,7 @@ const INFO = {
   fx_rotor: ["Rotor screw", "M3×8 SHCS", "Holds the rotor's shoulder on the motor shaft end (exploded view)."],
   fx_output_hub: ["Hub set screws", "2× M5×6 ISO 4026", "On the output shaft, one on its flat (exploded view)."],
   fx_output_shaft: ["Shaft circlip", "DIN 471-12", "Locates the output shaft against the inner bearing (exploded view)."],
+  fx_module_mount: ["Module mounting screws", "4× M5×35 SHCS + washers, M4×30 SHCS drawbolt", "They hold the whole clutch/motor module to the plate: the 4 M5 come from the belt-chamber side through the plate's slots into the cover's front wall (shown where they stand with the plate in between), the M4 drawbolt goes up through the tension block into the cover's side and sets the belt tension (exploded view)."],
   fx_cover: ["Cover fasteners", "6× M4×8 countersunk, circlips, tapped M5/M4", "Radial screws into the housing, DIN 472-28 circlips, the front wall's M5 and drawbolt M4 threads (exploded view)."],
   door_pin: ["Door hinge pin", "Ø3 × 180 silver steel rod (or a drill blank)", "The bottom door's axis, along the back bottom edge. Push it in from the end-wall end: it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95). The door's knuckles turn on it. Punch it out from the plate end to take the door off."],
   mains_cord_plug: ["Mains cord plug", "C13 end of an ordinary cord with an Israeli (SI 32) plug, bought locally; shape from the Linetek LS-13 catalogue (INFERRED)", "Shown plugged in, to check it fits the end-wall opening beside the inlet's rocker."],
@@ -234,6 +235,8 @@ for (const [n, col, dz] of ex) part("clutch", C + n + ".stl", col, { dz, metal: 
 // each part's own fasteners, exploded with it
 for (const [n, , dz] of ex.filter(e => ["motor_reference", "field_housing", "rotor", "output_hub", "output_shaft", "cover"].includes(e[0])))
   part("clutch", C + "fx_" + n + ".stl", 0x8c939b, { dz, metal: 0.9, rough: 0.35 });
+// the screws into the cover from outside the module (they come through the plate): with the cover
+part("clutch", F + "fx_module_mount.stl", 0x8c939b, { dz: ex.find(e => e[0] === "cover")[2], metal: 0.9, rough: 0.35 });
 
 // ---------------------------------------------------------------- the KiCad PCB, placed from feed_unit.py's layout file
 let layout = { pcb_x0: -50, pcb_y: -33, pcb_w0: 129 }, pcbParts = [];
