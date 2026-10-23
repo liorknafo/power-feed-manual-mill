@@ -13,14 +13,14 @@ Status: draft. The mechanical design is deferred until the mill model is known.
 | R5 | 3-position switch: center = stop and clutch released (handwheel free). Left/right = clutch engaged, feed in that direction. |
 | R6 | Rapid-traverse push-button. |
 | R7 | Overload protection ("resistance limit"): cap the motor torque, and stop the feed when the table jams or meets too much resistance. |
-| R8 | Powered from AC mains through a built-in 36 V supply (Mean Well LRS-75-36, 2.1 A) in an earthed aluminium mains tray inside the housing, behind a fused, switched IEC C14 inlet. (The S-350-36 was the original plan; it doesn't fit inside.) |
+| R8 | Powered from AC mains through a built-in 36 V supply (Mean Well LRS-150-36, 4.3 A; Amazon B019GYOQDW, the one Mean Well 36 V listing that ships to Israel) in an earthed aluminium mains tray inside the housing, behind a fused, switched IEC C14 inlet. (The S-350-36 was the original plan; it doesn't fit inside.) |
 | R9 | Custom PCB carrying the controller, stepper driver and clutch driver. Mains AC never reaches the custom PCB: all 230 V stays inside the earthed aluminium mains tray, and only the 36 V pair leaves it. |
 | R10 | E-stop and end-of-travel limit switches. |
 
 ## 2. Architecture
 
 ```
- AC mains ─► [IEC inlet + fuse + switch] ─► 36 V PSU (LRS-75-36), both in the earthed mains tray
+ AC mains ─► [IEC inlet + fuse + switch] ─► 36 V PSU (LRS-150-36), both in the earthed mains tray
                                                │ 36 V DC
  ┌─────────────────────────────── custom PCB ──┴──────────────────────────────┐
  │  input fuse, reverse-polarity protection, TVS, bulk caps                   │
@@ -129,7 +129,7 @@ This is the authoritative version; it matches `hardware/tools/build_schematic.py
 
 ## 5. Bill of materials (draft)
 
-Every bought part must ship to Israel from Amazon.com (the Amazon list "Mill power feed (SIEG X3.5D)" has them); raw stock is bought locally, the PCB and its parts come from JLCPCB/LCSC.
+Every bought part must ship to Israel from Amazon.com (the Amazon list "Mill power feed (SIEG X3.5D)" has them); raw stock and the mains cord (an ordinary C13 cord with an Israeli plug) are bought locally, the PCB and its parts come from JLCPCB/LCSC.
 
 | Block | Part | Status |
 |---|---|---|
@@ -144,7 +144,7 @@ Every bought part must ship to Israel from Amazon.com (the Amazon list "Mill pow
 | Clutch-side encoder | Aideepen LPD3806-600BM-G5-24C (Amazon B01MZ4V1XP; 600 PPR, NPN open-collector, 5–24 V). Power it from 5 V, with 2.2–4.7 kΩ pull-ups to 3.3 V | to buy |
 | Clutch | DIY electromagnetic tooth clutch, coil designed for the 36 V bus (see §7) | to build |
 | Motor | STEPPERONLINE NEMA 23, 3 N·m | owned |
-| PSU | Mean Well LRS-75-36, 36 V / 2.1 A (Amazon B019GYOJCU, from a third-party seller that ships to Israel) + 3-in-1 IEC C14 inlet with 5×20 fuse (T 2 A ceramic) and rocker (see FEED_UNIT.md → Power for the model chosen), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
+| PSU | Mean Well LRS-150-36, 36 V / 4.3 A, 159 × 97 × 30 (Amazon B019GYOQDW, ships to Israel) + 3-in-1 IEC C14 inlet with 5×20 fuse (T 2 A ceramic) and rocker (see FEED_UNIT.md → Power for the model chosen), + IEC retaining clip; folded 1.5 mm aluminium mains tray + lid (make) | to buy / make |
 | Programming port | QIANRENON USB-C threaded panel-mount extension (Amazon B0FX2MZDTS: M21, Ø21.5 hole, Ø27.5 flange, 30 cm cable) + a 90° USB-C male-to-female adapter ("up/down" type, B08P5HRH3Z) for J4 | to buy |
 | Fallback driver | DM556 | owned — used for breadboard firmware bring-up |
 | Panel | E-stop ZGSZJHF 22 mm ultra-short (Amazon B0FZCN2HCP: Ø22 keyed hole, Ø32 mushroom, 1 NO + 1 NC, only 18.3 mm behind the panel; the NC is the E-stop loop) on a printed yellow legend plate; ON-OFF-ON latching toggle, DMWD (B0BTSPYM34, Ø12 hole + key notch); Gebildet Ø16 stainless momentary for RAPID (B081JJBN4G); uxcell Ø30 knurled handwheel, Ø6 bore (B0DGFB1K9F) for the dial; 2× Twidec PBS-110 7 mm pushbuttons (B07RPS2ZY3, Ø7.2 holes) for BOOT/RESET; uxcell M16 nylon cable gland (B08K8HPHGM); 2× HiLetgo KW12-3 roller limit switches (B07X142VGC) | to buy |
@@ -290,7 +290,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
 ## 8a. Safety notes
 
 - **Mains (230 V) inside the unit:** the unit rides on the table, so mains is kept in one place and double-fenced.
-  - All 230 V parts (IEC inlet with fuse and switch, the LRS-75-36, L/N/PE wiring) sit in an **earthed folded-aluminium
+  - All 230 V parts (IEC inlet with fuse and switch, the LRS-150-36, L/N/PE wiring) sit in an **earthed folded-aluminium
     tray** with a lid over the terminals. It is a metal fire enclosure; the printed PETG housing never touches mains, and
     the floor below the tray has no vents.
   - Only the 36 V pair leaves the tray (grommet in the lid). No low-voltage wire enters it; `check_feed_unit.py` checks

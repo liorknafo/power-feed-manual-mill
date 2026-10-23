@@ -62,7 +62,7 @@ for t in (-FU.f.tension_slot, 0.0, FU.f.tension_slot):
         print("  heads t=%+.0f vs %-12s overlap %.3f mm3, min dist %.2f" % (t, name, v, d))
 print("bad pairs incl. bolt heads", bad)
 # housing clearances: the clutch module moves +-tension_slot along the belt centre line, the housing does not
-housing_names = [n for n in parts if n in ("shell", "hood", "psu", "mains_inlet", "mains_tray", "mains_tray_lid")]
+housing_names = [n for n in parts if n in ("shell", "hood", "end_cap", "psu", "mains_inlet", "mains_tray", "mains_tray_lid")]
 ux, uy = FU.math.cos(FU.ANG), FU.math.sin(FU.ANG)
 moving = ("motor", "clutch_cover", "clutch_field_housing", "pulley_20T")
 worst = {}
@@ -86,7 +86,7 @@ for a, b in (("pcb_placeholder", "controls"), ("controls", "shell"), ("encoder",
 # body repeats every 180, the nut every 60); keyed ones (toggle: lock-washer tab; E-stop: key in its notch; dial: ribs)
 # through their play
 ctl = FU.controls()
-around_c = ["shell", "hood", "pcb_placeholder", "usb_path", "plug_wires", "encoder", "encoder_disc", "plate", "motor",
+around_c = ["shell", "hood", "end_cap", "pcb_placeholder", "usb_path", "plug_wires", "encoder", "encoder_disc", "plate", "motor",
             "clutch_cover", "end_wall_parts", "fan"]
 CTRL_OF = {"estop": "estop", "estop_plate": "estop", "toggle": "toggle", "rapid": "rapid", "dial": "dial"}
 ANGLES = {"rapid": range(0, 180, 15),                                 # free (round hole)
@@ -144,8 +144,8 @@ for nm, deg, what in (("dial", 5, "its ribs"), ("estop", 5, "its notch")):
 # the end wall's parts and the fan against the rest
 for nm in ("end_wall_parts", "fan", "mains_cord_plug"):
     worst_v, worst_n = 0.0, ""
-    for n in ("shell", "hood", "pcb_placeholder", "usb_path", "plug_wires", "motor", "mains_tray", "mains_tray_lid",
-              "psu", "encoder", "controls"):
+    for n in ("shell", "hood", "end_cap", "pcb_placeholder", "usb_path", "plug_wires", "motor", "mains_tray",
+              "mains_tray_lid", "psu", "encoder", "controls"):
         if n == nm:
             continue
         x = parts[nm] & parts[n]
@@ -155,9 +155,9 @@ for nm in ("end_wall_parts", "fan", "mains_cord_plug"):
     print("  %-15s overlap %.3f mm3 %s" % (nm, worst_v, worst_n))
     if worst_v > 1e-2:
         bad += 1
-# the tray lid vs the LRS-75's terminal screw heads (the reviewer's >= 3 mm; the flat lid lies 1 mm over the case by
+# the tray lid vs the LRS-150's terminal screw heads (the reviewer's >= 3 mm; the flat lid lies 1 mm over the case by
 # design, the heads sit under the raised terminal zone; head height INFERRED - measure your PSU)
-heads = Compound(children=[FU.PSU_LOC * h for h in FU.B.lrs75_terminal_heads()])   # the same solids as the PSU model
+heads = Compound(children=[FU.PSU_LOC * h for h in FU.B.lrs150_terminal_heads()])   # the same solids as the PSU model
 d_heads = parts["mains_tray_lid"].distance_to(heads)
 print("  lid <-> PSU terminal screw heads: %.2f mm (need >= 3)" % d_heads)
 if d_heads < 3.0:
@@ -184,7 +184,7 @@ for t in (-FU.f.tension_slot, FU.f.tension_slot):
     if d < 3.0:
         bad += 1
 # every print must be ONE connected solid (no floating rails/posts)
-for n in ("shell", "hood", "door"):
+for n in ("shell", "hood", "door", "end_cap"):
     k = len(parts[n].solids())
     print("  %-5s is %d solid(s) %s" % (n, k, "OK" if k == 1 else "<- FLOATING PIECES"))
     if k != 1:
@@ -198,7 +198,7 @@ for sx in (-1, 1):                                    # and the door's 45-degree
     xa = sx * (FU.X_FP - FU.R_BOTTOM)
     hinge_zone = hinge_zone + FU.bx(min(xa, xa + sx * 9), max(xa, xa + sx * 9), FU.Y0 - FU.T - 0.01, FU.Y0 - FU.T + 2.6,
                                     FU.W_SHELL0 - 1, FU.W_END + 1)
-for n in ("shell", "hood", "door"):
+for n in ("shell", "hood", "door", "end_cap"):
     v = (parts[n] - (skin + hinge_zone)).volume
     print("  %-5s outside the skin: %.3f mm3" % (n, v))
     if v > 1e-2:
@@ -215,14 +215,7 @@ for part_, target, pt, d, kind in FU.screw_joints():
     if full < 0.95:
         bad += 1
         print("  insert seat at (%.1f, %.1f, %.1f) only %.0f %% material <- FIX" % (pt[0], pt[1], pt[2], 100 * full))
-# the door's far screw: M3 insert going up into the end wall's corner boss
-pl = Plane(origin=(FU.END_SCREW[0], FU.SPLIT_Y + 0.05, FU.END_SCREW[1]), z_dir=(0, 1, 0))
-ring = Solid.make_cylinder(4.0, FU.INSERT_L - 0.1, pl) - Solid.make_cylinder(FU.INSERT_D / 2 + 0.05, FU.INSERT_L - 0.1, pl)
-full = (ring & parts["shell"]).volume / ring.volume
-print("  door end-screw insert seat: %.0f %% material" % (100 * full))
-if full < 0.95:
-    bad += 1
-print("  insert seats checked: %d" % (1 + sum(1 for j in FU.screw_joints() if j[4] == "insert")))
+print("  insert seats checked: %d" % sum(1 for j in FU.screw_joints() if j[4] == "insert"))
 # mains separation: nothing but the PSU and the inlet may enter the earthed tray's inside, and the wiring zone
 # between the PSU terminals and the inlet body (>= 35 mm) must be empty
 t, hw = FU.f.tray_t, FU.TRAY_HALF
@@ -318,6 +311,19 @@ for dw in range(0, 205, 5):
         bad += 1
         break
 print("  shell slide-on sweep 0..200 mm: worst overlap %.3f mm3" % worst)
+# the end cap goes on last, along -W, over everything else fitted (door shut, PCB, hood; the cord unplugged): its floor
+# under the tray's far end, its scarf under the door's end, its blocks into the shell
+fitted = inner + ["shell", "hood", "door", "pcb_placeholder", "plug_wires", "controls", "fan", "plate", "door_pin"]
+worst = 0.0
+for dw in range(0, int(FU.W_END - FU.W_CUT) + 25, 2):
+    sh = Pos(0, 0, dw) * parts["end_cap"]
+    v = sum(getattr(sh & parts[n], "volume", 0) or 0 for n in fitted) + sum(getattr(sh & h, "volume", 0) or 0 for h in heads_c)
+    worst = max(worst, v)
+    if v > 1e-2:
+        print("  END CAP SLIDE-ON blocked %d mm from home: %.2f mm3" % (dw, v))
+        bad += 1
+        break
+print("  end cap slide-on sweep 0..%d mm: worst overlap %.3f mm3" % (FU.W_END - FU.W_CUT + 24, worst))
 # loading from below with the door open: the clutch/motor module rises into place (bearing boss and output shaft up the
 # plate's slot; its bolts, the 20T pulley, belt and guard come after, from the chamber side), then the mains tray (the
 # tension block fitted, the inlet not yet clipped in). Solids are moved one by one (a Compound moved as a whole
@@ -396,20 +402,21 @@ for name, shape, into, grp in fx:
 print("  fasteners checked: %d, stray overlaps %d" % (len(fx), stray))
 bad += stray
 # print-bed fit (Prusa MK3S 250 x 210 x 210) in the STATED orientations, keeping 5 mm off each bed edge:
-#   shell standing on its end wall (print height = W extent), hood with the control strip face down (height = x extent),
-#   door outer face down (height = y extent)
+#   shell standing on its cut face and end cap on its end wall (print height = W extent), hood with the control strip
+#   face down (height = x extent), door outer face down (height = y extent)
 bb = parts["shell"].bounding_box(); hb = parts["hood"].bounding_box()
-db = parts["door"].bounding_box()
+db = parts["door"].bounding_box(); cb = parts["end_cap"].bounding_box()
 fits = {"shell": (sorted([bb.size.X, bb.size.Y]), bb.size.Z), "hood": (sorted([hb.size.Y, hb.size.Z]), hb.size.X),
-        "door": (sorted([db.size.X, db.size.Z]), db.size.Y)}             # the door prints outer face down
+        "door": (sorted([db.size.X, db.size.Z]), db.size.Y),             # the door prints outer face down
+        "end_cap": (sorted([cb.size.X, cb.size.Y]), cb.size.Z)}
 for n, (foot, height) in fits.items():
     ok = foot[0] <= 200 and foot[1] <= 240 and height <= 207
-    print("  print fit %-5s footprint %.0f x %.0f, height %.0f -> %s" % (n, foot[0], foot[1], height, "OK" if ok else "TOO BIG"))
+    print("  print fit %-7s footprint %.0f x %.0f, height %.0f -> %s" % (n, foot[0], foot[1], height, "OK" if ok else "TOO BIG"))
     if not ok:
         bad += 1
 # overhangs in those orientations: down-facing area steeper than 45 degrees, excluding the bed face and small holes
 import numpy as np, trimesh
-for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
+for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0)), ("end_cap", (0, 0, -1))):
     m = trimesh.load(os.path.join(FU.OUT, n + ".stl"))
     upv = np.array(up, float)
     h = m.vertices @ upv
@@ -422,7 +429,7 @@ for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
 # nothing may start printing in mid-air: slice each print in its print orientation every 0.2 mm (one fixed 2D frame)
 # and require every island to touch one in the layer below (a door without its knuckle webs fails this: 2 islands)
 from trimesh.geometry import plane_transform
-for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0))):
+for n, up in (("shell", (0, 0, -1)), ("hood", (-1, 0, 0)), ("door", (0, 1, 0)), ("end_cap", (0, 0, -1))):
     m = trimesh.load(os.path.join(FU.OUT, n + ".stl"))
     upv = np.array(up, float)
     h = m.vertices @ upv
@@ -451,13 +458,14 @@ for px, py in FU.PCB_HOLES:
         bad += 1
 # plug + wire envelopes (J1/J2/J5) against the housing and the drive
 # USB-C path (90-degree adapter in J4, the extension's male plug from above, its panel end behind the end wall)
-for n in ("shell", "hood", "controls", "pcb_placeholder", "plug_wires", "motor", "clutch_cover", "mains_tray_lid"):
+for n in ("shell", "hood", "end_cap", "controls", "pcb_placeholder", "plug_wires", "motor", "clutch_cover",
+          "mains_tray_lid"):
     x = parts["usb_path"] & parts[n]
     v = x.volume if x is not None else 0.0
     print("  USB path vs %-15s overlap %.3f mm3, min dist %.2f" % (n, v, parts["usb_path"].distance_to(parts[n])))
     if v > 1e-3:
         bad += 1
-for n in ("shell", "hood", "motor"):
+for n in ("shell", "hood", "end_cap", "motor"):
     v = (parts["plug_wires"] & parts[n]).volume
     print("  plug wires vs %-6s overlap %.3f mm3, min dist %.2f" % (n, v, parts["plug_wires"].distance_to(parts[n])))
     if v > 1e-3:

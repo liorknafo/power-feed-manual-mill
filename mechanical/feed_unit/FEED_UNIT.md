@@ -11,7 +11,7 @@
 | Centre distance | 70.71 mm, tension slot ±3 mm along the centre line |
 | Module position | 70.7 mm from the leadscrew at -90° (below) |
 | Belt plane | 23.0 mm out from the bracket face |
-| Overall | ≈262 mm out from the table end (housing end panel) |
+| Overall | ≈316 mm out from the table end (housing end panel) |
 
 Firmware: `belt_ratio = 2.0`, `encoder_counts = 2400` (per leadscrew turn; the encoder is on the stub).
 
@@ -74,32 +74,33 @@ strip along the upper front with their bodies reaching back over the PCB.
 
 | | |
 |---|---|
-| Outer size | 116 (front-back) × 204 (high) × 207 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
-| `shell` (one print) | back, end and lower-front walls (3 mm), the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door). **Print standing on the end wall**, 207 mm tall (MK3S: 210). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
-| `door` (one print) | **the whole floor**, both rounded bottom edges and the end wall's bottom band included (116 × 207 mm, up to 8.5 mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; push the pin in **from the end-wall end** (that line runs just outside the box; from the plate end it would hit the mill): it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95, a drop of CA). To take the door off, punch the pin out from the plate end (there is room under the belt guard). Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut with 2 screws on the front side: M3×8 countersunk up into the plate's bottom edge (x 44) and M3×6 SHCS up through a counterbored boss into a heat-set insert in the end wall's bottom-front corner. It carries the 2 ribs under the tray's far end, the belt drawbolt access hole (belt tension is set with it shut), pockets for the PSU's and the tray tabs' screw heads, and the coolant drains. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
-| `hood` (one print) | top + control strip, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
+| Outer size | 116 (front-back) × 204 (high) × 262 mm (along the table); long edges R12, the top-front edge and the end wall chamfered 45° (they lie on the print bed); plus the 35 mm belt chamber and the controls proud of the front |
+| `shell` (one print) | back and lower-front walls (3 mm) from the plate to W 248, the rails, the 4 PCB bosses, the louvre blocks; **no floor** (that is the door), no end wall (that is the end cap). **Print standing on its cut face** (the plate-side rim up), 193 mm tall (MK3S: 210), on the 5 × 3 brace that ties its back and front walls across the cut face; above the brace they stand as two tall walls, so **use a brim** (5 mm). Every boss and block has a 45° underside, so **no supports**; only short bridges (≤ 12 mm: rail windows, louvre slots). PETG, 4 perimeters, 20 % gyroid |
+| `end_cap` (one print) | the last 68 mm of the box: the end wall, the ends of the back, front and top walls and of the control strip, and the floor under the mains tray's far end (2 ribs carry that end). It exists because the LRS-150-36 (the only 36 V Mean Well on Amazon that ships to Israel) makes the box 262 mm long, too long for one print. **Print standing on the end wall**, 90 mm tall with its blocks; the blocks' ends are 45° wedges, no supports. It goes on **last, sliding along the table axis** (checked: nothing in its way): its floor slides under the tray's far end, a 45° scarf on its bottom band slides under the door's far end and holds the door shut, and 3 blocks reach 22 mm into the shell along its back and front walls: 3× M3×8 countersunk through the shell's walls into heat-set inserts in them. The seam is **lapped over the top and the sides**: the cap's outer 1.2 mm runs 8 mm on over a step in the shell's walls, and the hood's runs 8 mm on over a step in the cap's top (0.2 mm clear), so coolant on the top or the sides can't reach the plugs or the mains tray. Only the sides' bottom 5.5 mm (beside the hinge knuckles) is a plain butt joint, which leads only to the floor under the earthed tray: a bead of silicone there, as on the door seam, if coolant gets in; the hood still lifts straight off, the cap still slides. Take it off (3 screws) before opening the door: it then hangs on the USB, SWD, button and limit-switch wires, so leave them ~150 mm of slack and set the cap down beside the box (or tie it up) rather than let it hang |
+| `door` (one print) | **the floor** up to the end cap, both rounded bottom edges included (116 × 193 mm, up to 8.5 mm on the walls): open it and the clutch/motor module and the mains tray go in and come out **from below** (checked: both lift into place with nothing in the way). Hinged along the **back bottom edge** on a Ø3 × 180 steel pin (silver steel / drill blank) through 5 knuckles outside the back wall; push the pin in **from the end-wall end** (that line runs just outside the box; from the plate end it would hit the mill): it slides through every knuckle (Ø3.2) and only its last 30 mm press into the plate-end knuckle (Ø2.95, a drop of CA). To take the door off, punch the pin out from the plate end (there is room under the belt guard). Opened, it swings down and hangs beside the box, so the opening is clear (swing checked to 100°). Shut by one screw on the front side, M3×8 countersunk up into the plate's bottom edge (x 44); its far end lies on the end cap's 45° scarf, which holds it up, so the cap comes off before the door opens and goes on after it shuts. It carries the belt drawbolt access hole (belt tension is set with it shut) and pockets for the PSU's and the tray tabs' screw heads. **Print outer face down**: 45° feet under the rounded edges, 45° drips and a 1.2 mm web from each door knuckle down to the bed (trim the webs off flush after printing), and its far end leans out at 45° (the scarf), no supports. The seam is a plain 0.3 mm butt joint: run a bead of silicone or a strip of foam tape along the front if coolant gets in |
+| `hood` (one print) | top + control strip up to the end cap, one L-shaped piece. **Print with the strip face down**: the engraved labels come out crisp on the bed side; its back lip has a 45° inside so it prints without support. Lift it off and the whole PCB is exposed from above |
 | Plate | aluminium, 110 wide, bottom corners R9, both top corners chamfered 10.5 × 45° to sit under the housing's chamfered inside |
-| Fixing | both prints overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (12× M3×8 countersunk into tapped holes); the hood also takes 9× M3×8 into heat-set inserts (Kadrick M3 × 5, B0FD88XTV4: Ø4.0 × 6 holes) in the shell's rails |
+| Fixing | shell, hood and door overlap the plate edges by 8 mm with 0.25 mm clearance per side, and screw into them (12× M3×8 countersunk into tapped holes); the hood also takes 7× M3×8 into heat-set inserts (Kadrick M3 × 5, B0FD88XTV4: Ø4.0 × 6 holes) in the shell's rails, and the end cap 3 through the shell's walls into inserts in its blocks |
 | PCB | on 4 printed bosses (heat-set inserts, M3×6), underside -33 mm below the leadscrew axis, ≥ 3 mm above the motor even with the motor raised 3 mm by the belt tensioner. The rails above it have 12 mm windows over all 4 holes, so a screwdriver and the insert iron go straight down (checked). Trim the SWD header's (J3) pins flush underneath. Air rises past the board between the bosses |
-| Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail (19 mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
+| Plugs | J1/J2/J5 MSTB plugs (≈13 mm) + ferrules: the wires run toward the end wall and turn down past the board's edge, behind the motor tail (74 mm), checked with a plug + wire-bend envelope. Unplugging in place: slide the plug off, the wires have slack below |
 | Controls (strip, left → right as you face it) | E-stop **ZGSZJHF 22 mm ultra-short** (Amazon B0FZCN2HCP; 1 NO + 1 NC: the NC is the E-stop loop, ESTOP_SRC–ESTOP_RET; Ø22.35 hole with its key notch, 3.5 wide (its drawing: 3.3 +0.2), so it can't turn; Ø32.3 mushroom 25.7 proud, only 18.3 behind the panel to its pin tips, so it clears the J6 ribbon plug with room to spare; its ring nut is drawn but not dimensioned, modelled Ø30) on a **printed yellow Ø45 legend plate** (1 mm, keyed the same), LEFT/STOP/RIGHT toggle (DMWD ON-OFF-ON latching DPDT, B0BTSPYM34: Ø12 hole (Ø12.2 here) + key notch for its lock washer, body 29.7 × 19.8 × 28.7) over RAPID (Gebildet Ø16 stainless momentary, B081JJBN4G: 22 behind the panel), SPEED dial (EC11-type encoder; CAD = Bourns PEC11R: M7 bushing, nut in front, no lug hole; snip the lug if yours has one: two printed ribs either side of its body stop it turning into the OLED) with the uxcell Ø30 knurled aluminium handwheel (B0DGFB1K9F, hub toward the panel, its 2 set screws on the shaft), the Hosyond 1.3" SH1106 OLED (B0C3L7N917, holes on 30.3 × 28) on 4 M2 posts behind its window; adapter board 40 × 28 (2×7 IDC) on 4 posts on the strip's inside, ~200 mm ribbon down to J6 so the hood can be lifted and set beside the unit. All shapes from the Amazon listings' drawings (`bought.py`), checked against the strip, the PCB, its plugs and each other, the E-stop and toggle through their key play |
-| End wall | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches (uxcell nylon M16×1.5, B08K8HPHGM), low beside the motor. **Programming ports, usable with the box closed:** a Ø21.6 hole for a round threaded USB-C panel extension (QIANRENON 5 Gbps, B0FX2MZDTS: M21 thread, Ø27.5 flange outside, its nut inside; body and strain relief reach 34.5 in, 30 cm cable to a male plug; the Adafruit #6069 with its M12 thread doesn't ship to Israel), **plus a 90° USB-C adapter (male to female, "up/down" type, rgzhihuifz B08P5HRH3Z) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is long (~38 mm allowed: the listing doesn't give it), so it goes down into the adapter from above (space checked, with the panel end's body and its cable turning away); **BOOT and RESET** buttons (Twidec PBS-110 7 mm momentary NO, pre-wired, B07RPS2ZY3, in Ø7.2 holes, recessed in Ø16.5 × 8.5 counterbores (room for a 1/4" 10 mm socket, ≤ 16 OD, on the 10 AF nut) so the caps stay 0.3 mm below the wall face and can't be pressed by a bump or a palm; a fingertip still reaches them; solder their 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
+| End wall (on the end cap) | the mains inlet (recessed 9 mm, see Power), one M16 cable gland for the limit switches (uxcell nylon M16×1.5, B08K8HPHGM), low beside the motor. **Programming ports, usable with the box closed:** a Ø21.6 hole for a round threaded USB-C panel extension (QIANRENON 5 Gbps, B0FX2MZDTS: M21 thread, Ø27.5 flange outside, its nut inside; body and strain relief reach 34.5 in, 30 cm cable to a male plug; the Adafruit #6069 with its M12 thread doesn't ship to Israel), **plus a 90° USB-C adapter (male to female, "up/down" type, rgzhihuifz B08P5HRH3Z) in J4**: J4 is only 29 mm from the wall and the extension's straight male end is long (~38 mm allowed: the listing doesn't give it), so it goes down into the adapter from above (space checked, with the panel end's body and its cable turning away); **BOOT and RESET** buttons (Twidec PBS-110 7 mm momentary NO, pre-wired, B07RPS2ZY3, in Ø7.2 holes, recessed in Ø16.5 × 8.5 counterbores (room for a 1/4" 10 mm socket, ≤ 16 OD, on the 10 AF nut) so the caps stay 0.3 mm below the wall face and can't be pressed by a bump or a palm; a fingertip still reaches them; solder their 2 wires across the pads of SW1 / SW2 on the PCB, in parallel with them) and a recessed **SWD port** (1×3 0.1" header, SWCLK / GND / SWDIO like J3, pressed into the slot from outside with a drop of CA; solder 3 wires to its inner pins and run them to J3) |
 | Vents | intake through louvre blocks on the back and front walls beside the motor (slots climb 45° inward, so chips and spray can't reach the mains tray); no floor vents; exhaust through a louvre block high on the back wall, beside the encoder (slots climb 45° inward through 7.5 mm, so chips can't fall in), away from the fuse. The block takes a 40 mm fan (4× M3 self-tapping, 32 mm square) on its inside |
 
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
-  motor (104 wide, 32 high over the PSU and 42 over the terminal/inlet zone, W 63…253; 1.5 mm
+  motor (104 wide, 32 high over the PSU and 42 over the terminal/inlet zone, W 63…308; 1.5 mm
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two flat floor tabs
   that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
-  - a Mean Well **LRS-75-36** (36 V / 2.1 A, 99 × 97 × 30, case 240A; Amazon B019GYOJCU: pick a third-party seller that ships to Israel), screwed through the tray floor into its two
-    base holes: **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
-    the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4 −V, 5 +V, toward the inlet;
+  - a Mean Well **LRS-150-36** (36 V / 4.3 A, 159 × 97 × 30, case 241A; Amazon B019GYOQDW, PowerNex: no LRS-75-36 or
+    LRS-100-36 listing ships to Israel), screwed through the tray floor into its two base holes (24 and 102 from the
+    terminal end): **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
+    the service door; their heads sit in pockets in the door. Terminals 1 L, 2 N, 3 FG, 4–5 −V, 6–7 +V, toward the inlet;
   - a **snap-in IEC C14 inlet with fuse and rocker switch** clipped into the tray's end face (cut-out
     47.2 × 28.2): the **JOYNANO 3-in-1** (Amazon B071VLCTPB), sold for 0.8–1.5 mm panels, so it grips the 1.5 mm
     tray sheet (most snap-ins are for 2 mm and would rattle); its listing has no drawing, so the CAD uses the same generic
     module's drawing (SINORS, B0H5TNSZ7L: flange 50 × 30.8 × 3, cut-out 47 × 27.5 R2, body 20.5 + tabs 10): C14 bay left,
-    rocker right, fuse drawer under the bay. Swap its 5 A fuse for a T 2 A ceramic. The cord: a C13 → Schuko cord
-    (Cable Leader, B0CK55JJ5P) and an earthed Schuko → Israel (SI 32) adapter (Ceptics GP-14, B00E0O0BS8): no C13
-    cord with an Israeli plug ships from Amazon; check earth continuity through the adapter before first use. The C13
+    rocker right, fuse drawer under the bay. Swap its 5 A fuse for a T 2 A ceramic. The cord: buy it locally, an ordinary
+    C13 cord with an Israeli (SI 32) plug, 3 × 0.75 mm² or more. The C13
     plug (LS-13 type: body 24.6 × 17, nose 23 × 15) reaches the inlet through the end wall's opening. It sits 9 mm behind the printed end wall's opening, so
     coolant running down the end wall doesn't reach it. Fit an IEC retaining clip (V-lock or a wire bail) so the cord
     can't half-unplug on a vibrating table;
@@ -116,19 +117,19 @@ strip along the upper front with their bodies reaching back over the PCB.
   - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
     2× **M4 × 8 button head (ISO 7380)** go up through them into the plate, with a **serrated lock washer (DIN 6798 J
     M4, 0.5 thick) between each tab and the plate**, in the rebate: it bites both bare metals (checked against every other
-    hole in the plate); the heads sit in pockets in the door. That holds it and earths it; the 2 ribs on the door
-    carry its far end when the door is shut. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
+    hole in the plate); the heads sit in pockets in the door. That holds it and earths it; 2 ribs on the end cap
+    carry its far end. PE: inlet ⏚ → an M4 stud on the tray (ring terminal, star washer) → PSU ⏚. Leave both earth
     leads longer than L/N so they pull out last. Don't anodise the plate or the tray, or scrape the bond faces.
     Through the plate the motor (4 M5), the clutch (cover + housing screws), the encoder posts, the stub and the mill
     table are all on the same earth.
   - **Wiring:** 0.75 mm² 300/500 V wire, insulated female spades on the inlet (fuse in **L**), crimp ferrules in the
-    PSU. 35 mm of free wiring room between the PSU terminals and the inlet body (checked). Tie each mains wire next to
+    PSU. 36 mm of free wiring room between the PSU terminals and the inlet body (checked). Tie each mains wire next to
     its spade and its terminal, so one loose wire can't move. Wire the whole tray on the bench, lid on, before it
     goes in: the PSU terminals can't be reached with the motor above them.
-  - **Fuse:** T 2 A ceramic (high breaking capacity) 5 × 20 for 230 V; T 3.15 A for 120 V.
+  - **Fuse:** T 2 A ceramic (high breaking capacity) 5 × 20 for 230 V; T 4 A for 120 V (the LRS-150 draws 3 A there at full load).
   - **Power budget:** about 35–50 W at rapid traverse and about 60 W during the clutch pull-in (54 W for 50 ms with
-    the motor at its 1 A hold current); 75 W covers normal use. Only a jam at rapid (motor at full torque, ~100 W) can
-    trip the supply before stall detection acts. That is safe: if the LRS trips (overload, or the overvoltage latch,
+    the motor at its 1 A hold current); the LRS-150's 155 W covers all of it, a jam at rapid (motor at full torque,
+    ~100 W) included. If the LRS ever trips (overload, or the overvoltage latch,
     which needs a mains off/on to reset), the clutch springs release and the board shows `NO 36V`; nothing restarts
     on its own until the switch is centred.
   - **No floor vents** (the tray is above the floor). The motor breathes through louvred slots in the back and front
@@ -149,11 +150,11 @@ strip along the upper front with their bodies reaching back over the PCB.
   - **Debugging:** Raspberry Pi Debug Probe on the end-wall SWD port (its
     JST-to-0.1" cable), then `cargo run --release` in `firmware/feed-app` (probe-rs flashes, resets and shows logs).
     The 36 V supply must be on (the probe doesn't power the board), or USB-C power is enough for the logic.
-- **Fuse:** lift the hood.
+- **Fuse:** the inlet's fuse drawer, under its C14 bay, is reached from outside through the end wall's opening (cord unplugged).
 - **Heat:** the motor is inside and the PCB sits above it. Default run current 3 A (~16 W in the coils), 1 A at standstill.
   PETG's glass transition is ~80 °C; the walls are ≥ 5.8 mm from the motor. On the bench, run it closed for 30 min:
   if the motor case passes ~60 °C or the PSU case passes ~60 °C (the LRS gives full power only up to 50 °C ambient;
-  it runs at about half load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
+  it runs at about a third of its load here), fit the 40 mm fan (exhaust), lower `MOTOR mA` in the menu (light feeds need far
   less), or reprint in ASA (needs an enclosure on the MK3S to print without warping).
 - **Order** (on the bench, before the plate goes onto the mill; the box goes on first, the module and the tray go in
   from below, the PCB from above):
@@ -172,11 +173,14 @@ strip along the upper front with their bodies reaching back over the PCB.
      Recommended extra: a green/yellow lead from the tray's earth stud to an M4 tapped hole in the plate's outer face,
      so the tray stays bonded even with its two screws loose.
   5. Hood off: PCB onto its bosses; plug the 36 V pair into J1, the motor, clutch and encoder leads behind the motor tail.
-  6. Limit-switch cable through the gland; USB-C extension, BOOT/RESET and SWD wires to the PCB.
+  6. Limit-switch cable through the end cap's gland; USB-C extension, BOOT/RESET and SWD wires from the end cap to the
+     PCB (the cap stays off, beside the box, on its wires).
   7. Fan (optional; it covers the H1 hole's tool path, so after the PCB); hood with its controls.
-  8. Close the door: 2 screws on the front side. Earth test (above) before the first plug-in. Then the plate onto the mill.
-  - **Service on the mill, from below:** **unplug the mains cord first** (the tray hangs on it otherwise). 2 screws
-    and the door swings down to the back: the PSU's screws, the belt
+  8. Close the door: its screw on the front side. Then slide the end cap on along the table axis (its floor under the
+     tray's end, its scarf under the door's end) and fit its 3 screws through the shell's walls. Earth test (above)
+     before the first plug-in. Then the plate onto the mill.
+  - **Service on the mill, from below:** **unplug the mains cord first** (the tray hangs on it otherwise). The end
+    cap's 3 screws (slide it off; it hangs on its wires), the door's screw, and the door swings down to the back: the PSU's screws, the belt
     tension, and the mains tray (unplug J1, 2 screws: it drops out with its inlet). **Repeat the earth test every time
     the tray has been out.**
   - **The module can't come out on the mill:** its 20T pulley sits inside the belt guard, which is trapped between the

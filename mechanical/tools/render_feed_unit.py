@@ -21,7 +21,7 @@ COL = {
     "mains_cord_plug": "#2e2e2e", "pcb_placeholder": "#1f6f3f", "fan": "#262626", "end_wall_parts": "#2a2a2a",
     "control_estop": "#c0392b", "control_estop_plate": "#f2c40f", "control_toggle": "#b8bec4", "control_rapid": "#8a9096",
     "control_dial": "#2a2a2a", "control_oled": "#203040", "control_adapter": "#2f7a3a",
-    "shell": "#e8e4da", "hood": "#f0ece2", "door": "#ddd8ca", "door_pin": "#9aa0a6",
+    "shell": "#e8e4da", "hood": "#f0ece2", "door": "#ddd8ca", "door_pin": "#9aa0a6", "end_cap": "#d9cfb8",
     "fx_plate": "#8c939b", "fx_housing": "#8c939b", "fx_mains": "#8c939b", "fx_clutch": "#8c939b",
 }
 DRIVE = ["mill_reference", "plate", "standoffs", "stub_shaft", "oldham_disc", "pulley_40T", "pulley_20T", "belt",
@@ -31,7 +31,7 @@ MAINS = ["psu", "mains_tray", "mains_tray_lid", "mains_inlet", "mains_cord_plug"
 INSIDE = ["pcb_placeholder", "fan"]
 CONTROLS = ["control_estop", "control_estop_plate", "control_toggle", "control_rapid", "control_dial", "control_oled",
             "control_adapter"]
-HOUSING = ["shell", "hood", "door", "door_pin", "end_wall_parts", "fx_housing"]
+HOUSING = ["shell", "end_cap", "hood", "door", "door_pin", "end_wall_parts", "fx_housing"]
 
 _cache = {}
 
@@ -64,7 +64,7 @@ def shot(png, names, view="iso", cut=None, up=None, zoom=1.15):
     elif view == "end":                 # from the end wall (+W)
         p.view_xy()
         p.camera.up = (0, 1, 0)
-    elif view == "print":               # the shell standing on its end wall, as printed
+    elif view == "print":               # standing on its bed face (W down), as printed
         p.view_isometric()
         p.camera.up = (0, 0, -1)
         p.camera.azimuth = 30
@@ -89,6 +89,7 @@ def main():
     shot("render_section.png", [n for n in everything if not n.startswith("fx_")], cut=(1, 0, 0), view="front", zoom=1.0)
     shot("render_mains_tray.png", MAINS, zoom=1.3)
     shot("render_shell_print.png", ["shell"], view="print", zoom=1.1)
+    shot("render_end_cap_print.png", ["end_cap"], view="print", zoom=1.1)
 
 
 if __name__ == "__main__":

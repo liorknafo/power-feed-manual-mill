@@ -151,27 +151,31 @@ def lpd3806():
 
 
 # ------------------------------------------------------------------ power supply
-def lrs75():
-    """Mean Well LRS-75-36 (Amazon B019GYOJCU: buy it from a third-party seller that ships to Israel, e.g. Yisung
-    Electronics or SKOLY, not the default offer; meanwell.com/Upload/PDF/LRS-75/LRS-75-SPEC.PDF, and the LRS-75 case
-    drawing on Amazon B019GYOHGI: base holes 2x M3 L=3 at (20.5, 45.5) and (75.5, 45.5)): 99 x 97 x 30, case 240A. Frame: base at
-    z = 0, the 99 length along +y from the terminal end at y = 0, the 97 width along x from x = 0. The 5-pole terminal
-    block (1 L, 2 N, 3 FG, 4 -V, 5 +V, pitch 9.5, M3.5 screws facing up) sits in a recess at the terminal end, first
-    pole 10 from the x = 0 edge, screw heads ~3.5 below the top (INFERRED from the drawing). Side vent slots."""
-    case = box(0, 97.0, 0, 99.0, 0, 30.0)
-    case = case - box(10.0 - 4.75 - 1.0, 10.0 + 4 * 9.5 + 4.75 + 1.0, -0.1, 17.0, 26.0, 30.1)   # terminal recess
-    for k, head in enumerate(lrs75_terminal_heads()):        # terminal screw heads (Ø6, 2.5 high) on their clamps
-        x = 10.0 + 9.5 * k
+LRS150_POLE1 = 15.8      # x of terminal 1 (L) from the case's x = 0 edge; 7 poles at 9.5
+LRS150_TERM_Y = 6.6      # terminal screw centres from the terminal end
+
+
+def lrs150():
+    """Mean Well LRS-150-36 (Amazon B019GYOQDW, PowerNex, ships to Israel; meanwell.com/Upload/PDF/LRS-150/LRS-150-SPEC.PDF,
+    case 241A, ±1): 159 x 97 x 30. Frame: base at z = 0, the 159 length along +y from the terminal end at y = 0, the 97
+    width along x from x = 0. Base holes 2x M3 L=3 at 24 and 102 from the terminal end, 32 from the x = 97 edge. The
+    7-pole terminal block (1 L, 2 N, 3 FG, 4-5 -V, 6-7 +V, pitch 9.5, screws facing up) runs from 10.2 to 78.5 along
+    the terminal end and 16 into the case; terminal 1 at 15.8 from the x = 0 edge, screw centres 6.6 from the end
+    (measured on the drawing). Block and screw heads sit in a recess under the top, heads ~3.5 below it (INFERRED, as on
+    the LRS-75's drawing)."""
+    case = box(0, 97.0, 0, 159.0, 0, 30.0)
+    x0, x1 = LRS150_POLE1 - 4.75 - 1.0, LRS150_POLE1 + 6 * 9.5 + 4.75 + 1.0
+    case = case - box(x0, x1, -0.1, 17.0, 26.0, 30.1)                  # terminal recess
+    for k, head in enumerate(lrs150_terminal_heads()):       # terminal screw heads (Ø6.5, 2.5 high) on their clamps
+        x = LRS150_POLE1 + 9.5 * k
         case = case + head
-        case = case - cyl(1.2, 25.6, 26.6, x, 8.5) - box(x - 0.4, x + 0.4, 6.5, 10.5, 26.0, 26.6)   # cross slot
-    for yy in (54.0, 59.0, 65.0):                            # side vent slots on the 99 x 30 face
-        case = case - box(-0.1, 1.0, yy - 1.65, yy + 1.65, 8.3, 24.4)
+        case = case - cyl(1.2, 25.6, 26.6, x, LRS150_TERM_Y) - box(x - 0.4, x + 0.4, LRS150_TERM_Y - 2, LRS150_TERM_Y + 2, 26.0, 26.6)
     return case
 
 
-def lrs75_terminal_heads():
-    """The 5 terminal screw heads of the LRS-75 (its frame), for clearance checks."""
-    return [cyl(3.0, 24.0, 26.5, 10.0 + 9.5 * k, 8.5) for k in range(5)]
+def lrs150_terminal_heads():
+    """The 7 terminal screw heads of the LRS-150 (its frame), for clearance checks."""
+    return [cyl(3.25, 24.0, 26.5, LRS150_POLE1 + 9.5 * k, LRS150_TERM_Y) for k in range(7)]
 
 
 # ------------------------------------------------------------------ panel controls (panel outer face at z = 0)
@@ -338,8 +342,8 @@ def iec_inlet_snapin():
 
 
 def c13_plug():
-    """The C13 end of the mains cord (Cable Leader Schuko-C13, Amazon B0CK55JJ5P: its listing gives no plug
-    dimensions, so the shape is the Linetek LS-13 catalogue's, temflexcontrols.com/pdf/power-cord-cat.pdf, INFERRED):
+    """The C13 end of the mains cord (an ordinary C13 cord with an Israeli plug, bought locally; the shape is the
+    Linetek LS-13 catalogue's, temflexcontrols.com/pdf/power-cord-cat.pdf, INFERRED):
     nose 23 x ~15 x 18.5 (into the inlet's C14 bay), body 24.6 x 17 x 19, strain relief Ø13.6 x 17. Mating face at
     z = 0, cord toward +z."""
     nose = box(-11.5, 11.5, -7.5, 7.5, -18.5, 0.0)
