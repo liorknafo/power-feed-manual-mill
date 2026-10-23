@@ -24,8 +24,8 @@ NET = os.path.join(KDIR, "power-feed.net.xml")
 KCLI = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
 FP_DIR = "/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints"
 JAVA = os.environ.get("JAVA", "/opt/homebrew/opt/openjdk@25/bin/java")
-FREEROUTING = os.environ.get(
-    "FREEROUTING_JAR", "~/Documents/Codex/2026-10-03/i-x20/outputs/home-robot-r1/pcb/tools/freerouting.jar")
+FREEROUTING = os.path.expanduser(os.environ.get(
+    "FREEROUTING_JAR", "~/Documents/Codex/2026-10-03/i-x20/outputs/home-robot-r1/pcb/tools/freerouting.jar"))
 
 W, H = 100.0, 100.0
 EDGE_MARGIN = 0.6
