@@ -22,8 +22,9 @@ import os
 import sys
 from dataclasses import dataclass
 
-from build123d import (Align, Axis, Box, Compound, Cylinder, Plane, Polyline, Pos, Rot, Solid, Text, export_step,
-                       export_stl, extrude, chamfer, fillet, make_face)
+import ezdxf
+from build123d import (Align, Axis, Box, Circle, Compound, Cylinder, GeomType, Plane, Polyline, Pos, Rectangle, Rot,
+                       Solid, Text, export_step, export_stl, extrude, chamfer, fillet, make_face)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "clutch"))
@@ -79,6 +80,13 @@ class F:
                                      # tension block's M5 heads stand to W 80)
     psu_top_gap: float = 3.0         # tray top under the clutch cover with the module at the bottom of its tension slot
     tray_t: float = 1.5              # 5052 / 1050 aluminium sheet, folded
+    bend_r: float = 1.5              # inside radius of the tray's folds (flat patterns only; the model's corners are
+                                     # sharp): 1 t, about the least 5052-H32 takes at 1.5 mm (1050 takes less). Radius the
+                                     # brake's clamping-bar nose to it
+    bend_k: float = 0.33             # K-factor, neutral fibre 0.33 t in from the inside: DIN 6935 gives k/2 =
+                                     # (0.65 + 0.5 lg(r/t)) / 2 = 0.325 at r = t, and the generic K-factor chart (The
+                                     # Fabricator) 0.33 for air-bent aluminium with r <= t. Fold a test strip and correct it
+    flat_fit: float = 0.25           # flat patterns: a flange that closes between two others is this much narrower a side
     tray_side_gap: float = 2.0       # PSU side -> tray wall
     psu_holes: tuple = ((24.0, 65.0), (102.0, 65.0))  # base M3 (max 3 mm deep): from the terminal end, from the x=0 edge
     mains_wiring: float = 36.0       # free wiring room, PSU terminal end -> inlet body (the mains review's >= 35)
@@ -436,6 +444,13 @@ STANDOFF_CB = 6.5                             # counterbore depth for the M6 sta
 TRAY_TAB_W0 = Z_PLATE_OUT - 11.0
 TRAY_SCREW_W = Z_PLATE_OUT - 6.0              # M4 x 8 button head (ISO 7380) up through each tab into the plate
 GROMMET = (-30.0, TRAY_W1 - 12.0)             # (x, W) of the Ø10 grommet in the tray lid: 36 V leads up to J1
+GROMMET_R = 5.0
+TRAY_TAB_HW = 6.0                             # floor tabs 12 wide
+TRAY_SCREW_R = 2.2                            # Ø4.4 in the tabs for the M4 screws
+DRAWBOLT_HOLE = (6.0, Z_PLATE_OUT + 4)        # (radius, W) of the floor's drawbolt access hole, at x = MX
+PSU_SCREW_R = 1.7                             # Ø3.4 in the floor for the PSU's M3 screws
+RIVNUT_R = 2.5                                # Ø5 in the lid flanges for the M3 rivnuts
+LID_HOLE_R = 4.25                             # Ø8.5 in the lid: clears the rivnuts' Ø8 x 0.8 flanges
 USB_PORT = (15.0, 13.0)     # (x, y) on the end wall: its Ø27.5 flange clears RESET's recess
 SWD_PORT = (-15.0, 10.0)
 BOOT_BTN = (-15.0, -11.0)   # 7 mm PBS-110 momentary buttons wired across the PCB's SW1 (BOOTSEL) and SW2 (RESET)
@@ -568,21 +583,21 @@ def mains_tray():
     end = bx(-hw, hw, TRAY_BOT, TERM_TOP, TRAY_W1 - t, TRAY_W1)
     tray = floor + walls + end
     for xt in TRAY_TABS_X:                           # two floor tabs on under the plate, into its bottom-edge rebates
-        tray = tray + bx(xt - 6, xt + 6, TRAY_BOT, TRAY_BOT + t, TRAY_TAB_W0, w0 + 0.01)
-        tray = tray - ycyl(2.2, TRAY_BOT - 1, TRAY_BOT + t + 1, xt, TRAY_SCREW_W)
+        tray = tray + bx(xt - TRAY_TAB_HW, xt + TRAY_TAB_HW, TRAY_BOT, TRAY_BOT + t, TRAY_TAB_W0, w0 + 0.01)
+        tray = tray - ycyl(TRAY_SCREW_R, TRAY_BOT - 1, TRAY_BOT + t + 1, xt, TRAY_SCREW_W)
     iw, ih = f.inlet_cut
     tray = tray - bx(-iw / 2, iw / 2, INLET_Y - ih / 2, INLET_Y + ih / 2, TRAY_W1 - t - 1, TRAY_W1 + 1)
-    tray = tray - ycyl(6.0, TRAY_BOT - 1, TRAY_BOT + t + 1, MX, Z_PLATE_OUT + 4)    # drawbolt access (outside the walls)
+    tray = tray - ycyl(DRAWBOLT_HOLE[0], TRAY_BOT - 1, TRAY_BOT + t + 1, MX, DRAWBOLT_HOLE[1])   # drawbolt access (outside the walls)
     for xp, wp in psu_screws():                      # PSU base screws: M3 x 4 button head (ISO 7380) from below
-        tray = tray - ycyl(1.7, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
+        tray = tray - ycyl(PSU_SCREW_R, TRAY_BOT - 1, TRAY_BOT + t + 1, xp, wp)
     for xs, ws in lid_screws():                      # lid screws: M3 into open-end rivnuts (Ø5 holes) in the flanges
-        tray = tray - ycyl(2.5, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
+        tray = tray - ycyl(RIVNUT_R, TERM_TOP - t - 1, TERM_TOP + 1, xs, ws)
     lid = bx(-hw, hw, TERM_TOP, TERM_TOP + t, wz, TRAY_W1)
     # its -W edge is folded down to just above the PSU: closes the step between the low and the raised part
     lid = lid + bx(-hw + t, hw - t, TRAY_TOP, TERM_TOP + t, wz, wz + t)
-    lid = lid - ycyl(5.0, TERM_TOP - 1, TERM_TOP + t + 1, GROMMET[0], GROMMET[1])
+    lid = lid - ycyl(GROMMET_R, TERM_TOP - 1, TERM_TOP + t + 1, GROMMET[0], GROMMET[1])
     for xs, ws in lid_screws():                      # Ø8.5: clears the rivnuts' Ø8 x 0.8 flanges, so the lid lies flat
-        lid = lid - ycyl(4.25, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
+        lid = lid - ycyl(LID_HOLE_R, TERM_TOP - 1, TERM_TOP + t + 1, xs, ws)
     return tray, lid
 
 
@@ -590,6 +605,348 @@ def lid_screws():
     """(x, W) of the tray lid's 4 M3 screws, in the walls' folded flanges."""
     hw = TRAY_HALF
     return [(xs, ws) for xs in (-hw + LID_FLANGE / 2, hw - LID_FLANGE / 2) for ws in (TERM_W0 + 8, TRAY_W1 - 8)]
+
+
+# ------------------------------------------------------------------ mains tray + lid: flat patterns (export only)
+# The folded model has sharp corners: its outer faces are the outside mould lines (OML) of every bend. All bends are
+# 90 degrees with inside radius bend_r. A point d from a bend's OML (the outer face of the flange it folds up from) lies
+# d - BD/2 from that bend's centre line in the flat; a flange between two bends is its outside width - BD wide.
+BEND_BA = math.pi / 2 * (f.bend_r + f.bend_k * f.tray_t)    # bend allowance: the neutral fibre's arc
+BEND_BD = 2 * (f.bend_r + f.tray_t) - BEND_BA               # bend deduction: flat = sum of outside lengths - BD per bend
+RELIEF = f.bend_r + f.tray_t + 0.5                          # bend reliefs reach 0.5 past the bend's tangent line
+CORNER_R = BEND_BA / math.sqrt(2) + 0.5                     # round relief where two bends meet: over both bend zones
+FLAT = {}                                                   # flat-pattern results for notes()
+
+
+def _rect(u0, u1, v0, v1):
+    return Pos(min(u0, u1), min(v0, v1)) * Rectangle(abs(u1 - u0), abs(v1 - v0), align=(Align.MIN, Align.MIN))
+
+
+def tray_flat():
+    """The mains tray's blank, seen from OUTSIDE (below): flat (u, v) = folded (x, W) on the floor, every bend folds away
+    from the viewer. Returns (sketch, bend lines, flanges, developed): each flange maps its outer face in the folded
+    model to the flat and lists its bends as (OML distance, flat bend line), developed(bounding box of the folded part)
+    is the blank's size from its outside lengths, and to_fold(u, v) maps a flat point back onto the folded outer faces,
+    for the check. The end face takes the corners (full width); the side walls stop flat_fit short of its inside, and
+    the lips start bend_r + flat_fit past the lid's folded-down edge, clear of its inside radius."""
+    t, hw, bd = f.tray_t, TRAY_HALF, BEND_BD
+    w0, w1, wz, ww0 = Z_PLATE_OUT, TRAY_W1, TERM_W0, TRAY_WALL_W0
+    hl, hh, lf = TRAY_TOP - TRAY_BOT, TERM_TOP - TRAY_BOT, LID_FLANGE
+    we = w1 - t - f.flat_fit                 # the walls' (and lips') far end
+    wl = wz + t + f.bend_r + f.flat_fit      # the lips' near end
+    ub = hw - bd / 2                         # |u| of the floor/wall bend lines
+    vb = w1 - bd / 2                         # v of the floor/end-face bend line
+    ul = hw - 1.5 * bd + hh                  # |u| of the wall/lip bend lines (hh - bd out from the floor's)
+    blank = _rect(-ub, ub, w0, vb) + _rect(-hw, hw, w0, ww0) + _rect(-hw, hw, vb, w1 - bd + hh)  # floor, end face
+    for xt in TRAY_TABS_X:
+        blank += _rect(xt - TRAY_TAB_HW, xt + TRAY_TAB_HW, TRAY_TAB_W0, w0)
+    for s in (-1, 1):
+        blank += _rect(s * ub, s * (hw - bd + hl), ww0, wz)                      # low wall
+        blank += _rect(s * ub, s * (hw - bd + hh - RELIEF), wz, we)              # raised wall, up to the lip's relief
+        blank += _rect(s * (hw - bd + hh - RELIEF), s * (ul + lf - bd / 2), wl, we)       # its top + the lip
+        blank -= _rect(s * (hw + 1), s * (hw - RELIEF), ww0 - t, ww0)           # relief where the wall's bend starts
+        blank -= Pos(s * ub, vb) * Circle(CORNER_R)                             # corner relief
+    for xt in TRAY_TABS_X:
+        blank -= Pos(xt, TRAY_SCREW_W) * Circle(TRAY_SCREW_R)
+    blank -= Pos(MX, DRAWBOLT_HOLE[1]) * Circle(DRAWBOLT_HOLE[0])
+    for xp, wp in psu_screws():
+        blank -= Pos(xp, wp) * Circle(PSU_SCREW_R)
+    for xs, ws in lid_screws():                                                 # rivnuts, in the lips
+        blank -= Pos(math.copysign(ul + (hw - abs(xs)) - bd / 2, xs), ws) * Circle(RIVNUT_R)
+    iw, ih = f.inlet_cut
+    blank -= _rect(-iw / 2, iw / 2, w1 - bd + INLET_Y - ih / 2 - TRAY_BOT, w1 - bd + INLET_Y + ih / 2 - TRAY_BOT)
+    side = {s: ((s * ub, ww0), (s * ub, we)) for s in (-1, 1)}
+    lip = {s: ((s * ul, wl), (s * ul, we)) for s in (-1, 1)}
+    end = ((-hw, vb), (hw, vb))
+    lines = [side[-1], side[1], lip[-1], lip[1], end]
+    flanges = [
+        dict(name="floor", plane=(1, TRAY_BOT, -1), region=lambda p: True, to_flat=lambda p: (p[0], p[2]),
+             bends=[(lambda p: p[0] + hw, side[-1]), (lambda p: hw - p[0], side[1]), (lambda p: w1 - p[2], end)]),
+        dict(name="end face", plane=(2, w1, 1), region=lambda p: True,
+             to_flat=lambda p: (p[0], w1 - bd + p[1] - TRAY_BOT), bends=[(lambda p: p[1] - TRAY_BOT, end)])]
+    for s in (-1, 1):
+        flanges.append(dict(name="back wall" if s < 0 else "front wall", plane=(0, s * hw, s), region=lambda p: True,
+                            to_flat=lambda p, s=s: (s * (hw - bd + p[1] - TRAY_BOT), p[2]),
+                            bends=[(lambda p: p[1] - TRAY_BOT, side[s])]))
+        flanges.append(dict(name="back lid flange" if s < 0 else "front lid flange", plane=(1, TERM_TOP, 1), region=lambda p, s=s: p[0] * s > 0,
+                            to_flat=lambda p, s=s: (s * (ul + hw - s * p[0] - bd / 2), p[2]),
+                            bends=[(lambda p, s=s: hw - s * p[0], lip[s])]))
+    # across: lip + wall + floor + wall + lip, 4 bends; along: tabs to the end face's top edge, 1 bend
+    developed = lambda fb: (fb.size.X + 2 * fb.size.Y + 2 * lf - 4 * bd, fb.size.Z + fb.size.Y - bd)
+
+    def to_fold(u, v):
+        s = 1 if u > 0 else -1
+        if v > vb:                                                              # end face
+            return (u, TRAY_BOT + v - (w1 - bd), w1)
+        if v < ww0 or abs(u) <= ub:                                             # floor
+            return (u, TRAY_BOT, v)
+        if abs(u) <= ul:                                                        # wall
+            return (s * hw, TRAY_BOT + abs(u) - hw + bd, v)
+        return (s * (hw - (abs(u) - ul + bd / 2)), TERM_TOP, v)                 # lip
+    return blank, lines, flanges, developed, to_fold
+
+
+def lid_flat():
+    """The tray lid's blank, seen from OUTSIDE (above): flat (u, v) = folded (x, -W) on the lid, the folded-down edge
+    folds away from the viewer. Same returns as tray_flat. The folded-down edge closes between the walls."""
+    t, hw, bd = f.tray_t, TRAY_HALF, BEND_BD
+    wz, w1 = TERM_W0, TRAY_W1
+    top, hf = TERM_TOP + t, TERM_TOP + t - TRAY_TOP      # lid's outer face; the folded-down edge's outside height
+    uf = hw - t - f.flat_fit
+    vb = -wz - bd / 2
+    blank = _rect(-hw, hw, -w1, -wz) + _rect(-uf, uf, vb, -wz - bd + hf)
+    for s in (-1, 1):
+        blank -= _rect(s * uf, s * (hw + 1), -wz - RELIEF, -wz + 1)            # relief at each end of the fold
+    blank -= Pos(GROMMET[0], -GROMMET[1]) * Circle(GROMMET_R)
+    for xs, ws in lid_screws():
+        blank -= Pos(xs, -ws) * Circle(LID_HOLE_R)
+    fold = ((-uf, vb), (uf, vb))
+    flanges = [dict(name="lid", plane=(1, top, 1), region=lambda p: True, to_flat=lambda p: (p[0], -p[2]),
+                    bends=[(lambda p: p[2] - wz, fold)]),
+               dict(name="lid edge", plane=(2, wz, -1), region=lambda p: True,
+                    to_flat=lambda p: (p[0], -wz - bd + top - p[1]), bends=[(lambda p: top - p[1], fold)])]
+    developed = lambda fb: (fb.size.X, fb.size.Z + fb.size.Y - bd)
+
+    def to_fold(u, v):
+        return (u, top, -v) if v <= vb else (u, top - (v + wz + bd), wz)
+    return blank, [fold], flanges, developed, to_fold
+
+
+def _xyz(v):
+    return (v.X, v.Y, v.Z)
+
+
+def _ordered(wire):
+    """The edges of a closed wire in order, as (start, end, edge); fails if the edges don't chain into one loop."""
+    left = list(wire.edges())
+    e = left.pop(0)
+    out = [(e.start_point(), e.end_point(), e)]
+    while left:
+        end = out[-1][1]
+        for i, e in enumerate(left):
+            if (e.start_point() - end).length < 1e-6:
+                out.append((e.start_point(), e.end_point(), e))
+                break
+            if (e.end_point() - end).length < 1e-6:
+                out.append((e.end_point(), e.start_point(), e))
+                break
+        else:
+            raise AssertionError("flat pattern: a loop doesn't close")
+        left.pop(i)
+    assert (out[-1][1] - out[0][0]).length < 1e-6, "flat pattern: a loop doesn't close"
+    return out
+
+
+def _hole(wire):
+    """(kind, centre, sizes) of a hole: a circle, or any other loop by its bounding box."""
+    es = wire.edges()
+    if len(es) == 1 and es[0].geom_type == GeomType.CIRCLE:
+        return "circle", _xyz(es[0].arc_center), (es[0].radius,)
+    bb = wire.bounding_box()
+    return "loop", _xyz(bb.center()), tuple(sorted((bb.size.X, bb.size.Y, bb.size.Z), reverse=True)[:2])
+
+
+def _line_dist(p, line):
+    (u0, v0), (u1, v1) = line
+    return abs((u1 - u0) * (p[1] - v0) - (v1 - v0) * (p[0] - u0)) / math.hypot(u1 - u0, v1 - v0)
+
+
+def _segments_cross(a, b, c, d):
+    def orient(p, q, r):
+        x = (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0])
+        return 0 if abs(x) < 1e-9 else (1 if x > 0 else -1)
+
+    def on(p, q, r):
+        return min(p[0], q[0]) - 1e-9 <= r[0] <= max(p[0], q[0]) + 1e-9 and min(p[1], q[1]) - 1e-9 <= r[1] <= max(p[1], q[1]) + 1e-9
+    o1, o2, o3, o4 = orient(a, b, c), orient(a, b, d), orient(c, d, a), orient(c, d, b)
+    if o1 != o2 and o3 != o4:
+        return True
+    return any(o == 0 and on(p, q, r) for o, p, q, r in ((o1, a, b, c), (o2, a, b, d), (o3, c, d, a), (o4, c, d, b)))
+
+
+def _seg_dist(p, line):
+    (u0, v0), (u1, v1) = line
+    du, dv = u1 - u0, v1 - v0
+    k = max(0.0, min(1.0, ((p[0] - u0) * du + (p[1] - v0) * dv) / (du * du + dv * dv)))
+    return math.hypot(p[0] - u0 - k * du, p[1] - v0 - k * dv)
+
+
+def check_flat(name, folded, face, lines, flanges, developed, to_fold):
+    """Self-check of a flat pattern against the folded solid. Every hole in the folded model's outer faces must be in
+    the blank where its flange's unfolding puts it, and each hole's distance from every bend line of its flange must be
+    its folded distance from that bend's OML - BD/2 (within 0.01); no other holes. The blank's size must be the sum of
+    the folded outside lengths - BD per bend crossed. Every corner of the outline more than RELIEF from a bend line
+    must fold back onto an edge of the folded part (so each free edge is where the model has it; it can't see a
+    feature that is missing, or an edge that moved along its own line). Every loop must close and none may cross itself
+    or another.
+    Returns warnings, as {text: count}, for holes whose edge comes within one thickness of a bend zone (they pull
+    oval when folded)."""
+    tol, warn = 0.01, {}
+    flat_holes = [_hole(w) for w in face.inner_wires()]
+    flat_bbs = [w.bounding_box() for w in face.inner_wires()]
+    used = [False] * len(flat_holes)
+    for fl in flanges:
+        axis, value, sign = fl["plane"]
+        for fc in folded.faces():
+            if fc.geom_type != GeomType.PLANE or abs(_xyz(fc.normal_at())[axis] - sign) > 1e-6 \
+                    or abs(_xyz(fc.center())[axis] - value) > 1e-6:
+                continue
+            for w in fc.inner_wires():
+                kind, c3, size = _hole(w)
+                if not fl["region"](c3):
+                    continue
+                u, v = fl["to_flat"](c3)
+                hit = [i for i, (k, c2, sz) in enumerate(flat_holes) if k == kind and not used[i]
+                       and math.hypot(c2[0] - u, c2[1] - v) < tol and all(abs(a - b) < tol for a, b in zip(sz, size))]
+                assert len(hit) == 1, "%s: the %s's hole at %s isn't in the blank at (%.2f, %.2f)" % (name, fl["name"], c3, u, v)
+                used[hit[0]] = True
+                c2 = flat_holes[hit[0]][1]
+                for dist, line in fl["bends"]:
+                    d_flat, d_fold = _line_dist(c2, line), dist(c3)
+                    assert abs(d_flat - (d_fold - BEND_BD / 2)) < tol, \
+                        "%s: hole at %s is %.3f from its bend line, folded %.3f - BD/2 = %.3f" % (
+                            name, c3, d_flat, d_fold, d_fold - BEND_BD / 2)
+                    (u0, v0), (u1, v1) = line                    # the hole's half-size across the bend line
+                    hb = flat_bbs[hit[0]].size
+                    half = (abs(u1 - u0) * hb.Y + abs(v1 - v0) * hb.X) / 2 / math.hypot(u1 - u0, v1 - v0)
+                    clear = d_flat - half - BEND_BA / 2
+                    if clear < f.tray_t:
+                        txt = ("%s hole in the %s: its edge %.2f mm %s the fold's tangent line" % (
+                            ("Ø%.1f" % (2 * size[0])) if kind == "circle" else "%.1f x %.1f" % size, fl["name"],
+                            abs(clear), "inside" if clear < 0 else "short of"))
+                        warn[txt] = warn.get(txt, 0) + 1
+    assert all(used), "%s: %d holes in the blank aren't in the folded model" % (name, used.count(False))
+    bb, want = face.bounding_box(), developed(folded.bounding_box())
+    assert abs(bb.size.X - want[0]) < tol and abs(bb.size.Y - want[1]) < tol, \
+        "%s: blank %.3f x %.3f, outside lengths - BD give %.3f x %.3f" % (name, bb.size.X, bb.size.Y, *want)
+    edges = Compound(children=folded.edges())
+    for vx in face.outer_wire().vertices():
+        p = (vx.X, vx.Y)
+        if min(_seg_dist(p, ln) for ln in lines) > RELIEF + tol:
+            gap = edges.distance_to(to_fold(*p))
+            assert gap < tol, "%s: the outline's corner at (%.2f, %.2f) folds to %s, %.3f off the folded part's edges" % (
+                name, p[0], p[1], to_fold(*p), gap)
+    assert face.is_valid and len(face.outer_wire().edges()) > 3
+    segs = []                                            # (loop, index, a, b) for the crossing test
+    for li, w in enumerate([face.outer_wire()] + face.inner_wires()):
+        pts = []
+        for a, b, e in _ordered(w):
+            if e.geom_type == GeomType.LINE:
+                pts.append(_xyz(a))
+            else:
+                rev = (e.start_point() - a).length > 1e-6
+                pts += [_xyz(e.position_at(1 - k / 24 if rev else k / 24)) for k in range(24)]
+        segs += [(li, i, len(pts), pts[i], pts[(i + 1) % len(pts)]) for i in range(len(pts))]
+    for i in range(len(segs)):
+        for j in range(i + 1, len(segs)):
+            (la, ia, na, a0, a1), (lb, ib, nb, b0, b1) = segs[i], segs[j]
+            if la == lb and (abs(ia - ib) == 1 or abs(ia - ib) == na - 1):
+                continue
+            assert not _segments_cross(a0, a1, b0, b1), "%s: its outline crosses itself near %s" % (name, a0)
+    return warn
+
+
+def write_flat(name, face, lines):
+    """DXF (R2000, mm: one closed LWPOLYLINE or CIRCLE per loop on CUT, bend centre lines as LINEs on BEND) and a
+    STEP of the blank extruded tray_t, both with the blank's corner at the origin. Reads the DXF back to check it."""
+    bb = face.bounding_box()
+    du, dv = -bb.min.X, -bb.min.Y
+    face = Pos(du, dv) * face
+    doc = ezdxf.new("R2000", setup=False)
+    doc.units = ezdxf.units.MM                              # $INSUNITS = 4
+    doc.header["$MEASUREMENT"] = 1
+    doc.layers.add("CUT", color=7)
+    doc.layers.add("BEND", color=1)
+    msp = doc.modelspace()
+    loops = [face.outer_wire()] + face.inner_wires()
+    for w in loops:
+        es = w.edges()
+        if len(es) == 1 and es[0].geom_type == GeomType.CIRCLE:
+            c = es[0].arc_center
+            msp.add_circle((c.X, c.Y), es[0].radius, dxfattribs={"layer": "CUT"})
+            continue
+        pts = []
+        for a, b, e in _ordered(w):
+            bulge = 0.0
+            if e.geom_type == GeomType.CIRCLE:               # bulge = tan(angle / 4) = sagitta / half chord, + = CCW
+                m, ch = e.position_at(0.5), b - a
+                bulge = -2 * ((ch.X * (m.Y - a.Y)) - (ch.Y * (m.X - a.X))) / ch.length ** 2
+            else:
+                assert e.geom_type == GeomType.LINE, "%s: a %s edge in the outline" % (name, e.geom_type)
+            pts.append((round(a.X, 6), round(a.Y, 6), bulge))
+        msp.add_lwpolyline(pts, format="xyb", close=True, dxfattribs={"layer": "CUT"})
+    for (u0, v0), (u1, v1) in lines:
+        msp.add_line((u0 + du, v0 + dv), (u1 + du, v1 + dv), dxfattribs={"layer": "BEND"})
+    path = os.path.join(OUT, name + ".dxf")
+    doc.saveas(path)
+    back = ezdxf.readfile(path)
+    kinds = {e.dxftype() for e in back.modelspace()}
+    assert kinds <= {"LWPOLYLINE", "LINE", "ARC", "CIRCLE"} and back.header["$INSUNITS"] == 4
+    cut = [e for e in back.modelspace() if e.dxf.layer == "CUT"]
+    assert len(cut) == len(loops) and all(e.dxftype() == "CIRCLE" or e.closed for e in cut)
+    assert len([e for e in back.modelspace() if e.dxf.layer == "BEND"]) == len(lines)
+    plate = extrude(face, f.tray_t)
+    assert abs(plate.volume - face.area * f.tray_t) < 1e-3
+    export_step(plate, os.path.join(OUT, name + ".step"))
+    return bb.size.X, bb.size.Y
+
+
+def export_flat_patterns(tray, lid):
+    """Flat patterns of the mains tray and its lid: out/mains_tray_flat.dxf/.step, out/mains_tray_lid_flat.dxf/.step."""
+    print("mains tray flat patterns: 90° folds, inside radius %.2f, K %.2f (%.1f mm sheet) -> bend allowance %.3f, "
+          "bend deduction %.3f mm per bend" % (f.bend_r, f.bend_k, f.tray_t, BEND_BA, BEND_BD))
+    print("  (K: DIN 6935 k/2 = (0.65 + 0.5 lg(r/t))/2 = %.3f at r/t = %.2f; generic chart: 0.33 for air-bent aluminium, "
+          "r <= t)" % ((0.65 + 0.5 * math.log10(f.bend_r / f.tray_t)) / 2, f.bend_r / f.tray_t))
+    for name, folded, (blank, lines, flanges, developed, to_fold) in (("mains_tray_flat", tray, tray_flat()),
+                                                                      ("mains_tray_lid_flat", lid, lid_flat())):
+        faces = blank.faces()
+        assert len(faces) == 1, "%s: the blank is %d pieces" % (name, len(faces))
+        warn = check_flat(name, folded, faces[0], lines, flanges, developed, to_fold)
+        size = write_flat(name, faces[0], lines)
+        FLAT[name] = dict(size=size, holes=len(faces[0].inner_wires()), bends=len(lines), warn=warn)
+        print("  %-20s blank %.2f x %.2f, %d holes, %d bends: holes and outline checked" % (
+            name, size[0], size[1], len(faces[0].inner_wires()), len(lines)))
+        for txt, n in warn.items():
+            print("    WARNING %d× %s" % (n, txt))
+
+
+def flat_notes():
+    """The flat-pattern bullet for FEED_UNIT.md (after export_flat_patterns has run)."""
+    tr, ld = FLAT["mains_tray_flat"], FLAT["mains_tray_lid_flat"]
+    warn = ";\n    ".join("%d× %s" % (n, txt) for d in (tr, ld) for txt, n in d["warn"].items())
+    return f"""  - **Flat patterns** (cut flat on the CNC, then fold): `out/mains_tray_flat.dxf` + `.step` and
+    `out/mains_tray_lid_flat.dxf` + `.step`, made from the same `F` as the folded model and checked against it on every
+    run: each hole in the folded model is in the blank where unfolding puts it, its distance from each bend line of its
+    flange is its folded distance from that bend's outside faces − BD/2 (within 0.01 mm), there are no other holes, the
+    blank's size is the sum of the outside lengths − BD per bend, every corner of the outline away from the bends folds
+    back onto an edge of the folded part, and every loop closes without crossing itself or another. DXF R2000 in mm: the outline and every hole as closed loops (LWPOLYLINE/CIRCLE) on layer `CUT`, the bend
+    centre lines as LINEs on layer `BEND` (ignore it in CAM). STEP: the blank, {f.tray_t} thick. Each blank is drawn **from
+    the outside** (the tray from below, the lid from above), so every bend folds 90° away from you.
+    **Bend method:** inside radius {f.bend_r} mm (1 t: about the least 5052-H32 takes at 1.5 mm; radius the brake's
+    clamping-bar nose to it), **K-factor {f.bend_k}** (DIN 6935: k/2 = (0.65 + 0.5·lg(r/t))/2 = 0.325 at r = t; the
+    generic K-factor chart, The Fabricator, gives 0.33 for air-bent aluminium with r ≤ t), so a bend allowance of
+    {BEND_BA:.3f} mm and a **bend deduction of {BEND_BD:.3f} mm per bend**: a flange is its outside length − BD/2 for each
+    bent edge, and each bend line lies BD/2 in from where the two outside faces meet. Fold a test strip first and
+    correct `bend_k` if the flanges come out long or short.
+    Tray blank {tr["size"][0]:.1f} × {tr["size"][1]:.1f} ({tr["holes"]} holes, {tr["bends"]} bends): fold the two lid flanges first, then the
+    side walls, then the end face (brake fingers set at most {2 * (TRAY_HALF - LID_FLANGE):.0f} wide, between the lid flanges' edges,
+    and taller than the {TERM_TOP - TRAY_BOT:.1f} walls). The end face takes the corners (full width);
+    the walls stop {f.flat_fit} mm short of its inside, the lid's folded edge is {f.flat_fit} mm narrower a side than the
+    gap between the walls, and the lid flanges start {f.bend_r + f.flat_fit:.2f} mm past that edge's inside face, clear of its
+    inside radius, so the lid sits down on them (that leaves a {f.bend_r + f.flat_fit:.2f} × {RELIEF:.1f} window at the top of each wall
+    beside the lid's folded edge: close both with silicone too). Ø{2 * CORNER_R:.1f} round reliefs where the floor's two bends meet at the end
+    face (each leaves a small hole in a bottom corner of the inlet end: close them with a dab of silicone after
+    folding, against swarf), and reliefs {RELIEF:.1f} deep where a bend starts partway along an edge: {f.tray_t} wide at the
+    walls' plate ends, {f.tray_t + f.bend_r + f.flat_fit:.2f} at the lid flanges' PSU-side ends, {f.tray_t + f.flat_fit:.2f} at both ends of
+    the lid's fold (so cut the blank with a Ø{f.tray_t} cutter or smaller, or file those reliefs). Lid blank
+    {ld["size"][0]:.1f} × {ld["size"][1]:.1f} ({ld["holes"]} holes, {ld["bends"]} bend).
+    **Holes near a fold** (from the check):
+    {warn or "none"}.
+    The rivnut holes sit {LID_FLANGE / 2:.0f} mm from the walls'
+    outside, so at this radius they reach into the lid flanges' folds: they are cut flat with the rest (layer `CUT`)
+    and may pull slightly oval, so run a Ø5 drill through each after folding. The rivnuts' Ø8 flanges also overhang
+    the folds' outside round (flat only from {f.bend_r + f.tray_t:.1f} mm out): check each rivnut seats; moving them out needs
+    wider flanges (not done). The lid's Ø8.5 holes stay outside its fold."""
 
 
 def psu_screw_heads():
@@ -1233,6 +1590,7 @@ def build():
     parts["end_wall_parts"] = Compound(children=[so for p_ in end_wall_parts() for so in p_.solids()])
     parts["fan"] = fan()
     parts["mains_tray"], parts["mains_tray_lid"] = mains_tray()
+    export_flat_patterns(parts["mains_tray"], parts["mains_tray_lid"])
     # the door's hinge pin: Ø3 silver steel, pressed into the shell's plate-end knuckle, the door turns on it
     parts["door_pin"] = wcyl(1.5, SHELL_KNUCKLES[0][0], SHELL_KNUCKLES[-1][1], HINGE_X, HINGE_Y)
     groups = {"estop": (0, 1), "estop_plate": (1, 2), "toggle": (2, 3), "rapid": (3, 4), "dial": (4, 5), "oled": (5, 6),
@@ -1349,7 +1707,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
   motor ({2 * TRAY_HALF:.0f} wide, {TRAY_TOP - TRAY_BOT:.0f} high over the PSU and {TERM_TOP - TRAY_BOT:.0f} over the terminal/inlet zone, W {Z_PLATE_OUT:.0f}…{TRAY_W1:.0f}; 1.5 mm
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two flat floor tabs
-  that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
+  that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`); flat patterns below. It holds:
   - a Mean Well **LRS-150-36** (36 V / 4.3 A, 159 × 97 × 30, case 241A; Amazon B019GYOQDW, PowerNex: no LRS-75-36 or
     LRS-100-36 listing ships to Israel), screwed through the tray floor into its two base holes (24 and 102 from the
     terminal end): **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
@@ -1373,6 +1731,7 @@ strip along the upper front with their bodies reaching back over the PCB.
     height is inferred from the drawing, so check it on your PSU), and line the
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
+{flat_notes()}
   - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
     2× **M4 × 8 button head (ISO 7380)** go up through them into the plate, with a **serrated lock washer (DIN 6798 J
     M4, 0.5 thick) between each tab and the plate**, in the rebate: it bites both bare metals (checked against every other

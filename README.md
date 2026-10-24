@@ -76,5 +76,5 @@ Create the Python environment for the CAD scripts first:
 
 ```sh
 python3 -m venv mechanical/.venv
-mechanical/.venv/bin/pip install build123d trimesh pyvista shapely networkx
+mechanical/.venv/bin/pip install build123d trimesh pyvista shapely networkx rtree
 ```

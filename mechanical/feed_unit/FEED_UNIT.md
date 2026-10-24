@@ -90,7 +90,7 @@ strip along the upper front with their bodies reaching back over the PCB.
 - **Power, built in: the mains tray.** All 230 V lives in an earthed, folded **aluminium tray** under the clutch and
   motor (104 wide, 32 high over the PSU and 42 over the terminal/inlet zone, W 63…308; 1.5 mm
   1050/5052 sheet: floor, two side walls with inward-folded lid flanges over the terminal zone, end face, and two flat floor tabs
-  that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`). It holds:
+  that reach under the plate). Fold drawing: `out/mains_tray.step` (+ `mains_tray_lid.step`); flat patterns below. It holds:
   - a Mean Well **LRS-150-36** (36 V / 4.3 A, 159 × 97 × 30, case 241A; Amazon B019GYOQDW, PowerNex: no LRS-75-36 or
     LRS-100-36 listing ships to Israel), screwed through the tray floor into its two base holes (24 and 102 from the
     terminal end): **M3 × 4 button head (ISO 7380)** — the case allows 3 mm of thread, the tray is 1.5 — reached through
@@ -114,6 +114,41 @@ strip along the upper front with their bodies reaching back over the PCB.
     height is inferred from the drawing, so check it on your PSU), and line the
     inside of the fold (and the lid above the terminals) with 0.4 mm Nomex/Formex insulating sheet either way. A Ø10 grommet in it: the **only** thing that leaves the
     tray is the 36 V pair (1 mm², 300/500 V insulation since it runs inside the mains tray, to J1).
+  - **Flat patterns** (cut flat on the CNC, then fold): `out/mains_tray_flat.dxf` + `.step` and
+    `out/mains_tray_lid_flat.dxf` + `.step`, made from the same `F` as the folded model and checked against it on every
+    run: each hole in the folded model is in the blank where unfolding puts it, its distance from each bend line of its
+    flange is its folded distance from that bend's outside faces − BD/2 (within 0.01 mm), there are no other holes, the
+    blank's size is the sum of the outside lengths − BD per bend, every corner of the outline away from the bends folds
+    back onto an edge of the folded part, and every loop closes without crossing itself or another. DXF R2000 in mm: the outline and every hole as closed loops (LWPOLYLINE/CIRCLE) on layer `CUT`, the bend
+    centre lines as LINEs on layer `BEND` (ignore it in CAM). STEP: the blank, 1.5 thick. Each blank is drawn **from
+    the outside** (the tray from below, the lid from above), so every bend folds 90° away from you.
+    **Bend method:** inside radius 1.5 mm (1 t: about the least 5052-H32 takes at 1.5 mm; radius the brake's
+    clamping-bar nose to it), **K-factor 0.33** (DIN 6935: k/2 = (0.65 + 0.5·lg(r/t))/2 = 0.325 at r = t; the
+    generic K-factor chart, The Fabricator, gives 0.33 for air-bent aluminium with r ≤ t), so a bend allowance of
+    3.134 mm and a **bend deduction of 2.866 mm per bend**: a flange is its outside length − BD/2 for each
+    bent edge, and each bend line lies BD/2 in from where the two outside faces meet. Fold a test strip first and
+    correct `bend_k` if the flanges come out long or short.
+    Tray blank 197.5 × 295.1 (9 holes, 5 bends): fold the two lid flanges first, then the
+    side walls, then the end face (brake fingers set at most 84 wide, between the lid flanges' edges,
+    and taller than the 42.5 walls). The end face takes the corners (full width);
+    the walls stop 0.25 mm short of its inside, the lid's folded edge is 0.25 mm narrower a side than the
+    gap between the walls, and the lid flanges start 1.75 mm past that edge's inside face, clear of its
+    inside radius, so the lid sits down on them (that leaves a 1.75 × 3.5 window at the top of each wall
+    beside the lid's folded edge: close both with silicone too). Ø5.4 round reliefs where the floor's two bends meet at the end
+    face (each leaves a small hole in a bottom corner of the inlet end: close them with a dab of silicone after
+    folding, against swarf), and reliefs 3.5 deep where a bend starts partway along an edge: 1.5 wide at the
+    walls' plate ends, 3.25 at the lid flanges' PSU-side ends, 1.75 at both ends of
+    the lid's fold (so cut the blank with a Ø1.5 cutter or smaller, or file those reliefs). Lid blank
+    104.0 × 93.1 (5 holes, 1 bend).
+    **Holes near a fold** (from the check):
+    2× Ø5.0 hole in the back lid flange: its edge 0.50 mm inside the fold's tangent line;
+    2× Ø5.0 hole in the front lid flange: its edge 0.50 mm inside the fold's tangent line;
+    2× Ø8.5 hole in the lid: its edge 0.75 mm short of the fold's tangent line.
+    The rivnut holes sit 5 mm from the walls'
+    outside, so at this radius they reach into the lid flanges' folds: they are cut flat with the rest (layer `CUT`)
+    and may pull slightly oval, so run a Ø5 drill through each after folding. The rivnuts' Ø8 flanges also overhang
+    the folds' outside round (flat only from 3.0 mm out): check each rivnut seats; moving them out needs
+    wider flanges (not done). The lid's Ø8.5 holes stay outside its fold.
   - **Fixing and earth:** the tray goes in from below. Its two floor tabs sit in rebates in the plate's bottom edge and
     2× **M4 × 8 button head (ISO 7380)** go up through them into the plate, with a **serrated lock washer (DIN 6798 J
     M4, 0.5 thick) between each tab and the plate**, in the rebate: it bites both bare metals (checked against every other
