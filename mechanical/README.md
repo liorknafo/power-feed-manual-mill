@@ -44,7 +44,10 @@ The mount for the left table end of the SIEG X3.5D:
 `mechanical/tools/check_clutch.py` (engaged and released) and `mechanical/tools/check_feed_unit.py`; re-run them after
 changing `P` or `F`.
 
-**Run:** `mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py`. It writes STEP/STL and `FEED_UNIT.md`; then
+**Run:** `mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py`. It writes STEP/STL and `FEED_UNIT.md`, plus
+the flat patterns of the folded-aluminium mains tray and its lid (`out/mains_tray_flat.dxf/.step`,
+`out/mains_tray_lid_flat.dxf/.step`, checked against the folded model; the DXFs are written with `ezdxf`, which comes
+with build123d); then
 `mechanical/.venv/bin/python mechanical/tools/render_feed_unit.py` writes the renders (`out/render_*.png`).
 
 **The mill-side dimensions are PLACEHOLDERS:** the leadscrew-end slot, the standoff positions on the table end, and the motor angle. See `FEED_UNIT.md` and docs/mill.md.
