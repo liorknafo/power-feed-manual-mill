@@ -1,0 +1,1331 @@
+{
+  "format": "solidcraft/53",
+  "name": "motor_23hs45",
+  "units": "mm",
+  "params": [
+    {
+      "name": "shaft_len",
+      "expr": "21 mm",
+      "unit": "mm",
+      "comment": "shaft beyond the flange face, as cut (drawing: 24, cut to 21 for the clutch) - MEASURE YOURS (> flat_len + 2 is the full flat)",
+      "model": false
+    },
+    {
+      "name": "flange_size",
+      "expr": "57 mm",
+      "unit": "mm",
+      "comment": "NEMA 23 flange and body square",
+      "model": false
+    },
+    {
+      "name": "flange_t",
+      "expr": "4.8 mm",
+      "unit": "mm",
+      "comment": "flange thickness",
+      "model": false
+    },
+    {
+      "name": "bolt_square",
+      "expr": "47 mm",
+      "unit": "mm",
+      "comment": "4x mounting holes on this square (23HS45-4204S drawing: 47.0)",
+      "model": false
+    },
+    {
+      "name": "bolt_hole_d",
+      "expr": "5.1 mm",
+      "unit": "mm",
+      "comment": "mounting hole diameter, through the flange",
+      "model": false
+    },
+    {
+      "name": "body_len",
+      "expr": "113 mm",
+      "unit": "mm",
+      "comment": "flange face to the rear cap (> flange_t + lead_d)",
+      "model": false
+    },
+    {
+      "name": "body_chamfer",
+      "expr": "17 mm",
+      "unit": "mm",
+      "comment": "corner relief of the body behind the flange, leg length (room for the M5 nuts; INFERRED, check yours)",
+      "model": false
+    },
+    {
+      "name": "pilot_d",
+      "expr": "38.1 mm",
+      "unit": "mm",
+      "comment": "pilot boss diameter",
+      "model": false
+    },
+    {
+      "name": "pilot_h",
+      "expr": "1.6 mm",
+      "unit": "mm",
+      "comment": "pilot boss height",
+      "model": false
+    },
+    {
+      "name": "shaft_d",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "shaft diameter",
+      "model": false
+    },
+    {
+      "name": "shaft_flat",
+      "expr": "9.5 mm",
+      "unit": "mm",
+      "comment": "across the D-flat (0.5 deep)",
+      "model": false
+    },
+    {
+      "name": "flat_len",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "D-flat length from the tip (it stops 2 mm above the face on a short shaft)",
+      "model": false
+    },
+    {
+      "name": "lead_d",
+      "expr": "7 mm",
+      "unit": "mm",
+      "comment": "lead cable stub diameter, out sideways (+x) at the rear cap",
+      "model": false
+    },
+    {
+      "name": "lead_len",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "lead stub length beyond the body flat",
+      "model": false
+    },
+    {
+      "name": "lead_z",
+      "expr": "109 mm",
+      "unit": "mm",
+      "comment": "lead stub axis, distance behind the flange face (< body_len - lead_d/2)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "flange_size",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "flange_size",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "flange_size",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "flange_size",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "bolt_square/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d19",
+      "expr": "pilot_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d20",
+      "expr": "shaft_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d23",
+      "expr": "lead_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "lead_z",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "shaft_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "shaft_d + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "shaft_d - shaft_flat + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d31",
+      "expr": "shaft_flat - shaft_d/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d32",
+      "expr": "shaft_d/2 + 1 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BodySketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-flange_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -28.5,
+              -28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              28.5,
+              -28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              28.5,
+              28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -28.5,
+              28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 1,
+            "value": 57.0,
+            "param": "d2"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 0,
+            "value": 57.0,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Body",
+      "suppressed": false,
+      "body_names": [
+        "motor"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "body_len - flange_t",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "CornerReliefs",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -28.5,
+            -28.5,
+            -113.0
+          ],
+          "max": [
+            28.5,
+            28.5,
+            -4.8
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -28.5,
+            -28.5,
+            -113.0
+          ],
+          "max": [
+            28.5,
+            28.5,
+            -4.8
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -28.5,
+            -28.5,
+            -113.0
+          ],
+          "max": [
+            28.5,
+            28.5,
+            -4.8
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -28.5,
+            -28.5,
+            -113.0
+          ],
+          "max": [
+            28.5,
+            28.5,
+            -4.8
+          ]
+        }
+      ],
+      "edge_names": [
+        "F2:side:l2|F2:side:l3",
+        "F2:side:l3|F2:side:l4",
+        "F2:side:l1|F2:side:l4",
+        "F2:side:l1|F2:side:l2"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          28.5,
+          28.5,
+          -60.0
+        ],
+        [
+          -28.5,
+          28.5,
+          -60.0
+        ],
+        [
+          -28.5,
+          -28.5,
+          -60.0
+        ],
+        [
+          28.5,
+          -28.5,
+          -60.0
+        ]
+      ],
+      "distance": "body_chamfer"
+    },
+    {
+      "id": 4,
+      "name": "FlangeSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -28.5,
+              -28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              28.5,
+              -28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              28.5,
+              28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -28.5,
+              28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 1,
+            "value": 57.0,
+            "param": "d6"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 0,
+            "value": 57.0,
+            "param": "d7"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Flange",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "type": "extrude",
+      "sketch": 4,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "flange_t",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 6,
+      "name": "BoltHoleSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              23.5,
+              23.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -23.5,
+              23.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -23.5,
+              -23.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              23.5,
+              -23.5
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 23.5,
+            "param": "d9"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 23.5,
+            "param": "d10"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 23.5,
+            "param": "d11"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 23.5,
+            "param": "d12"
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 23.5,
+            "param": "d13"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 23.5,
+            "param": "d14"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 4,
+            "value": 23.5,
+            "param": "d15"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 23.5,
+            "param": "d16"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "BoltHoles",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "type": "hole",
+      "position": [
+        23.5,
+        23.5,
+        0.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "bolt_hole_d",
+      "depth": "flange_t",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 6,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "name": "PilotSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 19.05,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 5.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 38.1,
+            "param": "d19"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 10.0,
+            "param": "d20"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Pilot",
+      "suppressed": false,
+      "param_names": [
+        "d21"
+      ],
+      "type": "extrude",
+      "sketch": 8,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "pilot_h",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 10,
+      "name": "LeadSketch",
+      "suppressed": false,
+      "param_names": [
+        "d22"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "flange_size/2"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              -109.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 3.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 7.0,
+            "param": "d23"
+          },
+          {
+            "id": "k2",
+            "type": "vertical_points",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k3",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 109.0,
+            "param": "d24"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 3
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "LeadStub",
+      "suppressed": false,
+      "param_names": [
+        "d25"
+      ],
+      "type": "extrude",
+      "sketch": 10,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "lead_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 12,
+      "name": "ShaftSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 5.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 10.0,
+            "param": "d26"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "Shaft",
+      "suppressed": false,
+      "body_names": [
+        "motor_shaft"
+      ],
+      "param_names": [
+        "d27"
+      ],
+      "type": "extrude",
+      "sketch": 12,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "shaft_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 14,
+      "name": "ShaftFlatSketch",
+      "suppressed": false,
+      "param_names": [
+        "d28"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "max(shaft_len - flat_len, 2 mm)"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              4.5,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              6.0,
+              -6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              6.0,
+              6.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              4.5,
+              6.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 1,
+            "value": 12.0,
+            "param": "d29"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 0,
+            "value": 1.5,
+            "param": "d30"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 4.5,
+            "param": "d31"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 6.0,
+            "param": "d32"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "ShaftFlat",
+      "suppressed": false,
+      "param_names": [
+        "d33"
+      ],
+      "type": "extrude",
+      "sketch": 14,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "shaft_len - max(shaft_len - flat_len, 2 mm)",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "motor_shaft"
+      ]
+    }
+  ],
+  "next_id": 16,
+  "next_component_color_index": 0,
+  "materials": {
+    "motor": "Steel",
+    "motor_shaft": "Steel"
+  }
+}

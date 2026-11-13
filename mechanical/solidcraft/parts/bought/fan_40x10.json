@@ -1,0 +1,801 @@
+{
+  "format": "solidcraft/53",
+  "name": "fan_40x10",
+  "units": "mm",
+  "params": [
+    {
+      "name": "fan_size",
+      "expr": "40 mm",
+      "unit": "mm",
+      "comment": "frame size, square (25 to 120 mm)",
+      "model": false
+    },
+    {
+      "name": "fan_t",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "frame thickness (6 to 25 mm)",
+      "model": false
+    },
+    {
+      "name": "venturi_d",
+      "expr": "38 mm",
+      "unit": "mm",
+      "comment": "venturi bore (hub_d + 10 to fan_size - 1)",
+      "model": false
+    },
+    {
+      "name": "hole_spacing",
+      "expr": "32 mm",
+      "unit": "mm",
+      "comment": "mounting hole spacing, square (fan_size - 10 to fan_size - 5)",
+      "model": false
+    },
+    {
+      "name": "hole_d",
+      "expr": "4.3 mm",
+      "unit": "mm",
+      "comment": "mounting hole diameter (3 to 4.5 mm)",
+      "model": false
+    },
+    {
+      "name": "hub_d",
+      "expr": "21 mm",
+      "unit": "mm",
+      "comment": "hub diameter (10 to venturi_d - 10)",
+      "model": false
+    },
+    {
+      "name": "blades",
+      "expr": "7",
+      "unit": "",
+      "comment": "number of blades: whole number, 3 to 11",
+      "model": false
+    },
+    {
+      "name": "blade_r",
+      "expr": "14 mm",
+      "unit": "mm",
+      "comment": "radius of the blade centres (hub_d/2 + 1 to venturi_d/2 - 5)",
+      "model": false
+    },
+    {
+      "name": "blade_len",
+      "expr": "9 mm",
+      "unit": "mm",
+      "comment": "blade radial length (5 to venturi_d/2 - hub_d/2)",
+      "model": false
+    },
+    {
+      "name": "blade_h",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "blade chord before tilting (4 to fan_t)",
+      "model": false
+    },
+    {
+      "name": "blade_t",
+      "expr": "1 mm",
+      "unit": "mm",
+      "comment": "blade thickness (0.6 to 2 mm)",
+      "model": false
+    },
+    {
+      "name": "blade_pitch",
+      "expr": "25 deg",
+      "unit": "deg",
+      "comment": "blade tilt about its radial line (0 to 45 deg)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "fan_size",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "fan_size",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "venturi_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "hub_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "blade_r",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "blade_len",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "blade_h",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "FrameSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -20.0,
+              -20.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              20.0,
+              -20.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              20.0,
+              20.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -20.0,
+              20.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 6,
+            "r": 19.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 40.0,
+            "param": "d1"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 40.0,
+            "param": "d2"
+          },
+          {
+            "id": "k9",
+            "type": "coincident",
+            "p": 0,
+            "q": 6
+          },
+          {
+            "id": "k10",
+            "type": "diameter",
+            "c": 6,
+            "value": 38.0,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 10,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Frame",
+      "suppressed": false,
+      "body_names": [
+        "fan_frame"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "l1",
+            "l2",
+            "l3",
+            "l4"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "fan_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "MountHole",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "face_names": [
+        "F2:top"
+      ],
+      "type": "hole",
+      "position": [
+        16.0,
+        16.0,
+        10.0
+      ],
+      "at": [
+        "hole_spacing/2",
+        "hole_spacing/2",
+        "fan_t"
+      ],
+      "direction": [
+        -0.0,
+        -5.709427122486454e-17,
+        -1.0
+      ],
+      "diameter": "hole_d",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 4,
+      "name": "MountHoles",
+      "suppressed": false,
+      "param_names": [
+        "d6",
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "type": "pattern",
+      "features": [
+        3
+      ],
+      "pattern": {
+        "type": "rectangular",
+        "dir1": [
+          -1.0,
+          0.0,
+          0.0
+        ],
+        "count1": "2",
+        "spacing1": "hole_spacing",
+        "dir2": [
+          0.0,
+          -1.0,
+          0.0
+        ],
+        "count2": "2",
+        "spacing2": "hole_spacing"
+      }
+    },
+    {
+      "id": 5,
+      "name": "HubSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 10.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 21.0,
+            "param": "d10"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Hub",
+      "suppressed": false,
+      "body_names": [
+        "fan_rotor"
+      ],
+      "param_names": [
+        "d11"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "fan_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 7,
+      "name": "FanMidPlane",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "fan_t/2"
+      }
+    },
+    {
+      "id": 8,
+      "name": "BladePlane",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "construction",
+          "feature": 7
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "angle": "blade_pitch - 90 deg",
+        "direction_only": true
+      }
+    },
+    {
+      "id": 9,
+      "name": "BladeSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 8
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              100.0,
+              0.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -100.0,
+              0.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p3",
+            "pos": [
+              9.5,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              18.5,
+              -4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              18.5,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              9.5,
+              4.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p7",
+            "pos": [
+              14.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": true,
+            "link": "j1"
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 6,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 3,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 4,
+            "b": 6,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 1
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 3
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 2
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 4
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 7,
+            "l": 5
+          },
+          {
+            "id": "k6",
+            "type": "point_on_curve",
+            "p": 7,
+            "c": 0
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 7,
+            "value": 14.0,
+            "param": "d14"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 1,
+            "value": 9.0,
+            "param": "d15"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 4,
+            "value": 8.0,
+            "param": "d16"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "plane",
+              "name": "XZ"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 9,
+          "l": 7,
+          "p": 7
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Blade",
+      "suppressed": false,
+      "param_names": [
+        "d17"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "blade_t",
+        "convention": "total_distance",
+        "direction": "symmetric"
+      },
+      "operation": "join",
+      "targets": [
+        "fan_rotor"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Blades",
+      "suppressed": false,
+      "param_names": [
+        "d18",
+        "d19"
+      ],
+      "type": "pattern",
+      "features": [
+        10
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "blades",
+        "angle": "360 deg"
+      }
+    }
+  ],
+  "next_id": 12,
+  "next_component_color_index": 0,
+  "materials": {
+    "fan_frame": "ABS Plastic",
+    "fan_rotor": "ABS Plastic"
+  }
+}

@@ -1,0 +1,633 @@
+{
+  "format": "solidcraft/53",
+  "name": "c13_plug",
+  "units": "mm",
+  "params": [
+    {
+      "name": "nose_w",
+      "expr": "23 mm",
+      "unit": "mm",
+      "comment": "C13 nose width along x (22 to 24 mm)",
+      "model": false
+    },
+    {
+      "name": "nose_h",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "C13 nose height along y (14 to 16 mm)",
+      "model": false
+    },
+    {
+      "name": "nose_len",
+      "expr": "18.5 mm",
+      "unit": "mm",
+      "comment": "nose length in front of the body (15 to 20 mm)",
+      "model": false
+    },
+    {
+      "name": "body_w",
+      "expr": "24.6 mm",
+      "unit": "mm",
+      "comment": "plug body width (nose_w + 0.5 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "body_h",
+      "expr": "17 mm",
+      "unit": "mm",
+      "comment": "plug body height (nose_h + 0.5 to 22 mm)",
+      "model": false
+    },
+    {
+      "name": "body_len",
+      "expr": "19 mm",
+      "unit": "mm",
+      "comment": "plug body length (12 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "relief_d",
+      "expr": "13.6 mm",
+      "unit": "mm",
+      "comment": "strain relief diameter (8 to body_h)",
+      "model": false
+    },
+    {
+      "name": "relief_len",
+      "expr": "17 mm",
+      "unit": "mm",
+      "comment": "strain relief length behind the body (10 to 40 mm)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "nose_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "nose_h",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "body_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "body_h",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "relief_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "relief_d + 0.8 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "NoseSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -11.5,
+              -7.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              11.5,
+              -7.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              11.5,
+              7.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -11.5,
+              7.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 23.0,
+            "param": "d1"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 15.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Nose",
+      "suppressed": false,
+      "body_names": [
+        "c13_plug"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "nose_len",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "BodySketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -12.3,
+              -8.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              12.3,
+              -8.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              12.3,
+              8.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -12.3,
+              8.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 24.6,
+            "param": "d4"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 17.0,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Body",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "body_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "ReliefSketch",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "body_len"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 6.8,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 13.6,
+            "param": "d8"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "StrainRelief",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "relief_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "ReliefRibSketch",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "body_len + 11 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 7.2,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 14.4,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "ReliefRib",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "3.5 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    }
+  ],
+  "next_id": 9,
+  "next_component_color_index": 0,
+  "materials": {
+    "c13_plug": "ABS Plastic"
+  }
+}

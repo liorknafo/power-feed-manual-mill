@@ -1,0 +1,819 @@
+{
+  "format": "solidcraft/53",
+  "name": "encoder_lpd3806",
+  "units": "mm",
+  "params": [
+    {
+      "name": "body_d",
+      "expr": "38 mm",
+      "unit": "mm",
+      "comment": "encoder body diameter (30 to 50 mm)",
+      "model": false
+    },
+    {
+      "name": "body_len",
+      "expr": "35 mm",
+      "unit": "mm",
+      "comment": "encoder body length behind the front face (25 to 45 mm)",
+      "model": false
+    },
+    {
+      "name": "boss_d",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "face boss diameter (10 to 26 mm)",
+      "model": false
+    },
+    {
+      "name": "boss_len",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "face boss height (2 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "shaft_d",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "shaft diameter (4 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "shaft_len",
+      "expr": "13 mm",
+      "unit": "mm",
+      "comment": "shaft length beyond the boss (flat_len + 1 to 25 mm)",
+      "model": false
+    },
+    {
+      "name": "flat_af",
+      "expr": "5.5 mm",
+      "unit": "mm",
+      "comment": "shaft size across the flat (shaft_d - 1.5 to shaft_d - 0.2)",
+      "model": false
+    },
+    {
+      "name": "flat_len",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "flat length from the shaft tip (3 to shaft_len - 1)",
+      "model": false
+    },
+    {
+      "name": "hole_pcd1",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "pitch circle of the 3 M3 face holes at 30/150/270 deg (boss_d + 4 to body_d - 4)",
+      "model": false
+    },
+    {
+      "name": "hole_pcd2",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "pitch circle of the 3 M3 face holes at 60/180/300 deg (boss_d + 4 to body_d - 4)",
+      "model": false
+    },
+    {
+      "name": "tap_d",
+      "expr": "2.5 mm",
+      "unit": "mm",
+      "comment": "M3 tap drill of the face holes (2.4 to 2.6 mm)",
+      "model": false
+    },
+    {
+      "name": "tap_depth",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "face hole depth (3 to 10 mm)",
+      "model": false
+    },
+    {
+      "name": "cable_d",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "cable diameter at the radial exit (3 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "cable_z",
+      "expr": "28.5 mm",
+      "unit": "mm",
+      "comment": "cable exit height above the front face (cable_d/2 to body_len - cable_d/2)",
+      "model": false
+    },
+    {
+      "name": "cable_len",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "cable stub length modelled out of the body (2 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "body_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "boss_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "shaft_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "flat_af - shaft_d/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "boss_len + shaft_len - flat_len",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "flat_len + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d20",
+      "expr": "cable_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "cable_z",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BodySketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 19.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 38.0,
+            "param": "d1"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "EncoderBody",
+      "suppressed": false,
+      "body_names": [
+        "encoder_lpd3806"
+      ],
+      "param_names": [
+        "d2"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "body_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "BossSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 10.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 20.0,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "FaceBoss",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "boss_len",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "ShaftSketch",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-boss_len"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 3.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 6.0,
+            "param": "d6"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Shaft",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "shaft_len",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "ShaftFlatSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XZ"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              2.5,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              4.5,
+              8.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              4.5,
+              19.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              2.5,
+              19.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 2.5,
+            "param": "d8"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 8.0,
+            "param": "d9"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 2.0,
+            "param": "d10"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 11.0,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "ShaftFlat",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "shaft_d + 2 mm",
+        "convention": "total_distance",
+        "direction": "symmetric"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 9,
+      "name": "FaceHoleA",
+      "suppressed": false,
+      "param_names": [
+        "d13",
+        "d14"
+      ],
+      "face_names": [
+        "F2:start"
+      ],
+      "type": "hole",
+      "position": [
+        12.99038105676658,
+        7.499999999999999,
+        0.0
+      ],
+      "at": [
+        "hole_pcd1/2 * cos(30 deg)",
+        "hole_pcd1/2 * sin(30 deg)",
+        0.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        1.0
+      ],
+      "diameter": "tap_d",
+      "depth": "tap_depth",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 10,
+      "name": "FaceHoleB",
+      "suppressed": false,
+      "param_names": [
+        "d15",
+        "d16"
+      ],
+      "face_names": [
+        "F2:start"
+      ],
+      "type": "hole",
+      "position": [
+        7.000000000000002,
+        12.12435565298214,
+        0.0
+      ],
+      "at": [
+        "hole_pcd2/2 * cos(60 deg)",
+        "hole_pcd2/2 * sin(60 deg)",
+        0.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        1.0
+      ],
+      "diameter": "tap_d",
+      "depth": "tap_depth",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 11,
+      "name": "FaceHoles",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "type": "pattern",
+      "features": [
+        9,
+        10
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "3",
+        "angle": "360 deg"
+      }
+    },
+    {
+      "id": 12,
+      "name": "CableSketch",
+      "suppressed": false,
+      "param_names": [
+        "d19"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "body_d/2"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              -28.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 3.0,
+            "construction": false
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": true,
+            "link": "j1"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 6.0,
+            "param": "d20"
+          },
+          {
+            "id": "k2",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 1
+          },
+          {
+            "id": "k3",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 28.5,
+            "param": "d21"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "j": 1,
+          "k": 3,
+          "l": 1,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "CableExit",
+      "suppressed": false,
+      "body_names": [
+        "encoder_lpd3806_cable"
+      ],
+      "param_names": [
+        "d22"
+      ],
+      "type": "extrude",
+      "sketch": 12,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cable_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 14,
+  "next_component_color_index": 0,
+  "materials": {
+    "encoder_lpd3806": "Aluminum",
+    "encoder_lpd3806_cable": "PVC"
+  },
+  "user_materials": [
+    {
+      "name": "PVC",
+      "density": 1.38,
+      "appearance": {
+        "name": "PVC",
+        "color": [
+          32,
+          32,
+          32
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

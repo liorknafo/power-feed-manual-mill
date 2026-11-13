@@ -1,0 +1,628 @@
+{
+  "format": "solidcraft/53",
+  "name": "output_shaft",
+  "units": "mm",
+  "params": [
+    {
+      "name": "z_shaft0",
+      "expr": "36.85 mm",
+      "unit": "mm",
+      "comment": "clutch frame: the shaft's motor-side end, inside the hub bore (Z_HUB + hub_flange_t - 5)",
+      "model": false
+    },
+    {
+      "name": "out_shaft_d",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "ground shaft diameter (6001 bore: 12)",
+      "model": false
+    },
+    {
+      "name": "out_shaft_len",
+      "expr": "78 mm",
+      "unit": "mm",
+      "comment": "shaft length (> pulley_flat_len + z_groove - z_shaft0)",
+      "model": false
+    },
+    {
+      "name": "flat_depth",
+      "expr": "0.6 mm",
+      "unit": "mm",
+      "comment": "depth of the pulley flat and the hub spot face (0.2 .. 1.5)",
+      "model": false
+    },
+    {
+      "name": "pulley_flat_len",
+      "expr": "22 mm",
+      "unit": "mm",
+      "comment": "pulley set-screw flat, from the tip (+x side)",
+      "model": false
+    },
+    {
+      "name": "z_spot",
+      "expr": "46.85 mm",
+      "unit": "mm",
+      "comment": "clutch frame: hub set-screw height (mid boss) = centre of the hub spot face, at 30 deg",
+      "model": false
+    },
+    {
+      "name": "spot_d",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "end mill diameter of the hub spot face (< hub boss length)",
+      "model": false
+    },
+    {
+      "name": "z_groove",
+      "expr": "66.55 mm",
+      "unit": "mm",
+      "comment": "clutch frame: motor-side flank of the DIN 471-12 groove (inner bearing face + bearing_w + 0.1)",
+      "model": false
+    },
+    {
+      "name": "groove_d",
+      "expr": "11.5 mm",
+      "unit": "mm",
+      "comment": "DIN 471-12 groove diameter",
+      "model": false
+    },
+    {
+      "name": "groove_w",
+      "expr": "1.1 mm",
+      "unit": "mm",
+      "comment": "DIN 471-12 groove width",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "out_shaft_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "out_shaft_d + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "flat_depth + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "out_shaft_d/2 - flat_depth",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "out_shaft_d/2 + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "spot_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "z_spot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "out_shaft_d + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d17",
+      "expr": "groove_d",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "ShaftSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_shaft0"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 6.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 12.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Shaft",
+      "suppressed": false,
+      "body_names": [
+        "output_shaft"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "out_shaft_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "PulleyFlatSketch",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_shaft0 + out_shaft_len"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              5.4,
+              -7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              7.0,
+              -7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              7.0,
+              7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              5.4,
+              7.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 1,
+            "value": 14.0,
+            "param": "d5"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 0,
+            "value": 1.6,
+            "param": "d6"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 5.4,
+            "param": "d7"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 7.0,
+            "param": "d8"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "PulleyFlat",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "pulley_flat_len",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 5,
+      "name": "SpotFacePlane",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "angle": "30 deg"
+      }
+    },
+    {
+      "id": 6,
+      "name": "HubSpotFaceSketch",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "construction",
+          "feature": 5
+        },
+        "distance": "out_shaft_d/2 - flat_depth"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              46.85
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 5.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 10.0,
+            "param": "d12"
+          },
+          {
+            "id": "k2",
+            "type": "vertical_points",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k3",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 46.85,
+            "param": "d13"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 3
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "HubSpotFace",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "flat_depth + 1 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 8,
+      "name": "CirclipGrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_groove"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 7.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 5.75,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 14.0,
+            "param": "d16"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 11.5,
+            "param": "d17"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "CirclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "extrude",
+      "sketch": 8,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "groove_w",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    }
+  ],
+  "next_id": 10,
+  "next_component_color_index": 0,
+  "materials": {
+    "output_shaft": "Steel"
+  }
+}

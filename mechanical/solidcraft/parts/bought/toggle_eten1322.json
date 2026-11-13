@@ -1,0 +1,766 @@
+{
+  "format": "solidcraft/53",
+  "name": "toggle_eten1322",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "2.75 mm",
+      "unit": "mm",
+      "comment": "control strip thickness it clamps (STRIP_T); 1 to 5 mm",
+      "model": false
+    },
+    {
+      "name": "nut_af",
+      "expr": "14 mm",
+      "unit": "mm",
+      "comment": "the two nuts across flats (INFERRED); 13 to 16 mm",
+      "model": false
+    },
+    {
+      "name": "bushing_l",
+      "expr": "9.5 mm",
+      "unit": "mm",
+      "comment": "threaded bushing length (INFERRED); panel_t + 6 to 12 mm",
+      "model": false
+    },
+    {
+      "name": "lever_l",
+      "expr": "17.3 mm",
+      "unit": "mm",
+      "comment": "lever length above the bushing; 10 to 25 mm",
+      "model": false
+    },
+    {
+      "name": "d3",
+      "expr": "nut_af",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "nut_af",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Bushing",
+      "suppressed": false,
+      "body_names": [
+        "toggle_eten1322"
+      ],
+      "param_names": [
+        "d1",
+        "d2"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "-panel_t - 3"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "5.85",
+      "height": "(bushing_l - panel_t - 3) - (-panel_t - 3)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "FrontNutSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              4.0414518843336635,
+              7.000000000000853
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -4.041451884323198,
+              7.000000000003216
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -8.082903768658912,
+              6.1761468162770374e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -4.041451884336396,
+              -6.99999999999907
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              4.041451884321536,
+              -7.000000000007125
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              8.082903768657552,
+              -7.104511956568081e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 7.0,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 8.082903768658117,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 14.0,
+            "param": "d3"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "FrontNut",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 2,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "3",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "toggle_eten1322"
+      ]
+    },
+    {
+      "id": 4,
+      "name": "BackNutSketch",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-panel_t - 3"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              4.0414518843336635,
+              7.000000000000853
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -4.041451884323198,
+              7.000000000003216
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -8.082903768658912,
+              6.1761468162770374e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -4.041451884336396,
+              -6.99999999999907
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              4.041451884321536,
+              -7.000000000007125
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              8.082903768657552,
+              -7.104511956568081e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 7.0,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 8.082903768658117,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 14.0,
+            "param": "d6"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "BackNut",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "extrude",
+      "sketch": 4,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "(-panel_t) - (-panel_t - 3)",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "toggle_eten1322"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Lever",
+      "suppressed": false,
+      "param_names": [
+        "d8",
+        "d9"
+      ],
+      "participants": [
+        "toggle_eten1322"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "bushing_l - panel_t - 3"
+      ],
+      "axis": [
+        0.2079116908179501,
+        0.0,
+        0.9781476007337652
+      ],
+      "radius": "3",
+      "height": "lever_l",
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "Case",
+      "suppressed": false,
+      "param_names": [
+        "d10",
+        "d11",
+        "d12"
+      ],
+      "participants": [
+        "toggle_eten1322"
+      ],
+      "type": "box",
+      "corner": [
+        -14.85,
+        -9.9,
+        "-panel_t - 25"
+      ],
+      "length": "29.7",
+      "width": "19.8",
+      "height": "(-panel_t - 3) - (-panel_t - 25)",
+      "operation": "join"
+    },
+    {
+      "id": 8,
+      "name": "Terminal",
+      "suppressed": false,
+      "param_names": [
+        "d13",
+        "d14",
+        "d15"
+      ],
+      "participants": [
+        "toggle_eten1322"
+      ],
+      "type": "box",
+      "corner": [
+        -13.75,
+        -9.0,
+        "-panel_t - 31.7"
+      ],
+      "length": "7.1",
+      "width": "7",
+      "height": "(-panel_t - 25) - (-panel_t - 31.7)",
+      "operation": "join"
+    },
+    {
+      "id": 9,
+      "name": "Terminals",
+      "suppressed": false,
+      "param_names": [
+        "d16",
+        "d17",
+        "d18",
+        "d19"
+      ],
+      "type": "pattern",
+      "features": [
+        8
+      ],
+      "pattern": {
+        "type": "rectangular",
+        "dir1": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "count1": "3",
+        "spacing1": "10.2 mm",
+        "dir2": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "count2": "2",
+        "spacing2": "11 mm"
+      }
+    },
+    {
+      "id": 10,
+      "name": "LockWasherTab",
+      "suppressed": false,
+      "param_names": [
+        "d20",
+        "d21",
+        "d22"
+      ],
+      "participants": [
+        "toggle_eten1322"
+      ],
+      "type": "box",
+      "corner": [
+        -0.9,
+        5.6,
+        "-panel_t"
+      ],
+      "length": "1.8",
+      "width": "1.3",
+      "height": "0 - (-panel_t)",
+      "operation": "join"
+    }
+  ],
+  "next_id": 11,
+  "next_component_color_index": 0,
+  "materials": {
+    "toggle_eten1322": "ABS Plastic"
+  }
+}

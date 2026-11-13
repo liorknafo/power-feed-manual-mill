@@ -1,0 +1,3918 @@
+{
+  "format": "solidcraft/53",
+  "name": "plate",
+  "units": "mm",
+  "params": [
+    {
+      "name": "C",
+      "expr": "70.70883080499217 mm",
+      "unit": "mm",
+      "comment": "belt centre distance (solved from the 295-5M belt): the clutch/motor axis is at y = -C, straight below the leadscrew",
+      "model": false
+    },
+    {
+      "name": "chamber",
+      "expr": "35 mm",
+      "unit": "mm",
+      "comment": "bracket face to the plate's chamber face (Z_PLATE_IN), 25 to 60 mm",
+      "model": false
+    },
+    {
+      "name": "plate_t",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "plate thickness: 2x bearing_w + 2x (circlip_land + circlip_groove + 0.2) + spacer tube (27 to 40 mm)",
+      "model": false
+    },
+    {
+      "name": "x_half",
+      "expr": "55 mm",
+      "unit": "mm",
+      "comment": "plate / housing inner half-width (x = -x_half back ... +x_half front), 50 to 70 mm",
+      "model": false
+    },
+    {
+      "name": "guard_r1",
+      "expr": "37.83098861837907 mm",
+      "unit": "mm",
+      "comment": "belt guard inside radius round the 40T pulley (pitch radius + 6)",
+      "model": false
+    },
+    {
+      "name": "plate_top",
+      "expr": "guard_r1 + 6 mm",
+      "unit": "mm",
+      "comment": "world y of the top edge: covers the belt guard's open face (derived)",
+      "model": false
+    },
+    {
+      "name": "tension_slot",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "+- belt-tension travel of the module along the centre line (1 to 6 mm)",
+      "model": false
+    },
+    {
+      "name": "cover_r",
+      "expr": "44 mm",
+      "unit": "mm",
+      "comment": "clutch cover outer radius (housing_od/2 + cover_wall)",
+      "model": false
+    },
+    {
+      "name": "tray_stack",
+      "expr": "36 mm",
+      "unit": "mm",
+      "comment": "cover bottom at the lowest tension to the plate's bottom edge: 3 gap + 1 + PSU 30 + tray 1.5 + 0.5",
+      "model": false
+    },
+    {
+      "name": "plate_bot",
+      "expr": "-(C + cover_r + tension_slot + tray_stack)",
+      "unit": "mm",
+      "comment": "world y of the bottom edge (derived)",
+      "model": false
+    },
+    {
+      "name": "r_long",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "housing outer radius of the long edges (8 to 16 mm)",
+      "model": false
+    },
+    {
+      "name": "panel_t",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "housing wall thickness (2 to 4 mm)",
+      "model": false
+    },
+    {
+      "name": "corner_r",
+      "expr": "r_long - panel_t",
+      "unit": "mm",
+      "comment": "bottom corner radius = the housing's inside radius (derived)",
+      "model": false
+    },
+    {
+      "name": "top_chamfer",
+      "expr": "r_long - panel_t*(2 - sqrt(2)) + 0.3 mm",
+      "unit": "mm",
+      "comment": "top corner chamfer legs, under the housing's chamfered inside + 0.3 (derived)",
+      "model": false
+    },
+    {
+      "name": "bearing_od",
+      "expr": "32 mm",
+      "unit": "mm",
+      "comment": "6002 OD = the straight-through stub bearing bore (H7)",
+      "model": false
+    },
+    {
+      "name": "circlip_land",
+      "expr": "2.6 mm",
+      "unit": "mm",
+      "comment": "material outside each DIN 472-32 groove (2 to 4 mm)",
+      "model": false
+    },
+    {
+      "name": "circlip_groove",
+      "expr": "1.3 mm",
+      "unit": "mm",
+      "comment": "DIN 472-32 groove width",
+      "model": false
+    },
+    {
+      "name": "circlip_groove_d",
+      "expr": "33.7 mm",
+      "unit": "mm",
+      "comment": "DIN 472-32 groove diameter",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "x_half",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "x_half",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "-plate_bot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "plate_top",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "circlip_groove_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "circlip_groove_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "clutch_bearing_od",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "clutch output bearing OD (6001); its boss is this + 10 mm",
+      "model": false
+    },
+    {
+      "name": "boss_r",
+      "expr": "clutch_bearing_od/2 + 6 mm",
+      "unit": "mm",
+      "comment": "half width of the clutch boss slot: the boss + 1 mm (derived)",
+      "model": false
+    },
+    {
+      "name": "d17",
+      "expr": "boss_r",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d18",
+      "expr": "C - tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d19",
+      "expr": "-plate_bot + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "cover_bolt_r",
+      "expr": "36 mm",
+      "unit": "mm",
+      "comment": "radius of the clutch cover's 4 M5 module bolts (at 40, 140, 190, 350 deg in the clutch frame)",
+      "model": false
+    },
+    {
+      "name": "module_bolt_d",
+      "expr": "5.5 mm",
+      "unit": "mm",
+      "comment": "M5 clearance width of the module bolt slots",
+      "model": false
+    },
+    {
+      "name": "d22",
+      "expr": "module_bolt_d/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d23",
+      "expr": "cover_bolt_r*cos(40 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "cover_bolt_r*cos(40 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d25",
+      "expr": "C + cover_bolt_r*sin(40 deg) - tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "C + cover_bolt_r*sin(40 deg) + tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "module_bolt_d/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "cover_bolt_r*cos(40 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "cover_bolt_r*cos(40 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "C + cover_bolt_r*sin(40 deg) - tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d31",
+      "expr": "C + cover_bolt_r*sin(40 deg) + tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d32",
+      "expr": "module_bolt_d/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d33",
+      "expr": "cover_bolt_r*cos(10 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d34",
+      "expr": "cover_bolt_r*cos(10 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d35",
+      "expr": "C - cover_bolt_r*sin(10 deg) - tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d36",
+      "expr": "C - cover_bolt_r*sin(10 deg) + tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d37",
+      "expr": "module_bolt_d/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d38",
+      "expr": "cover_bolt_r*cos(10 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d39",
+      "expr": "cover_bolt_r*cos(10 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d40",
+      "expr": "C - cover_bolt_r*sin(10 deg) - tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d41",
+      "expr": "C - cover_bolt_r*sin(10 deg) + tension_slot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "standoff_x",
+      "expr": "46 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER x of the 4 standoffs either side of the leadscrew axis (where they land on the table end), 35 to x_half - 7 mm",
+      "model": false
+    },
+    {
+      "name": "standoff_y_hi",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER y of the upper standoff pair above the leadscrew axis (5 to plate_top - 14 mm)",
+      "model": false
+    },
+    {
+      "name": "standoff_y_lo",
+      "expr": "78 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER distance of the lower standoff pair below the leadscrew axis (clear of the module bolt heads)",
+      "model": false
+    },
+    {
+      "name": "standoff_cb",
+      "expr": "6.5 mm",
+      "unit": "mm",
+      "comment": "counterbore depth for the M6 standoff screws' heads, from the outer face (6 to 10 mm)",
+      "model": false
+    },
+    {
+      "name": "enc_post_r",
+      "expr": "23 mm",
+      "unit": "mm",
+      "comment": "radius of the 3 encoder post M3 taps, outside the bearing bore (18 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "tb_screw_x",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "x of the tension block's 2 M5 taps, in the legs beside the slot",
+      "model": false
+    },
+    {
+      "name": "tb_y",
+      "expr": "-(C + cover_r + tension_slot + 10 mm)",
+      "unit": "mm",
+      "comment": "world y of the tension block centre and its M5 taps (derived)",
+      "model": false
+    },
+    {
+      "name": "d44",
+      "expr": "standoff_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d45",
+      "expr": "standoff_y_hi",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d46",
+      "expr": "standoff_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d47",
+      "expr": "standoff_y_hi",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d48",
+      "expr": "standoff_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d49",
+      "expr": "standoff_y_lo",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d50",
+      "expr": "standoff_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d51",
+      "expr": "standoff_y_lo",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d56",
+      "expr": "enc_post_r",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d57",
+      "expr": "enc_post_r*cos(30 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d58",
+      "expr": "enc_post_r/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d59",
+      "expr": "enc_post_r*cos(30 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d60",
+      "expr": "enc_post_r/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d64",
+      "expr": "tb_screw_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d65",
+      "expr": "-tb_y",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d66",
+      "expr": "tb_screw_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d67",
+      "expr": "-tb_y",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "tray_tab_x",
+      "expr": "34 mm",
+      "unit": "mm",
+      "comment": "x of the mains tray's 2 floor tabs, either side of the slot (boss_r + 10 to x_half - 14 mm)",
+      "model": false
+    },
+    {
+      "name": "rebate_h",
+      "expr": "2.5 mm",
+      "unit": "mm",
+      "comment": "tray tab rebate depth up from the bottom edge (tab 1.5 + 0.5 + 0.5)",
+      "model": false
+    },
+    {
+      "name": "rebate_hw",
+      "expr": "7 mm",
+      "unit": "mm",
+      "comment": "half width of each tray tab rebate (tab half width 6 + 1)",
+      "model": false
+    },
+    {
+      "name": "rebate_depth",
+      "expr": "13 mm",
+      "unit": "mm",
+      "comment": "tray tab rebate length in from the outer face (8 to plate_t - 6 mm)",
+      "model": false
+    },
+    {
+      "name": "rebate_r",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "inner corner radius of the rebates (a 6 mm end mill from the bottom edge), less than rebate_hw",
+      "model": false
+    },
+    {
+      "name": "tray_screw_in",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "M4 tray-tab tap: distance in from the outer face (less than rebate_depth - 2)",
+      "model": false
+    },
+    {
+      "name": "lap",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "housing overlap on the plate edges; its M3 screws tap into the edges at lap/2 from the outer face",
+      "model": false
+    },
+    {
+      "name": "d71",
+      "expr": "tray_tab_x - rebate_hw",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d72",
+      "expr": "tray_tab_x + rebate_hw",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d73",
+      "expr": "chamber + plate_t - rebate_depth",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d74",
+      "expr": "chamber + plate_t + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d75",
+      "expr": "tray_tab_x - rebate_hw",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d76",
+      "expr": "tray_tab_x + rebate_hw",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d77",
+      "expr": "chamber + plate_t - rebate_depth",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d78",
+      "expr": "chamber + plate_t + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d79",
+      "expr": "rebate_r",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d82",
+      "expr": "tray_tab_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d83",
+      "expr": "chamber + plate_t - tray_screw_in",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d84",
+      "expr": "tray_tab_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d85",
+      "expr": "chamber + plate_t - tray_screw_in",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d89",
+      "expr": "30 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d90",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d91",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d92",
+      "expr": "30 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d93",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d97",
+      "expr": "44 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d98",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d102",
+      "expr": "110 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d103",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d104",
+      "expr": "60 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d105",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d106",
+      "expr": "10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d107",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d108",
+      "expr": "20 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d109",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d113",
+      "expr": "110 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d114",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d115",
+      "expr": "60 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d116",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d117",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d118",
+      "expr": "26 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d119",
+      "expr": "chamber + plate_t - lap/2",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "PlateSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -55.0,
+              -153.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              55.0,
+              -153.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              55.0,
+              43.83098861837907
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -55.0,
+              43.83098861837907
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 55.0,
+            "param": "d2"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 55.0,
+            "param": "d3"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 153.70883080499217,
+            "param": "d4"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 43.83098861837907,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "PlateBlank",
+      "suppressed": false,
+      "body_names": [
+        "plate"
+      ],
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "plate_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "BottomCornerFillets",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.0,
+            -153.70883080499217,
+            35.0
+          ],
+          "max": [
+            55.0,
+            43.83098861837907,
+            63.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.0,
+            -153.70883080499217,
+            35.0
+          ],
+          "max": [
+            55.0,
+            43.83098861837907,
+            63.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F2:side:l1|F2:side:l4",
+        "F2:side:l1|F2:side:l2"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -55.0,
+          -153.70883080499217,
+          49.0
+        ],
+        [
+          55.0,
+          -153.70883080499217,
+          49.0
+        ]
+      ],
+      "radius": "corner_r"
+    },
+    {
+      "id": 4,
+      "name": "TopCornerChamfers",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.0,
+            -153.70883080499217,
+            35.0
+          ],
+          "max": [
+            55.0,
+            43.83098861837907,
+            63.00000000000001
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.0,
+            -153.70883080499217,
+            35.0
+          ],
+          "max": [
+            55.0,
+            43.83098861837907,
+            63.00000000000001
+          ]
+        }
+      ],
+      "edge_names": [
+        "F2:side:l3|F2:side:l4",
+        "F2:side:l2|F2:side:l3"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          -55.0,
+          43.83098861837907,
+          49.0
+        ],
+        [
+          55.0,
+          43.83098861837907,
+          49.0
+        ]
+      ],
+      "distance": "top_chamfer"
+    },
+    {
+      "id": 5,
+      "name": "BearingBore",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "face_names": [
+        "F2:top"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        63.0
+      ],
+      "at": [
+        "0 mm",
+        "0 mm",
+        "chamber + plate_t"
+      ],
+      "direction": [
+        2.8568910894045055e-17,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "bearing_od",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 6,
+      "name": "InnerCirclipGrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + circlip_land"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 16.85,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 33.7,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "InnerCirclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "circlip_groove",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "plate"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "OuterCirclipGrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t - circlip_land - circlip_groove"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 16.85,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 33.7,
+            "param": "d14"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "OuterCirclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "extrude",
+      "sketch": 8,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "circlip_groove",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "plate"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "BossSlotSketch",
+      "suppressed": false,
+      "param_names": [
+        "d16"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -20.0,
+              -67.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -20.0,
+              -154.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              20.0,
+              -154.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              20.0,
+              -67.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              0.0,
+              -154.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              0.0,
+              -67.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              -111.20883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p7",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 5,
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 6,
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 6,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": true,
+            "link": "j1"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "tangent",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "tangent",
+            "a": 2,
+            "b": 1
+          },
+          {
+            "id": "k3",
+            "type": "tangent",
+            "a": 0,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "tangent",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "k6",
+            "type": "midpoint",
+            "p": 7,
+            "l": 4
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 5
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 5
+          },
+          {
+            "id": "k9",
+            "type": "radius",
+            "c": 3,
+            "value": 20.0,
+            "param": "d17"
+          },
+          {
+            "id": "k10",
+            "type": "distance_y",
+            "p": 0,
+            "q": 6,
+            "value": 67.70883080499217,
+            "param": "d18"
+          },
+          {
+            "id": "k11",
+            "type": "distance_y",
+            "p": 0,
+            "q": 5,
+            "value": 154.70883080499217,
+            "param": "d19"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "j": 1,
+          "k": 11,
+          "l": 4,
+          "p": 7
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "BossSlot",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "type": "extrude",
+      "sketch": 10,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "plate_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "plate"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "ModuleBoltSlotSketch",
+      "suppressed": false,
+      "param_names": [
+        "d21"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              24.827599952283208,
+              -90.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              24.827599952283208,
+              -96.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              30.327599952283208,
+              -96.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              30.327599952283208,
+              -90.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              27.577599952283208,
+              -96.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              27.577599952283208,
+              -90.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              27.577599952283208,
+              -93.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -30.327599952283208,
+              -90.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -30.327599952283208,
+              -96.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -24.827599952283208,
+              -96.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -24.827599952283208,
+              -90.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              -27.577599952283208,
+              -96.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.center",
+            "pos": [
+              -27.577599952283208,
+              -90.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -27.577599952283208,
+              -93.84918475370759
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p11",
+            "pos": [
+              -38.20307910843949,
+              -61.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p12",
+            "pos": [
+              -38.20307910843949,
+              -67.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p13",
+            "pos": [
+              -32.70307910843949,
+              -67.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p14",
+            "pos": [
+              -32.70307910843949,
+              -61.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a5.center",
+            "pos": [
+              -35.45307910843949,
+              -67.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a6.center",
+            "pos": [
+              -35.45307910843949,
+              -61.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p15",
+            "pos": [
+              -35.45307910843949,
+              -64.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p16",
+            "pos": [
+              32.70307910843949,
+              -61.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p17",
+            "pos": [
+              32.70307910843949,
+              -67.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p18",
+            "pos": [
+              38.20307910843949,
+              -67.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p19",
+            "pos": [
+              38.20307910843949,
+              -61.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a7.center",
+            "pos": [
+              35.45307910843949,
+              -67.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a8.center",
+            "pos": [
+              35.45307910843949,
+              -61.45749640898268
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p20",
+            "pos": [
+              35.45307910843949,
+              -64.45749640898268
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 5,
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 6,
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 6,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 12,
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 13,
+            "a": 11,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 13,
+            "b": 12,
+            "construction": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "a5",
+            "type": "arc",
+            "c": 19,
+            "a": 16,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "a6",
+            "type": "arc",
+            "c": 20,
+            "a": 18,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 20,
+            "b": 19,
+            "construction": true
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "a7",
+            "type": "arc",
+            "c": 26,
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 24,
+            "b": 25,
+            "construction": false
+          },
+          {
+            "id": "a8",
+            "type": "arc",
+            "c": 27,
+            "a": 25,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 27,
+            "b": 26,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "tangent",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "tangent",
+            "a": 2,
+            "b": 1
+          },
+          {
+            "id": "k3",
+            "type": "tangent",
+            "a": 0,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "tangent",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "k6",
+            "type": "midpoint",
+            "p": 7,
+            "l": 4
+          },
+          {
+            "id": "k7",
+            "type": "radius",
+            "c": 3,
+            "value": 2.75,
+            "param": "d22"
+          },
+          {
+            "id": "k8",
+            "type": "distance_x",
+            "p": 0,
+            "q": 6,
+            "value": 27.577599952283208,
+            "param": "d23"
+          },
+          {
+            "id": "k9",
+            "type": "distance_x",
+            "p": 0,
+            "q": 5,
+            "value": 27.577599952283208,
+            "param": "d24"
+          },
+          {
+            "id": "k10",
+            "type": "distance_y",
+            "p": 0,
+            "q": 6,
+            "value": 90.84918475370759,
+            "param": "d25"
+          },
+          {
+            "id": "k11",
+            "type": "distance_y",
+            "p": 0,
+            "q": 5,
+            "value": 96.84918475370759,
+            "param": "d26"
+          },
+          {
+            "id": "k12",
+            "type": "tangent",
+            "a": 5,
+            "b": 6
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 7,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "tangent",
+            "a": 5,
+            "b": 8
+          },
+          {
+            "id": "k15",
+            "type": "tangent",
+            "a": 7,
+            "b": 8
+          },
+          {
+            "id": "k16",
+            "type": "equal",
+            "a": 8,
+            "b": 6
+          },
+          {
+            "id": "k17",
+            "type": "midpoint",
+            "p": 14,
+            "l": 9
+          },
+          {
+            "id": "k18",
+            "type": "radius",
+            "c": 8,
+            "value": 2.75,
+            "param": "d27"
+          },
+          {
+            "id": "k19",
+            "type": "distance_x",
+            "p": 0,
+            "q": 13,
+            "value": 27.577599952283208,
+            "param": "d28"
+          },
+          {
+            "id": "k20",
+            "type": "distance_x",
+            "p": 0,
+            "q": 12,
+            "value": 27.577599952283208,
+            "param": "d29"
+          },
+          {
+            "id": "k21",
+            "type": "distance_y",
+            "p": 0,
+            "q": 13,
+            "value": 90.84918475370759,
+            "param": "d30"
+          },
+          {
+            "id": "k22",
+            "type": "distance_y",
+            "p": 0,
+            "q": 12,
+            "value": 96.84918475370759,
+            "param": "d31"
+          },
+          {
+            "id": "k23",
+            "type": "tangent",
+            "a": 10,
+            "b": 11
+          },
+          {
+            "id": "k24",
+            "type": "tangent",
+            "a": 12,
+            "b": 11
+          },
+          {
+            "id": "k25",
+            "type": "tangent",
+            "a": 10,
+            "b": 13
+          },
+          {
+            "id": "k26",
+            "type": "tangent",
+            "a": 12,
+            "b": 13
+          },
+          {
+            "id": "k27",
+            "type": "equal",
+            "a": 13,
+            "b": 11
+          },
+          {
+            "id": "k28",
+            "type": "midpoint",
+            "p": 21,
+            "l": 14
+          },
+          {
+            "id": "k29",
+            "type": "radius",
+            "c": 13,
+            "value": 2.75,
+            "param": "d32"
+          },
+          {
+            "id": "k30",
+            "type": "distance_x",
+            "p": 0,
+            "q": 20,
+            "value": 35.45307910843949,
+            "param": "d33"
+          },
+          {
+            "id": "k31",
+            "type": "distance_x",
+            "p": 0,
+            "q": 19,
+            "value": 35.45307910843949,
+            "param": "d34"
+          },
+          {
+            "id": "k32",
+            "type": "distance_y",
+            "p": 0,
+            "q": 20,
+            "value": 61.45749640898268,
+            "param": "d35"
+          },
+          {
+            "id": "k33",
+            "type": "distance_y",
+            "p": 0,
+            "q": 19,
+            "value": 67.45749640898268,
+            "param": "d36"
+          },
+          {
+            "id": "k34",
+            "type": "tangent",
+            "a": 15,
+            "b": 16
+          },
+          {
+            "id": "k35",
+            "type": "tangent",
+            "a": 17,
+            "b": 16
+          },
+          {
+            "id": "k36",
+            "type": "tangent",
+            "a": 15,
+            "b": 18
+          },
+          {
+            "id": "k37",
+            "type": "tangent",
+            "a": 17,
+            "b": 18
+          },
+          {
+            "id": "k38",
+            "type": "equal",
+            "a": 18,
+            "b": 16
+          },
+          {
+            "id": "k39",
+            "type": "midpoint",
+            "p": 28,
+            "l": 19
+          },
+          {
+            "id": "k40",
+            "type": "radius",
+            "c": 18,
+            "value": 2.75,
+            "param": "d37"
+          },
+          {
+            "id": "k41",
+            "type": "distance_x",
+            "p": 0,
+            "q": 27,
+            "value": 35.45307910843949,
+            "param": "d38"
+          },
+          {
+            "id": "k42",
+            "type": "distance_x",
+            "p": 0,
+            "q": 26,
+            "value": 35.45307910843949,
+            "param": "d39"
+          },
+          {
+            "id": "k43",
+            "type": "distance_y",
+            "p": 0,
+            "q": 27,
+            "value": 61.45749640898268,
+            "param": "d40"
+          },
+          {
+            "id": "k44",
+            "type": "distance_y",
+            "p": 0,
+            "q": 26,
+            "value": 67.45749640898268,
+            "param": "d41"
+          }
+        ],
+        "counters": {
+          "a": 8,
+          "k": 44,
+          "l": 12,
+          "p": 20
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "ModuleBoltSlots",
+      "suppressed": false,
+      "param_names": [
+        "d42"
+      ],
+      "type": "extrude",
+      "sketch": 12,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "plate_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "plate"
+      ]
+    },
+    {
+      "id": 14,
+      "name": "StandoffHolePoints",
+      "suppressed": false,
+      "param_names": [
+        "d43"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              46.0,
+              12.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -46.0,
+              12.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              46.0,
+              -78.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -46.0,
+              -78.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 46.0,
+            "param": "d44"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 12.0,
+            "param": "d45"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 46.0,
+            "param": "d46"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 12.0,
+            "param": "d47"
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 46.0,
+            "param": "d48"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 78.0,
+            "param": "d49"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 4,
+            "value": 46.0,
+            "param": "d50"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 78.0,
+            "param": "d51"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "StandoffHoles",
+      "suppressed": false,
+      "param_names": [
+        "d52",
+        "d53",
+        "d54"
+      ],
+      "type": "hole",
+      "position": [
+        46.0,
+        12.0,
+        63.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "6.6",
+      "hole": {
+        "type": "counterbore",
+        "cb_diameter": "11",
+        "cb_depth": "standoff_cb"
+      },
+      "points": {
+        "sketch": 14,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      }
+    },
+    {
+      "id": 16,
+      "name": "EncoderPostTapPoints",
+      "suppressed": false,
+      "param_names": [
+        "d55"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              23.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -19.91858428704209,
+              -11.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              19.91858428704209,
+              -11.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": true,
+            "link": "j1"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 0
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 23.0,
+            "param": "d56"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 19.91858428704209,
+            "param": "d57"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 11.5,
+            "param": "d58"
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 19.91858428704209,
+            "param": "d59"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 11.5,
+            "param": "d60"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 6,
+          "l": 1,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "EncoderPostTaps",
+      "suppressed": false,
+      "param_names": [
+        "d61",
+        "d62"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        23.0,
+        63.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "2.5",
+      "depth": "8",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 16,
+        "ids": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      }
+    },
+    {
+      "id": 18,
+      "name": "TensionBlockTapPoints",
+      "suppressed": false,
+      "param_names": [
+        "d63"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              30.0,
+              -127.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -30.0,
+              -127.70883080499217
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 30.0,
+            "param": "d64"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 127.70883080499217,
+            "param": "d65"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 30.0,
+            "param": "d66"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 127.70883080499217,
+            "param": "d67"
+          }
+        ],
+        "counters": {
+          "k": 4,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 19,
+      "name": "TensionBlockTaps",
+      "suppressed": false,
+      "param_names": [
+        "d68",
+        "d69"
+      ],
+      "type": "hole",
+      "position": [
+        30.0,
+        -127.70883080499217,
+        63.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.2",
+      "depth": "12",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 18,
+        "ids": [
+          "p1",
+          "p2"
+        ]
+      }
+    },
+    {
+      "id": 20,
+      "name": "TrayRebateSketch",
+      "suppressed": false,
+      "param_names": [
+        "d70"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "plate_bot"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              27.0,
+              -64.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              41.0,
+              -64.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -41.0,
+              -64.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -27.0,
+              -64.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p9",
+            "pos": [
+              41.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p10",
+            "pos": [
+              38.0,
+              -50.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              38.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p11",
+            "pos": [
+              30.0,
+              -50.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p12",
+            "pos": [
+              27.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              30.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p13",
+            "pos": [
+              -27.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p14",
+            "pos": [
+              -30.0,
+              -50.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              -30.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p15",
+            "pos": [
+              -38.0,
+              -50.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p16",
+            "pos": [
+              -41.0,
+              -53.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.center",
+            "pos": [
+              -38.0,
+              -53.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 6,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 9,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 4,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 12,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 15,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 7,
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 10,
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 13,
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 16,
+            "a": 14,
+            "b": 15,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "horizontal",
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "horizontal",
+            "l": 6
+          },
+          {
+            "id": "k7",
+            "type": "vertical",
+            "l": 5
+          },
+          {
+            "id": "k8",
+            "type": "vertical",
+            "l": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 27.0,
+            "param": "d71"
+          },
+          {
+            "id": "k10",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 41.0,
+            "param": "d72"
+          },
+          {
+            "id": "k11",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 50.0,
+            "param": "d73"
+          },
+          {
+            "id": "k12",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 64.0,
+            "param": "d74"
+          },
+          {
+            "id": "k13",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 5,
+            "value": 27.0,
+            "param": "d75"
+          },
+          {
+            "id": "k14",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 7,
+            "value": 41.0,
+            "param": "d76"
+          },
+          {
+            "id": "k15",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 6,
+            "value": 50.0,
+            "param": "d77"
+          },
+          {
+            "id": "k16",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 4,
+            "value": 64.0,
+            "param": "d78"
+          },
+          {
+            "id": "k17",
+            "type": "tangent",
+            "a": 1,
+            "b": 8
+          },
+          {
+            "id": "k18",
+            "type": "tangent",
+            "a": 2,
+            "b": 8
+          },
+          {
+            "id": "k19",
+            "type": "radius",
+            "c": 8,
+            "value": 3.0,
+            "param": "d79"
+          },
+          {
+            "id": "k20",
+            "type": "tangent",
+            "a": 2,
+            "b": 9
+          },
+          {
+            "id": "k21",
+            "type": "tangent",
+            "a": 3,
+            "b": 9
+          },
+          {
+            "id": "k22",
+            "type": "equal",
+            "a": 8,
+            "b": 9
+          },
+          {
+            "id": "k23",
+            "type": "tangent",
+            "a": 5,
+            "b": 10
+          },
+          {
+            "id": "k24",
+            "type": "tangent",
+            "a": 6,
+            "b": 10
+          },
+          {
+            "id": "k25",
+            "type": "equal",
+            "a": 8,
+            "b": 10
+          },
+          {
+            "id": "k26",
+            "type": "tangent",
+            "a": 6,
+            "b": 11
+          },
+          {
+            "id": "k27",
+            "type": "tangent",
+            "a": 7,
+            "b": 11
+          },
+          {
+            "id": "k28",
+            "type": "equal",
+            "a": 8,
+            "b": 11
+          }
+        ],
+        "counters": {
+          "a": 4,
+          "k": 28,
+          "l": 8,
+          "p": 16
+        }
+      }
+    },
+    {
+      "id": 21,
+      "name": "TrayRebates",
+      "suppressed": false,
+      "param_names": [
+        "d80"
+      ],
+      "type": "extrude",
+      "sketch": 20,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "rebate_h",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "plate"
+      ]
+    },
+    {
+      "id": 22,
+      "name": "TrayScrewTapPoints",
+      "suppressed": false,
+      "param_names": [
+        "d81"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "plate_bot + rebate_h"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              34.0,
+              -57.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -34.0,
+              -57.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 34.0,
+            "param": "d82"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 57.0,
+            "param": "d83"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 34.0,
+            "param": "d84"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 57.0,
+            "param": "d85"
+          }
+        ],
+        "counters": {
+          "k": 4,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 23,
+      "name": "TrayScrewTaps",
+      "suppressed": false,
+      "param_names": [
+        "d86",
+        "d87"
+      ],
+      "type": "hole",
+      "position": [
+        34.0,
+        -151.20883080499217,
+        57.0
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        -0.0
+      ],
+      "diameter": "3.3",
+      "depth": "10",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 22,
+        "ids": [
+          "p1",
+          "p2"
+        ]
+      }
+    },
+    {
+      "id": 24,
+      "name": "TopEdgeTapsPoints",
+      "suppressed": false,
+      "param_names": [
+        "d88"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "plate_top"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -30.0,
+              -59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              0.0,
+              -59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              30.0,
+              -59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": true,
+            "link": "j1"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 30.0,
+            "param": "d89"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 59.0,
+            "param": "d90"
+          },
+          {
+            "id": "k3",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 0
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 59.0,
+            "param": "d91"
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 30.0,
+            "param": "d92"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 59.0,
+            "param": "d93"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 6,
+          "l": 1,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 25,
+      "name": "TopEdgeTaps",
+      "suppressed": false,
+      "param_names": [
+        "d94",
+        "d95"
+      ],
+      "type": "hole",
+      "position": [
+        -30.0,
+        43.83098861837907,
+        59.0
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        -0.0
+      ],
+      "diameter": "2.5",
+      "depth": "8",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 24,
+        "ids": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      }
+    },
+    {
+      "id": 26,
+      "name": "BottomEdgeTapPoints",
+      "suppressed": false,
+      "param_names": [
+        "d96"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "plate_bot"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              44.0,
+              -59.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 44.0,
+            "param": "d97"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 59.0,
+            "param": "d98"
+          }
+        ],
+        "counters": {
+          "k": 2,
+          "p": 1
+        }
+      }
+    },
+    {
+      "id": 27,
+      "name": "BottomEdgeTap",
+      "suppressed": false,
+      "param_names": [
+        "d99",
+        "d100"
+      ],
+      "type": "hole",
+      "position": [
+        44.0,
+        -153.70883080499217,
+        59.0
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        -0.0
+      ],
+      "diameter": "2.5",
+      "depth": "8",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 26,
+        "ids": [
+          "p1"
+        ]
+      }
+    },
+    {
+      "id": 28,
+      "name": "BackEdgeTapsPoints",
+      "suppressed": false,
+      "param_names": [
+        "d101"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "-x_half"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -110.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -60.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -10.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              20.0,
+              59.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 110.0,
+            "param": "d102"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 59.0,
+            "param": "d103"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 60.0,
+            "param": "d104"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 59.0,
+            "param": "d105"
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 10.0,
+            "param": "d106"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 59.0,
+            "param": "d107"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 4,
+            "value": 20.0,
+            "param": "d108"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 59.0,
+            "param": "d109"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 29,
+      "name": "BackEdgeTaps",
+      "suppressed": false,
+      "param_names": [
+        "d110",
+        "d111"
+      ],
+      "type": "hole",
+      "position": [
+        -55.0,
+        -110.0,
+        59.0
+      ],
+      "direction": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "diameter": "2.5",
+      "depth": "8",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 28,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      }
+    },
+    {
+      "id": 30,
+      "name": "FrontEdgeTapsPoints",
+      "suppressed": false,
+      "param_names": [
+        "d112"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "x_half"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -110.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -60.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              0.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              26.0,
+              59.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p6",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": true,
+            "link": "j1"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 110.0,
+            "param": "d113"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 59.0,
+            "param": "d114"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 60.0,
+            "param": "d115"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 59.0,
+            "param": "d116"
+          },
+          {
+            "id": "k5",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 0
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 59.0,
+            "param": "d117"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 4,
+            "value": 26.0,
+            "param": "d118"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 59.0,
+            "param": "d119"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 8,
+          "l": 1,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 31,
+      "name": "FrontEdgeTaps",
+      "suppressed": false,
+      "param_names": [
+        "d120",
+        "d121"
+      ],
+      "type": "hole",
+      "position": [
+        55.0,
+        -110.0,
+        59.0
+      ],
+      "direction": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "diameter": "2.5",
+      "depth": "8",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 30,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      }
+    }
+  ],
+  "next_id": 32,
+  "next_component_color_index": 0,
+  "materials": {
+    "plate": "Aluminum"
+  }
+}

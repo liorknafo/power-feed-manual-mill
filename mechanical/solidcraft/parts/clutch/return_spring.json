@@ -1,0 +1,197 @@
+{
+  "format": "solidcraft/53",
+  "name": "return_spring",
+  "units": "mm",
+  "params": [
+    {
+      "name": "spring_od",
+      "expr": "9 mm",
+      "unit": "mm",
+      "comment": "spring outside diameter (> 3 * spring_wire)",
+      "model": false
+    },
+    {
+      "name": "spring_wire",
+      "expr": "0.8 mm",
+      "unit": "mm",
+      "comment": "wire diameter (> 0)",
+      "model": false
+    },
+    {
+      "name": "spring_len",
+      "expr": "7.6 mm",
+      "unit": "mm",
+      "comment": "length between the seats as fitted (engaged 7.6, released 8.7; > turns * spring_wire + spring_wire)",
+      "model": false
+    },
+    {
+      "name": "turns",
+      "expr": "5",
+      "unit": "",
+      "comment": "number of turns of the modelled helix (> 0, may be fractional)",
+      "model": false
+    },
+    {
+      "name": "lead_angle",
+      "expr": "atan((spring_len - spring_wire) / turns / (pi * (spring_od - spring_wire)))",
+      "unit": "deg",
+      "comment": "derived: helix lead angle; the wire section is square to the helix",
+      "model": false
+    },
+    {
+      "name": "d3",
+      "expr": "spring_wire",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "spring_od/2 - spring_wire/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "spring_wire/2 * cos(lead_angle)",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "WireSectionPlane",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "angle": "lead_angle"
+      }
+    },
+    {
+      "id": 2,
+      "name": "WireSection",
+      "suppressed": false,
+      "param_names": [
+        "d2"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "construction",
+          "feature": 1
+        },
+        "distance": "spring_wire/2 * sin(lead_angle)"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              4.1,
+              -0.39944374528170434
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 0.4,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 0.8,
+            "param": "d3"
+          },
+          {
+            "id": "k2",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 4.1,
+            "param": "d4"
+          },
+          {
+            "id": "k3",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 0.39944374528170434,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 3
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Coil",
+      "suppressed": false,
+      "body_names": [
+        "return_spring"
+      ],
+      "param_names": [
+        "d6",
+        "d7"
+      ],
+      "type": "coil",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "sketch": 2,
+      "pitch": "(spring_len - spring_wire) / (turns)",
+      "turns": "turns",
+      "section": "circular",
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 4,
+  "next_component_color_index": 0,
+  "materials": {
+    "return_spring": "Steel"
+  }
+}

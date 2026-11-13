@@ -1,0 +1,114 @@
+{
+  "format": "solidcraft/53",
+  "name": "coupling_6x8",
+  "units": "mm",
+  "params": [
+    {
+      "name": "coupling_d",
+      "expr": "19 mm",
+      "unit": "mm",
+      "comment": "coupling outer diameter (15 to 25 mm)",
+      "model": false
+    },
+    {
+      "name": "coupling_len",
+      "expr": "25 mm",
+      "unit": "mm",
+      "comment": "coupling length (18 to 32 mm)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "coupling_d",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "CouplingSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 9.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 19.0,
+            "param": "d1"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Coupling",
+      "suppressed": false,
+      "body_names": [
+        "coupling_6x8"
+      ],
+      "param_names": [
+        "d2"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "coupling_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "coupling_6x8": "Aluminum"
+  }
+}

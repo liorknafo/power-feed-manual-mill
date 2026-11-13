@@ -1,0 +1,5162 @@
+{
+  "format": "solidcraft/53",
+  "name": "shell",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "printed wall thickness (PETG); 2-4 mm",
+      "model": false
+    },
+    {
+      "name": "fit_gap",
+      "expr": "0.25 mm",
+      "unit": "mm",
+      "comment": "per side, housing cavity over the plate edges; 0.1-0.5 mm",
+      "model": false
+    },
+    {
+      "name": "x_half",
+      "expr": "55 mm",
+      "unit": "mm",
+      "comment": "plate / housing inner half-width (back wall inside at -x_half, front at +x_half); 45-70 mm",
+      "model": false
+    },
+    {
+      "name": "r_long",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "outer radius of the top-back long edge, and size of the 45 deg top-front chamfer; both go with the hood, so 8-13 mm leaves the shell unchanged",
+      "model": false
+    },
+    {
+      "name": "r_bottom",
+      "expr": "8.5 mm",
+      "unit": "mm",
+      "comment": "outer radius of the two bottom long edges (the door's rounded edges); panel_t+2 .. 12 mm",
+      "model": false
+    },
+    {
+      "name": "plate_top",
+      "expr": "43.83098861837907 mm",
+      "unit": "mm",
+      "comment": "world y of the plate's top edge (feed_unit PLATE_TOP, from the guard and standoffs)",
+      "model": false
+    },
+    {
+      "name": "plate_bot",
+      "expr": "-153.70883080499217 mm",
+      "unit": "mm",
+      "comment": "world y of the plate's bottom edge (feed_unit PLATE_BOT, from the module and tray)",
+      "model": false
+    },
+    {
+      "name": "w_shell0",
+      "expr": "55 mm",
+      "unit": "mm",
+      "comment": "W of the housing's open rim on the plate edges (plate outer face minus the lap)",
+      "model": false
+    },
+    {
+      "name": "plate_out",
+      "expr": "63 mm",
+      "unit": "mm",
+      "comment": "W of the plate's outer face: the rails start here; > w_shell0",
+      "model": false
+    },
+    {
+      "name": "cap_cut",
+      "expr": "248 mm",
+      "unit": "mm",
+      "comment": "W where the end cap starts: shell, hood and door end here (each prints on a MK3S); 230-260 mm",
+      "model": false
+    },
+    {
+      "name": "rail",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "printed rails carrying the hood's M3 heat-set inserts (square section); 8-12 mm",
+      "model": false
+    },
+    {
+      "name": "band_y",
+      "expr": "-26 mm",
+      "unit": "mm",
+      "comment": "world y of the bottom of the hood's control strip (top of the shell's front wall)",
+      "model": false
+    },
+    {
+      "name": "knuckle_r",
+      "expr": "3.5 mm",
+      "unit": "mm",
+      "comment": "hinge knuckle radius (on a 3 mm steel pin); 3-4 mm",
+      "model": false
+    },
+    {
+      "name": "lap",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "end-cap seam lap length over the shell's stepped walls; 5-10 mm",
+      "model": false
+    },
+    {
+      "name": "lap_t",
+      "expr": "1.2 mm",
+      "unit": "mm",
+      "comment": "end cap's lap skin thickness; < panel_t/2",
+      "model": false
+    },
+    {
+      "name": "lap_g",
+      "expr": "0.2 mm",
+      "unit": "mm",
+      "comment": "clearance under the end cap's lap; 0.1-0.4 mm",
+      "model": false
+    },
+    {
+      "name": "split_y",
+      "expr": "plate_bot - panel_t + r_bottom",
+      "unit": "mm",
+      "comment": "derived: door / shell split, top of the bottom fillets",
+      "model": false
+    },
+    {
+      "name": "hinge_x",
+      "expr": "-(x_half + panel_t + 0.75 mm)",
+      "unit": "mm",
+      "comment": "derived: hinge pin axis, 0.75 outside the back wall, on the split line",
+      "model": false
+    },
+    {
+      "name": "chamfer_in",
+      "expr": "r_long - panel_t * (2 - sqrt(2))",
+      "unit": "mm",
+      "comment": "derived: inside legs of the housing's top 45 deg chamfers",
+      "model": false
+    },
+    {
+      "name": "pcb_x0",
+      "expr": "-50 mm",
+      "unit": "mm",
+      "comment": "world x of the PCB's x=0 edge (feed_unit f.pcb_x0)",
+      "model": false
+    },
+    {
+      "name": "pcb_y",
+      "expr": "-33 mm",
+      "unit": "mm",
+      "comment": "world y of the PCB's underside = top of its 4 bosses",
+      "model": false
+    },
+    {
+      "name": "pcb_w0",
+      "expr": "129 mm",
+      "unit": "mm",
+      "comment": "world W of the PCB's y=0 edge; its holes are 4 mm in from a 100 x 100 board's corners",
+      "model": false
+    },
+    {
+      "name": "insert_d",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "M3 heat-set insert hole diameter (Kadrick M3x5: 4.0)",
+      "model": false
+    },
+    {
+      "name": "insert_l",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "M3 heat-set insert hole depth (insert + 1)",
+      "model": false
+    },
+    {
+      "name": "d27",
+      "expr": "insert_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "insert_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "insert_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "insert_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "intake_w0",
+      "expr": "145 mm",
+      "unit": "mm",
+      "comment": "W where the motor-air louvre fields start (back and front walls)",
+      "model": false
+    },
+    {
+      "name": "intake_w1",
+      "expr": "225 mm",
+      "unit": "mm",
+      "comment": "W where the louvre fields end",
+      "model": false
+    },
+    {
+      "name": "intake_y0",
+      "expr": "-100 mm",
+      "unit": "mm",
+      "comment": "world y of the louvre blocks' bottom (4 slots, 6 mm pitch, from intake_y0 + 5)",
+      "model": false
+    },
+    {
+      "name": "intake_y1",
+      "expr": "-72 mm",
+      "unit": "mm",
+      "comment": "world y of the louvre blocks' top",
+      "model": false
+    },
+    {
+      "name": "fan_w0",
+      "expr": "115 mm",
+      "unit": "mm",
+      "comment": "W where the 40 mm fan / exhaust louvre block starts (back wall)",
+      "model": false
+    },
+    {
+      "name": "fan_w1",
+      "expr": "155 mm",
+      "unit": "mm",
+      "comment": "W where the fan block ends",
+      "model": false
+    },
+    {
+      "name": "fan_y0",
+      "expr": "-12 mm",
+      "unit": "mm",
+      "comment": "world y of the fan block's bottom (6 slots, 5.5 mm pitch, from fan_y0 + 4)",
+      "model": false
+    },
+    {
+      "name": "fan_y1",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "world y of the fan block's top",
+      "model": false
+    },
+    {
+      "name": "fan_screw_d",
+      "expr": "2.5 mm",
+      "unit": "mm",
+      "comment": "fan screw holes (self-tapping M3 into the louvre block); 2.4-2.8 mm",
+      "model": false
+    },
+    {
+      "name": "d63",
+      "expr": "fan_screw_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d64",
+      "expr": "fan_screw_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d65",
+      "expr": "fan_screw_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d66",
+      "expr": "fan_screw_d",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "OuterBlock",
+      "suppressed": false,
+      "body_names": [
+        "shell"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        "-(x_half + panel_t)",
+        "plate_bot - panel_t",
+        "w_shell0"
+      ],
+      "length": "2 * (x_half + panel_t)",
+      "width": "plate_top - plate_bot + 2 * panel_t",
+      "height": "cap_cut - w_shell0",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "TopFrontChamfer",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            55.0
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            248.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F1:+x|F1:+y"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          58.0,
+          46.83098861837907,
+          151.5
+        ]
+      ],
+      "distance": "r_long",
+      "body": "shell"
+    },
+    {
+      "id": 3,
+      "name": "TopBackFillet",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            55.0
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            248.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F1:+y|F1:-x"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -58.0,
+          46.83098861837907,
+          151.5
+        ]
+      ],
+      "radius": "r_long",
+      "body": "shell"
+    },
+    {
+      "id": 4,
+      "name": "BottomFillets",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            54.99999999999999
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            248.00000000000003
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            54.99999999999999
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            248.00000000000003
+          ]
+        }
+      ],
+      "edge_names": [
+        "F1:-x|F1:-y",
+        "F1:+x|F1:-y"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -58.0,
+          -156.70883080499217,
+          151.5
+        ],
+        [
+          58.0,
+          -156.70883080499217,
+          151.5
+        ]
+      ],
+      "radius": "r_bottom",
+      "body": "shell"
+    },
+    {
+      "id": 5,
+      "name": "CavityBlock",
+      "suppressed": false,
+      "body_names": [
+        "cavity"
+      ],
+      "param_names": [
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "type": "box",
+      "corner": [
+        "-(x_half + fit_gap)",
+        "plate_bot - fit_gap",
+        "w_shell0 - 1 mm"
+      ],
+      "length": "2 * (x_half + fit_gap)",
+      "width": "plate_top - plate_bot + 2 * fit_gap",
+      "height": "cap_cut - w_shell0 + 2 mm",
+      "operation": "new_body"
+    },
+    {
+      "id": 6,
+      "name": "CavityTopChamfers",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            54.0
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            249.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            54.0
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            249.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F5:+x|F5:+y",
+        "F5:+y|F5:-x"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          55.25,
+          44.08098861837907,
+          151.5
+        ],
+        [
+          -55.25,
+          44.08098861837907,
+          151.5
+        ]
+      ],
+      "distance": "chamfer_in",
+      "body": "cavity"
+    },
+    {
+      "id": 7,
+      "name": "CavityBottomFillets",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            53.99999999999999
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            249.00000000000003
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            53.99999999999999
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            249.00000000000003
+          ]
+        }
+      ],
+      "edge_names": [
+        "F5:-x|F5:-y",
+        "F5:+x|F5:-y"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -55.25,
+          -153.95883080499217,
+          151.5
+        ],
+        [
+          55.25,
+          -153.95883080499217,
+          151.5
+        ]
+      ],
+      "radius": "r_bottom - panel_t + fit_gap",
+      "body": "cavity"
+    },
+    {
+      "id": 8,
+      "name": "HollowOut",
+      "suppressed": false,
+      "type": "combine",
+      "target": "shell",
+      "tools": [
+        "cavity"
+      ],
+      "operation": "cut",
+      "keep_tools": false
+    },
+    {
+      "id": 9,
+      "name": "HoodRegionSketch",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "w_shell0 - 1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -59.0,
+              33.58834793125978
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + panel_t + 1 mm)",
+              "y": "plate_top - chamfer_in"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -44.757359312880716,
+              33.58834793125978
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-x_half + chamfer_in",
+              "y": "plate_top - chamfer_in"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -44.757359312880716,
+              43.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-x_half + chamfer_in",
+              "y": "plate_top"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              43.757359312880716,
+              43.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half - chamfer_in - 1 mm",
+              "y": "plate_top"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              43.757359312880716,
+              32.58834793125978
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half - chamfer_in - 1 mm",
+              "y": "plate_top - chamfer_in - 1 mm"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              55.0,
+              32.58834793125978
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half",
+              "y": "plate_top - chamfer_in - 1 mm"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              55.0,
+              -26.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half",
+              "y": "band_y"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              59.0,
+              -26.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half + panel_t + 1 mm",
+              "y": "band_y"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              59.0,
+              47.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half + panel_t + 1 mm",
+              "y": "plate_top + panel_t + 1 mm"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -59.0,
+              47.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + panel_t + 1 mm)",
+              "y": "plate_top + panel_t + 1 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 10,
+          "p": 10
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "HoodRegion",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut - w_shell0 + 2 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "DoorRegionSketch",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "w_shell0 - 1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -59.0,
+              -162.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + panel_t + 1 mm)",
+              "y": "plate_bot - panel_t - 6 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              59.0,
+              -162.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half + panel_t + 1 mm",
+              "y": "plate_bot - panel_t - 6 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              59.0,
+              -148.20883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half + panel_t + 1 mm",
+              "y": "split_y"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -59.0,
+              -148.20883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + panel_t + 1 mm)",
+              "y": "split_y"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "DoorRegion",
+      "suppressed": false,
+      "body_names": [
+        "shell (1)"
+      ],
+      "param_names": [
+        "d15"
+      ],
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut - w_shell0 + 2 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "BackRailSection",
+      "suppressed": false,
+      "param_names": [
+        "d16"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "plate_out"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -55.75,
+              29.830988618379067
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 0.5 mm)",
+              "y": "plate_top - rail - 4 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -34.757359312880716,
+              29.830988618379067
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in) + rail",
+              "y": "plate_top - rail - 4 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -34.757359312880716,
+              43.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in) + rail",
+              "y": "plate_top"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -44.757359312880716,
+              43.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in)",
+              "y": "plate_top"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -44.757359312880716,
+              33.58834793125978
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in)",
+              "y": "plate_top - chamfer_in"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -55.75,
+              33.58834793125978
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 0.5 mm)",
+              "y": "plate_top - chamfer_in"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "BackRail",
+      "suppressed": false,
+      "body_names": [
+        "back_rail"
+      ],
+      "param_names": [
+        "d17"
+      ],
+      "type": "extrude",
+      "sketch": 13,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut - plate_out",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 15,
+      "name": "BackRailWindowsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "plate_top - rail - 5 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -55.75,
+              -127.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -55.75,
+              -139.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -34.257359312880716,
+              -139.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in) + rail + 0.5 mm",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -34.257359312880716,
+              -105.50735931288071
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in) + rail + 0.5 mm",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm - (chamfer_in + rail + fit_gap + 1 mm))"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -55.75,
+              -219.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -55.75,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -34.257359312880716,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in) + rail + 0.5 mm",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -34.257359312880716,
+              -197.5073593128807
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + chamfer_in) + rail + 0.5 mm",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm - (chamfer_in + rail + fit_gap + 1 mm))"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 8,
+          "p": 8
+        }
+      }
+    },
+    {
+      "id": 16,
+      "name": "BackRailWindows",
+      "suppressed": false,
+      "body_names": [
+        "back_rail (1)",
+        "back_rail (2)"
+      ],
+      "param_names": [
+        "d19"
+      ],
+      "type": "extrude",
+      "sketch": 15,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "rail + 6 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "back_rail"
+      ]
+    },
+    {
+      "id": 17,
+      "name": "FrontRailSection",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "plate_out"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              45.0,
+              -16.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half - rail)",
+              "y": "band_y + rail"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              45.0,
+              -26.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half - rail)",
+              "y": "band_y"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              55.75,
+              -36.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 0.5 mm)",
+              "y": "band_y - (fit_gap + 0.5 mm + rail)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              55.75,
+              -26.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 0.5 mm)",
+              "y": "band_y"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              55.0,
+              -26.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half",
+              "y": "band_y"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              55.0,
+              -16.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "x_half",
+              "y": "band_y + rail"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 18,
+      "name": "FrontRail",
+      "suppressed": false,
+      "body_names": [
+        "front_rail"
+      ],
+      "param_names": [
+        "d21"
+      ],
+      "type": "extrude",
+      "sketch": 17,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut - plate_out",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 19,
+      "name": "FrontRailWindowsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d22"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "band_y - (fit_gap + 0.5 mm + rail) - 1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              55.75,
+              -127.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              55.75,
+              -139.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              44.5,
+              -139.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half - rail) - 0.5 mm",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              44.5,
+              -115.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half - rail) - 0.5 mm",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm - (rail + fit_gap + 1 mm))"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              55.75,
+              -219.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              55.75,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 0.5 mm)",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              44.5,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half - rail) - 0.5 mm",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              44.5,
+              -207.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half - rail) - 0.5 mm",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm - (rail + fit_gap + 1 mm))"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 8,
+          "p": 8
+        }
+      }
+    },
+    {
+      "id": 20,
+      "name": "FrontRailWindows",
+      "suppressed": false,
+      "body_names": [
+        "front_rail (1)",
+        "front_rail (2)"
+      ],
+      "param_names": [
+        "d23"
+      ],
+      "type": "extrude",
+      "sketch": 19,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2 * rail + fit_gap + 2.5 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "front_rail"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "PcbBossesSketch",
+      "suppressed": false,
+      "param_names": [
+        "d24"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "pcb_y - 8 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -55.25,
+              -127.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -41.0,
+              -127.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 9 mm)",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -41.0,
+              -139.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 9 mm)",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -55.25,
+              -153.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm + (pcb_x0 + 9 mm + x_half + fit_gap))"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              55.25,
+              -127.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              41.0,
+              -127.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 91 mm)",
+              "y": "-((pcb_w0 + 4 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              41.0,
+              -139.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 91 mm)",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              55.25,
+              -153.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 4 mm) + 6 mm + (x_half + fit_gap - pcb_x0 - 91 mm))"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -55.25,
+              -219.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -41.0,
+              -219.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 9 mm)",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p11",
+            "pos": [
+              -41.0,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 9 mm)",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p12",
+            "pos": [
+              -55.25,
+              -245.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm + (pcb_x0 + 9 mm + x_half + fit_gap))"
+            }
+          },
+          {
+            "id": "p13",
+            "pos": [
+              55.25,
+              -219.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p14",
+            "pos": [
+              41.0,
+              -219.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 91 mm)",
+              "y": "-((pcb_w0 + 96 mm) - 6 mm)"
+            }
+          },
+          {
+            "id": "p15",
+            "pos": [
+              41.0,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(pcb_x0 + 91 mm)",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm)"
+            }
+          },
+          {
+            "id": "p16",
+            "pos": [
+              55.25,
+              -245.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap)",
+              "y": "-((pcb_w0 + 96 mm) + 6 mm + (x_half + fit_gap - pcb_x0 - 91 mm))"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 13,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 16,
+          "p": 16
+        }
+      }
+    },
+    {
+      "id": 22,
+      "name": "PcbBosses",
+      "suppressed": false,
+      "body_names": [
+        "pcb_bosses",
+        "pcb_bosses (2)",
+        "pcb_bosses (3)",
+        "pcb_bosses (4)"
+      ],
+      "param_names": [
+        "d25"
+      ],
+      "type": "extrude",
+      "sketch": 21,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "8 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 23,
+      "name": "JoinRailsAndBosses",
+      "suppressed": false,
+      "type": "combine",
+      "target": "shell",
+      "tools": [
+        "shell (1)",
+        "back_rail",
+        "back_rail (1)",
+        "back_rail (2)",
+        "front_rail",
+        "front_rail (1)",
+        "front_rail (2)",
+        "pcb_bosses",
+        "pcb_bosses (2)",
+        "pcb_bosses (3)",
+        "pcb_bosses (4)"
+      ],
+      "operation": "join",
+      "keep_tools": false
+    },
+    {
+      "id": 24,
+      "name": "PcbInsertHolesSketch",
+      "suppressed": false,
+      "param_names": [
+        "d26"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "pcb_y - insert_l"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -46.0,
+              -133.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "pcb_x0 + 4 mm",
+              "y": "-(pcb_w0 + 4 mm)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -46.0,
+              -225.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "pcb_x0 + 4 mm",
+              "y": "-(pcb_w0 + 96 mm)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              46.0,
+              -133.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "pcb_x0 + 96 mm",
+              "y": "-(pcb_w0 + 4 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              46.0,
+              -225.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "pcb_x0 + 96 mm",
+              "y": "-(pcb_w0 + 96 mm)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.0,
+            "construction": false
+          },
+          {
+            "id": "c3",
+            "type": "circle",
+            "c": 3,
+            "r": 2.0,
+            "construction": false
+          },
+          {
+            "id": "c4",
+            "type": "circle",
+            "c": 4,
+            "r": 2.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 4.0,
+            "param": "d27"
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 1,
+            "value": 4.0,
+            "param": "d28"
+          },
+          {
+            "id": "k3",
+            "type": "diameter",
+            "c": 2,
+            "value": 4.0,
+            "param": "d29"
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 3,
+            "value": 4.0,
+            "param": "d30"
+          }
+        ],
+        "counters": {
+          "c": 4,
+          "k": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 25,
+      "name": "PcbInsertHoles",
+      "suppressed": false,
+      "param_names": [
+        "d31"
+      ],
+      "type": "extrude",
+      "sketch": 24,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "insert_l + 0.1 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 26,
+      "name": "DoorKnuckleClearance1",
+      "suppressed": false,
+      "param_names": [
+        "d32",
+        "d33"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "100 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r + 0.3 mm",
+      "height": "(145 mm) - (100 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 27,
+      "name": "DoorKnuckleClearance2",
+      "suppressed": false,
+      "param_names": [
+        "d34",
+        "d35"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "175 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r + 0.3 mm",
+      "height": "(cap_cut - 30 mm) - (175 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 28,
+      "name": "ShellKnuckle1",
+      "suppressed": false,
+      "param_names": [
+        "d36",
+        "d37"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "70 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r",
+      "height": "(100 mm) - (70 mm)",
+      "operation": "join"
+    },
+    {
+      "id": 29,
+      "name": "ShellKnuckle2",
+      "suppressed": false,
+      "param_names": [
+        "d38",
+        "d39"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "145 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r",
+      "height": "(175 mm) - (145 mm)",
+      "operation": "join"
+    },
+    {
+      "id": 30,
+      "name": "ShellKnuckle3",
+      "suppressed": false,
+      "param_names": [
+        "d40",
+        "d41"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "cap_cut - 30 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r",
+      "height": "(cap_cut) - (cap_cut - 30 mm)",
+      "operation": "join"
+    },
+    {
+      "id": 31,
+      "name": "PinPressBore",
+      "suppressed": false,
+      "param_names": [
+        "d42",
+        "d43"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "69.99 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "1.475 mm",
+      "height": "(100.01 mm) - (69.99 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 32,
+      "name": "PinBore2",
+      "suppressed": false,
+      "param_names": [
+        "d44",
+        "d45"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "144.99 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "1.6 mm",
+      "height": "(175.01 mm) - (144.99 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 33,
+      "name": "PinBore3",
+      "suppressed": false,
+      "param_names": [
+        "d46",
+        "d47"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "cap_cut - 30.01 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "1.6 mm",
+      "height": "(cap_cut + 0.01 mm) - (cap_cut - 30.01 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 34,
+      "name": "PinPunchGroove",
+      "suppressed": false,
+      "param_names": [
+        "d48",
+        "d49"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "w_shell0 - 1 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "1.6 mm",
+      "height": "(70.01 mm) - (w_shell0 - 1 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 35,
+      "name": "IntakeBlocksSketch",
+      "suppressed": false,
+      "param_names": [
+        "d50"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "intake_y0"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -55.25,
+              -145.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-intake_w0"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -50.25,
+              -145.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-(x_half + fit_gap) + 5 mm)",
+              "y": "-intake_w0"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -50.25,
+              -225.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-(x_half + fit_gap) + 5 mm)",
+              "y": "-intake_w1"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -55.25,
+              -230.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-(intake_w1 + 5 mm)"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              55.25,
+              -145.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap)",
+              "y": "-intake_w0"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              50.25,
+              -145.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + fit_gap) - 5 mm)",
+              "y": "-intake_w0"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              50.25,
+              -225.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + fit_gap) - 5 mm)",
+              "y": "-intake_w1"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              55.25,
+              -230.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap)",
+              "y": "-(intake_w1 + 5 mm)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 8,
+          "p": 8
+        }
+      }
+    },
+    {
+      "id": 36,
+      "name": "IntakeBlocks",
+      "suppressed": false,
+      "param_names": [
+        "d51"
+      ],
+      "type": "extrude",
+      "sketch": 35,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "intake_y1 - intake_y0",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 37,
+      "name": "IntakeSlotsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d52"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "intake_w0 + 2 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -58.75999999999999,
+              -94.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 5.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -58.760000000000005,
+              -98.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 1.7929437251522842 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -51.451724394270315,
+              -90.89878066911803
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -3.7982756057296854 mm)",
+              "y": "intake_y0 + 9.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -53.148780669118025,
+              -89.20172439427031
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -2.1012193308819747 mm)",
+              "y": "intake_y0 + 10.798275605729685 mm"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -58.75999999999999,
+              -88.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 11.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -58.760000000000005,
+              -92.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 7.792943725152284 mm"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -51.451724394270315,
+              -84.89878066911803
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -3.7982756057296854 mm)",
+              "y": "intake_y0 + 15.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -53.148780669118025,
+              -83.20172439427031
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -2.1012193308819747 mm)",
+              "y": "intake_y0 + 16.798275605729685 mm"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -58.75999999999999,
+              -82.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 17.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -58.760000000000005,
+              -86.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 13.792943725152284 mm"
+            }
+          },
+          {
+            "id": "p11",
+            "pos": [
+              -51.451724394270315,
+              -78.89878066911803
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -3.7982756057296854 mm)",
+              "y": "intake_y0 + 21.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p12",
+            "pos": [
+              -53.148780669118025,
+              -77.20172439427031
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -2.1012193308819747 mm)",
+              "y": "intake_y0 + 22.798275605729685 mm"
+            }
+          },
+          {
+            "id": "p13",
+            "pos": [
+              -58.75999999999999,
+              -76.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 23.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p14",
+            "pos": [
+              -58.760000000000005,
+              -80.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 19.792943725152284 mm"
+            }
+          },
+          {
+            "id": "p15",
+            "pos": [
+              -51.55294372515229,
+              -73.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -3.6970562748477107 mm)",
+              "y": "intake_y1 - 1 mm"
+            }
+          },
+          {
+            "id": "p16",
+            "pos": [
+              -54.94705627484771,
+              -73.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap + -0.3029437251522893 mm)",
+              "y": "intake_y1 - 1 mm"
+            }
+          },
+          {
+            "id": "p17",
+            "pos": [
+              58.760000000000005,
+              -98.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 1.7929437251522842 mm"
+            }
+          },
+          {
+            "id": "p18",
+            "pos": [
+              58.75999999999999,
+              -94.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 5.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p19",
+            "pos": [
+              53.148780669118025,
+              -89.20172439427031
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -2.1012193308819747 mm)",
+              "y": "intake_y0 + 10.798275605729685 mm"
+            }
+          },
+          {
+            "id": "p20",
+            "pos": [
+              51.451724394270315,
+              -90.89878066911803
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -3.7982756057296854 mm)",
+              "y": "intake_y0 + 9.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p21",
+            "pos": [
+              58.760000000000005,
+              -92.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 7.792943725152284 mm"
+            }
+          },
+          {
+            "id": "p22",
+            "pos": [
+              58.75999999999999,
+              -88.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 11.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p23",
+            "pos": [
+              53.148780669118025,
+              -83.20172439427031
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -2.1012193308819747 mm)",
+              "y": "intake_y0 + 16.798275605729685 mm"
+            }
+          },
+          {
+            "id": "p24",
+            "pos": [
+              51.451724394270315,
+              -84.89878066911803
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -3.7982756057296854 mm)",
+              "y": "intake_y0 + 15.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p25",
+            "pos": [
+              58.760000000000005,
+              -86.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 13.792943725152284 mm"
+            }
+          },
+          {
+            "id": "p26",
+            "pos": [
+              58.75999999999999,
+              -82.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 17.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p27",
+            "pos": [
+              53.148780669118025,
+              -77.20172439427031
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -2.1012193308819747 mm)",
+              "y": "intake_y0 + 22.798275605729685 mm"
+            }
+          },
+          {
+            "id": "p28",
+            "pos": [
+              51.451724394270315,
+              -78.89878066911803
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -3.7982756057296854 mm)",
+              "y": "intake_y0 + 21.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p29",
+            "pos": [
+              58.760000000000005,
+              -80.20705627484772
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.510000000000005 mm)",
+              "y": "intake_y0 + 19.792943725152284 mm"
+            }
+          },
+          {
+            "id": "p30",
+            "pos": [
+              58.75999999999999,
+              -76.81294372515228
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + 3.509999999999991 mm)",
+              "y": "intake_y0 + 23.18705627484772 mm"
+            }
+          },
+          {
+            "id": "p31",
+            "pos": [
+              54.94705627484771,
+              -73.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -0.3029437251522893 mm)",
+              "y": "intake_y1 - 1 mm"
+            }
+          },
+          {
+            "id": "p32",
+            "pos": [
+              51.55294372515229,
+              -73.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + fit_gap + -3.6970562748477107 mm)",
+              "y": "intake_y1 - 1 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 20,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 21,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 24,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l25",
+            "type": "line",
+            "a": 25,
+            "b": 26,
+            "construction": false
+          },
+          {
+            "id": "l26",
+            "type": "line",
+            "a": 26,
+            "b": 27,
+            "construction": false
+          },
+          {
+            "id": "l27",
+            "type": "line",
+            "a": 27,
+            "b": 28,
+            "construction": false
+          },
+          {
+            "id": "l28",
+            "type": "line",
+            "a": 28,
+            "b": 25,
+            "construction": false
+          },
+          {
+            "id": "l29",
+            "type": "line",
+            "a": 29,
+            "b": 30,
+            "construction": false
+          },
+          {
+            "id": "l30",
+            "type": "line",
+            "a": 30,
+            "b": 31,
+            "construction": false
+          },
+          {
+            "id": "l31",
+            "type": "line",
+            "a": 31,
+            "b": 32,
+            "construction": false
+          },
+          {
+            "id": "l32",
+            "type": "line",
+            "a": 32,
+            "b": 29,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 32,
+          "p": 32
+        }
+      }
+    },
+    {
+      "id": 38,
+      "name": "IntakeLouvres",
+      "suppressed": false,
+      "param_names": [
+        "d53"
+      ],
+      "type": "extrude",
+      "sketch": 37,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "intake_w1 - intake_w0 - 4 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 39,
+      "name": "FanBlockSketch",
+      "suppressed": false,
+      "param_names": [
+        "d54"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "fan_y0"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -55.25,
+              -115.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-fan_w0"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -50.5,
+              -115.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + 4.5 mm)",
+              "y": "-fan_w0"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -50.5,
+              -155.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(-x_half + 4.5 mm)",
+              "y": "-fan_w1"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -55.25,
+              -159.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + fit_gap)",
+              "y": "-(fan_w1 + 4.5 mm + fit_gap)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 40,
+      "name": "FanBlock",
+      "suppressed": false,
+      "param_names": [
+        "d55"
+      ],
+      "type": "extrude",
+      "sketch": 39,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "fan_y1 - fan_y0",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 41,
+      "name": "FanSlotsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d56"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "fan_w0 + 2 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -59.0,
+              -8.802943725152286
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 3.1970562748477143 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -59.0,
+              -11.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 1 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -57.80294372515229,
+              -11.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 2.8029437251522893 mm)",
+              "y": "fan_y0 + 1 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -50.701724394270315,
+              -3.8987806691180253
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -4.298275605729685 mm)",
+              "y": "fan_y0 + 8.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -52.398780669118025,
+              -2.201724394270311
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -2.6012193308819747 mm)",
+              "y": "fan_y0 + 9.798275605729689 mm"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -59.0,
+              -3.3029437251522875
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 8.697056274847712 mm"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -59.0,
+              -6.697056274847714
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 5.302943725152286 mm"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -50.701724394270315,
+              1.6012193308819747
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -4.298275605729685 mm)",
+              "y": "fan_y0 + 13.601219330881975 mm"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -52.398780669118025,
+              3.298275605729689
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -2.6012193308819747 mm)",
+              "y": "fan_y0 + 15.298275605729689 mm"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -59.0,
+              2.1970562748477107
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 14.19705627484771 mm"
+            }
+          },
+          {
+            "id": "p11",
+            "pos": [
+              -59.0,
+              -1.1970562748477125
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 10.802943725152288 mm"
+            }
+          },
+          {
+            "id": "p12",
+            "pos": [
+              -50.701724394270315,
+              7.101219330881975
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -4.298275605729685 mm)",
+              "y": "fan_y0 + 19.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p13",
+            "pos": [
+              -52.398780669118025,
+              8.798275605729689
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -2.6012193308819747 mm)",
+              "y": "fan_y0 + 20.79827560572969 mm"
+            }
+          },
+          {
+            "id": "p14",
+            "pos": [
+              -59.0,
+              7.697056274847711
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 19.69705627484771 mm"
+            }
+          },
+          {
+            "id": "p15",
+            "pos": [
+              -59.0,
+              4.302943725152286
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 16.302943725152286 mm"
+            }
+          },
+          {
+            "id": "p16",
+            "pos": [
+              -50.701724394270315,
+              12.601219330881975
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -4.298275605729685 mm)",
+              "y": "fan_y0 + 24.601219330881975 mm"
+            }
+          },
+          {
+            "id": "p17",
+            "pos": [
+              -52.398780669118025,
+              14.298275605729689
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -2.6012193308819747 mm)",
+              "y": "fan_y0 + 26.29827560572969 mm"
+            }
+          },
+          {
+            "id": "p18",
+            "pos": [
+              -59.0,
+              13.197056274847714
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 25.197056274847714 mm"
+            }
+          },
+          {
+            "id": "p19",
+            "pos": [
+              -59.0,
+              9.80294372515229
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 21.80294372515229 mm"
+            }
+          },
+          {
+            "id": "p20",
+            "pos": [
+              -50.701724394270315,
+              18.101219330881975
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -4.298275605729685 mm)",
+              "y": "fan_y0 + 30.101219330881975 mm"
+            }
+          },
+          {
+            "id": "p21",
+            "pos": [
+              -52.398780669118025,
+              19.79827560572969
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -2.6012193308819747 mm)",
+              "y": "fan_y0 + 31.79827560572969 mm"
+            }
+          },
+          {
+            "id": "p22",
+            "pos": [
+              -59.0,
+              18.69705627484771
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 30.69705627484771 mm"
+            }
+          },
+          {
+            "id": "p23",
+            "pos": [
+              -59.0,
+              15.30294372515229
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + 4.0 mm)",
+              "y": "fan_y0 + 27.30294372515229 mm"
+            }
+          },
+          {
+            "id": "p24",
+            "pos": [
+              -50.701724394270315,
+              23.601219330881975
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -4.298275605729685 mm)",
+              "y": "fan_y0 + 35.601219330881975 mm"
+            }
+          },
+          {
+            "id": "p25",
+            "pos": [
+              -52.398780669118025,
+              25.298275605729685
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + -2.6012193308819747 mm)",
+              "y": "fan_y0 + 37.298275605729685 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 17,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 20,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 21,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 23,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 24,
+            "b": 25,
+            "construction": false
+          },
+          {
+            "id": "l25",
+            "type": "line",
+            "a": 25,
+            "b": 22,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 25,
+          "p": 25
+        }
+      }
+    },
+    {
+      "id": 42,
+      "name": "FanLouvres",
+      "suppressed": false,
+      "param_names": [
+        "d57"
+      ],
+      "type": "extrude",
+      "sketch": 41,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "fan_w1 - fan_w0 - 4 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 43,
+      "name": "FanScrewHolesSketch",
+      "suppressed": false,
+      "param_names": [
+        "d58"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "-x_half + 4.5 mm - 8 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -8.0,
+              119.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(fan_y0 + fan_y1) / 2 + -16 mm",
+              "y": "(fan_w0 + fan_w1) / 2 + -16 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -8.0,
+              151.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(fan_y0 + fan_y1) / 2 + -16 mm",
+              "y": "(fan_w0 + fan_w1) / 2 + 16 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              24.0,
+              119.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(fan_y0 + fan_y1) / 2 + 16 mm",
+              "y": "(fan_w0 + fan_w1) / 2 + -16 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              24.0,
+              151.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(fan_y0 + fan_y1) / 2 + 16 mm",
+              "y": "(fan_w0 + fan_w1) / 2 + 16 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 1.25,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 1.25,
+            "construction": false
+          },
+          {
+            "id": "c3",
+            "type": "circle",
+            "c": 3,
+            "r": 1.25,
+            "construction": false
+          },
+          {
+            "id": "c4",
+            "type": "circle",
+            "c": 4,
+            "r": 1.25,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 2.5,
+            "param": "d63"
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 1,
+            "value": 2.5,
+            "param": "d64"
+          },
+          {
+            "id": "k3",
+            "type": "diameter",
+            "c": 2,
+            "value": 2.5,
+            "param": "d65"
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 3,
+            "value": 2.5,
+            "param": "d66"
+          }
+        ],
+        "counters": {
+          "c": 4,
+          "k": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 44,
+      "name": "FanScrewHoles",
+      "suppressed": false,
+      "param_names": [
+        "d59"
+      ],
+      "type": "extrude",
+      "sketch": 43,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "8.1 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 45,
+      "name": "Brace",
+      "suppressed": false,
+      "param_names": [
+        "d60",
+        "d61",
+        "d62"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "box",
+      "corner": [
+        "-(x_half + fit_gap + 0.5 mm)",
+        "-45 mm",
+        "cap_cut - 3 mm"
+      ],
+      "length": "2 * (x_half + fit_gap + 0.5 mm)",
+      "width": "5 mm",
+      "height": "3 mm",
+      "operation": "join"
+    },
+    {
+      "id": 46,
+      "name": "CapLapStairsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d67"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "split_y + knuckle_r + 2 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -59.0,
+              -249.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t + 1 mm))",
+              "y": "-(cap_cut + 1 mm)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -59.0,
+              -238.86666666666667
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t + 1 mm))",
+              "y": "-((cap_cut - lap - lap_g) - 2 * (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -57.53333333333333,
+              -238.86666666666667
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t) - (lap_t + lap_g) / 3)",
+              "y": "-((cap_cut - lap - lap_g) - 2 * (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -57.53333333333333,
+              -239.33333333333334
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t) - (lap_t + lap_g) / 3)",
+              "y": "-((cap_cut - lap - lap_g) - (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -57.06666666666667,
+              -239.33333333333334
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t) - 2 * (lap_t + lap_g) / 3)",
+              "y": "-((cap_cut - lap - lap_g) - (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -57.06666666666667,
+              -239.8
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t) - 2 * (lap_t + lap_g) / 3)",
+              "y": "-(cap_cut - lap - lap_g)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -56.6,
+              -239.8
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t) - (lap_t + lap_g))",
+              "y": "-(cap_cut - lap - lap_g)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -56.6,
+              -249.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t) - (lap_t + lap_g))",
+              "y": "-(cap_cut + 1 mm)"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              59.0,
+              -249.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t + 1 mm))",
+              "y": "-(cap_cut + 1 mm)"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              59.0,
+              -238.86666666666667
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t + 1 mm))",
+              "y": "-((cap_cut - lap - lap_g) - 2 * (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p11",
+            "pos": [
+              57.53333333333333,
+              -238.86666666666667
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t) - (lap_t + lap_g) / 3)",
+              "y": "-((cap_cut - lap - lap_g) - 2 * (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p12",
+            "pos": [
+              57.53333333333333,
+              -239.33333333333334
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t) - (lap_t + lap_g) / 3)",
+              "y": "-((cap_cut - lap - lap_g) - (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p13",
+            "pos": [
+              57.06666666666667,
+              -239.33333333333334
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t) - 2 * (lap_t + lap_g) / 3)",
+              "y": "-((cap_cut - lap - lap_g) - (lap_t + lap_g) / 3)"
+            }
+          },
+          {
+            "id": "p14",
+            "pos": [
+              57.06666666666667,
+              -239.8
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t) - 2 * (lap_t + lap_g) / 3)",
+              "y": "-(cap_cut - lap - lap_g)"
+            }
+          },
+          {
+            "id": "p15",
+            "pos": [
+              56.6,
+              -239.8
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t) - (lap_t + lap_g))",
+              "y": "-(cap_cut - lap - lap_g)"
+            }
+          },
+          {
+            "id": "p16",
+            "pos": [
+              56.6,
+              -249.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "((x_half + panel_t) - (lap_t + lap_g))",
+              "y": "-(cap_cut + 1 mm)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 9,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 16,
+          "p": 16
+        }
+      }
+    },
+    {
+      "id": 47,
+      "name": "CapLapStairs",
+      "suppressed": false,
+      "param_names": [
+        "d68"
+      ],
+      "type": "extrude",
+      "sketch": 46,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "plate_top + 1 mm - (split_y + knuckle_r + 2 mm)",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "shell"
+      ]
+    },
+    {
+      "id": 48,
+      "name": "BackWallScrewPoints",
+      "suppressed": false,
+      "param_names": [
+        "d69"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "-(x_half + panel_t)"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -110.0,
+              59.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(w_shell0 + plate_out) / 2"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -60.0,
+              59.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(w_shell0 + plate_out) / 2"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -10.0,
+              59.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(w_shell0 + plate_out) / 2"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              20.0,
+              59.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(w_shell0 + plate_out) / 2"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -60.0,
+              232.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(cap_cut - 16 mm)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              15.0,
+              232.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(cap_cut - 16 mm)"
+            }
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 49,
+      "name": "BackWallScrewHoles",
+      "suppressed": false,
+      "param_names": [
+        "d70",
+        "d71",
+        "d72",
+        "d73"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "hole",
+      "position": [
+        -58.0,
+        -110.0,
+        59.0
+      ],
+      "direction": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "diameter": "3.4 mm",
+      "depth": "panel_t + 0.01 mm",
+      "hole": {
+        "type": "countersink",
+        "cs_diameter": "6.9 mm",
+        "cs_angle": "90 deg"
+      },
+      "points": {
+        "sketch": 48,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4",
+          "p5",
+          "p6"
+        ]
+      }
+    },
+    {
+      "id": 50,
+      "name": "FrontWallScrewPoints",
+      "suppressed": false,
+      "param_names": [
+        "d74"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "x_half + panel_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -110.0,
+              59.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(w_shell0 + plate_out) / 2"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -60.0,
+              59.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(w_shell0 + plate_out) / 2"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -60.0,
+              232.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "(cap_cut - 16 mm)"
+            }
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {
+          "p": 3
+        }
+      }
+    },
+    {
+      "id": 51,
+      "name": "FrontWallScrewHoles",
+      "suppressed": false,
+      "param_names": [
+        "d75",
+        "d76",
+        "d77",
+        "d78"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "hole",
+      "position": [
+        58.0,
+        -110.0,
+        59.0
+      ],
+      "direction": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "diameter": "3.4 mm",
+      "depth": "panel_t + 0.01 mm",
+      "hole": {
+        "type": "countersink",
+        "cs_diameter": "6.9 mm",
+        "cs_angle": "90 deg"
+      },
+      "points": {
+        "sketch": 50,
+        "ids": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      }
+    },
+    {
+      "id": 52,
+      "name": "HoodTopInsertPoints",
+      "suppressed": false,
+      "param_names": [
+        "d79"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "plate_top"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -39.757359312880716,
+              -100.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-x_half + chamfer_in + rail / 2"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -39.757359312880716,
+              -165.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-x_half + chamfer_in + rail / 2"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -39.757359312880716,
+              -192.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-x_half + chamfer_in + rail / 2"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -39.757359312880716,
+              -240.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-x_half + chamfer_in + rail / 2",
+              "y": "-(cap_cut - 8 mm)"
+            }
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 53,
+      "name": "HoodTopInsertHoles",
+      "suppressed": false,
+      "param_names": [
+        "d80",
+        "d81"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "hole",
+      "position": [
+        -39.757359312880716,
+        43.83098861837907,
+        100.0
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        -0.0
+      ],
+      "diameter": "insert_d",
+      "depth": "insert_l",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 52,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      }
+    },
+    {
+      "id": 54,
+      "name": "HoodStripInsertPoints",
+      "suppressed": false,
+      "param_names": [
+        "d82"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "x_half"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -21.0,
+              110.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "band_y + rail / 2"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -21.0,
+              200.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "band_y + rail / 2"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -21.0,
+              240.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "band_y + rail / 2",
+              "y": "cap_cut - 8 mm"
+            }
+          }
+        ],
+        "curves": [],
+        "constraints": [],
+        "counters": {
+          "p": 3
+        }
+      }
+    },
+    {
+      "id": 55,
+      "name": "HoodStripInsertHoles",
+      "suppressed": false,
+      "param_names": [
+        "d83",
+        "d84"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "hole",
+      "position": [
+        55.0,
+        -21.0,
+        110.0
+      ],
+      "direction": [
+        -1.0,
+        -0.0,
+        -0.0
+      ],
+      "diameter": "insert_d",
+      "depth": "insert_l",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 54,
+        "ids": [
+          "p1",
+          "p2",
+          "p3"
+        ]
+      }
+    },
+    {
+      "id": 56,
+      "name": "TrimAtCapCut",
+      "suppressed": false,
+      "param_names": [
+        "d85",
+        "d86",
+        "d87"
+      ],
+      "participants": [
+        "shell"
+      ],
+      "type": "box",
+      "corner": [
+        "-(x_half + panel_t + 10 mm)",
+        "plate_bot - panel_t - 10 mm",
+        "cap_cut"
+      ],
+      "length": "2 * (x_half + panel_t + 10 mm)",
+      "width": "plate_top - plate_bot + 2 * panel_t + 20 mm",
+      "height": "20 mm",
+      "operation": "cut"
+    }
+  ],
+  "next_id": 57,
+  "next_component_color_index": 0,
+  "materials": {
+    "shell": "PETG"
+  },
+  "user_materials": [
+    {
+      "name": "PETG",
+      "density": 1.27,
+      "appearance": {
+        "name": "PETG",
+        "color": [
+          58,
+          123,
+          213
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

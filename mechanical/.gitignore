@@ -1,3 +1,2 @@
-.venv/
-*/out/*
-!*/out/render_*.png
+*.bak
+.DS_Store

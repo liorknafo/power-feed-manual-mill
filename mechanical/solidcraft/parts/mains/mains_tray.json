@@ -1,0 +1,1693 @@
+{
+  "format": "solidcraft/53",
+  "name": "mains_tray",
+  "units": "mm",
+  "params": [
+    {
+      "name": "tray_t",
+      "expr": "1.5 mm",
+      "unit": "mm",
+      "comment": "5052 / 1050 aluminium sheet thickness; 1.0 to 2.0 mm",
+      "model": false
+    },
+    {
+      "name": "bend_r",
+      "expr": "1.5 mm",
+      "unit": "mm",
+      "comment": "inside bend radius (1 t, the least 5052-H32 takes at 1.5 mm); 1 to 3 mm",
+      "model": false
+    },
+    {
+      "name": "psu_w",
+      "expr": "97 mm",
+      "unit": "mm",
+      "comment": "LRS-150-36 width; fixed by the supply",
+      "model": false
+    },
+    {
+      "name": "tray_side_gap",
+      "expr": "2 mm",
+      "unit": "mm",
+      "comment": "PSU side -> tray wall; 1 to 5 mm",
+      "model": false
+    },
+    {
+      "name": "tray_half",
+      "expr": "psu_w/2 + tray_side_gap + tray_t",
+      "unit": "mm",
+      "comment": "half outside width of the tray (derived)",
+      "model": false
+    },
+    {
+      "name": "tray_bot",
+      "expr": "-153.20883080499217 mm",
+      "unit": "mm",
+      "comment": "world y of the tray floor's underside (from the clutch layout); fixed by feed_unit.py",
+      "model": false
+    },
+    {
+      "name": "tray_low",
+      "expr": "32.5 mm",
+      "unit": "mm",
+      "comment": "outside height of the low walls over the PSU: psu_h + 1 + tray_t; 32 to 40 mm",
+      "model": false
+    },
+    {
+      "name": "term_zone_rise",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "walls, end face and lid this much higher over the terminal/inlet zone; 5 to 15 mm",
+      "model": false
+    },
+    {
+      "name": "tray_w0",
+      "expr": "63 mm",
+      "unit": "mm",
+      "comment": "W of the plate's outer face, where the floor starts; fixed by feed_unit.py",
+      "model": false
+    },
+    {
+      "name": "wall_w0",
+      "expr": "tray_w0 + 12 mm",
+      "unit": "mm",
+      "comment": "W where the side walls start (past the belt-tension block)",
+      "model": false
+    },
+    {
+      "name": "term_w0",
+      "expr": "223 mm",
+      "unit": "mm",
+      "comment": "W where the raised terminal/inlet zone starts (psu_w0 + psu_l - 18)",
+      "model": false
+    },
+    {
+      "name": "tray_w1",
+      "expr": "307.5 mm",
+      "unit": "mm",
+      "comment": "W of the end face's outside (inlet panel); 280 to 320 mm",
+      "model": false
+    },
+    {
+      "name": "lid_flange",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "inward-folded lid flanges carrying the M3 rivnuts; 8 to 14 mm",
+      "model": false
+    },
+    {
+      "name": "relief",
+      "expr": "bend_r + tray_t + 0.5 mm",
+      "unit": "mm",
+      "comment": "bend reliefs reach 0.5 past the bend's tangent line (derived)",
+      "model": false
+    },
+    {
+      "name": "tab_x",
+      "expr": "34 mm",
+      "unit": "mm",
+      "comment": "x of the two floor tabs (M4 into the plate); 25 to 40 mm",
+      "model": false
+    },
+    {
+      "name": "bend_allow",
+      "expr": "pi/2*(bend_r + 0.33*tray_t)",
+      "unit": "mm",
+      "comment": "bend allowance per 90-degree bend at K 0.33 (derived; keep the 0.33 equal to the rule's K-factor)",
+      "model": false
+    },
+    {
+      "name": "bend_ded",
+      "expr": "2*(bend_r + tray_t) - bend_allow",
+      "unit": "mm",
+      "comment": "bend deduction per 90-degree bend (derived)",
+      "model": false
+    },
+    {
+      "name": "corner_relief_r",
+      "expr": "bend_allow/sqrt(2) + 0.5 mm",
+      "unit": "mm",
+      "comment": "round relief where the floor's wall and end-face bends cross: over both bend zones (derived)",
+      "model": false
+    },
+    {
+      "name": "d13",
+      "expr": "corner_relief_r",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "corner_relief_r",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "5 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "FloorSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "tray_bot"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -52.0,
+              -63.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half)",
+              "y": "-(tray_w0)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -40.0,
+              -63.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tab_x + 6 mm)",
+              "y": "-(tray_w0)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -40.0,
+              -52.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tab_x + 6 mm)",
+              "y": "-(tray_w0 - 11 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -28.0,
+              -52.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tab_x - 6 mm)",
+              "y": "-(tray_w0 - 11 mm)"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -28.0,
+              -63.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tab_x - 6 mm)",
+              "y": "-(tray_w0)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              28.0,
+              -63.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tab_x - 6 mm",
+              "y": "-(tray_w0)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              28.0,
+              -52.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tab_x - 6 mm",
+              "y": "-(tray_w0 - 11 mm)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              40.0,
+              -52.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tab_x + 6 mm",
+              "y": "-(tray_w0 - 11 mm)"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              40.0,
+              -63.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tab_x + 6 mm",
+              "y": "-(tray_w0)"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              52.0,
+              -63.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half",
+              "y": "-(tray_w0)"
+            }
+          },
+          {
+            "id": "p11",
+            "pos": [
+              52.0,
+              -73.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half",
+              "y": "-(wall_w0 - tray_t)"
+            }
+          },
+          {
+            "id": "p12",
+            "pos": [
+              48.5,
+              -73.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - relief",
+              "y": "-(wall_w0 - tray_t)"
+            }
+          },
+          {
+            "id": "p13",
+            "pos": [
+              48.5,
+              -75.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - relief",
+              "y": "-(wall_w0)"
+            }
+          },
+          {
+            "id": "p14",
+            "pos": [
+              52.0,
+              -75.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half",
+              "y": "-(wall_w0)"
+            }
+          },
+          {
+            "id": "p15",
+            "pos": [
+              52.0,
+              -307.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half",
+              "y": "-(tray_w1)"
+            }
+          },
+          {
+            "id": "p16",
+            "pos": [
+              -52.0,
+              -307.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half)",
+              "y": "-(tray_w1)"
+            }
+          },
+          {
+            "id": "p17",
+            "pos": [
+              -52.0,
+              -75.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half)",
+              "y": "-(wall_w0)"
+            }
+          },
+          {
+            "id": "p18",
+            "pos": [
+              -48.5,
+              -75.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - relief)",
+              "y": "-(wall_w0)"
+            }
+          },
+          {
+            "id": "p19",
+            "pos": [
+              -48.5,
+              -73.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - relief)",
+              "y": "-(wall_w0 - tray_t)"
+            }
+          },
+          {
+            "id": "p20",
+            "pos": [
+              -52.0,
+              -73.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half)",
+              "y": "-(wall_w0 - tray_t)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 19,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 20,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 20,
+          "p": 20
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Floor",
+      "suppressed": false,
+      "body_names": [
+        "mains_tray"
+      ],
+      "type": "sheet_base",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      }
+    },
+    {
+      "id": 3,
+      "name": "EndFace",
+      "suppressed": false,
+      "param_names": [
+        "d2",
+        "d3"
+      ],
+      "edge_names": [
+        "base:l15:top"
+      ],
+      "type": "sheet_flange",
+      "edges": [
+        [
+          0.0,
+          -151.70883080499217,
+          307.5
+        ]
+      ],
+      "height": "tray_low + term_zone_rise",
+      "angle": "90 deg",
+      "position": "inside"
+    },
+    {
+      "id": 4,
+      "name": "Walls",
+      "suppressed": false,
+      "param_names": [
+        "d4",
+        "d5",
+        "d6",
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "edge_names": [
+        "base:l10:top",
+        "base:l16:top"
+      ],
+      "type": "sheet_flange",
+      "edges": [
+        {
+          "point": [
+            52.0,
+            -151.70883080499217,
+            190.0
+          ],
+          "segments": [
+            {
+              "from": 0.0,
+              "to": 0.355119825708061,
+              "height": "tray_low + term_zone_rise"
+            },
+            {
+              "from": 0.355119825708061,
+              "to": 1.0,
+              "height": "tray_low"
+            }
+          ]
+        },
+        {
+          "point": [
+            -52.0,
+            -151.70883080499217,
+            190.0
+          ],
+          "segments": [
+            {
+              "from": 0.0,
+              "to": 0.644880174291939,
+              "height": "tray_low"
+            },
+            {
+              "from": 0.644880174291939,
+              "to": 1.0,
+              "height": "tray_low + term_zone_rise"
+            }
+          ]
+        }
+      ],
+      "height": "tray_low + term_zone_rise",
+      "angle": "90 deg",
+      "position": "inside"
+    },
+    {
+      "id": 5,
+      "name": "UnfoldForWallEnds",
+      "suppressed": false,
+      "type": "sheet_unfold",
+      "body": "mains_tray"
+    },
+    {
+      "id": 6,
+      "name": "WallEndsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "tray_bot"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              52.133738671955825,
+              -304.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - bend_ded/2 + bend_allow/2",
+              "y": "-(tray_w1 - tray_t - bend_r)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              91.63373867195583,
+              -304.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - bend_ded + tray_low + term_zone_rise",
+              "y": "-(tray_w1 - tray_t - bend_r)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              91.63373867195583,
+              -305.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - bend_ded + tray_low + term_zone_rise",
+              "y": "-(tray_w1 - tray_t - 0.25 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              52.133738671955825,
+              -305.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - bend_ded/2 + bend_allow/2",
+              "y": "-(tray_w1 - tray_t - 0.25 mm)"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -52.133738671955825,
+              -304.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - bend_ded/2 + bend_allow/2)",
+              "y": "-(tray_w1 - tray_t - bend_r)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -52.133738671955825,
+              -305.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - bend_ded/2 + bend_allow/2)",
+              "y": "-(tray_w1 - tray_t - 0.25 mm)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -91.63373867195583,
+              -305.75
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - bend_ded + tray_low + term_zone_rise)",
+              "y": "-(tray_w1 - tray_t - 0.25 mm)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -91.63373867195583,
+              -304.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - bend_ded + tray_low + term_zone_rise)",
+              "y": "-(tray_w1 - tray_t - bend_r)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 8,
+          "p": 8
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "WallEnds",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tray_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "mains_tray"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "CornerReliefsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "tray_bot + tray_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              50.56686933597791,
+              -306.0668693359779
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(tray_half - bend_ded/2)",
+              "y": "-(tray_w1 - bend_ded/2)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -50.56686933597791,
+              -306.0668693359779
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - bend_ded/2)",
+              "y": "-(tray_w1 - bend_ded/2)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.715887865406485,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.715887865406485,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "radius",
+            "c": 0,
+            "value": 2.715887865406485,
+            "param": "d13"
+          },
+          {
+            "id": "k2",
+            "type": "radius",
+            "c": 1,
+            "value": 2.715887865406485,
+            "param": "d14"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 2,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "CornerReliefs",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "extrude",
+      "sketch": 8,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tray_t + 1 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "mains_tray"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "RefoldWalls",
+      "suppressed": false,
+      "type": "sheet_unfold",
+      "body": "mains_tray",
+      "refold": true
+    },
+    {
+      "id": 11,
+      "name": "LipReliefSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "YZ"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -114.20883080499217,
+              223.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_bot + tray_low + term_zone_rise - relief",
+              "y": "term_w0"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -109.70883080499217,
+              223.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_bot + tray_low + term_zone_rise + 1 mm",
+              "y": "term_w0"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -109.70883080499217,
+              226.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_bot + tray_low + term_zone_rise + 1 mm",
+              "y": "term_w0 + tray_t + bend_r + 0.25 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -114.20883080499217,
+              226.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_bot + tray_low + term_zone_rise - relief",
+              "y": "term_w0 + tray_t + bend_r + 0.25 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "LipReliefs",
+      "suppressed": false,
+      "param_names": [
+        "d16"
+      ],
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2*tray_half + 10 mm",
+        "convention": "total_distance",
+        "direction": "symmetric"
+      },
+      "operation": "cut",
+      "targets": [
+        "mains_tray"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "LidFlanges",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "edge_names": [
+        "F4.0:far:top",
+        "F4.3:far:top"
+      ],
+      "type": "sheet_flange",
+      "edges": [
+        [
+          50.5,
+          -110.70883080499217,
+          265.0
+        ],
+        [
+          -50.5,
+          -110.70883080499217,
+          265.0
+        ]
+      ],
+      "height": "lid_flange",
+      "angle": "90 deg",
+      "position": "inside"
+    },
+    {
+      "id": 14,
+      "name": "TabScrewHoleBack",
+      "suppressed": false,
+      "param_names": [
+        "d19"
+      ],
+      "face_names": [
+        "F2:face:1#[F2:face:11,F2:face:12,F2:face:13,F2:face:14,F2:face:15,F2:face:16,F2:face:17,F2:face:18,F2:face:19,F2:face:2,F2:face:20,F2:face:21,F2:face:3,F2:face:4,F2:face:5,F4:face:34,F4:face:37,F9:side:c1,F9:side:c2]"
+      ],
+      "participants": [
+        "mains_tray"
+      ],
+      "type": "hole",
+      "position": [
+        -34.0,
+        -153.20883080499217,
+        57.0
+      ],
+      "at": [
+        "-tab_x",
+        "tray_bot",
+        "tray_w0 - 6 mm"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "4.4",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 15,
+      "name": "TabScrewHoleFront",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "face_names": [
+        "F2:face:1#[F14:face:21,F14:face:22,F2:face:11,F2:face:12,F2:face:13,F2:face:14,F2:face:15,F2:face:16,F2:face:17,F2:face:18,F2:face:19,F2:face:2,F2:face:20,F2:face:21,F2:face:3,F2:face:4,F2:face:5,F4:face:34,F4:face:37,F9:side:c1,F9:side:c2]"
+      ],
+      "participants": [
+        "mains_tray"
+      ],
+      "type": "hole",
+      "position": [
+        34.0,
+        -153.20883080499217,
+        57.0
+      ],
+      "at": [
+        "tab_x",
+        "tray_bot",
+        "tray_w0 - 6 mm"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "4.4",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 16,
+      "name": "DrawboltAccessHole",
+      "suppressed": false,
+      "param_names": [
+        "d21"
+      ],
+      "face_names": [
+        "F2:face:1#[F14:face:21,F14:face:22,F15:face:23,F15:face:24,F2:face:11,F2:face:12,F2:face:13,F2:face:14,F2:face:15,F2:face:16,F2:face:17,F2:face:18,F2:face:19,F2:face:2,F2:face:20,F2:face:21,F2:face:3,F2:face:4,F2:face:5,F4:face:34,F4:face:37,F9:side:c1,F9:side:c2]"
+      ],
+      "participants": [
+        "mains_tray"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        -153.20883080499217,
+        67.0
+      ],
+      "at": [
+        0.0,
+        "tray_bot",
+        "tray_w0 + 4 mm"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "12",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 17,
+      "name": "PsuScrewHoleNear",
+      "suppressed": false,
+      "param_names": [
+        "d22"
+      ],
+      "face_names": [
+        "F2:face:1#[F14:face:21,F14:face:22,F15:face:23,F15:face:24,F16:face:2,F16:face:24,F16:face:3,F2:face:11,F2:face:12,F2:face:13,F2:face:14,F2:face:15,F2:face:16,F2:face:17,F2:face:18,F2:face:19,F2:face:2,F2:face:20,F2:face:21,F2:face:3,F2:face:4,F2:face:5,F4:face:34,F4:face:37,F9:side:c1,F9:side:c2]"
+      ],
+      "participants": [
+        "mains_tray"
+      ],
+      "type": "hole",
+      "position": [
+        16.5,
+        -153.20883080499217,
+        139.0
+      ],
+      "at": [
+        "65 mm - psu_w/2",
+        "tray_bot",
+        "term_w0 + 18 mm - 102 mm"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "3.4",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 18,
+      "name": "PsuScrewHoleFar",
+      "suppressed": false,
+      "param_names": [
+        "d23"
+      ],
+      "face_names": [
+        "F2:face:1#[F14:face:21,F14:face:22,F15:face:23,F15:face:24,F16:face:2,F16:face:24,F16:face:3,F17:face:29,F17:face:30,F2:face:11,F2:face:12,F2:face:13,F2:face:14,F2:face:15,F2:face:16,F2:face:17,F2:face:18,F2:face:19,F2:face:2,F2:face:20,F2:face:21,F2:face:3,F2:face:4,F2:face:5,F4:face:34,F4:face:37,F9:side:c1,F9:side:c2]"
+      ],
+      "participants": [
+        "mains_tray"
+      ],
+      "type": "hole",
+      "position": [
+        16.5,
+        -153.20883080499217,
+        217.0
+      ],
+      "at": [
+        "65 mm - psu_w/2",
+        "tray_bot",
+        "term_w0 + 18 mm - 24 mm"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "3.4",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 19,
+      "name": "InletCutoutSketch",
+      "suppressed": false,
+      "param_names": [
+        "d24"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "tray_w1"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -23.6,
+              -145.30883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "tray_bot + 22 mm - 14.1 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              23.6,
+              -145.30883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "tray_bot + 22 mm - 14.1 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              23.6,
+              -117.10883080499218
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "tray_bot + 22 mm + 14.1 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -23.6,
+              -117.10883080499218
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "tray_bot + 22 mm + 14.1 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 20,
+      "name": "InletCutout",
+      "suppressed": false,
+      "param_names": [
+        "d25"
+      ],
+      "type": "extrude",
+      "sketch": 19,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tray_t + 1 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "mains_tray"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "UnfoldForRivnutHoles",
+      "suppressed": false,
+      "type": "sheet_unfold",
+      "body": "mains_tray"
+    },
+    {
+      "id": 22,
+      "name": "RivnutHolesSketch",
+      "suppressed": false,
+      "param_names": [
+        "d26"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "tray_bot + tray_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -93.76747734391164,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - 2*bend_ded + tray_low + term_zone_rise + lid_flange/2)",
+              "y": "-(term_w0 + 8 mm)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -93.76747734391164,
+              -299.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - 2*bend_ded + tray_low + term_zone_rise + lid_flange/2)",
+              "y": "-(tray_w1 - 8 mm)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              93.76747734391164,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(tray_half - 2*bend_ded + tray_low + term_zone_rise + lid_flange/2)",
+              "y": "-(term_w0 + 8 mm)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              93.76747734391164,
+              -299.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(tray_half - 2*bend_ded + tray_low + term_zone_rise + lid_flange/2)",
+              "y": "-(tray_w1 - 8 mm)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 2.5,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.5,
+            "construction": false
+          },
+          {
+            "id": "c3",
+            "type": "circle",
+            "c": 3,
+            "r": 2.5,
+            "construction": false
+          },
+          {
+            "id": "c4",
+            "type": "circle",
+            "c": 4,
+            "r": 2.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 5.0,
+            "param": "d27"
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 1,
+            "value": 5.0,
+            "param": "d28"
+          },
+          {
+            "id": "k3",
+            "type": "diameter",
+            "c": 2,
+            "value": 5.0,
+            "param": "d29"
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 3,
+            "value": 5.0,
+            "param": "d30"
+          }
+        ],
+        "counters": {
+          "c": 4,
+          "k": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 23,
+      "name": "RivnutHoles",
+      "suppressed": false,
+      "param_names": [
+        "d31"
+      ],
+      "type": "extrude",
+      "sketch": 22,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tray_t + 1 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "mains_tray"
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Refold",
+      "suppressed": false,
+      "type": "sheet_unfold",
+      "body": "mains_tray",
+      "refold": true
+    }
+  ],
+  "next_id": 25,
+  "next_component_color_index": 0,
+  "sheet": {
+    "rules": [
+      {
+        "name": "AL5052 1.5",
+        "thickness": "tray_t",
+        "k_factor": "0.33",
+        "bend_radius": "bend_r",
+        "relief_width": "tray_t",
+        "relief_depth": "0.5 mm",
+        "corner_relief": "2*(pi/2*(bend_r + 0.33*tray_t)/sqrt(2) + 0.5 mm)",
+        "corner_relief_shape": "round",
+        "hem_gap": "0.01 mm",
+        "gap": "0.25 mm"
+      }
+    ],
+    "active": "AL5052 1.5"
+  },
+  "materials": {
+    "mains_tray": "Aluminium 5052"
+  },
+  "user_materials": [
+    {
+      "name": "Aluminium 5052",
+      "density": 2.68,
+      "appearance": {
+        "name": "Aluminium 5052",
+        "color": [
+          184,
+          188,
+          194
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

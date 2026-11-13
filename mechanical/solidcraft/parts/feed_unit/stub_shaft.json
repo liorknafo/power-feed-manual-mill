@@ -1,0 +1,961 @@
+{
+  "format": "solidcraft/53",
+  "name": "stub_shaft",
+  "units": "mm",
+  "params": [
+    {
+      "name": "chamber",
+      "expr": "35 mm",
+      "unit": "mm",
+      "comment": "bracket face to the plate's chamber face (Z_PLATE_IN), 25 to 60 mm",
+      "model": false
+    },
+    {
+      "name": "plate_t",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "plate thickness; the stub body ends 1 mm past its outer face",
+      "model": false
+    },
+    {
+      "name": "screw_end_z",
+      "expr": "-1 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER leadscrew end face relative to the bracket face (-5 to 2 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_d",
+      "expr": "16 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER leadscrew OD; the tongue is screw_d - 2 long",
+      "model": false
+    },
+    {
+      "name": "oldham_t",
+      "expr": "9 mm",
+      "unit": "mm",
+      "comment": "Oldham disc thickness",
+      "model": false
+    },
+    {
+      "name": "oldham_gap",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "axial gap each side of the Oldham disc",
+      "model": false
+    },
+    {
+      "name": "stub_d",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "stub diameter at the 6002 bearings (15 x 32 x 9)",
+      "model": false
+    },
+    {
+      "name": "stub_shoulder_d",
+      "expr": "18 mm",
+      "unit": "mm",
+      "comment": "shoulder on the inner bearing's inner race (stub_d + 2 to 20 mm)",
+      "model": false
+    },
+    {
+      "name": "stub_enc_d",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "encoder-end diameter (coupling bore), 5 to 10 mm",
+      "model": false
+    },
+    {
+      "name": "stub_enc_len",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "encoder-end length past the body (6 to 20 mm)",
+      "model": false
+    },
+    {
+      "name": "stub_tongue_w",
+      "expr": "4.8 mm",
+      "unit": "mm",
+      "comment": "tongue width into the Oldham cross slot (3 to 6 mm)",
+      "model": false
+    },
+    {
+      "name": "stub_tongue_h",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "tongue height (2 to oldham_t - 2 mm)",
+      "model": false
+    },
+    {
+      "name": "bearing_w",
+      "expr": "9 mm",
+      "unit": "mm",
+      "comment": "6002 width",
+      "model": false
+    },
+    {
+      "name": "circlip_land",
+      "expr": "2.6 mm",
+      "unit": "mm",
+      "comment": "plate material outside each DIN 472-32 groove",
+      "model": false
+    },
+    {
+      "name": "circlip_groove",
+      "expr": "1.3 mm",
+      "unit": "mm",
+      "comment": "DIN 472-32 groove width in the plate",
+      "model": false
+    },
+    {
+      "name": "shaft_groove_d",
+      "expr": "14.3 mm",
+      "unit": "mm",
+      "comment": "DIN 471-15 groove diameter",
+      "model": false
+    },
+    {
+      "name": "shaft_groove_w",
+      "expr": "1.1 mm",
+      "unit": "mm",
+      "comment": "DIN 471-15 groove width",
+      "model": false
+    },
+    {
+      "name": "flat_depth",
+      "expr": "0.6 mm",
+      "unit": "mm",
+      "comment": "pulley set-screw flat depth (0.3 to 1.5 mm)",
+      "model": false
+    },
+    {
+      "name": "z_stub",
+      "expr": "max(screw_end_z, 0 mm) + 2*oldham_gap + oldham_t",
+      "unit": "mm",
+      "comment": "world z of the stub's end face at the Oldham disc (derived)",
+      "model": false
+    },
+    {
+      "name": "z_bearing",
+      "expr": "chamber + circlip_land + circlip_groove + 0.2 mm",
+      "unit": "mm",
+      "comment": "world z of the inner 6002's chamber-side face (derived)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "stub_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "stub_shoulder_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "stub_enc_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "stub_d + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "shaft_groove_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "stub_d/2 - flat_depth",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "stub_d/2 - flat_depth + 10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d17",
+      "expr": "10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d18",
+      "expr": "10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "screw_d - 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d22",
+      "expr": "stub_tongue_w",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BodySketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_stub"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 7.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 15.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Body",
+      "suppressed": false,
+      "body_names": [
+        "stub_shaft"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "chamber + plate_t + 1 mm - z_stub",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "ShoulderSketch",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_bearing - 2 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 9.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 18.0,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Shoulder",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "stub_shaft"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "EncoderEndSketch",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t + 1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 8.0,
+            "param": "d8"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "EncoderEnd",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "stub_enc_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "stub_shaft"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "CirclipGrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_bearing + bearing_w + 0.1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 8.5,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 7.15,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 17.0,
+            "param": "d11"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 14.3,
+            "param": "d12"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "CirclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "shaft_groove_w",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "stub_shaft"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "FlatSketch",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_stub"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              6.9,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              16.9,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              16.9,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              6.9,
+              10.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 6.9,
+            "param": "d15"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 16.9,
+            "param": "d16"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 10.0,
+            "param": "d17"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 10.0,
+            "param": "d18"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "SetScrewFlat",
+      "suppressed": false,
+      "param_names": [
+        "d19"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "z_bearing - 2 mm - z_stub",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "stub_shaft"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "TongueSketch",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_stub"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -2.4,
+              -7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              2.4,
+              -7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              2.4,
+              7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -2.4,
+              7.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 1,
+            "value": 14.0,
+            "param": "d21"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 0,
+            "value": 4.8,
+            "param": "d22"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Tongue",
+      "suppressed": false,
+      "param_names": [
+        "d23"
+      ],
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "stub_tongue_h + oldham_gap",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join",
+      "targets": [
+        "stub_shaft"
+      ]
+    }
+  ],
+  "next_id": 13,
+  "next_component_color_index": 0,
+  "materials": {
+    "stub_shaft": "Steel"
+  }
+}

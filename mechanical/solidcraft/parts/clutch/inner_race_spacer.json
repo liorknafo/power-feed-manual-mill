@@ -1,0 +1,174 @@
+{
+  "format": "solidcraft/53",
+  "name": "inner_race_spacer",
+  "units": "mm",
+  "params": [
+    {
+      "name": "spacer_od",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "spacer OD: bears on the 6001 inner race only (12.5 .. 17 mm)",
+      "model": false
+    },
+    {
+      "name": "out_shaft_d",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "output shaft diameter = spacer bore",
+      "model": false
+    },
+    {
+      "name": "z_hub_top",
+      "expr": "51.85 mm",
+      "unit": "mm",
+      "comment": "clutch frame: top of the output hub boss (spacer's motor-side face)",
+      "model": false
+    },
+    {
+      "name": "z_bearing_in",
+      "expr": "58.45 mm",
+      "unit": "mm",
+      "comment": "clutch frame: motor-side face of the inner bearing (> z_hub_top)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "spacer_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "out_shaft_d",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "SpacerSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_hub_top"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 7.5,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 6.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 15.0,
+            "param": "d2"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 12.0,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Spacer",
+      "suppressed": false,
+      "body_names": [
+        "inner_race_spacer"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "z_bearing_in - z_hub_top",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "inner_race_spacer": "Steel"
+  }
+}

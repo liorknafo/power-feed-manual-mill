@@ -1,0 +1,1414 @@
+{
+  "format": "solidcraft/53",
+  "name": "iec_inlet_snapin",
+  "units": "mm",
+  "params": [
+    {
+      "name": "flange_w",
+      "expr": "50 mm",
+      "unit": "mm",
+      "comment": "front flange width along x (body_w + 2 to 60 mm)",
+      "model": false
+    },
+    {
+      "name": "flange_h",
+      "expr": "30.8 mm",
+      "unit": "mm",
+      "comment": "front flange height along y (body_h + 2 to 40 mm)",
+      "model": false
+    },
+    {
+      "name": "flange_t",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "front flange thickness, proud of the panel (2 to 5 mm)",
+      "model": false
+    },
+    {
+      "name": "body_w",
+      "expr": "47 mm",
+      "unit": "mm",
+      "comment": "body width = panel cut-out width (40 to 50 mm)",
+      "model": false
+    },
+    {
+      "name": "body_h",
+      "expr": "27.5 mm",
+      "unit": "mm",
+      "comment": "body height = panel cut-out height (24 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "body_depth",
+      "expr": "20.5 mm",
+      "unit": "mm",
+      "comment": "body depth from the flange's front face (15 to 25 mm)",
+      "model": false
+    },
+    {
+      "name": "overall_depth",
+      "expr": "29 mm",
+      "unit": "mm",
+      "comment": "depth behind the panel to the end of the tabs (body_depth - flange_t + 2 to 40 mm)",
+      "model": false
+    },
+    {
+      "name": "bay_depth",
+      "expr": "18.6 mm",
+      "unit": "mm",
+      "comment": "C14 bay depth from the flange's front face (C13 nose 18.5 in; 16 to body_depth - 1)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "flange_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "flange_h",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "body_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "body_h",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "30 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "20 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "24 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "16 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "1.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "flange_h/2 - 2.7 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d18",
+      "expr": "21.2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d19",
+      "expr": "15.2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d20",
+      "expr": "2.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "7.6 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "19 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d25",
+      "expr": "13 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "3.6 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "6.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "21 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d31",
+      "expr": "9.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d32",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d33",
+      "expr": "5 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "FlangeSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -25.0,
+              -15.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              25.0,
+              -15.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              25.0,
+              15.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -25.0,
+              15.4
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 50.0,
+            "param": "d1"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 30.8,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Flange",
+      "suppressed": false,
+      "body_names": [
+        "iec_inlet_snapin"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "flange_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "BodySketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -23.5,
+              -13.75
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              23.5,
+              -13.75
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              23.5,
+              13.75
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -23.5,
+              13.75
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 47.0,
+            "param": "d4"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 27.5,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Body",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "body_depth - flange_t",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "TabsSketch",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "flange_t - body_depth"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -15.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              15.0,
+              -10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              15.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -15.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 30.0,
+            "param": "d8"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 20.0,
+            "param": "d9"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "SnapTabs",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "overall_depth - body_depth + flange_t",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "C14BaySketch",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "flange_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -22.5,
+              -3.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              1.5,
+              -3.3
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              1.5,
+              12.7
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -22.5,
+              12.7
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 0,
+            "value": 24.0,
+            "param": "d12"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 3,
+            "value": 16.0,
+            "param": "d13"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 1.5,
+            "param": "d14"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 12.7,
+            "param": "d15"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "C14Bay",
+      "suppressed": false,
+      "param_names": [
+        "d16"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "bay_depth",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 9,
+      "name": "RockerBezelSketch",
+      "suppressed": false,
+      "param_names": [
+        "d17"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "flange_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              2.5,
+              -7.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              23.7,
+              -7.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              23.7,
+              7.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              2.5,
+              7.6
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 0,
+            "value": 21.2,
+            "param": "d18"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 3,
+            "value": 15.2,
+            "param": "d19"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 2.5,
+            "param": "d20"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 7.6,
+            "param": "d21"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "RockerBezel",
+      "suppressed": false,
+      "param_names": [
+        "d22"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "1 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 11,
+      "name": "RockerSketch",
+      "suppressed": false,
+      "param_names": [
+        "d23"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "flange_t + 1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              3.6,
+              -6.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              22.6,
+              -6.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              22.6,
+              6.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              3.6,
+              6.5
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 0,
+            "value": 19.0,
+            "param": "d24"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 3,
+            "value": 13.0,
+            "param": "d25"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 3.6,
+            "param": "d26"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 6.5,
+            "param": "d27"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Rocker",
+      "suppressed": false,
+      "param_names": [
+        "d28"
+      ],
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2.7 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 13,
+      "name": "FuseDrawerSketch",
+      "suppressed": false,
+      "param_names": [
+        "d29"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "flange_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -21.5,
+              -14.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -0.5,
+              -14.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -0.5,
+              -5.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -21.5,
+              -5.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 0,
+            "value": 21.0,
+            "param": "d30"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 3,
+            "value": 9.5,
+            "param": "d31"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 0.5,
+            "param": "d32"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 5.0,
+            "param": "d33"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "FuseDrawer",
+      "suppressed": false,
+      "param_names": [
+        "d34"
+      ],
+      "type": "extrude",
+      "sketch": 13,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "1.3 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    }
+  ],
+  "next_id": 15,
+  "next_component_color_index": 0,
+  "materials": {
+    "iec_inlet_snapin": "Nylon"
+  }
+}

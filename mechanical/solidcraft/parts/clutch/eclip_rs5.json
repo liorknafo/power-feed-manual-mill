@@ -1,0 +1,343 @@
+{
+  "format": "solidcraft/53",
+  "name": "eclip_rs5",
+  "units": "mm",
+  "params": [
+    {
+      "name": "eclip_od",
+      "expr": "11 mm",
+      "unit": "mm",
+      "comment": "DIN 6799 RS5 E-clip outside diameter (> eclip_id)",
+      "model": false
+    },
+    {
+      "name": "eclip_id",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "inside diameter = groove diameter (RS5: 5)",
+      "model": false
+    },
+    {
+      "name": "eclip_t",
+      "expr": "0.7 mm",
+      "unit": "mm",
+      "comment": "thickness (RS5: 0.7)",
+      "model": false
+    },
+    {
+      "name": "opening_w",
+      "expr": "4.4 mm",
+      "unit": "mm",
+      "comment": "width of the opening, from the bore out through the rim toward +x (< eclip_id)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "eclip_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "eclip_id",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "opening_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "eclip_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "opening_w/2",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "RingSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 5.5,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 11.0,
+            "param": "d1"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 5.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Ring",
+      "suppressed": false,
+      "body_names": [
+        "eclip_rs5"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "eclip_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "OpeningSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -2.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              11.0,
+              -2.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              11.0,
+              2.2
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              0.0,
+              2.2
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "length",
+            "l": 1,
+            "value": 4.4,
+            "param": "d4"
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 0,
+            "value": 11.0,
+            "param": "d5"
+          },
+          {
+            "id": "k7",
+            "type": "vertical_points",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 2.2,
+            "param": "d6"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Opening",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "eclip_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    }
+  ],
+  "next_id": 5,
+  "next_component_color_index": 0,
+  "materials": {
+    "eclip_rs5": "Steel"
+  }
+}

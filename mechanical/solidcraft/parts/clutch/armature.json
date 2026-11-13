@@ -1,0 +1,814 @@
+{
+  "format": "solidcraft/53",
+  "name": "armature",
+  "units": "mm",
+  "params": [
+    {
+      "name": "housing_len",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "Field housing length (motor face to housing pole face); places the stack; 15..30 mm",
+      "model": false
+    },
+    {
+      "name": "face_gap",
+      "expr": "0.3 mm",
+      "unit": "mm",
+      "comment": "Axial gap housing pole face -> rotor back face; 0.2..0.5 mm",
+      "model": false
+    },
+    {
+      "name": "face_t",
+      "expr": "5.6 mm",
+      "unit": "mm",
+      "comment": "Rotor pole-face disc thickness; 4..8 mm",
+      "model": false
+    },
+    {
+      "name": "engaged_gap",
+      "expr": "0.15 mm",
+      "unit": "mm",
+      "comment": "Pole-face gap rotor -> armature when meshed (engaged); 0.05..0.3 mm",
+      "model": false
+    },
+    {
+      "name": "rotor_od",
+      "expr": "76 mm",
+      "unit": "mm",
+      "comment": "Armature OD (= rotor OD and hub flange OD); 2*tooth_r_out",
+      "model": false
+    },
+    {
+      "name": "armature_t",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "Armature thickness; 4..10 mm",
+      "model": false
+    },
+    {
+      "name": "armature_bore",
+      "expr": "11.5 mm",
+      "unit": "mm",
+      "comment": "Armature bore (clears the 10 mm motor shaft / screw head); 10.5..2*(pin_r-pin_d)-2 mm",
+      "model": false
+    },
+    {
+      "name": "pin_r",
+      "expr": "21 mm",
+      "unit": "mm",
+      "comment": "Drive pin circle radius (between the pole rings r 15 / r 27); 16..26 mm",
+      "model": false
+    },
+    {
+      "name": "pin_d",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "Drive pin diameter (6 h6 silver steel); 4..8 mm",
+      "model": false
+    },
+    {
+      "name": "pin_glue",
+      "expr": "0.17 mm",
+      "unit": "mm",
+      "comment": "Diametral glue gap for the bonded pins (Loctite 680 fills up to 0.38); 0.05..0.3 mm",
+      "model": false
+    },
+    {
+      "name": "teeth",
+      "expr": "30",
+      "unit": "",
+      "comment": "Number of radial face teeth, whole number 12..60 (the rotor must match)",
+      "model": false
+    },
+    {
+      "name": "tooth_r_in",
+      "expr": "32 mm",
+      "unit": "mm",
+      "comment": "Tooth band inner radius; 28..tooth_r_out-3 mm",
+      "model": false
+    },
+    {
+      "name": "tooth_r_out",
+      "expr": "rotor_od / 2",
+      "unit": "mm",
+      "comment": "Tooth band outer radius (= armature OD/2)",
+      "model": false
+    },
+    {
+      "name": "tooth_h",
+      "expr": "0.9 mm",
+      "unit": "mm",
+      "comment": "Full (un-truncated) tooth height, root to root of the mating parts; 0.5..2 mm",
+      "model": false
+    },
+    {
+      "name": "tip_trunc",
+      "expr": "0.1 mm",
+      "unit": "mm",
+      "comment": "Tips cut this much shorter (the flanks carry the load); 0..tooth_h/3",
+      "model": false
+    },
+    {
+      "name": "root_relief",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "Root floor this far beyond the root level (flanks continue to it); 0.2..1 mm",
+      "model": false
+    },
+    {
+      "name": "tooth_runout",
+      "expr": "1 mm",
+      "unit": "mm",
+      "comment": "Turned run-out groove inside the teeth (tool clearance); 0.5..2 mm",
+      "model": false
+    },
+    {
+      "name": "flank_deg",
+      "expr": "30 deg",
+      "unit": "deg",
+      "comment": "Flank angle from the axis (planar flanks, 60-degree chamfer mill); 20..40 deg",
+      "model": false
+    },
+    {
+      "name": "root_drop",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "Rotor root level below the rotor pole face (the armature's root is tooth_h above it); 0.3..1 mm",
+      "model": false
+    },
+    {
+      "name": "z_pole",
+      "expr": "housing_len + face_gap + face_t",
+      "unit": "mm",
+      "comment": "Derived: rotor pole face",
+      "model": false
+    },
+    {
+      "name": "z_arm",
+      "expr": "z_pole + engaged_gap",
+      "unit": "mm",
+      "comment": "Derived: armature pole face (engaged)",
+      "model": false
+    },
+    {
+      "name": "z_root",
+      "expr": "z_pole - root_drop + tooth_h",
+      "unit": "mm",
+      "comment": "Derived: armature tooth root level (flanks of the mating teeth meet tooth_h above the rotor's)",
+      "model": false
+    },
+    {
+      "name": "z_pitch",
+      "expr": "z_root - tooth_h / 2",
+      "unit": "mm",
+      "comment": "Derived: pitch plane, shared with the rotor (tooth width = gap width = half a pitch there)",
+      "model": false
+    },
+    {
+      "name": "z_floor",
+      "expr": "z_root + root_relief",
+      "unit": "mm",
+      "comment": "Derived: root floor of the tooth band",
+      "model": false
+    },
+    {
+      "name": "z_tip",
+      "expr": "z_root - (tooth_h - tip_trunc)",
+      "unit": "mm",
+      "comment": "Derived: truncated tooth tips (pointing toward the motor)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "rotor_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "armature_bore",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "tooth_r_out + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "tooth_r_in - tooth_runout",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "tooth_r_out",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "tooth_r_in",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "ArmatureSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_arm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 38.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 5.75,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 76.0,
+            "param": "d2"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 11.5,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "ArmatureRing",
+      "suppressed": false,
+      "body_names": [
+        "armature"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "armature_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "ToothRecessSketch",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_floor"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 39.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 31.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "radius",
+            "c": 0,
+            "value": 39.0,
+            "param": "d6"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "radius",
+            "c": 1,
+            "value": 31.0,
+            "param": "d7"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "ToothRecess",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "z_floor - z_arm + 1 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "armature"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ToothBandSketch",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_tip"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 38.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 32.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "radius",
+            "c": 0,
+            "value": 38.0,
+            "param": "d10"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "radius",
+            "c": 1,
+            "value": 32.0,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "ToothBand",
+      "suppressed": false,
+      "body_names": [
+        "armature_teeth"
+      ],
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "z_floor - z_tip + 1 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 7,
+      "name": "ToothGapSketch",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_pitch"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              41.9424404596921,
+              -2.198110162203641
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(tooth_r_out + 4 mm) * cos(-90 deg / teeth)",
+              "y": "(tooth_r_out + 4 mm) * sin(-90 deg / teeth)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              41.9424404596921,
+              2.198110162203641
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(tooth_r_out + 4 mm) * cos(90 deg / teeth)",
+              "y": "(tooth_r_out + 4 mm) * sin(90 deg / teeth)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 0,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 2,
+            "b": 0,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 3,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "ToothGapBelowPitch",
+      "suppressed": false,
+      "param_names": [
+        "d14",
+        "d15"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tooth_h",
+        "convention": "total_distance",
+        "direction": "negative",
+        "taper": "flank_deg"
+      },
+      "operation": "cut",
+      "targets": [
+        "armature_teeth"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "ToothGapAbovePitch",
+      "suppressed": false,
+      "param_names": [
+        "d16",
+        "d17"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tooth_h / 2 + root_relief",
+        "convention": "total_distance",
+        "direction": "positive",
+        "taper": "-flank_deg"
+      },
+      "operation": "cut",
+      "targets": [
+        "armature_teeth"
+      ]
+    },
+    {
+      "id": 10,
+      "name": "ToothGaps",
+      "suppressed": false,
+      "param_names": [
+        "d18",
+        "d19"
+      ],
+      "type": "pattern",
+      "features": [
+        8,
+        9
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "teeth",
+        "angle": "360 deg"
+      }
+    },
+    {
+      "id": 11,
+      "name": "JoinTeeth",
+      "suppressed": false,
+      "type": "combine",
+      "target": "armature",
+      "tools": [
+        "armature_teeth"
+      ],
+      "operation": "join",
+      "keep_tools": false
+    },
+    {
+      "id": 12,
+      "name": "PinHole",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "face_names": [
+        "F2:top"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        21.0,
+        32.05
+      ],
+      "at": [
+        0.0,
+        "pin_r",
+        "z_arm + armature_t"
+      ],
+      "direction": [
+        -1.051736575194873e-16,
+        -1.5024808217069616e-17,
+        -1.0
+      ],
+      "diameter": "pin_d + pin_glue",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 13,
+      "name": "PinHoles",
+      "suppressed": false,
+      "param_names": [
+        "d21",
+        "d22"
+      ],
+      "type": "pattern",
+      "features": [
+        12
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "3",
+        "angle": "360 deg"
+      }
+    }
+  ],
+  "next_id": 14,
+  "next_component_color_index": 0,
+  "materials": {
+    "armature": "Steel"
+  }
+}

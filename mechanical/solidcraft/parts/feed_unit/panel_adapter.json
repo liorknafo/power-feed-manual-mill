@@ -1,0 +1,102 @@
+{
+  "format": "solidcraft/53",
+  "name": "panel_adapter",
+  "units": "mm",
+  "params": [
+    {
+      "name": "x_front",
+      "expr": "55 mm",
+      "unit": "mm",
+      "comment": "world X of the control strip's inner face (X_FRONT)",
+      "model": false
+    },
+    {
+      "name": "adapter_w",
+      "expr": "124.5 mm",
+      "unit": "mm",
+      "comment": "world Z (W) of the adapter board's centre (CTRL adapter)",
+      "model": false
+    },
+    {
+      "name": "adapter_y",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "world Y of the adapter board's centre (CTRL adapter)",
+      "model": false
+    },
+    {
+      "name": "post_h",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "board's front face behind the strip's inner face (its posts); 3 to 10 mm",
+      "model": false
+    },
+    {
+      "name": "board_t",
+      "expr": "1.6 mm",
+      "unit": "mm",
+      "comment": "adapter board thickness; 0.8 to 2.4 mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "AdapterBoard",
+      "suppressed": false,
+      "body_names": [
+        "adapter_board"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        "x_front - post_h - board_t",
+        "adapter_y - 14",
+        "adapter_w - 20"
+      ],
+      "length": "(x_front - post_h) - (x_front - post_h - board_t)",
+      "width": "(adapter_y + 14) - (adapter_y - 14)",
+      "height": "(adapter_w + 20) - (adapter_w - 20)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "IdcHeader",
+      "suppressed": false,
+      "body_names": [
+        "adapter_header"
+      ],
+      "param_names": [
+        "d4",
+        "d5",
+        "d6"
+      ],
+      "type": "box",
+      "corner": [
+        "x_front - post_h - board_t - 9",
+        "adapter_y - 5",
+        "adapter_w - 16"
+      ],
+      "length": "(x_front - post_h - board_t) - (x_front - post_h - board_t - 9)",
+      "width": "(adapter_y + 5) - (adapter_y - 5)",
+      "height": "(adapter_w + 16) - (adapter_w - 16)",
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "adapter_board": "FR4",
+    "adapter_header": "ABS Plastic"
+  },
+  "user_materials": [
+    {
+      "name": "FR4",
+      "density": 1.85
+    }
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "format": "solidcraft/53",
+  "name": "coil_bobbin",
+  "units": "mm",
+  "params": [
+    {
+      "name": "housing_len",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "Field housing length along the axis (motor flange face to pole face); 15..30 mm",
+      "model": false
+    },
+    {
+      "name": "back_plate",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "Field housing back plate thickness under the coil pocket; 3..8 mm",
+      "model": false
+    },
+    {
+      "name": "coil_r_in",
+      "expr": "14 mm",
+      "unit": "mm",
+      "comment": "Coil pocket inner radius (inner pole wall OD/2); 11..coil_r_out-5 mm",
+      "model": false
+    },
+    {
+      "name": "coil_r_out",
+      "expr": "27 mm",
+      "unit": "mm",
+      "comment": "Coil pocket outer radius; coil_r_in+5..32 mm",
+      "model": false
+    },
+    {
+      "name": "coil_clear",
+      "expr": "0.3 mm",
+      "unit": "mm",
+      "comment": "Bobbin clearance to the pocket walls and floor; 0.1..1 mm",
+      "model": false
+    },
+    {
+      "name": "coil_top_clear",
+      "expr": "0.2 mm",
+      "unit": "mm",
+      "comment": "Winding top below the housing pole face; 0..1 mm",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "coil_r_out - coil_clear",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "coil_r_in + coil_clear",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "CoilSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "back_plate + coil_clear"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 26.7,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 14.3,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "radius",
+            "c": 0,
+            "value": 26.7,
+            "param": "d2"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "radius",
+            "c": 1,
+            "value": 14.3,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "CoilWinding",
+      "suppressed": false,
+      "body_names": [
+        "coil_bobbin"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "housing_len - back_plate - coil_clear - coil_top_clear",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "coil_bobbin": "Coil winding"
+  },
+  "user_materials": [
+    {
+      "name": "Coil winding",
+      "density": 3.67,
+      "appearance": {
+        "name": "Coil winding",
+        "color": [
+          184,
+          115,
+          51
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

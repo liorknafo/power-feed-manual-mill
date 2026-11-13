@@ -1,0 +1,2829 @@
+{
+  "format": "solidcraft/53",
+  "name": "belt",
+  "units": "mm",
+  "params": [
+    {
+      "name": "teeth_big",
+      "expr": "40",
+      "unit": "",
+      "comment": "teeth of the big (leadscrew) pulley: whole number, teeth_small + 4 to 72",
+      "model": false
+    },
+    {
+      "name": "teeth_small",
+      "expr": "20",
+      "unit": "",
+      "comment": "teeth of the small (clutch) pulley: whole number, 14 to teeth_big - 4",
+      "model": false
+    },
+    {
+      "name": "belt_len",
+      "expr": "295 mm",
+      "unit": "mm",
+      "comment": "belt pitch length, HTD 5M (a multiple of 5 mm; 200 to 500 mm)",
+      "model": false
+    },
+    {
+      "name": "belt_w",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "belt width (9 to 25 mm)",
+      "model": false
+    },
+    {
+      "name": "w_pulley",
+      "expr": "23 mm",
+      "unit": "mm",
+      "comment": "world Z of the belt's mid-plane (= W_PULLEY of the feed unit)",
+      "model": false
+    },
+    {
+      "name": "pitch_r_big",
+      "expr": "teeth_big * 5 mm / pi / 2",
+      "unit": "mm",
+      "comment": "pitch radius of the big pulley (derived)",
+      "model": false
+    },
+    {
+      "name": "pitch_r_small",
+      "expr": "teeth_small * 5 mm / pi / 2",
+      "unit": "mm",
+      "comment": "pitch radius of the small pulley (derived)",
+      "model": false
+    },
+    {
+      "name": "ctr",
+      "expr": "(belt_len - pi*(pitch_r_big + pitch_r_small) + sqrt((belt_len - pi*(pitch_r_big + pitch_r_small))^2 - 8*(pitch_r_big - pitch_r_small)^2)) / 4",
+      "unit": "mm",
+      "comment": "pulley centre distance from the belt length (derived, closed form of feed_unit.centre_distance); the small pulley sits straight below the big one",
+      "model": false
+    },
+    {
+      "name": "beta",
+      "expr": "asin((pitch_r_big - pitch_r_small) / ctr)",
+      "unit": "deg",
+      "comment": "half the difference of the wrap angles, (wrap_big - 180 deg)/2 (derived)",
+      "model": false
+    },
+    {
+      "name": "back_t",
+      "expr": "1.17 mm",
+      "unit": "mm",
+      "comment": "backing outside the pitch line (HTD 5M; 1 to 1.5 mm)",
+      "model": false
+    },
+    {
+      "name": "land_t",
+      "expr": "0.55 mm",
+      "unit": "mm",
+      "comment": "inner face of the backing inside the pitch line (just outside the pulley tips at 0.57; 0.4 to 0.57 mm)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "ctr",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "pitch_r_big + back_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "pitch_r_small + back_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "pitch_r_big - land_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "pitch_r_small - land_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "step_big",
+      "expr": "360 deg / teeth_big",
+      "unit": "deg",
+      "comment": "tooth pitch angle of the big pulley (derived)",
+      "model": false
+    },
+    {
+      "name": "step_small",
+      "expr": "360 deg / teeth_small",
+      "unit": "deg",
+      "comment": "tooth pitch angle of the small pulley (derived)",
+      "model": false
+    },
+    {
+      "name": "big_j0",
+      "expr": "floor(-beta / step_big) + 1",
+      "unit": "",
+      "comment": "index of the first groove of the big pulley the belt sits in (derived)",
+      "model": false
+    },
+    {
+      "name": "big_n",
+      "expr": "ceil((180 deg + beta) / step_big - 1) - big_j0",
+      "unit": "",
+      "comment": "belt teeth on the big pulley's wrap (derived: grooves more than half a pitch inside the wrap)",
+      "model": false
+    },
+    {
+      "name": "small_j0",
+      "expr": "floor((180 deg + beta) / step_small) + 1",
+      "unit": "",
+      "comment": "index of the first groove of the small pulley the belt sits in (derived)",
+      "model": false
+    },
+    {
+      "name": "small_n",
+      "expr": "ceil((360 deg - beta) / step_small - 1) - small_j0",
+      "unit": "",
+      "comment": "belt teeth on the small pulley's wrap (derived)",
+      "model": false
+    },
+    {
+      "name": "span_len",
+      "expr": "sqrt(ctr^2 - (pitch_r_big - pitch_r_small)^2)",
+      "unit": "mm",
+      "comment": "length of a straight span between the tangent points (derived)",
+      "model": false
+    },
+    {
+      "name": "span_s0",
+      "expr": "pitch_r_big * mod(step_big/2 + beta, step_big) / (180 deg) * pi",
+      "unit": "mm",
+      "comment": "pitch-line distance from the last big-wrap groove to the tangent point (derived)",
+      "model": false
+    },
+    {
+      "name": "skip_big",
+      "expr": "sqrt((pitch_r_big + 2.06 mm)^2 - pitch_r_big^2) + 1 mm",
+      "unit": "mm",
+      "comment": "span length next to the big pulley left without teeth (entry zone, derived)",
+      "model": false
+    },
+    {
+      "name": "skip_small",
+      "expr": "sqrt((pitch_r_small + 2.06 mm)^2 - pitch_r_small^2) + 1 mm",
+      "unit": "mm",
+      "comment": "span length next to the small pulley left without teeth (derived)",
+      "model": false
+    },
+    {
+      "name": "span_k0",
+      "expr": "ceil((skip_big + span_s0) / 5 mm)",
+      "unit": "",
+      "comment": "pitch count of the first span tooth from the last wrap groove (derived)",
+      "model": false
+    },
+    {
+      "name": "span_d0",
+      "expr": "5 mm * span_k0 - span_s0",
+      "unit": "mm",
+      "comment": "first span tooth's distance from the big pulley's tangent point (derived)",
+      "model": false
+    },
+    {
+      "name": "span_n",
+      "expr": "floor((span_len - skip_small + span_s0) / 5 mm) - span_k0 + 1",
+      "unit": "",
+      "comment": "teeth on each straight span (derived)",
+      "model": false
+    },
+    {
+      "name": "tooth_t",
+      "expr": "2.8 mm",
+      "unit": "mm",
+      "comment": "belt tooth width along the belt, modelled square (2 to 3 mm, under the 3 mm groove)",
+      "model": false
+    },
+    {
+      "name": "tooth_depth",
+      "expr": "2.0 mm",
+      "unit": "mm",
+      "comment": "belt tooth depth below the land at 0.57 inside the pitch line (1.5 to 2.06 mm)",
+      "model": false
+    },
+    {
+      "name": "d12",
+      "expr": "w_pulley",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "tooth_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "belt_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d19",
+      "expr": "w_pulley",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d20",
+      "expr": "tooth_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "belt_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "span_d0",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "w_pulley",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "tooth_t",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "belt_w",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BandSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "w_pulley - belt_w/2"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              32.15415489205879,
+              -7.428026182500566
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              -32.15415489205909,
+              -7.428026182500823
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              0.0,
+              -70.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              -16.647065843327358,
+              -74.55451859747679
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              16.6470658433273,
+              -74.55451859747667
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "a3.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.start",
+            "pos": [
+              30.47829157008724,
+              -7.040880052375586
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a3.end",
+            "pos": [
+              -30.4782915700875,
+              -7.0408800523758135
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.start",
+            "pos": [
+              -14.97120252135592,
+              -74.16737246735185
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a4.end",
+            "pos": [
+              14.971202521355883,
+              -74.16737246735177
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 1,
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 4,
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 2,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": true,
+            "link": "j1"
+          },
+          {
+            "id": "a3",
+            "type": "arc",
+            "c": 9,
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "a4",
+            "type": "arc",
+            "c": 4,
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 10,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 11,
+            "b": 12,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "tangent",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "id": "k3",
+            "type": "tangent",
+            "a": 2,
+            "b": 1
+          },
+          {
+            "id": "k4",
+            "type": "tangent",
+            "a": 3,
+            "b": 0
+          },
+          {
+            "id": "k5",
+            "type": "tangent",
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "k6",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 4
+          },
+          {
+            "id": "k7",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 70.70883080499217,
+            "param": "d2"
+          },
+          {
+            "id": "k8",
+            "type": "radius",
+            "c": 0,
+            "value": 33.00098861837907,
+            "param": "d3"
+          },
+          {
+            "id": "k9",
+            "type": "radius",
+            "c": 1,
+            "value": 17.085494309189535,
+            "param": "d4"
+          },
+          {
+            "id": "k10",
+            "type": "coincident",
+            "p": 0,
+            "q": 9
+          },
+          {
+            "id": "k11",
+            "type": "tangent",
+            "a": 7,
+            "b": 5
+          },
+          {
+            "id": "k12",
+            "type": "tangent",
+            "a": 7,
+            "b": 6
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 8,
+            "b": 5
+          },
+          {
+            "id": "k14",
+            "type": "tangent",
+            "a": 8,
+            "b": 6
+          },
+          {
+            "id": "k15",
+            "type": "radius",
+            "c": 5,
+            "value": 31.280988618379066,
+            "param": "d5"
+          },
+          {
+            "id": "k16",
+            "type": "radius",
+            "c": 6,
+            "value": 15.365494309189533,
+            "param": "d6"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "a": 4,
+          "j": 1,
+          "k": 16,
+          "l": 5,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Backing",
+      "suppressed": false,
+      "body_names": [
+        "belt"
+      ],
+      "param_names": [
+        "d7"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "a1",
+            "l2",
+            "a2",
+            "l1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "belt_w",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "BigWrapToothPlane",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "angle": "(big_j0 + 0.5) * step_big"
+      }
+    },
+    {
+      "id": 4,
+      "name": "SmallCentrePlane",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "-ctr"
+      }
+    },
+    {
+      "id": 5,
+      "name": "SmallWrapToothPlane",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "construction",
+          "feature": 4
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "angle": "(small_j0 + 0.5) * step_small - 90 deg",
+        "direction_only": true
+      }
+    },
+    {
+      "id": 6,
+      "name": "SpanPlane",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "angle": "-beta"
+      }
+    },
+    {
+      "id": 7,
+      "name": "BigWrapToothSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 3
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -1.4,
+              15.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              1.4,
+              15.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              1.4,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -1.4,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p7",
+            "pos": [
+              0.0,
+              23.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": true,
+            "link": "j1"
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 6,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 3,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 4,
+            "b": 6,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 1
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 3
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 2
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 4
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 7,
+            "l": 5
+          },
+          {
+            "id": "k6",
+            "type": "point_on_curve",
+            "p": 7,
+            "c": 0
+          },
+          {
+            "id": "k7",
+            "type": "distance_y",
+            "p": 0,
+            "q": 7,
+            "value": 23.0,
+            "param": "d12"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 1,
+            "value": 2.8,
+            "param": "d13"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 4,
+            "value": 15.0,
+            "param": "d14"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "axis",
+              "name": "Z"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 9,
+          "l": 7,
+          "p": 7
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "BigWrapTooth",
+      "suppressed": false,
+      "param_names": [
+        "d15",
+        "d16"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tooth_depth + 0.1 mm",
+        "convention": "total_distance",
+        "direction": "positive",
+        "start_offset": "pitch_r_big - 0.57 mm - tooth_depth"
+      },
+      "operation": "join",
+      "targets": [
+        "belt"
+      ]
+    },
+    {
+      "id": 9,
+      "name": "BigWrapTeeth",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18"
+      ],
+      "type": "pattern",
+      "features": [
+        8
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "big_n",
+        "angle": "(big_n - 1) * step_big"
+      }
+    },
+    {
+      "id": 10,
+      "name": "SmallWrapToothSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 5
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -1.4,
+              -30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              1.4,
+              -30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              1.4,
+              -15.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -1.4,
+              -15.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p7",
+            "pos": [
+              0.0,
+              -23.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": true,
+            "link": "j1"
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 6,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 3,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 4,
+            "b": 6,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 1
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 3
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 2
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 4
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 7,
+            "l": 5
+          },
+          {
+            "id": "k6",
+            "type": "point_on_curve",
+            "p": 7,
+            "c": 0
+          },
+          {
+            "id": "k7",
+            "type": "distance_y",
+            "p": 0,
+            "q": 7,
+            "value": 23.0,
+            "param": "d19"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 1,
+            "value": 2.8,
+            "param": "d20"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 4,
+            "value": 15.0,
+            "param": "d21"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "plane",
+              "name": "YZ"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 9,
+          "l": 7,
+          "p": 7
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "SmallWrapTooth",
+      "suppressed": false,
+      "param_names": [
+        "d22",
+        "d23"
+      ],
+      "type": "extrude",
+      "sketch": 10,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tooth_depth + 0.1 mm",
+        "convention": "total_distance",
+        "direction": "positive",
+        "start_offset": "pitch_r_small - 0.57 mm - tooth_depth"
+      },
+      "operation": "join",
+      "targets": [
+        "belt"
+      ]
+    },
+    {
+      "id": 12,
+      "name": "SmallWrapTeeth",
+      "suppressed": false,
+      "param_names": [
+        "d24",
+        "d25"
+      ],
+      "type": "pattern",
+      "features": [
+        11
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          "-ctr",
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "small_n",
+        "angle": "(small_n - 1) * step_small"
+      }
+    },
+    {
+      "id": 13,
+      "name": "SpanTeethSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 6
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -16.67340326207022,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -13.873403262070351,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -13.873403262070838,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -16.673403262069733,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -15.273403262072007,
+              23.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -21.673403262070178,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -18.873403262070312,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -18.87340326207081,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p11",
+            "pos": [
+              -21.67340326206968,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p12",
+            "pos": [
+              -26.673403262070178,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p13",
+            "pos": [
+              -23.873403262070312,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p14",
+            "pos": [
+              -23.87340326207081,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p15",
+            "pos": [
+              -26.67340326206968,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p16",
+            "pos": [
+              -31.673403262070178,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p17",
+            "pos": [
+              -28.873403262070312,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p18",
+            "pos": [
+              -28.87340326207081,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p19",
+            "pos": [
+              -31.67340326206968,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p20",
+            "pos": [
+              -36.67340326207018,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p21",
+            "pos": [
+              -33.87340326207031,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p22",
+            "pos": [
+              -33.87340326207081,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p23",
+            "pos": [
+              -36.67340326206968,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p24",
+            "pos": [
+              -41.67340326207018,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p25",
+            "pos": [
+              -38.87340326207031,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p26",
+            "pos": [
+              -38.87340326207081,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p27",
+            "pos": [
+              -41.67340326206968,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p28",
+            "pos": [
+              -46.67340326207018,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p29",
+            "pos": [
+              -43.87340326207031,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p30",
+            "pos": [
+              -43.87340326207081,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p31",
+            "pos": [
+              -46.67340326206968,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p32",
+            "pos": [
+              -51.673403262070174,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p33",
+            "pos": [
+              -48.87340326207031,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p34",
+            "pos": [
+              -48.873403262070816,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p35",
+            "pos": [
+              -51.673403262069684,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p52",
+            "pos": [
+              -56.67340326207018,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p53",
+            "pos": [
+              -53.87340326207031,
+              15.499999999999998
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p54",
+            "pos": [
+              -53.873403262070816,
+              30.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p55",
+            "pos": [
+              -56.673403262069684,
+              30.5
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": true,
+            "link": "j1"
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 6,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 3,
+            "b": 5,
+            "construction": true
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 4,
+            "b": 6,
+            "construction": true
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 10,
+            "construction": false
+          },
+          {
+            "id": "l10",
+            "type": "line",
+            "a": 10,
+            "b": 11,
+            "construction": false
+          },
+          {
+            "id": "l11",
+            "type": "line",
+            "a": 11,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l12",
+            "type": "line",
+            "a": 12,
+            "b": 13,
+            "construction": false
+          },
+          {
+            "id": "l13",
+            "type": "line",
+            "a": 13,
+            "b": 14,
+            "construction": false
+          },
+          {
+            "id": "l14",
+            "type": "line",
+            "a": 14,
+            "b": 15,
+            "construction": false
+          },
+          {
+            "id": "l15",
+            "type": "line",
+            "a": 15,
+            "b": 12,
+            "construction": false
+          },
+          {
+            "id": "l16",
+            "type": "line",
+            "a": 16,
+            "b": 17,
+            "construction": false
+          },
+          {
+            "id": "l17",
+            "type": "line",
+            "a": 17,
+            "b": 18,
+            "construction": false
+          },
+          {
+            "id": "l18",
+            "type": "line",
+            "a": 18,
+            "b": 19,
+            "construction": false
+          },
+          {
+            "id": "l19",
+            "type": "line",
+            "a": 19,
+            "b": 16,
+            "construction": false
+          },
+          {
+            "id": "l20",
+            "type": "line",
+            "a": 20,
+            "b": 21,
+            "construction": false
+          },
+          {
+            "id": "l21",
+            "type": "line",
+            "a": 21,
+            "b": 22,
+            "construction": false
+          },
+          {
+            "id": "l22",
+            "type": "line",
+            "a": 22,
+            "b": 23,
+            "construction": false
+          },
+          {
+            "id": "l23",
+            "type": "line",
+            "a": 23,
+            "b": 20,
+            "construction": false
+          },
+          {
+            "id": "l24",
+            "type": "line",
+            "a": 24,
+            "b": 25,
+            "construction": false
+          },
+          {
+            "id": "l25",
+            "type": "line",
+            "a": 25,
+            "b": 26,
+            "construction": false
+          },
+          {
+            "id": "l26",
+            "type": "line",
+            "a": 26,
+            "b": 27,
+            "construction": false
+          },
+          {
+            "id": "l27",
+            "type": "line",
+            "a": 27,
+            "b": 24,
+            "construction": false
+          },
+          {
+            "id": "l28",
+            "type": "line",
+            "a": 28,
+            "b": 29,
+            "construction": false
+          },
+          {
+            "id": "l29",
+            "type": "line",
+            "a": 29,
+            "b": 30,
+            "construction": false
+          },
+          {
+            "id": "l30",
+            "type": "line",
+            "a": 30,
+            "b": 31,
+            "construction": false
+          },
+          {
+            "id": "l31",
+            "type": "line",
+            "a": 31,
+            "b": 28,
+            "construction": false
+          },
+          {
+            "id": "l32",
+            "type": "line",
+            "a": 32,
+            "b": 33,
+            "construction": false
+          },
+          {
+            "id": "l33",
+            "type": "line",
+            "a": 33,
+            "b": 34,
+            "construction": false
+          },
+          {
+            "id": "l34",
+            "type": "line",
+            "a": 34,
+            "b": 35,
+            "construction": false
+          },
+          {
+            "id": "l35",
+            "type": "line",
+            "a": 35,
+            "b": 32,
+            "construction": false
+          },
+          {
+            "id": "l52",
+            "type": "line",
+            "a": 36,
+            "b": 37,
+            "construction": false
+          },
+          {
+            "id": "l53",
+            "type": "line",
+            "a": 37,
+            "b": 38,
+            "construction": false
+          },
+          {
+            "id": "l54",
+            "type": "line",
+            "a": 38,
+            "b": 39,
+            "construction": false
+          },
+          {
+            "id": "l55",
+            "type": "line",
+            "a": 39,
+            "b": 36,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 1
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 3
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 2
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 4
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 7,
+            "l": 5
+          },
+          {
+            "id": "k6",
+            "type": "distance_x",
+            "p": 0,
+            "q": 7,
+            "value": 15.273403262072007,
+            "param": "d26"
+          },
+          {
+            "id": "k7",
+            "type": "distance_y",
+            "p": 0,
+            "q": 7,
+            "value": 23.0,
+            "param": "d27"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 1,
+            "value": 2.8,
+            "param": "d28"
+          },
+          {
+            "id": "k9",
+            "type": "length",
+            "l": 4,
+            "value": 15.0,
+            "param": "d29"
+          },
+          {
+            "id": "k10",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 8,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -5.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k11",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 9,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -5.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k12",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 10,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -5.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k13",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 11,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -5.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k14",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 12,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -10.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k15",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 13,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -10.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k16",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 14,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -10.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k17",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 15,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -10.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k18",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 16,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -15.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k19",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 17,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -15.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k20",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 18,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -15.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k21",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 19,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -15.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k22",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 20,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -20.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k23",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 21,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -20.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k24",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 22,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -20.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k25",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 23,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -20.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k26",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 24,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -25.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k27",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 25,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -25.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k28",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 26,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -25.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k29",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 27,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -25.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k30",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 28,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -30.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k31",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 29,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -30.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k32",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 30,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -30.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k33",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 31,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -30.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k34",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 32,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -35.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k35",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 33,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -35.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k36",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 34,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -35.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k37",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 35,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -35.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k54",
+            "type": "pattern_point",
+            "p": 3,
+            "q": 36,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -40.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k55",
+            "type": "pattern_point",
+            "p": 4,
+            "q": 37,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -40.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k56",
+            "type": "pattern_point",
+            "p": 5,
+            "q": 38,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -40.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          },
+          {
+            "id": "k57",
+            "type": "pattern_point",
+            "p": 6,
+            "q": 39,
+            "center": null,
+            "angle": 0.0,
+            "offset": [
+              -40.0,
+              0.0
+            ],
+            "directions": [
+              null,
+              null
+            ]
+          }
+        ],
+        "patterns": [
+          {
+            "id": "pat1",
+            "entities": [
+              "l2",
+              "l3",
+              "l4",
+              "l5"
+            ],
+            "kind": {
+              "type": "rectangular",
+              "dir": [
+                -1.0,
+                0.0
+              ],
+              "dir2": null,
+              "direction": null,
+              "direction2": null,
+              "count": 9,
+              "spacing": 5.0,
+              "count2": 1,
+              "spacing2": 5.0,
+              "alignment": "right",
+              "alignment2": "right",
+              "reversed": false,
+              "reversed2": false
+            },
+            "instances": [
+              {
+                "index": [
+                  1,
+                  0
+                ],
+                "curves": [
+                  "l8",
+                  "l9",
+                  "l10",
+                  "l11"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p8"
+                  ],
+                  [
+                    "p4",
+                    "p9"
+                  ],
+                  [
+                    "p5",
+                    "p10"
+                  ],
+                  [
+                    "p6",
+                    "p11"
+                  ]
+                ],
+                "constraints": [
+                  "k10",
+                  "k11",
+                  "k12",
+                  "k13"
+                ]
+              },
+              {
+                "index": [
+                  2,
+                  0
+                ],
+                "curves": [
+                  "l12",
+                  "l13",
+                  "l14",
+                  "l15"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p12"
+                  ],
+                  [
+                    "p4",
+                    "p13"
+                  ],
+                  [
+                    "p5",
+                    "p14"
+                  ],
+                  [
+                    "p6",
+                    "p15"
+                  ]
+                ],
+                "constraints": [
+                  "k14",
+                  "k15",
+                  "k16",
+                  "k17"
+                ]
+              },
+              {
+                "index": [
+                  3,
+                  0
+                ],
+                "curves": [
+                  "l16",
+                  "l17",
+                  "l18",
+                  "l19"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p16"
+                  ],
+                  [
+                    "p4",
+                    "p17"
+                  ],
+                  [
+                    "p5",
+                    "p18"
+                  ],
+                  [
+                    "p6",
+                    "p19"
+                  ]
+                ],
+                "constraints": [
+                  "k18",
+                  "k19",
+                  "k20",
+                  "k21"
+                ]
+              },
+              {
+                "index": [
+                  4,
+                  0
+                ],
+                "curves": [
+                  "l20",
+                  "l21",
+                  "l22",
+                  "l23"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p20"
+                  ],
+                  [
+                    "p4",
+                    "p21"
+                  ],
+                  [
+                    "p5",
+                    "p22"
+                  ],
+                  [
+                    "p6",
+                    "p23"
+                  ]
+                ],
+                "constraints": [
+                  "k22",
+                  "k23",
+                  "k24",
+                  "k25"
+                ]
+              },
+              {
+                "index": [
+                  5,
+                  0
+                ],
+                "curves": [
+                  "l24",
+                  "l25",
+                  "l26",
+                  "l27"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p24"
+                  ],
+                  [
+                    "p4",
+                    "p25"
+                  ],
+                  [
+                    "p5",
+                    "p26"
+                  ],
+                  [
+                    "p6",
+                    "p27"
+                  ]
+                ],
+                "constraints": [
+                  "k26",
+                  "k27",
+                  "k28",
+                  "k29"
+                ]
+              },
+              {
+                "index": [
+                  6,
+                  0
+                ],
+                "curves": [
+                  "l28",
+                  "l29",
+                  "l30",
+                  "l31"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p28"
+                  ],
+                  [
+                    "p4",
+                    "p29"
+                  ],
+                  [
+                    "p5",
+                    "p30"
+                  ],
+                  [
+                    "p6",
+                    "p31"
+                  ]
+                ],
+                "constraints": [
+                  "k30",
+                  "k31",
+                  "k32",
+                  "k33"
+                ]
+              },
+              {
+                "index": [
+                  7,
+                  0
+                ],
+                "curves": [
+                  "l32",
+                  "l33",
+                  "l34",
+                  "l35"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p32"
+                  ],
+                  [
+                    "p4",
+                    "p33"
+                  ],
+                  [
+                    "p5",
+                    "p34"
+                  ],
+                  [
+                    "p6",
+                    "p35"
+                  ]
+                ],
+                "constraints": [
+                  "k34",
+                  "k35",
+                  "k36",
+                  "k37"
+                ]
+              },
+              {
+                "index": [
+                  8,
+                  0
+                ],
+                "curves": [
+                  "l52",
+                  "l53",
+                  "l54",
+                  "l55"
+                ],
+                "points": [
+                  [
+                    "p3",
+                    "p52"
+                  ],
+                  [
+                    "p4",
+                    "p53"
+                  ],
+                  [
+                    "p5",
+                    "p54"
+                  ],
+                  [
+                    "p6",
+                    "p55"
+                  ]
+                ],
+                "constraints": [
+                  "k54",
+                  "k55",
+                  "k56",
+                  "k57"
+                ]
+              }
+            ],
+            "expressions": {
+              "count": "span_n",
+              "spacing": "5 mm",
+              "spacing2": "5 mm"
+            }
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "axis",
+              "name": "Z"
+            }
+          }
+        ],
+        "counters": {
+          "j": 1,
+          "k": 57,
+          "l": 55,
+          "p": 55,
+          "pat": 1
+        }
+      }
+    },
+    {
+      "id": 14,
+      "name": "SpanTeethRight",
+      "suppressed": false,
+      "param_names": [
+        "d30",
+        "d31"
+      ],
+      "type": "extrude",
+      "sketch": 13,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tooth_depth + 0.1 mm",
+        "convention": "total_distance",
+        "direction": "positive",
+        "start_offset": "pitch_r_big - 0.57 mm - tooth_depth"
+      },
+      "operation": "join",
+      "targets": [
+        "belt"
+      ]
+    },
+    {
+      "id": 15,
+      "name": "SpanTeethLeft",
+      "suppressed": false,
+      "type": "mirror",
+      "features": [
+        14
+      ],
+      "plane": {
+        "type": "origin",
+        "name": "YZ"
+      },
+      "combine": true
+    }
+  ],
+  "next_id": 16,
+  "next_component_color_index": 0,
+  "materials": {
+    "belt": "Neoprene"
+  },
+  "user_materials": [
+    {
+      "name": "Neoprene",
+      "density": 1.25,
+      "appearance": {
+        "name": "Neoprene",
+        "color": [
+          48,
+          48,
+          48
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

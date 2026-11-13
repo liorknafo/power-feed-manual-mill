@@ -23,9 +23,9 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | `docs/` | The spec, plus notes about the mill | `docs/design.md`, `docs/mill.md` |
 | `hardware/` | KiCad 9 schematic + 4-layer 100×100 mm PCB, order files | `hardware/README.md`, `hardware/fab/README.md` |
 | `firmware/` | Rust firmware for the RP2040 (Embassy). Core logic is unit-tested on the PC | `firmware/README.md` |
-| `mechanical/clutch/` | Tooth clutch: parametric CAD + machining sheet | `mechanical/clutch/MACHINING.md` |
+| `mechanical/solidcraft/` | The CAD, in SolidCraft: one parametric design per part, the clutch and feed-unit assemblies, checks, renders, the mains tray's flat patterns | `mechanical/README.md`, `mechanical/solidcraft/README.md` |
+| `mechanical/clutch/` | Tooth clutch: machining sheet | `mechanical/clutch/MACHINING.md` |
 | `mechanical/feed_unit/` | The whole power feed in one box at the left table end: plate, 2:1 belt, leadscrew stub, encoder, clutch module, motor, controller PCB and control panel | `mechanical/feed_unit/FEED_UNIT.md` |
-| `mechanical/viewer/` | Interactive 3D view of everything (`sh mechanical/viewer/build.sh` builds and serves it; `sh mechanical/viewer/serve.sh [address]` just serves it, from any folder) | `mechanical/README.md` |
 
 ## Status
 
@@ -34,6 +34,7 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
 | Schematic | Done: bare RP2040 (flash, crystal, USB-C with ESD, 3.3 V LDO), TMC5160 power stage, clutch driver, E-stop interlock. ERC clean, netlist checked, independently reviewed |
 | PCB | **Ready to order.** 4 layers, 100 × 100 mm. Independently reviewed over 4 rounds (power stage, RP2040 layout, assembly). DRC 0 errors with schematic parity (11 cosmetic silkscreen warnings). Gerbers, BOM, CPL in `hardware/fab/` |
 | Firmware | Builds for the RP2040; 48 passing tests. Flashable with the box closed: **USB FLASH** menu item + end-wall USB-C (UF2), or the end-wall SWD port with a Debug Probe (recovers anything). Needs bench commissioning (`firmware/README.md`) |
+| CAD | In SolidCraft (`mechanical/solidcraft/`), migrated from the build123d model part by part and checked against it (identical apart from true arcs where the old model used polylines, and real bends in the sheet-metal tray). Interference, mains separation, door swing and print fit re-checked in SolidCraft |
 | Clutch CAD | Ready to machine, after you measure the motor shaft length. Independently reviewed for fit and for machinability on a 3-axis CNC + manual lathe/mill (teeth: one 60° chamfer-mill pass per flank). Magnetic sizing must be bench-calibrated |
 | Feed unit CAD | Structure reviewed: Oldham drive, circlip bearing stack, encoder adapter, guard, drawbolt tensioner. **Mill-side dimensions are placeholders until measured** |
 | Housing (one box: drive + PCB + controls + 36 V supply) | **Ready to print.** Compact, rounded PETG (116 × 204 × 262 mm), built-in LRS-150-36 supply (the only 36 V Mean Well on Amazon that ships to Israel) and fused, switched IEC inlet in an earthed aluminium mains tray (mains part independently safety-reviewed: wiring room, separation, fixing, earthing, assembly order); USB-C, BOOT/RESET and SWD on the end wall: a shell, a hood with the controls, a bottom door (the clutch/motor module and the mains tray go in and come out from below) and an end cap that slides on last and holds the door's far end, each one print on a Prusa MK3S with no supports; the PCB lies above the motor. Independently reviewed (printability, assembly, tool access, plugs, inserts). See FEED_UNIT.md → "Housing" |
@@ -46,8 +47,9 @@ A stepper-motor X-axis power feed for a **SIEG X3.5D** mill.
    - where the plate can bolt to the table end;
    - clearances at full travel.
 
-   Enter the values in `mechanical/feed_unit/feed_unit.py` (class `F`) and re-run it.
-2. **Measure the motor:** shaft length beyond the flange and the pilot diameter. Set them in `mechanical/clutch/clutch.py` (class `P`).
+   Enter the values in the SolidCraft part files that use them (`mechanical/solidcraft/README.md` → "Measure first"
+   lists each value's parameter and files), update the assemblies' links and run the checks.
+2. **Measure the motor:** shaft length beyond the flange and the pilot diameter. Set `shaft_len` and `pilot_d` the same way.
 3. **Order the PCB:**
    - upload `hardware/fab/power-feed-gerbers.zip` to JLCPCB: 4 layers, 1.6 mm, 1 oz outer copper (standard; 2 oz breaks the fine-pitch spacing);
    - stencil plus the BOM/CPL for assembly, or reflow it yourself;
@@ -65,16 +67,10 @@ python3 hardware/tools/check_schematic.py                 # schematic: ERC + net
 python3 hardware/tools/check_pcb.py                       # PCB: DRC + schematic parity
 (cd firmware/feed-core && cargo test)                     # logic tests
 (cd firmware/feed-app && cargo build --release)           # firmware
-mechanical/.venv/bin/python mechanical/clutch/clutch.py   # clutch CAD (+ machining sheet)
-mechanical/.venv/bin/python mechanical/feed_unit/feed_unit.py
-mechanical/.venv/bin/python mechanical/tools/check_clutch.py      # interference, engaged + released
-mechanical/.venv/bin/python mechanical/tools/check_feed_unit.py   # interference, incl. bolt heads over the tension slot
-mechanical/.venv/bin/python mechanical/tools/check_machinable.py  # no sharp internal corners a cutter can't make
+(cd mechanical/solidcraft && solidcraft-cli run clutch.build.json --save clutch.sc)        # clutch assembly
+(cd mechanical/solidcraft && solidcraft-cli run feed_unit.build.json --save feed_unit.sc)  # whole unit
+python3 mechanical/solidcraft/tools/check.py        # interference (clutch engaged + released), mains separation, door, print fit
+sh mechanical/solidcraft/tools/render.sh            # renders
 ```
 
-Create the Python environment for the CAD scripts first:
-
-```sh
-python3 -m venv mechanical/.venv
-mechanical/.venv/bin/pip install build123d trimesh pyvista shapely networkx rtree
-```
+The CAD needs SolidCraft 0.40 or later (`solidcraft-cli` on the PATH); edit the parts in the SolidCraft app.

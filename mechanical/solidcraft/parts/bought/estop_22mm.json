@@ -1,0 +1,294 @@
+{
+  "format": "solidcraft/53",
+  "name": "estop_22mm",
+  "units": "mm",
+  "params": [
+    {
+      "name": "strip_t",
+      "expr": "2.75 mm",
+      "unit": "mm",
+      "comment": "control strip thickness = X_FP - X_FRONT - G (58 - 55 - 0.25); 1 to 3.5 mm",
+      "model": false
+    },
+    {
+      "name": "estop_plate_t",
+      "expr": "1 mm",
+      "unit": "mm",
+      "comment": "printed legend plate under the collar; 0.5 to 2 mm",
+      "model": false
+    },
+    {
+      "name": "panel_t",
+      "expr": "strip_t + estop_plate_t",
+      "unit": "mm",
+      "comment": "what the E-stop clamps (strip + legend plate); 1 to 4 mm (its drawing)",
+      "model": false
+    },
+    {
+      "name": "head_d",
+      "expr": "32.26 mm",
+      "unit": "mm",
+      "comment": "mushroom diameter (drawing: 32.3); 28 to 40 mm",
+      "model": false
+    },
+    {
+      "name": "head_top",
+      "expr": "25.65 mm",
+      "unit": "mm",
+      "comment": "mushroom top above the panel face (drawing: 25.7); 20 to 30 mm",
+      "model": false
+    },
+    {
+      "name": "head_h",
+      "expr": "16.76 mm",
+      "unit": "mm",
+      "comment": "mushroom height (drawing: 16.8); 10 to head_top - 3 mm",
+      "model": false
+    },
+    {
+      "name": "nut_d",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "ring nut diameter (INFERRED); 26 to 34 mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Collar",
+      "suppressed": false,
+      "body_names": [
+        "estop_22mm"
+      ],
+      "param_names": [
+        "d1",
+        "d2"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "14",
+      "height": "2.5",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Neck",
+      "suppressed": false,
+      "param_names": [
+        "d3",
+        "d4"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        2.5
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "12",
+      "height": "(head_top - head_h) - (2.5)",
+      "operation": "join"
+    },
+    {
+      "id": 3,
+      "name": "Head",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "head_top - head_h"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "head_d / 2",
+      "height": "(head_top) - (head_top - head_h)",
+      "operation": "join"
+    },
+    {
+      "id": 4,
+      "name": "Body",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        -10.15
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "11",
+      "height": "10.15",
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "Key",
+      "suppressed": false,
+      "param_names": [
+        "d9",
+        "d10",
+        "d11"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "box",
+      "corner": [
+        -1.5,
+        10.5,
+        "-panel_t"
+      ],
+      "length": "3",
+      "width": "1.4",
+      "height": "0 - (-panel_t)",
+      "operation": "join"
+    },
+    {
+      "id": 6,
+      "name": "RingNut",
+      "suppressed": false,
+      "param_names": [
+        "d12",
+        "d13"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "-panel_t - 4"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "nut_d / 2",
+      "height": "(-panel_t) - (-panel_t - 4)",
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "Pin",
+      "suppressed": false,
+      "param_names": [
+        "d14",
+        "d15",
+        "d16"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "box",
+      "corner": [
+        -7.7,
+        -4.6,
+        -18.3
+      ],
+      "length": "1.2",
+      "width": "0.6",
+      "height": "8.15",
+      "operation": "join"
+    },
+    {
+      "id": 8,
+      "name": "Pins",
+      "suppressed": false,
+      "param_names": [
+        "d17",
+        "d18",
+        "d19",
+        "d20"
+      ],
+      "type": "pattern",
+      "features": [
+        7
+      ],
+      "pattern": {
+        "type": "rectangular",
+        "dir1": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "count1": "2",
+        "spacing1": "14.2 mm",
+        "dir2": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "count2": "2",
+        "spacing2": "8.6 mm"
+      }
+    },
+    {
+      "id": 9,
+      "name": "Wires",
+      "suppressed": false,
+      "param_names": [
+        "d21",
+        "d22",
+        "d23"
+      ],
+      "participants": [
+        "estop_22mm"
+      ],
+      "type": "box",
+      "corner": [
+        -9.0,
+        -6.0,
+        -26.3
+      ],
+      "length": "18",
+      "width": "12",
+      "height": "8",
+      "operation": "join"
+    }
+  ],
+  "next_id": 10,
+  "next_component_color_index": 0,
+  "materials": {
+    "estop_22mm": "ABS Plastic"
+  }
+}

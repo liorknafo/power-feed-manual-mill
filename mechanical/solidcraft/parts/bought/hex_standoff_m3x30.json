@@ -1,0 +1,361 @@
+{
+  "format": "solidcraft/53",
+  "name": "hex_standoff_m3x30",
+  "units": "mm",
+  "params": [
+    {
+      "name": "af",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "width across flats of the hex standoff (5.5 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "post_len",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "standoff length (5 to 60 mm)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "af",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "HexSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              3.0,
+              1.732050807568877
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              2.1211504774498136e-16,
+              3.4641016151377544
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -2.999999999999999,
+              1.7320508075688783
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -3.0000000000000004,
+              -1.7320508075688763
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -6.363451432349441e-16,
+              -3.4641016151377544
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              3.0000000000000004,
+              -1.732050807568876
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c3.center",
+            "pos": [
+              7.401486830834377e-17,
+              5.551115123125783e-16
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 3.0,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 3.4641016151377544,
+            "construction": true
+          },
+          {
+            "id": "c3",
+            "type": "circle",
+            "c": 9,
+            "r": 3.464101615137754,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 6.0,
+            "param": "d1"
+          },
+          {
+            "id": "k17",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 8
+          },
+          {
+            "id": "k18",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 8
+          },
+          {
+            "id": "k19",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 8
+          },
+          {
+            "id": "k20",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 8
+          },
+          {
+            "id": "k21",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 8
+          },
+          {
+            "id": "k22",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 8
+          },
+          {
+            "id": "k23",
+            "type": "vertical",
+            "l": 2
+          }
+        ],
+        "counters": {
+          "c": 3,
+          "k": 23,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "HexBody",
+      "suppressed": false,
+      "body_names": [
+        "hex_standoff_m3x30"
+      ],
+      "param_names": [
+        "d2"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "post_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "hex_standoff_m3x30": "Brass"
+  }
+}

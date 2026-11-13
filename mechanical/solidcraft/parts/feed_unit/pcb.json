@@ -1,0 +1,499 @@
+{
+  "format": "solidcraft/53",
+  "name": "pcb",
+  "units": "mm",
+  "params": [
+    {
+      "name": "pcb_x0",
+      "expr": "-50 mm",
+      "unit": "mm",
+      "comment": "world X of the PCB's x = 0 edge (F.pcb_x0)",
+      "model": false
+    },
+    {
+      "name": "pcb_y",
+      "expr": "-33 mm",
+      "unit": "mm",
+      "comment": "world Y of the PCB's underside (F.pcb_y)",
+      "model": false
+    },
+    {
+      "name": "pcb_w0",
+      "expr": "129 mm",
+      "unit": "mm",
+      "comment": "world Z (W) of the PCB's y = 0 edge (F.pcb_w0)",
+      "model": false
+    },
+    {
+      "name": "pcb_t",
+      "expr": "1.6 mm",
+      "unit": "mm",
+      "comment": "board thickness; 0.8 to 2.4 mm (parts sit on its top)",
+      "model": false
+    },
+    {
+      "name": "pcb_size",
+      "expr": "100 mm",
+      "unit": "mm",
+      "comment": "square board side; 100 mm on the routed board",
+      "model": false
+    },
+    {
+      "name": "mstb_plug",
+      "expr": "13 mm",
+      "unit": "mm",
+      "comment": "MSTB 2,5/..-ST-5,08 plug body beyond the header face (MSTB_PLUG); 12 to 15 mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Board",
+      "suppressed": false,
+      "body_names": [
+        "pcb"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0",
+        "pcb_y",
+        "pcb_w0"
+      ],
+      "length": "(pcb_x0 + pcb_size) - (pcb_x0)",
+      "width": "(pcb_y + pcb_t) - (pcb_y)",
+      "height": "(pcb_w0 + pcb_size) - (pcb_w0)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "BulkCap1",
+      "suppressed": false,
+      "body_names": [
+        "C_bulk_1"
+      ],
+      "param_names": [
+        "d4",
+        "d5"
+      ],
+      "type": "cylinder",
+      "base": [
+        "pcb_x0 + 15.5",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 37.0"
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "6.25",
+      "height": "25",
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "BulkCap2",
+      "suppressed": false,
+      "body_names": [
+        "C_bulk_2"
+      ],
+      "param_names": [
+        "d6",
+        "d7"
+      ],
+      "type": "cylinder",
+      "base": [
+        "pcb_x0 + 19.0",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 74.0"
+      ],
+      "axis": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "radius": "6.25",
+      "height": "25",
+      "operation": "new_body"
+    },
+    {
+      "id": 4,
+      "name": "RP2040Block",
+      "suppressed": false,
+      "body_names": [
+        "U3_rp2040_flash_crystal"
+      ],
+      "param_names": [
+        "d8",
+        "d9",
+        "d10"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 55.8",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 3.3"
+      ],
+      "length": "(pcb_x0 + 73.7) - (pcb_x0 + 55.8)",
+      "width": "(pcb_y + pcb_t + 1.4) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 25.0) - (pcb_w0 + 3.3)",
+      "operation": "new_body"
+    },
+    {
+      "id": 5,
+      "name": "ResetSwitch",
+      "suppressed": false,
+      "body_names": [
+        "SW2_reset"
+      ],
+      "param_names": [
+        "d11",
+        "d12",
+        "d13"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 32.5",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 0.8"
+      ],
+      "length": "(pcb_x0 + 42.5) - (pcb_x0 + 32.5)",
+      "width": "(pcb_y + pcb_t + 3.5) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 8.2) - (pcb_w0 + 0.8)",
+      "operation": "new_body"
+    },
+    {
+      "id": 6,
+      "name": "BootselSwitch",
+      "suppressed": false,
+      "body_names": [
+        "SW1_bootsel"
+      ],
+      "param_names": [
+        "d14",
+        "d15",
+        "d16"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 77.0",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 4.3"
+      ],
+      "length": "(pcb_x0 + 87.0) - (pcb_x0 + 77.0)",
+      "width": "(pcb_y + pcb_t + 3.5) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 11.7) - (pcb_w0 + 4.3)",
+      "operation": "new_body"
+    },
+    {
+      "id": 7,
+      "name": "SwdHeaderJ3",
+      "suppressed": false,
+      "body_names": [
+        "J3_swd_header"
+      ],
+      "param_names": [
+        "d17",
+        "d18",
+        "d19"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 44.6",
+        "pcb_y - 3.0",
+        "pcb_w0 + 1.9"
+      ],
+      "length": "(pcb_x0 + 52.5) - (pcb_x0 + 44.6)",
+      "width": "(pcb_y + 10.1) - (pcb_y - 3.0)",
+      "height": "(pcb_w0 + 4.5) - (pcb_w0 + 1.9)",
+      "operation": "new_body"
+    },
+    {
+      "id": 8,
+      "name": "UsbCJ4",
+      "suppressed": false,
+      "body_names": [
+        "J4_usb_c"
+      ],
+      "param_names": [
+        "d20",
+        "d21",
+        "d22"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 83.1",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 92.9"
+      ],
+      "length": "(pcb_x0 + 92.1) - (pcb_x0 + 83.1)",
+      "width": "(pcb_y + pcb_t + 3.2) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 100.0) - (pcb_w0 + 92.9)",
+      "operation": "new_body"
+    },
+    {
+      "id": 9,
+      "name": "J1Header",
+      "suppressed": false,
+      "body_names": [
+        "J1_36v"
+      ],
+      "param_names": [
+        "d23",
+        "d24",
+        "d25"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 12.0",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 89"
+      ],
+      "length": "(pcb_x0 + 25.3) - (pcb_x0 + 12.0)",
+      "width": "(pcb_y + pcb_t + 12.0) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 100) - (pcb_w0 + 89)",
+      "operation": "new_body"
+    },
+    {
+      "id": 10,
+      "name": "J2Header",
+      "suppressed": false,
+      "body_names": [
+        "J2_motor"
+      ],
+      "param_names": [
+        "d26",
+        "d27",
+        "d28"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 26.5",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 89"
+      ],
+      "length": "(pcb_x0 + 49.9) - (pcb_x0 + 26.5)",
+      "width": "(pcb_y + pcb_t + 12.0) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 100) - (pcb_w0 + 89)",
+      "operation": "new_body"
+    },
+    {
+      "id": 11,
+      "name": "J5Header",
+      "suppressed": false,
+      "body_names": [
+        "J5_clutch"
+      ],
+      "param_names": [
+        "d29",
+        "d30",
+        "d31"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 50.9",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 89"
+      ],
+      "length": "(pcb_x0 + 64.2) - (pcb_x0 + 50.9)",
+      "width": "(pcb_y + pcb_t + 12.0) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 100) - (pcb_w0 + 89)",
+      "operation": "new_body"
+    },
+    {
+      "id": 12,
+      "name": "J7Header",
+      "suppressed": false,
+      "body_names": [
+        "J7_encoder_limits"
+      ],
+      "param_names": [
+        "d32",
+        "d33",
+        "d34"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 65.6",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 77"
+      ],
+      "length": "(pcb_x0 + 72.4) - (pcb_x0 + 65.6)",
+      "width": "(pcb_y + pcb_t + 8.5) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 98) - (pcb_w0 + 77)",
+      "operation": "new_body"
+    },
+    {
+      "id": 13,
+      "name": "J6Header",
+      "suppressed": false,
+      "body_names": [
+        "J6_panel_idc"
+      ],
+      "param_names": [
+        "d35",
+        "d36",
+        "d37"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 73.0",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 66.4"
+      ],
+      "length": "(pcb_x0 + 83.9) - (pcb_x0 + 73.0)",
+      "width": "(pcb_y + pcb_t + 10.0) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 92.9) - (pcb_w0 + 66.4)",
+      "operation": "new_body"
+    },
+    {
+      "id": 14,
+      "name": "J6RibbonPlug",
+      "suppressed": false,
+      "body_names": [
+        "J6_ribbon_plug"
+      ],
+      "param_names": [
+        "d38",
+        "d39",
+        "d40"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 72.0",
+        "pcb_y + pcb_t + 10.0",
+        "pcb_w0 + 64.4"
+      ],
+      "length": "(pcb_x0 + 84.9) - (pcb_x0 + 72.0)",
+      "width": "(pcb_y + pcb_t + 19.0) - (pcb_y + pcb_t + 10.0)",
+      "height": "(pcb_w0 + 94.9) - (pcb_w0 + 64.4)",
+      "operation": "new_body"
+    },
+    {
+      "id": 15,
+      "name": "FuseHolder",
+      "suppressed": false,
+      "body_names": [
+        "F1_fuse_holder"
+      ],
+      "param_names": [
+        "d41",
+        "d42",
+        "d43"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 0.0",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 59"
+      ],
+      "length": "(pcb_x0 + 11.0) - (pcb_x0 + 0.0)",
+      "width": "(pcb_y + pcb_t + 13.0) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 87) - (pcb_w0 + 59)",
+      "operation": "new_body"
+    },
+    {
+      "id": 16,
+      "name": "J1Plug",
+      "suppressed": false,
+      "body_names": [
+        "J1_plug"
+      ],
+      "param_names": [
+        "d44",
+        "d45",
+        "d46"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 12.0",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 99.3"
+      ],
+      "length": "(pcb_x0 + 25.3) - (pcb_x0 + 12.0)",
+      "width": "(pcb_y + pcb_t + 15) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug) - (pcb_w0 + 99.3)",
+      "operation": "new_body"
+    },
+    {
+      "id": 17,
+      "name": "J2Plug",
+      "suppressed": false,
+      "body_names": [
+        "J2_plug"
+      ],
+      "param_names": [
+        "d47",
+        "d48",
+        "d49"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 26.5",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 99.3"
+      ],
+      "length": "(pcb_x0 + 49.9) - (pcb_x0 + 26.5)",
+      "width": "(pcb_y + pcb_t + 15) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug) - (pcb_w0 + 99.3)",
+      "operation": "new_body"
+    },
+    {
+      "id": 18,
+      "name": "J5Plug",
+      "suppressed": false,
+      "body_names": [
+        "J5_plug"
+      ],
+      "param_names": [
+        "d50",
+        "d51",
+        "d52"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 50.9",
+        "pcb_y + pcb_t",
+        "pcb_w0 + 99.3"
+      ],
+      "length": "(pcb_x0 + 64.2) - (pcb_x0 + 50.9)",
+      "width": "(pcb_y + pcb_t + 15) - (pcb_y + pcb_t)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug) - (pcb_w0 + 99.3)",
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 19,
+  "next_component_color_index": 0,
+  "materials": {
+    "C_bulk_1": "ABS Plastic",
+    "C_bulk_2": "ABS Plastic",
+    "F1_fuse_holder": "ABS Plastic",
+    "J1_36v": "ABS Plastic",
+    "J1_plug": "ABS Plastic",
+    "J2_motor": "ABS Plastic",
+    "J2_plug": "ABS Plastic",
+    "J3_swd_header": "ABS Plastic",
+    "J4_usb_c": "ABS Plastic",
+    "J5_clutch": "ABS Plastic",
+    "J5_plug": "ABS Plastic",
+    "J6_panel_idc": "ABS Plastic",
+    "J6_ribbon_plug": "ABS Plastic",
+    "J7_encoder_limits": "ABS Plastic",
+    "SW1_bootsel": "ABS Plastic",
+    "SW2_reset": "ABS Plastic",
+    "U3_rp2040_flash_crystal": "ABS Plastic",
+    "pcb": "FR4"
+  },
+  "user_materials": [
+    {
+      "name": "FR4",
+      "density": 1.85
+    }
+  ]
+}

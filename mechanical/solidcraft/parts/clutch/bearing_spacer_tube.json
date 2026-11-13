@@ -1,0 +1,188 @@
+{
+  "format": "solidcraft/53",
+  "name": "bearing_spacer_tube",
+  "units": "mm",
+  "params": [
+    {
+      "name": "bearing_od",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "6001 bearing OD = cover bore (mm, > tube_id + 0.1)",
+      "model": false
+    },
+    {
+      "name": "tube_clear",
+      "expr": "0.05 mm",
+      "unit": "mm",
+      "comment": "radial clearance of the tube in the cover bore (0 .. 0.5 mm)",
+      "model": false
+    },
+    {
+      "name": "tube_id",
+      "expr": "25 mm",
+      "unit": "mm",
+      "comment": "tube bore: clears the 6001 inner race and shaft (12.5 .. bearing_od - 0.2)",
+      "model": false
+    },
+    {
+      "name": "bearing_w",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "6001 bearing width (> 0)",
+      "model": false
+    },
+    {
+      "name": "z_bearing_in",
+      "expr": "58.45 mm",
+      "unit": "mm",
+      "comment": "clutch frame: motor-side face of the inner (locating) bearing",
+      "model": false
+    },
+    {
+      "name": "z_bearing_out",
+      "expr": "79.25 mm",
+      "unit": "mm",
+      "comment": "clutch frame: motor-side face of the outer bearing (> z_bearing_in + bearing_w)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "bearing_od - 2*tube_clear",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "tube_id",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "TubeSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_bearing_in + bearing_w"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 13.95,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 12.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 27.9,
+            "param": "d2"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 25.0,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Tube",
+      "suppressed": false,
+      "body_names": [
+        "bearing_spacer_tube"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "z_bearing_out - z_bearing_in - bearing_w",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "bearing_spacer_tube": "Steel"
+  }
+}
