@@ -1,0 +1,500 @@
+{
+  "format": "solidcraft/53",
+  "name": "mains_tray_lid",
+  "units": "mm",
+  "params": [
+    {
+      "name": "tray_t",
+      "expr": "1.5 mm",
+      "unit": "mm",
+      "comment": "5052 / 1050 aluminium sheet thickness; 1.0 to 2.0 mm",
+      "model": false
+    },
+    {
+      "name": "bend_r",
+      "expr": "1.5 mm",
+      "unit": "mm",
+      "comment": "inside bend radius (1 t); 1 to 3 mm",
+      "model": false
+    },
+    {
+      "name": "tray_half",
+      "expr": "52 mm",
+      "unit": "mm",
+      "comment": "half outside width of the mains tray (psu_w/2 + tray_side_gap + tray_t)",
+      "model": false
+    },
+    {
+      "name": "lid_y",
+      "expr": "-110.70883080499217 mm",
+      "unit": "mm",
+      "comment": "world y of the lid's underside = top of the tray's raised walls (tray_bot + 42.5); fixed by feed_unit.py",
+      "model": false
+    },
+    {
+      "name": "term_zone_rise",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "the raised zone's walls are this much higher than the low walls; 5 to 15 mm",
+      "model": false
+    },
+    {
+      "name": "term_w0",
+      "expr": "223 mm",
+      "unit": "mm",
+      "comment": "W where the raised terminal/inlet zone starts (the lid's folded edge)",
+      "model": false
+    },
+    {
+      "name": "tray_w1",
+      "expr": "307.5 mm",
+      "unit": "mm",
+      "comment": "W of the tray's end face outside (the lid's far edge); 280 to 320 mm",
+      "model": false
+    },
+    {
+      "name": "relief",
+      "expr": "bend_r + tray_t + 0.5 mm",
+      "unit": "mm",
+      "comment": "bend reliefs reach 0.5 past the bend's tangent line (derived)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "8.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "8.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "8.5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "8.5 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "LidSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "lid_y"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -52.0,
+              -226.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half)",
+              "y": "-(term_w0 + relief)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -50.25,
+              -226.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - tray_t - 0.25 mm)",
+              "y": "-(term_w0 + relief)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -50.25,
+              -223.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - tray_t - 0.25 mm)",
+              "y": "-(term_w0)"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              50.25,
+              -223.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - tray_t - 0.25 mm",
+              "y": "-(term_w0)"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              50.25,
+              -226.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - tray_t - 0.25 mm",
+              "y": "-(term_w0 + relief)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              52.0,
+              -226.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half",
+              "y": "-(term_w0 + relief)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              52.0,
+              -307.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half",
+              "y": "-(tray_w1)"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -52.0,
+              -307.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half)",
+              "y": "-(tray_w1)"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -30.0,
+              -295.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "y": "-(tray_w1 - 12 mm)"
+            }
+          },
+          {
+            "id": "p10",
+            "pos": [
+              -47.0,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - 5 mm)",
+              "y": "-(term_w0 + 8 mm)"
+            }
+          },
+          {
+            "id": "p11",
+            "pos": [
+              -47.0,
+              -299.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(tray_half - 5 mm)",
+              "y": "-(tray_w1 - 8 mm)"
+            }
+          },
+          {
+            "id": "p12",
+            "pos": [
+              47.0,
+              -231.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - 5 mm",
+              "y": "-(term_w0 + 8 mm)"
+            }
+          },
+          {
+            "id": "p13",
+            "pos": [
+              47.0,
+              -299.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "tray_half - 5 mm",
+              "y": "-(tray_w1 - 8 mm)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 9,
+            "r": 5.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 10,
+            "r": 4.25,
+            "construction": false
+          },
+          {
+            "id": "c3",
+            "type": "circle",
+            "c": 11,
+            "r": 4.25,
+            "construction": false
+          },
+          {
+            "id": "c4",
+            "type": "circle",
+            "c": 12,
+            "r": 4.25,
+            "construction": false
+          },
+          {
+            "id": "c5",
+            "type": "circle",
+            "c": 13,
+            "r": 4.25,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 8,
+            "value": 10.0,
+            "param": "d2"
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 9,
+            "value": 8.5,
+            "param": "d3"
+          },
+          {
+            "id": "k3",
+            "type": "diameter",
+            "c": 10,
+            "value": 8.5,
+            "param": "d4"
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 11,
+            "value": 8.5,
+            "param": "d5"
+          },
+          {
+            "id": "k5",
+            "type": "diameter",
+            "c": 12,
+            "value": 8.5,
+            "param": "d6"
+          }
+        ],
+        "counters": {
+          "c": 5,
+          "k": 5,
+          "l": 8,
+          "p": 13
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "LidPlate",
+      "suppressed": false,
+      "body_names": [
+        "mains_tray_lid"
+      ],
+      "type": "sheet_base",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "l1",
+            "l8",
+            "l7",
+            "l6",
+            "l5",
+            "l4",
+            "l3",
+            "l2"
+          ]
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "name": "LidFoldedEdge",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "edge_names": [
+        "base:l3:bottom"
+      ],
+      "type": "sheet_flange",
+      "edges": [
+        [
+          0.0,
+          -110.70883080499217,
+          223.0
+        ]
+      ],
+      "height": "term_zone_rise + tray_t",
+      "angle": "90 deg",
+      "position": "inside"
+    }
+  ],
+  "next_id": 4,
+  "next_component_color_index": 0,
+  "sheet": {
+    "rules": [
+      {
+        "name": "AL5052 1.5",
+        "thickness": "tray_t",
+        "k_factor": "0.33",
+        "bend_radius": "bend_r",
+        "relief_width": "tray_t",
+        "relief_depth": "0.5 mm",
+        "corner_relief": "2*(pi/2*(bend_r + 0.33*tray_t)/sqrt(2) + 0.5 mm)",
+        "corner_relief_shape": "round",
+        "hem_gap": "0.01 mm",
+        "gap": "0.25 mm"
+      }
+    ],
+    "active": "AL5052 1.5"
+  },
+  "materials": {
+    "mains_tray_lid": "Aluminium 5052"
+  },
+  "user_materials": [
+    {
+      "name": "Aluminium 5052",
+      "density": 2.68,
+      "appearance": {
+        "name": "Aluminium 5052",
+        "color": [
+          184,
+          188,
+          194
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

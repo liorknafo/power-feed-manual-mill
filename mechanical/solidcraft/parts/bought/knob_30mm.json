@@ -1,0 +1,113 @@
+{
+  "format": "solidcraft/53",
+  "name": "knob_30mm",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "2.75 mm",
+      "unit": "mm",
+      "comment": "control strip thickness the PEC11R sits in (STRIP_T); 0.5 to 5 mm",
+      "model": false
+    },
+    {
+      "name": "knob_gap",
+      "expr": "1 mm",
+      "unit": "mm",
+      "comment": "hub above the encoder bushing's top; 0.5 to 3 mm",
+      "model": false
+    },
+    {
+      "name": "knob_z0",
+      "expr": "7 mm - panel_t + knob_gap",
+      "unit": "mm",
+      "comment": "hub face above the panel face (derived: bushing 7 - panel_t + gap)",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Hub",
+      "suppressed": false,
+      "body_names": [
+        "knob_30mm"
+      ],
+      "param_names": [
+        "d1",
+        "d2"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "knob_z0"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "9",
+      "height": "(knob_z0 + 10) - (knob_z0)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Rim",
+      "suppressed": false,
+      "param_names": [
+        "d3",
+        "d4"
+      ],
+      "participants": [
+        "knob_30mm"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "knob_z0 + 10"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "15",
+      "height": "(knob_z0 + 20) - (knob_z0 + 10)",
+      "operation": "join"
+    },
+    {
+      "id": 3,
+      "name": "Bore",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6"
+      ],
+      "participants": [
+        "knob_30mm"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "knob_z0 - 0.1"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "3.05",
+      "height": "(knob_z0 + 20.1) - (knob_z0 - 0.1)",
+      "operation": "cut"
+    }
+  ],
+  "next_id": 4,
+  "next_component_color_index": 0,
+  "materials": {
+    "knob_30mm": "Aluminum"
+  }
+}

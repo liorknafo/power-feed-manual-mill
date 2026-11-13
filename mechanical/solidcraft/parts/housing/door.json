@@ -1,0 +1,1554 @@
+{
+  "format": "solidcraft/53",
+  "name": "door",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "printed wall thickness (PETG); 2-4 mm",
+      "model": false
+    },
+    {
+      "name": "fit_gap",
+      "expr": "0.25 mm",
+      "unit": "mm",
+      "comment": "per side, housing cavity over the plate edges; 0.1-0.5 mm",
+      "model": false
+    },
+    {
+      "name": "x_half",
+      "expr": "55 mm",
+      "unit": "mm",
+      "comment": "plate / housing inner half-width (back wall inside at -x_half, front at +x_half); 45-70 mm",
+      "model": false
+    },
+    {
+      "name": "r_long",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "outer radius of the top-back long edge, and size of the 45 deg top-front chamfer; both go with the hood, so 8-13 mm leaves the shell unchanged",
+      "model": false
+    },
+    {
+      "name": "r_bottom",
+      "expr": "8.5 mm",
+      "unit": "mm",
+      "comment": "outer radius of the two bottom long edges (the door's rounded edges); panel_t+2 .. 12 mm",
+      "model": false
+    },
+    {
+      "name": "plate_top",
+      "expr": "43.83098861837907 mm",
+      "unit": "mm",
+      "comment": "world y of the plate's top edge (feed_unit PLATE_TOP, from the guard and standoffs)",
+      "model": false
+    },
+    {
+      "name": "plate_bot",
+      "expr": "-153.70883080499217 mm",
+      "unit": "mm",
+      "comment": "world y of the plate's bottom edge (feed_unit PLATE_BOT, from the module and tray)",
+      "model": false
+    },
+    {
+      "name": "w_shell0",
+      "expr": "55 mm",
+      "unit": "mm",
+      "comment": "W of the housing's open rim on the plate edges (plate outer face minus the lap)",
+      "model": false
+    },
+    {
+      "name": "plate_out",
+      "expr": "63 mm",
+      "unit": "mm",
+      "comment": "W of the plate's outer face: drawbolt hole at plate_out + 4, tray-tab screws at plate_out - 6",
+      "model": false
+    },
+    {
+      "name": "cap_cut",
+      "expr": "248 mm",
+      "unit": "mm",
+      "comment": "W where the end cap starts; the door's far end is the 45 deg scarf W - y = cap_cut - plate_bot under it; 230-260 mm",
+      "model": false
+    },
+    {
+      "name": "knuckle_r",
+      "expr": "3.5 mm",
+      "unit": "mm",
+      "comment": "hinge knuckle radius (on a 3 mm steel pin); 3-4 mm",
+      "model": false
+    },
+    {
+      "name": "split_y",
+      "expr": "plate_bot - panel_t + r_bottom",
+      "unit": "mm",
+      "comment": "derived: door / shell split, top of the bottom fillets",
+      "model": false
+    },
+    {
+      "name": "hinge_x",
+      "expr": "-(x_half + panel_t + 0.75 mm)",
+      "unit": "mm",
+      "comment": "derived: hinge pin axis, 0.75 outside the back wall, on the split line",
+      "model": false
+    },
+    {
+      "name": "chamfer_in",
+      "expr": "r_long - panel_t * (2 - sqrt(2))",
+      "unit": "mm",
+      "comment": "derived: inside legs of the housing's top 45 deg chamfers",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "OuterBlock",
+      "suppressed": false,
+      "body_names": [
+        "door"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        "-(x_half + panel_t)",
+        "plate_bot - panel_t",
+        "w_shell0"
+      ],
+      "length": "2 * (x_half + panel_t)",
+      "width": "plate_top - plate_bot + 2 * panel_t",
+      "height": "cap_cut + 20 mm - w_shell0",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "TopFrontChamfer",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            55.0
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            268.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F1:+x|F1:+y"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          58.0,
+          46.83098861837907,
+          161.5
+        ]
+      ],
+      "distance": "r_long",
+      "body": "door"
+    },
+    {
+      "id": 3,
+      "name": "TopBackFillet",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            55.0
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            268.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F1:+y|F1:-x"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -58.0,
+          46.83098861837907,
+          161.5
+        ]
+      ],
+      "radius": "r_long",
+      "body": "door"
+    },
+    {
+      "id": 4,
+      "name": "BottomFillets",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            54.99999999999999
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            268.00000000000006
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -58.0,
+            -156.70883080499217,
+            54.99999999999999
+          ],
+          "max": [
+            58.0,
+            46.83098861837905,
+            268.00000000000006
+          ]
+        }
+      ],
+      "edge_names": [
+        "F1:-x|F1:-y",
+        "F1:+x|F1:-y"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -58.0,
+          -156.70883080499217,
+          161.5
+        ],
+        [
+          58.0,
+          -156.70883080499217,
+          161.5
+        ]
+      ],
+      "radius": "r_bottom",
+      "body": "door"
+    },
+    {
+      "id": 5,
+      "name": "CavityBlock",
+      "suppressed": false,
+      "body_names": [
+        "cavity"
+      ],
+      "param_names": [
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "type": "box",
+      "corner": [
+        "-(x_half + fit_gap)",
+        "plate_bot - fit_gap",
+        "w_shell0 - 1 mm"
+      ],
+      "length": "2 * (x_half + fit_gap)",
+      "width": "plate_top - plate_bot + 2 * fit_gap",
+      "height": "cap_cut + 22 mm - w_shell0",
+      "operation": "new_body"
+    },
+    {
+      "id": 6,
+      "name": "CavityTopChamfers",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            54.0
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            269.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            54.0
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            269.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F5:+x|F5:+y",
+        "F5:+y|F5:-x"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          55.25,
+          44.08098861837907,
+          161.5
+        ],
+        [
+          -55.25,
+          44.08098861837907,
+          161.5
+        ]
+      ],
+      "distance": "chamfer_in",
+      "body": "cavity"
+    },
+    {
+      "id": 7,
+      "name": "CavityBottomFillets",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            54.0
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            269.0
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "min": [
+            -55.25,
+            -153.95883080499217,
+            54.0
+          ],
+          "max": [
+            55.25,
+            44.08098861837905,
+            269.0
+          ]
+        }
+      ],
+      "edge_names": [
+        "F5:-x|F5:-y",
+        "F5:+x|F5:-y"
+      ],
+      "type": "fillet",
+      "edges": [
+        [
+          -55.25,
+          -153.95883080499217,
+          161.5
+        ],
+        [
+          55.25,
+          -153.95883080499217,
+          161.5
+        ]
+      ],
+      "radius": "r_bottom - panel_t + fit_gap",
+      "body": "cavity"
+    },
+    {
+      "id": 8,
+      "name": "HollowOut",
+      "suppressed": false,
+      "type": "combine",
+      "target": "door",
+      "tools": [
+        "cavity"
+      ],
+      "operation": "cut",
+      "keep_tools": false
+    },
+    {
+      "id": 9,
+      "name": "AboveSplitSketch",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "w_shell0 - 1 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -59.0,
+              -148.5088308049922
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + panel_t + 1 mm)",
+              "y": "split_y - 0.3 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              59.0,
+              -148.5088308049922
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + panel_t + 1 mm)",
+              "y": "split_y - 0.3 mm"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              59.0,
+              47.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + panel_t + 1 mm)",
+              "y": "plate_top + panel_t + 1 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -59.0,
+              47.83098861837907
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-(x_half + panel_t + 1 mm)",
+              "y": "plate_top + panel_t + 1 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "FloorRegion",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut + 22 mm - w_shell0",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "door"
+      ]
+    },
+    {
+      "id": 11,
+      "name": "FeetSketch",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "w_shell0"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              49.5,
+              -156.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + panel_t - r_bottom)",
+              "y": "(plate_bot - panel_t)"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              53.020815280171306,
+              -156.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + panel_t - r_bottom) + 2 * (r_bottom / sqrt(2)) - r_bottom",
+              "y": "(plate_bot - panel_t)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              55.51040764008565,
+              -154.21923844507782
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + panel_t - r_bottom) + (r_bottom / sqrt(2))",
+              "y": "(plate_bot - panel_t) + r_bottom - (r_bottom / sqrt(2))"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              49.5,
+              -154.21923844507782
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(x_half + panel_t - r_bottom)",
+              "y": "(plate_bot - panel_t) + r_bottom - (r_bottom / sqrt(2))"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -49.5,
+              -156.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t - r_bottom))",
+              "y": "(plate_bot - panel_t)"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -53.020815280171306,
+              -156.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t - r_bottom) + 2 * (r_bottom / sqrt(2)) - r_bottom)",
+              "y": "(plate_bot - panel_t)"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -55.51040764008565,
+              -154.21923844507782
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t - r_bottom) + (r_bottom / sqrt(2)))",
+              "y": "(plate_bot - panel_t) + r_bottom - (r_bottom / sqrt(2))"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -49.5,
+              -154.21923844507782
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "-((x_half + panel_t - r_bottom))",
+              "y": "(plate_bot - panel_t) + r_bottom - (r_bottom / sqrt(2))"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 5,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 8,
+          "p": 8
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Feet",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut + 20 mm - w_shell0",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "door"
+      ]
+    },
+    {
+      "id": 13,
+      "name": "ShellKnuckleClearance1",
+      "suppressed": false,
+      "param_names": [
+        "d16",
+        "d17"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "69.5 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r + 0.3 mm",
+      "height": "(100.5 mm) - (69.5 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 14,
+      "name": "ShellKnuckleClearance2",
+      "suppressed": false,
+      "param_names": [
+        "d18",
+        "d19"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "144.5 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r + 0.3 mm",
+      "height": "(175.5 mm) - (144.5 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 15,
+      "name": "ShellKnuckleClearance3",
+      "suppressed": false,
+      "param_names": [
+        "d20",
+        "d21"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "cap_cut - 30.5 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r + 0.3 mm",
+      "height": "(cap_cut + 0.5 mm) - (cap_cut - 30.5 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 16,
+      "name": "DoorKnuckle1",
+      "suppressed": false,
+      "param_names": [
+        "d22",
+        "d23"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "100.5 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r",
+      "height": "(144.5 mm) - (100.5 mm)",
+      "operation": "join"
+    },
+    {
+      "id": 17,
+      "name": "DoorKnuckle2",
+      "suppressed": false,
+      "param_names": [
+        "d24",
+        "d25"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "175.5 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "knuckle_r",
+      "height": "(cap_cut - 30.5 mm) - (175.5 mm)",
+      "operation": "join"
+    },
+    {
+      "id": 18,
+      "name": "KnuckleDripWebSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -58.75,
+              -148.20883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x",
+              "y": "split_y"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -56.275126265847085,
+              -150.68370453914508
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x + knuckle_r / sqrt(2)",
+              "y": "split_y - knuckle_r / sqrt(2)"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -58.45,
+              -152.858578273298
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x + 0.3 mm",
+              "y": "split_y - knuckle_r * sqrt(2) + 0.3 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -58.15,
+              -152.858578273298
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x + 0.6 mm",
+              "y": "split_y - knuckle_r * sqrt(2) + 0.3 mm"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              -58.15,
+              -156.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x + 0.6 mm",
+              "y": "plate_bot - panel_t"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              -59.35,
+              -156.70883080499217
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x - 0.6 mm",
+              "y": "plate_bot - panel_t"
+            }
+          },
+          {
+            "id": "p7",
+            "pos": [
+              -59.35,
+              -152.858578273298
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x - 0.6 mm",
+              "y": "split_y - knuckle_r * sqrt(2) + 0.3 mm"
+            }
+          },
+          {
+            "id": "p8",
+            "pos": [
+              -59.05,
+              -152.858578273298
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x - 0.3 mm",
+              "y": "split_y - knuckle_r * sqrt(2) + 0.3 mm"
+            }
+          },
+          {
+            "id": "p9",
+            "pos": [
+              -61.224873734152915,
+              -150.68370453914508
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "hinge_x - knuckle_r / sqrt(2)",
+              "y": "split_y - knuckle_r / sqrt(2)"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 7,
+            "construction": false
+          },
+          {
+            "id": "l7",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": false
+          },
+          {
+            "id": "l8",
+            "type": "line",
+            "a": 8,
+            "b": 9,
+            "construction": false
+          },
+          {
+            "id": "l9",
+            "type": "line",
+            "a": 9,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 9,
+          "p": 9
+        }
+      }
+    },
+    {
+      "id": 19,
+      "name": "KnuckleDripWeb1",
+      "suppressed": false,
+      "param_names": [
+        "d26",
+        "d27"
+      ],
+      "type": "extrude",
+      "sketch": 18,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "44 mm",
+        "convention": "total_distance",
+        "direction": "positive",
+        "start_offset": "100.5 mm"
+      },
+      "operation": "join",
+      "targets": [
+        "door"
+      ]
+    },
+    {
+      "id": 20,
+      "name": "KnuckleDripWeb2",
+      "suppressed": false,
+      "param_names": [
+        "d28",
+        "d29"
+      ],
+      "type": "extrude",
+      "sketch": 18,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cap_cut - 30.5 mm - 175.5 mm",
+        "convention": "total_distance",
+        "direction": "positive",
+        "start_offset": "175.5 mm"
+      },
+      "operation": "join",
+      "targets": [
+        "door"
+      ]
+    },
+    {
+      "id": 21,
+      "name": "PinBore",
+      "suppressed": false,
+      "param_names": [
+        "d30",
+        "d31"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "split_y",
+        "w_shell0 - 1 mm"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "1.6 mm",
+      "height": "(cap_cut + 21 mm) - (w_shell0 - 1 mm)",
+      "operation": "cut"
+    },
+    {
+      "id": 22,
+      "name": "DrawboltAccessHole",
+      "suppressed": false,
+      "param_names": [
+        "d32"
+      ],
+      "face_names": [
+        "F1:-y"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        -156.70883080499217,
+        67.0
+      ],
+      "at": [
+        0.0,
+        "plate_bot - panel_t",
+        "plate_out + 4 mm"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "12 mm",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 23,
+      "name": "PsuScrewHeadPocket1",
+      "suppressed": false,
+      "param_names": [
+        "d33",
+        "d34"
+      ],
+      "face_names": [
+        "F5:-y"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "hole",
+      "position": [
+        16.5,
+        -153.95883080499217,
+        217.0
+      ],
+      "at": [
+        16.5,
+        "plate_bot - fit_gap",
+        217.0
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "diameter": "9 mm",
+      "depth": "1.2 mm",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 24,
+      "name": "PsuScrewHeadPocket2",
+      "suppressed": false,
+      "param_names": [
+        "d35",
+        "d36"
+      ],
+      "face_names": [
+        "F5:-y"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "hole",
+      "position": [
+        16.5,
+        -153.95883080499217,
+        139.0
+      ],
+      "at": [
+        16.5,
+        "plate_bot - fit_gap",
+        139.0
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "diameter": "9 mm",
+      "depth": "1.2 mm",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 25,
+      "name": "TrayScrewHeadPocket1",
+      "suppressed": false,
+      "param_names": [
+        "d37",
+        "d38"
+      ],
+      "face_names": [
+        "F5:-y"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "hole",
+      "position": [
+        -34.0,
+        -153.95883080499217,
+        57.0
+      ],
+      "at": [
+        -34.0,
+        "plate_bot - fit_gap",
+        "plate_out - 6 mm"
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "diameter": "10 mm",
+      "depth": "1.75 mm",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 26,
+      "name": "TrayScrewHeadPocket2",
+      "suppressed": false,
+      "param_names": [
+        "d39",
+        "d40"
+      ],
+      "face_names": [
+        "F5:-y"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "hole",
+      "position": [
+        34.0,
+        -153.95883080499217,
+        57.0
+      ],
+      "at": [
+        34.0,
+        "plate_bot - fit_gap",
+        "plate_out - 6 mm"
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        0.0
+      ],
+      "diameter": "10 mm",
+      "depth": "1.75 mm",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 27,
+      "name": "EndScarfSketch",
+      "suppressed": false,
+      "param_names": [
+        "d41"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "YZ"
+        },
+        "distance": "-(x_half + panel_t + 10 mm)"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -166.70883080499217,
+              235.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "plate_bot - panel_t - 10 mm",
+              "y": "cap_cut - panel_t - 10 mm"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -138.20883080499217,
+              263.5
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "split_y + 10 mm",
+              "y": "split_y + 10 mm + cap_cut - plate_bot"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -138.20883080499217,
+              278.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "split_y + 10 mm",
+              "y": "cap_cut + 30 mm"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -166.70883080499217,
+              278.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "plate_bot - panel_t - 10 mm",
+              "y": "cap_cut + 30 mm"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 28,
+      "name": "EndScarf",
+      "suppressed": false,
+      "param_names": [
+        "d42"
+      ],
+      "type": "extrude",
+      "sketch": 27,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2 * (x_half + panel_t + 10 mm)",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut",
+      "targets": [
+        "door"
+      ]
+    },
+    {
+      "id": 29,
+      "name": "PlateScrewHole",
+      "suppressed": false,
+      "param_names": [
+        "d43",
+        "d44",
+        "d45",
+        "d46"
+      ],
+      "face_names": [
+        "F1:-y"
+      ],
+      "participants": [
+        "door"
+      ],
+      "type": "hole",
+      "position": [
+        44.0,
+        -156.70883080499217,
+        59.0
+      ],
+      "at": [
+        44.0,
+        "plate_bot - panel_t",
+        "(w_shell0 + plate_out) / 2"
+      ],
+      "direction": [
+        -0.0,
+        1.0,
+        -0.0
+      ],
+      "diameter": "3.4 mm",
+      "depth": "panel_t + 0.01 mm",
+      "hole": {
+        "type": "countersink",
+        "cs_diameter": "6.9 mm",
+        "cs_angle": "90 deg"
+      }
+    }
+  ],
+  "next_id": 30,
+  "next_component_color_index": 0,
+  "materials": {
+    "door": "PETG"
+  },
+  "user_materials": [
+    {
+      "name": "PETG",
+      "density": 1.27,
+      "appearance": {
+        "name": "PETG",
+        "color": [
+          58,
+          123,
+          213
+        ],
+        "opacity": 1.0
+      }
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "format": "solidcraft/53",
+  "name": "oled_sh1106",
+  "units": "mm",
+  "params": [
+    {
+      "name": "oled_yc",
+      "expr": "-2.15 mm",
+      "unit": "mm",
+      "comment": "PCB centre relative to the active area's centre = -(33.7/2 - 7.35 - 14.7/2) (OLED_YC)",
+      "model": false
+    },
+    {
+      "name": "pcb_t",
+      "expr": "1.2 mm",
+      "unit": "mm",
+      "comment": "PCB thickness (INFERRED); 1 to 1.6 mm",
+      "model": false
+    },
+    {
+      "name": "hole_px",
+      "expr": "30.3 mm",
+      "unit": "mm",
+      "comment": "mounting hole pitch across (OLED_HOLES); 28 to 32 mm",
+      "model": false
+    },
+    {
+      "name": "hole_py",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "mounting hole pitch up (OLED_HOLES); 26 to 30 mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Board",
+      "suppressed": false,
+      "body_names": [
+        "oled_sh1106"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        -17.75,
+        "oled_yc - 16.85",
+        "-pcb_t"
+      ],
+      "length": "35.5",
+      "width": "(oled_yc + 16.85) - (oled_yc - 16.85)",
+      "height": "0 - (-pcb_t)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "MountHole",
+      "suppressed": false,
+      "param_names": [
+        "d4",
+        "d5"
+      ],
+      "participants": [
+        "oled_sh1106"
+      ],
+      "type": "cylinder",
+      "base": [
+        "-hole_px / 2",
+        "oled_yc - hole_py / 2",
+        "-pcb_t - 0.1"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "1.5",
+      "height": "0.1 - (-pcb_t - 0.1)",
+      "operation": "cut"
+    },
+    {
+      "id": 3,
+      "name": "MountHoles",
+      "suppressed": false,
+      "param_names": [
+        "d6",
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "type": "pattern",
+      "features": [
+        2
+      ],
+      "pattern": {
+        "type": "rectangular",
+        "dir1": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "count1": "2",
+        "spacing1": "hole_px",
+        "dir2": [
+          0.0,
+          1.0,
+          0.0
+        ],
+        "count2": "2",
+        "spacing2": "hole_py"
+      }
+    },
+    {
+      "id": 4,
+      "name": "Glass",
+      "suppressed": false,
+      "param_names": [
+        "d10",
+        "d11",
+        "d12"
+      ],
+      "participants": [
+        "oled_sh1106"
+      ],
+      "type": "box",
+      "corner": [
+        -17.25,
+        "oled_yc + 11.6 - 23",
+        0.0
+      ],
+      "length": "34.5",
+      "width": "(oled_yc + 11.6) - (oled_yc + 11.6 - 23)",
+      "height": "1.5",
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "Header",
+      "suppressed": false,
+      "param_names": [
+        "d13",
+        "d14",
+        "d15"
+      ],
+      "participants": [
+        "oled_sh1106"
+      ],
+      "type": "box",
+      "corner": [
+        -5.1,
+        "oled_yc + 13.55",
+        "-pcb_t - 8.5"
+      ],
+      "length": "10.2",
+      "width": "(oled_yc + 16.15) - (oled_yc + 13.55)",
+      "height": "(-pcb_t) - (-pcb_t - 8.5)",
+      "operation": "join"
+    }
+  ],
+  "next_id": 6,
+  "next_component_color_index": 0,
+  "materials": {
+    "oled_sh1106": "FR4"
+  },
+  "user_materials": [
+    {
+      "name": "FR4",
+      "density": 1.85
+    }
+  ]
+}

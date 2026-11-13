@@ -1,0 +1,160 @@
+{
+  "format": "solidcraft/53",
+  "name": "serrated_washer_m4",
+  "units": "mm",
+  "params": [
+    {
+      "name": "washer_od",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "washer outer diameter (6 to 12 mm)",
+      "model": false
+    },
+    {
+      "name": "washer_id",
+      "expr": "4.4 mm",
+      "unit": "mm",
+      "comment": "washer hole (4.2 to 5 mm, less than od)",
+      "model": false
+    },
+    {
+      "name": "washer_t",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "washer thickness (0.3 to 1.5 mm)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "washer_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "washer_id",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "WasherSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.2,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 8.0,
+            "param": "d1"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 4.4,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Washer",
+      "suppressed": false,
+      "body_names": [
+        "serrated_washer_m4"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "washer_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 3,
+  "next_component_color_index": 0,
+  "materials": {
+    "serrated_washer_m4": "Steel"
+  }
+}

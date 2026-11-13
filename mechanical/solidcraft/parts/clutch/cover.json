@@ -1,0 +1,1345 @@
+{
+  "format": "solidcraft/53",
+  "name": "cover",
+  "units": "mm",
+  "params": [
+    {
+      "name": "housing_od",
+      "expr": "80 mm",
+      "unit": "mm",
+      "comment": "field housing OD = spigot bore (slide fit)",
+      "model": false
+    },
+    {
+      "name": "cover_wall",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "radial wall over the housing (>= 3, carries the M4 countersinks)",
+      "model": false
+    },
+    {
+      "name": "housing_len",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "field housing length: the shoulder sits on its rim at z = housing_len",
+      "model": false
+    },
+    {
+      "name": "cover_spigot_z",
+      "expr": "2 mm",
+      "unit": "mm",
+      "comment": "clutch frame: start of the spigot over the housing (0.5 .. housing_len - 10)",
+      "model": false
+    },
+    {
+      "name": "cover_cavity_d",
+      "expr": "78 mm",
+      "unit": "mm",
+      "comment": "cavity bore: clears the Ø76 rotor / armature (< housing_od)",
+      "model": false
+    },
+    {
+      "name": "z_front",
+      "expr": "54.85 mm",
+      "unit": "mm",
+      "comment": "clutch frame: inside face of the front wall (hub top + 3)",
+      "model": false
+    },
+    {
+      "name": "cover_front_t",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "front wall thickness: carries the 4 M5 module bolts (> 6)",
+      "model": false
+    },
+    {
+      "name": "bearing_od",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "6001 bearing OD = straight-through bore",
+      "model": false
+    },
+    {
+      "name": "bearing_w",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "6001 bearing width",
+      "model": false
+    },
+    {
+      "name": "bearing_gap",
+      "expr": "8 mm",
+      "unit": "mm",
+      "comment": "gap between the two 6001s (spacer tube length = bearing_gap + 4.8)",
+      "model": false
+    },
+    {
+      "name": "boss_len",
+      "expr": "2*bearing_w + bearing_gap + 4 mm",
+      "unit": "mm",
+      "comment": "derived: bearing boss length beyond the front wall",
+      "model": false
+    },
+    {
+      "name": "boss_wall",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "bearing boss wall around the bore (>= 3)",
+      "model": false
+    },
+    {
+      "name": "circlip_groove",
+      "expr": "1.3 mm",
+      "unit": "mm",
+      "comment": "DIN 472-28 groove width",
+      "model": false
+    },
+    {
+      "name": "circlip_land",
+      "expr": "2.1 mm",
+      "unit": "mm",
+      "comment": "material outside each bore groove (DIN 472-28 minimum edge margin)",
+      "model": false
+    },
+    {
+      "name": "groove_d",
+      "expr": "29.4 mm",
+      "unit": "mm",
+      "comment": "DIN 472-28 groove diameter (> bearing_od)",
+      "model": false
+    },
+    {
+      "name": "cover_screws",
+      "expr": "6",
+      "unit": "",
+      "comment": "whole number, 3 .. 8: radial M4 countersunk screws into the housing, the first at 30 deg",
+      "model": false
+    },
+    {
+      "name": "cover_screw_z",
+      "expr": "(cover_spigot_z + housing_len)/2 + 1 mm",
+      "unit": "mm",
+      "comment": "derived: height of the radial M4 screws",
+      "model": false
+    },
+    {
+      "name": "cover_screw_d",
+      "expr": "4.5 mm",
+      "unit": "mm",
+      "comment": "M4 clearance (ISO 273 medium)",
+      "model": false
+    },
+    {
+      "name": "cover_csk_d",
+      "expr": "9.2 mm",
+      "unit": "mm",
+      "comment": "90 deg countersink diameter for ISO 10642 M4 (head Ø8.96)",
+      "model": false
+    },
+    {
+      "name": "cover_bolt_r",
+      "expr": "36 mm",
+      "unit": "mm",
+      "comment": "module bolt radius, 4x M5 tapped into the front wall at 40/140/190/350 deg (bearing_od/2 + boss_wall + 4 .. housing_od/2 + cover_wall - 5)",
+      "model": false
+    },
+    {
+      "name": "drawbolt_depth",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "M4 belt-tension drawbolt tap-drill depth, radial at +Y (< housing_od/2 + cover_wall - bearing_od/2 - 2)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "housing_od + 2*cover_wall",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "housing_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "housing_od + 2*cover_wall",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "cover_cavity_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "housing_od + 2*cover_wall",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "bearing_od + 2*boss_wall",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d18",
+      "expr": "groove_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "groove_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "cover_bolt_r * abs(cos(40 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d25",
+      "expr": "cover_bolt_r * abs(sin(40 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d26",
+      "expr": "cover_bolt_r * abs(cos(140 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d27",
+      "expr": "cover_bolt_r * abs(sin(140 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d28",
+      "expr": "cover_bolt_r * abs(cos(190 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d29",
+      "expr": "cover_bolt_r * abs(sin(190 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d30",
+      "expr": "cover_bolt_r * abs(cos(350 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d31",
+      "expr": "cover_bolt_r * abs(sin(350 deg))",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d35",
+      "expr": "z_front + cover_front_t/2",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "SpigotSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "cover_spigot_z"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 44.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 40.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 88.0,
+            "param": "d2"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 80.0,
+            "param": "d3"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Spigot",
+      "suppressed": false,
+      "body_names": [
+        "cover"
+      ],
+      "param_names": [
+        "d4"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "housing_len - cover_spigot_z",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "ShoulderSketch",
+      "suppressed": false,
+      "param_names": [
+        "d5"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "housing_len"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 44.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 39.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 88.0,
+            "param": "d6"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 78.0,
+            "param": "d7"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Shoulder",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "z_front - housing_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "FrontWallSketch",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_front"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 44.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 88.0,
+            "param": "d10"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "FrontWall",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "cover_front_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "BearingBossSketch",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_front + cover_front_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 19.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 38.0,
+            "param": "d13"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "BearingBoss",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "boss_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 9,
+      "name": "BearingBore",
+      "suppressed": false,
+      "param_names": [
+        "d15",
+        "d16"
+      ],
+      "face_names": [
+        "F8:top"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        90.85
+      ],
+      "at": [
+        "0 mm",
+        "0 mm",
+        "z_front + cover_front_t + boss_len"
+      ],
+      "direction": [
+        -0.0,
+        0.0,
+        -1.0
+      ],
+      "diameter": "bearing_od",
+      "depth": "cover_front_t + boss_len",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 10,
+      "name": "InnerCirclipGrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d17"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_front + circlip_land"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 14.7,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 29.4,
+            "param": "d18"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "InnerCirclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d19"
+      ],
+      "type": "extrude",
+      "sketch": 10,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "circlip_groove",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 12,
+      "name": "OuterCirclipGrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_front + cover_front_t + boss_len - circlip_land - circlip_groove"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 14.7,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 29.4,
+            "param": "d21"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "OuterCirclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d22"
+      ],
+      "type": "extrude",
+      "sketch": 12,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "circlip_groove",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 14,
+      "name": "ModuleBoltSketch",
+      "suppressed": false,
+      "param_names": [
+        "d23"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_front + cover_front_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              27.577599952283208,
+              23.140353948715415
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -27.577599952283204,
+              23.140353948715422
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -35.45307910843949,
+              -6.251334396009497
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              35.45307910843949,
+              -6.251334396009494
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 27.577599952283208,
+            "param": "d24"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 23.140353948715415,
+            "param": "d25"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 27.577599952283204,
+            "param": "d26"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 23.140353948715422,
+            "param": "d27"
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 3,
+            "value": 35.45307910843949,
+            "param": "d28"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 3,
+            "value": 6.251334396009497,
+            "param": "d29"
+          },
+          {
+            "id": "k7",
+            "type": "distance_x",
+            "p": 0,
+            "q": 4,
+            "value": 35.45307910843949,
+            "param": "d30"
+          },
+          {
+            "id": "k8",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 6.251334396009494,
+            "param": "d31"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 15,
+      "name": "ModuleBoltHoles",
+      "suppressed": false,
+      "param_names": [
+        "d32",
+        "d33"
+      ],
+      "type": "hole",
+      "position": [
+        27.577599952283208,
+        23.140353948715415,
+        62.85
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "4.2",
+      "depth": "cover_front_t",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 14,
+        "ids": [
+          "p1",
+          "p2",
+          "p3",
+          "p4"
+        ]
+      },
+      "thread": "M5"
+    },
+    {
+      "id": 16,
+      "name": "DrawboltSketch",
+      "suppressed": false,
+      "param_names": [
+        "d34"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "distance": "housing_od/2 + cover_wall"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -58.85
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "vertical_points",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 58.85,
+            "param": "d35"
+          }
+        ],
+        "counters": {
+          "k": 2,
+          "p": 1
+        }
+      }
+    },
+    {
+      "id": 17,
+      "name": "DrawboltHole",
+      "suppressed": false,
+      "param_names": [
+        "d36",
+        "d37"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        44.0,
+        58.85
+      ],
+      "direction": [
+        0.0,
+        -1.0,
+        -0.0
+      ],
+      "diameter": "3.3",
+      "depth": "drawbolt_depth",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 16,
+        "ids": [
+          "p1"
+        ]
+      },
+      "thread": "M4"
+    },
+    {
+      "id": 18,
+      "name": "CoverScrewPlane",
+      "suppressed": false,
+      "param_names": [
+        "d38"
+      ],
+      "type": "construction_plane",
+      "plane": {
+        "type": "at_angle",
+        "base": {
+          "type": "origin",
+          "name": "XZ"
+        },
+        "axis_origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis_dir": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "angle": "30 deg"
+      }
+    },
+    {
+      "id": 19,
+      "name": "CoverScrewSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "construction",
+        "feature": 18
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              38.0,
+              -12.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "housing_od/2 - 2 mm",
+              "y": "-cover_screw_z"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              38.0,
+              -14.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "housing_od/2 - 2 mm",
+              "y": "-cover_screw_z - cover_screw_d/2"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              41.65,
+              -14.25
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(housing_od/2 + cover_wall) - (cover_csk_d - cover_screw_d)/2",
+              "y": "-cover_screw_z - cover_screw_d/2"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              44.0,
+              -16.6
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(housing_od/2 + cover_wall)",
+              "y": "-cover_screw_z - cover_csk_d/2"
+            }
+          },
+          {
+            "id": "p5",
+            "pos": [
+              45.0,
+              -16.6
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(housing_od/2 + cover_wall) + 1 mm",
+              "y": "-cover_screw_z - cover_csk_d/2"
+            }
+          },
+          {
+            "id": "p6",
+            "pos": [
+              45.0,
+              -12.0
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(housing_od/2 + cover_wall) + 1 mm",
+              "y": "-cover_screw_z"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 20,
+      "name": "CoverScrewHole",
+      "suppressed": false,
+      "param_names": [
+        "d39"
+      ],
+      "type": "revolve",
+      "sketch": 19,
+      "profiles": {
+        "type": "all"
+      },
+      "axis": {
+        "type": "sketch_line",
+        "curve": "l6",
+        "sketch": 19
+      },
+      "angle": "360",
+      "operation": "cut",
+      "convention": "sketch_normal"
+    },
+    {
+      "id": 21,
+      "name": "CoverScrewHoles",
+      "suppressed": false,
+      "param_names": [
+        "d40",
+        "d41"
+      ],
+      "type": "pattern",
+      "features": [
+        20
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "cover_screws",
+        "angle": "360 deg"
+      }
+    }
+  ],
+  "next_id": 22,
+  "next_component_color_index": 0,
+  "materials": {
+    "cover": "Aluminum"
+  }
+}

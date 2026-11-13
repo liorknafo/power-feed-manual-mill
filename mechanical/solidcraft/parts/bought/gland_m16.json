@@ -1,0 +1,677 @@
+{
+  "format": "solidcraft/53",
+  "name": "gland_m16",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "panel (end wall) thickness the gland clamps; 1 to 6 mm (thread 9 long)",
+      "model": false
+    },
+    {
+      "name": "hex_af",
+      "expr": "19 mm",
+      "unit": "mm",
+      "comment": "hex across flats of the body and the locknut; 17 to 22 mm",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "hex_af",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "hex_af",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BodyHexSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              5.484827557302508,
+              9.500000000000155
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -5.48482755730076,
+              9.500000000000549
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -10.969655114603606,
+              1.0182138143036683e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -5.484827557302954,
+              -9.49999999999987
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              5.484827557300484,
+              -9.50000000000121
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              10.96965511460338,
+              -1.1894735216561e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 9.5,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 10.969655114603473,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 19.0,
+            "param": "d1"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "BodyHex",
+      "suppressed": false,
+      "body_names": [
+        "gland_m16"
+      ],
+      "param_names": [
+        "d2"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "6",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "DomeBase",
+      "suppressed": false,
+      "param_names": [
+        "d3",
+        "d4"
+      ],
+      "participants": [
+        "gland_m16"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        6.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "8.5",
+      "height": "9",
+      "operation": "join"
+    },
+    {
+      "id": 4,
+      "name": "Dome",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6"
+      ],
+      "participants": [
+        "gland_m16"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        15.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "6",
+      "height": "6",
+      "operation": "join"
+    },
+    {
+      "id": 5,
+      "name": "Thread",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "participants": [
+        "gland_m16"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        -9.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "8",
+      "height": "9",
+      "operation": "join"
+    },
+    {
+      "id": 6,
+      "name": "LocknutSketch",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-panel_t - 3"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              5.484827557302508,
+              9.500000000000155
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -5.48482755730076,
+              9.500000000000549
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -10.969655114603606,
+              1.0182138143036683e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -5.484827557302954,
+              -9.49999999999987
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              5.484827557300484,
+              -9.50000000000121
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              10.96965511460338,
+              -1.1894735216561e-12
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 9.5,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 10.969655114603473,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 19.0,
+            "param": "d10"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "Locknut",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "(-panel_t) - (-panel_t - 3)",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "gland_m16"
+      ]
+    }
+  ],
+  "next_id": 8,
+  "next_component_color_index": 0,
+  "materials": {
+    "gland_m16": "Nylon"
+  }
+}

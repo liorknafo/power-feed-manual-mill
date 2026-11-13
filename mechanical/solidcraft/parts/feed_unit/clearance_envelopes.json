@@ -1,0 +1,325 @@
+{
+  "format": "solidcraft/53",
+  "name": "clearance_envelopes",
+  "units": "mm",
+  "params": [
+    {
+      "name": "pcb_x0",
+      "expr": "-50 mm",
+      "unit": "mm",
+      "comment": "world X of the PCB's x = 0 edge (F.pcb_x0)",
+      "model": false
+    },
+    {
+      "name": "pcb_y",
+      "expr": "-33 mm",
+      "unit": "mm",
+      "comment": "world Y of the PCB's underside (F.pcb_y)",
+      "model": false
+    },
+    {
+      "name": "pcb_w0",
+      "expr": "129 mm",
+      "unit": "mm",
+      "comment": "world Z (W) of the PCB's y = 0 edge (F.pcb_w0)",
+      "model": false
+    },
+    {
+      "name": "w_end",
+      "expr": "316.5 mm",
+      "unit": "mm",
+      "comment": "world Z (W) of the end wall's outer face (W_END)",
+      "model": false
+    },
+    {
+      "name": "usb_port_x",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "world X of the USB-C panel extension (USB_PORT)",
+      "model": false
+    },
+    {
+      "name": "usb_port_y",
+      "expr": "13 mm",
+      "unit": "mm",
+      "comment": "world Y of the USB-C panel extension (USB_PORT)",
+      "model": false
+    },
+    {
+      "name": "mstb_plug",
+      "expr": "13 mm",
+      "unit": "mm",
+      "comment": "MSTB plug body beyond the header face (MSTB_PLUG); 12 to 15 mm",
+      "model": false
+    },
+    {
+      "name": "wire_run",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "ferrule + straight wire before the bend (WIRE_RUN); 8 to 15 mm",
+      "model": false
+    },
+    {
+      "name": "wire_bend",
+      "expr": "7 mm",
+      "unit": "mm",
+      "comment": "bend radius of the wires turning down (WIRE_BEND); 5 to 12 mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "UsbAdapter90",
+      "suppressed": false,
+      "body_names": [
+        "env_usb_adapter_90"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 81.4",
+        "pcb_y + 1.6",
+        "pcb_w0 + 100.6"
+      ],
+      "length": "(pcb_x0 + 93.9) - (pcb_x0 + 81.4)",
+      "width": "(pcb_y + 21.6) - (pcb_y + 1.6)",
+      "height": "(pcb_w0 + 114.6) - (pcb_w0 + 100.6)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "UsbMalePlug",
+      "suppressed": false,
+      "body_names": [
+        "env_usb_male_plug"
+      ],
+      "param_names": [
+        "d4",
+        "d5",
+        "d6"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 81.6",
+        "pcb_y + 21.6",
+        "pcb_w0 + 104.0"
+      ],
+      "length": "(pcb_x0 + 93.7) - (pcb_x0 + 81.6)",
+      "width": "(pcb_y + 59.6) - (pcb_y + 21.6)",
+      "height": "(pcb_w0 + 112.0) - (pcb_w0 + 104.0)",
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "UsbCableBend",
+      "suppressed": false,
+      "body_names": [
+        "env_usb_cable_bend"
+      ],
+      "param_names": [
+        "d7",
+        "d8",
+        "d9"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 78.0",
+        "pcb_y + 59.6",
+        "pcb_w0 + 100.0"
+      ],
+      "length": "(pcb_x0 + 97.0) - (pcb_x0 + 78.0)",
+      "width": "(pcb_y + 72.0) - (pcb_y + 59.6)",
+      "height": "(pcb_w0 + 115.0) - (pcb_w0 + 100.0)",
+      "operation": "new_body"
+    },
+    {
+      "id": 4,
+      "name": "UsbPanelCable",
+      "suppressed": false,
+      "body_names": [
+        "env_usb_panel_cable"
+      ],
+      "param_names": [
+        "d10",
+        "d11"
+      ],
+      "type": "cylinder",
+      "base": [
+        "usb_port_x",
+        "usb_port_y",
+        "w_end - 48.5"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "7",
+      "height": "(w_end - 34.5) - (w_end - 48.5)",
+      "operation": "new_body"
+    },
+    {
+      "id": 5,
+      "name": "J1WireRun",
+      "suppressed": false,
+      "body_names": [
+        "env_J1_wire_run"
+      ],
+      "param_names": [
+        "d12",
+        "d13",
+        "d14"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 13.0",
+        "pcb_y + 3",
+        "pcb_w0 + 99.3 + mstb_plug"
+      ],
+      "length": "(pcb_x0 + 24.3) - (pcb_x0 + 13.0)",
+      "width": "(pcb_y + 12) - (pcb_y + 3)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug + wire_run + wire_bend) - (pcb_w0 + 99.3 + mstb_plug)",
+      "operation": "new_body"
+    },
+    {
+      "id": 6,
+      "name": "J1WireBend",
+      "suppressed": false,
+      "body_names": [
+        "env_J1_wire_bend"
+      ],
+      "param_names": [
+        "d15",
+        "d16",
+        "d17"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 13.0",
+        "pcb_y - 40",
+        "pcb_w0 + 99.3 + mstb_plug + wire_run"
+      ],
+      "length": "(pcb_x0 + 24.3) - (pcb_x0 + 13.0)",
+      "width": "(pcb_y + 12) - (pcb_y - 40)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug + wire_run + wire_bend) - (pcb_w0 + 99.3 + mstb_plug + wire_run)",
+      "operation": "new_body"
+    },
+    {
+      "id": 7,
+      "name": "J2WireRun",
+      "suppressed": false,
+      "body_names": [
+        "env_J2_wire_run"
+      ],
+      "param_names": [
+        "d18",
+        "d19",
+        "d20"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 27.5",
+        "pcb_y + 3",
+        "pcb_w0 + 99.3 + mstb_plug"
+      ],
+      "length": "(pcb_x0 + 48.9) - (pcb_x0 + 27.5)",
+      "width": "(pcb_y + 12) - (pcb_y + 3)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug + wire_run + wire_bend) - (pcb_w0 + 99.3 + mstb_plug)",
+      "operation": "new_body"
+    },
+    {
+      "id": 8,
+      "name": "J2WireBend",
+      "suppressed": false,
+      "body_names": [
+        "env_J2_wire_bend"
+      ],
+      "param_names": [
+        "d21",
+        "d22",
+        "d23"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 27.5",
+        "pcb_y - 40",
+        "pcb_w0 + 99.3 + mstb_plug + wire_run"
+      ],
+      "length": "(pcb_x0 + 48.9) - (pcb_x0 + 27.5)",
+      "width": "(pcb_y + 12) - (pcb_y - 40)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug + wire_run + wire_bend) - (pcb_w0 + 99.3 + mstb_plug + wire_run)",
+      "operation": "new_body"
+    },
+    {
+      "id": 9,
+      "name": "J5WireRun",
+      "suppressed": false,
+      "body_names": [
+        "env_J5_wire_run"
+      ],
+      "param_names": [
+        "d24",
+        "d25",
+        "d26"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 51.9",
+        "pcb_y + 3",
+        "pcb_w0 + 99.3 + mstb_plug"
+      ],
+      "length": "(pcb_x0 + 63.2) - (pcb_x0 + 51.9)",
+      "width": "(pcb_y + 12) - (pcb_y + 3)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug + wire_run + wire_bend) - (pcb_w0 + 99.3 + mstb_plug)",
+      "operation": "new_body"
+    },
+    {
+      "id": 10,
+      "name": "J5WireBend",
+      "suppressed": false,
+      "body_names": [
+        "env_J5_wire_bend"
+      ],
+      "param_names": [
+        "d27",
+        "d28",
+        "d29"
+      ],
+      "type": "box",
+      "corner": [
+        "pcb_x0 + 51.9",
+        "pcb_y - 40",
+        "pcb_w0 + 99.3 + mstb_plug + wire_run"
+      ],
+      "length": "(pcb_x0 + 63.2) - (pcb_x0 + 51.9)",
+      "width": "(pcb_y + 12) - (pcb_y - 40)",
+      "height": "(pcb_w0 + 99.3 + mstb_plug + wire_run + wire_bend) - (pcb_w0 + 99.3 + mstb_plug + wire_run)",
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 11,
+  "next_component_color_index": 0,
+  "materials": {
+    "env_J1_wire_bend": "Envelope",
+    "env_J1_wire_run": "Envelope",
+    "env_J2_wire_bend": "Envelope",
+    "env_J2_wire_run": "Envelope",
+    "env_J5_wire_bend": "Envelope",
+    "env_J5_wire_run": "Envelope",
+    "env_usb_adapter_90": "Envelope",
+    "env_usb_cable_bend": "Envelope",
+    "env_usb_male_plug": "Envelope",
+    "env_usb_panel_cable": "Envelope"
+  },
+  "user_materials": [
+    {
+      "name": "Envelope",
+      "density": 0.001
+    }
+  ]
+}

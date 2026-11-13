@@ -1,0 +1,130 @@
+{
+  "format": "solidcraft/53",
+  "name": "estop_legend_plate",
+  "units": "mm",
+  "params": [
+    {
+      "name": "plate_d",
+      "expr": "45 mm",
+      "unit": "mm",
+      "comment": "legend plate diameter; 35 to 60 mm",
+      "model": false
+    },
+    {
+      "name": "plate_t",
+      "expr": "1 mm",
+      "unit": "mm",
+      "comment": "plate thickness (ESTOP_PLATE_T); 0.6 to 2 mm",
+      "model": false
+    },
+    {
+      "name": "hole_d",
+      "expr": "22.4 mm",
+      "unit": "mm",
+      "comment": "E-stop hole (22.35 on its drawing); 22 to 23 mm",
+      "model": false
+    },
+    {
+      "name": "key_w",
+      "expr": "3.5 mm",
+      "unit": "mm",
+      "comment": "anti-rotation notch width (3.3 +0.2); 3 to 4 mm",
+      "model": false
+    },
+    {
+      "name": "key_ext",
+      "expr": "24.1 mm",
+      "unit": "mm",
+      "comment": "extent over the hole across the notch (from the hole's far edge); hole_d to 26 mm",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Plate",
+      "suppressed": false,
+      "body_names": [
+        "estop_legend_plate"
+      ],
+      "param_names": [
+        "d1",
+        "d2"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "plate_d / 2",
+      "height": "plate_t",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Hole",
+      "suppressed": false,
+      "param_names": [
+        "d3",
+        "d4"
+      ],
+      "participants": [
+        "estop_legend_plate"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        -0.1
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "hole_d / 2",
+      "height": "(plate_t + 0.1) - (-0.1)",
+      "operation": "cut"
+    },
+    {
+      "id": 3,
+      "name": "KeyNotch",
+      "suppressed": false,
+      "param_names": [
+        "d5",
+        "d6",
+        "d7"
+      ],
+      "participants": [
+        "estop_legend_plate"
+      ],
+      "type": "box",
+      "corner": [
+        "-key_w / 2",
+        0.0,
+        -0.1
+      ],
+      "length": "(key_w / 2) - (-key_w / 2)",
+      "width": "key_ext - hole_d / 2",
+      "height": "(plate_t + 0.1) - (-0.1)",
+      "operation": "cut"
+    }
+  ],
+  "next_id": 4,
+  "next_component_color_index": 0,
+  "materials": {
+    "estop_legend_plate": "PETG"
+  },
+  "user_materials": [
+    {
+      "name": "PETG",
+      "density": 1.27
+    }
+  ]
+}

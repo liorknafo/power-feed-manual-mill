@@ -1,0 +1,915 @@
+{
+  "format": "solidcraft/53",
+  "name": "psu_lrs150_36",
+  "units": "mm",
+  "params": [
+    {
+      "name": "psu_w",
+      "expr": "97 mm",
+      "unit": "mm",
+      "comment": "case width along x (80 to 120 mm)",
+      "model": false
+    },
+    {
+      "name": "psu_l",
+      "expr": "159 mm",
+      "unit": "mm",
+      "comment": "case length along y from the terminal end (120 to 220 mm)",
+      "model": false
+    },
+    {
+      "name": "psu_h",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "case height (25 to 50 mm)",
+      "model": false
+    },
+    {
+      "name": "pole1_x",
+      "expr": "15.8 mm",
+      "unit": "mm",
+      "comment": "x of terminal 1 (L) from the x = 0 edge (8 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "pole_pitch",
+      "expr": "9.5 mm",
+      "unit": "mm",
+      "comment": "terminal pitch (7.62 to 11 mm)",
+      "model": false
+    },
+    {
+      "name": "poles",
+      "expr": "7",
+      "unit": "",
+      "comment": "number of terminals: whole number, 3 to 9",
+      "model": false
+    },
+    {
+      "name": "term_y",
+      "expr": "6.6 mm",
+      "unit": "mm",
+      "comment": "terminal screw centres from the terminal end (4 to recess_y - 4)",
+      "model": false
+    },
+    {
+      "name": "recess_y",
+      "expr": "17 mm",
+      "unit": "mm",
+      "comment": "terminal recess depth into the case from the terminal end (12 to 25 mm)",
+      "model": false
+    },
+    {
+      "name": "recess_h",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "terminal recess depth below the top (3 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "head_d",
+      "expr": "6.5 mm",
+      "unit": "mm",
+      "comment": "terminal screw head diameter (5 to pole_pitch - 1)",
+      "model": false
+    },
+    {
+      "name": "head_h",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "head height above the recess floor (0.3 to 2 mm); the heads are 3.5 below the top",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "psu_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "psu_l",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "pole1_x - pole_pitch/2 - 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "poles * pole_pitch + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "recess_y + 1 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "head_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "pole1_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "term_y",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "2.4 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d17",
+      "expr": "pole1_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d18",
+      "expr": "term_y",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d21",
+      "expr": "0.8 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d22",
+      "expr": "4 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d23",
+      "expr": "pole1_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d24",
+      "expr": "term_y",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "CaseSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              97.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              97.0,
+              159.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              0.0,
+              159.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 0,
+            "value": 97.0,
+            "param": "d1"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 3,
+            "value": 159.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "k": 7,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Case",
+      "suppressed": false,
+      "body_names": [
+        "psu_lrs150_36"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "psu_h",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "TerminalRecessSketch",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "psu_h"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              10.05,
+              -1.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              78.55,
+              -1.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              78.55,
+              17.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              10.05,
+              17.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 10.05,
+            "param": "d5"
+          },
+          {
+            "id": "k6",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 1.0,
+            "param": "d6"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 0,
+            "value": 68.5,
+            "param": "d7"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 3,
+            "value": 18.0,
+            "param": "d8"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "TerminalRecess",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "recess_h",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 5,
+      "name": "HeadSketch",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "psu_h - recess_h"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              15.8,
+              6.6
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 3.25,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 6.5,
+            "param": "d11"
+          },
+          {
+            "id": "k2",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 15.8,
+            "param": "d12"
+          },
+          {
+            "id": "k3",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 6.6,
+            "param": "d13"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 3
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "TerminalHead",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "head_h",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "HeadRecessSketch",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "psu_h - recess_h + head_h"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              15.8,
+              6.6
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 1.2,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "diameter",
+            "c": 0,
+            "value": 2.4,
+            "param": "d16"
+          },
+          {
+            "id": "k2",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 15.8,
+            "param": "d17"
+          },
+          {
+            "id": "k3",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 6.6,
+            "param": "d18"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 3
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "HeadRecess",
+      "suppressed": false,
+      "param_names": [
+        "d19"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "0.9 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 9,
+      "name": "HeadSlotSketch",
+      "suppressed": false,
+      "param_names": [
+        "d20"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "psu_h - recess_h + head_h"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              15.4,
+              4.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              16.200000000000003,
+              4.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              16.200000000000003,
+              8.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              15.4,
+              8.6
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              15.8,
+              6.6
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "length",
+            "l": 0,
+            "value": 0.8,
+            "param": "d21"
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 3,
+            "value": 4.0,
+            "param": "d22"
+          },
+          {
+            "id": "k8",
+            "type": "distance_x",
+            "p": 0,
+            "q": 5,
+            "value": 15.8,
+            "param": "d23"
+          },
+          {
+            "id": "k9",
+            "type": "distance_y",
+            "p": 0,
+            "q": 5,
+            "value": 6.6,
+            "param": "d24"
+          }
+        ],
+        "counters": {
+          "k": 9,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "HeadSlot",
+      "suppressed": false,
+      "param_names": [
+        "d25"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "head_h",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 11,
+      "name": "TerminalHeads",
+      "suppressed": false,
+      "param_names": [
+        "d26",
+        "d27"
+      ],
+      "type": "pattern",
+      "features": [
+        6,
+        8,
+        10
+      ],
+      "pattern": {
+        "type": "rectangular",
+        "dir1": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "count1": "poles",
+        "spacing1": "pole_pitch"
+      }
+    }
+  ],
+  "next_id": 12,
+  "next_component_color_index": 0,
+  "materials": {
+    "psu_lrs150_36": "Aluminum"
+  }
+}

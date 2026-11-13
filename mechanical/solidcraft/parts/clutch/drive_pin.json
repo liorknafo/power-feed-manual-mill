@@ -1,0 +1,264 @@
+{
+  "format": "solidcraft/53",
+  "name": "drive_pin",
+  "units": "mm",
+  "params": [
+    {
+      "name": "pin_d",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "drive pin diameter, h6 silver steel (> groove_d)",
+      "model": false
+    },
+    {
+      "name": "pin_len",
+      "expr": "25.5 mm",
+      "unit": "mm",
+      "comment": "pin length (> groove_land + groove_w)",
+      "model": false
+    },
+    {
+      "name": "groove_d",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "E-clip groove root diameter (DIN 6799 RS5: 5; < pin_d)",
+      "model": false
+    },
+    {
+      "name": "groove_w",
+      "expr": "0.74 mm",
+      "unit": "mm",
+      "comment": "E-clip groove width (RS5: 0.74)",
+      "model": false
+    },
+    {
+      "name": "groove_land",
+      "expr": "1 mm",
+      "unit": "mm",
+      "comment": "from the groove's outer flank to the pin's +z end (> 0)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "pin_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "pin_d + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "groove_d",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "PinSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 3.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 6.0,
+            "param": "d1"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Pin",
+      "suppressed": false,
+      "body_names": [
+        "drive_pin"
+      ],
+      "param_names": [
+        "d2"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "pin_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "GrooveSketch",
+      "suppressed": false,
+      "param_names": [
+        "d3"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "pin_len - groove_land - groove_w"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 4.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 2.5,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 8.0,
+            "param": "d4"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 5.0,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "EclipGroove",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "groove_w",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    }
+  ],
+  "next_id": 5,
+  "next_component_color_index": 0,
+  "materials": {
+    "drive_pin": "Steel"
+  }
+}

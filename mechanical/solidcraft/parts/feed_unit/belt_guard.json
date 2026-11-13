@@ -1,0 +1,374 @@
+{
+  "format": "solidcraft/53",
+  "name": "belt_guard",
+  "units": "mm",
+  "params": [
+    {
+      "name": "C",
+      "expr": "70.70883080499217 mm",
+      "unit": "mm",
+      "comment": "belt centre distance (solved from the 295-5M belt): the small pulley's axis is at y = -C, straight below the leadscrew",
+      "model": false
+    },
+    {
+      "name": "chamber",
+      "expr": "35 mm",
+      "unit": "mm",
+      "comment": "belt chamber depth, table end to plate; the guard is 1 mm shorter (25 to 60 mm)",
+      "model": false
+    },
+    {
+      "name": "guard_r1",
+      "expr": "37.83098861837907 mm",
+      "unit": "mm",
+      "comment": "inside radius round the 40T pulley: its pitch radius 31.83 + 6 mm",
+      "model": false
+    },
+    {
+      "name": "guard_r2",
+      "expr": "21.915494309189533 mm",
+      "unit": "mm",
+      "comment": "inside radius round the 20T pulley: its pitch radius 15.92 + 6 mm (less than guard_r1)",
+      "model": false
+    },
+    {
+      "name": "guard_wall",
+      "expr": "2 mm",
+      "unit": "mm",
+      "comment": "printed wall and back thickness (1.2 to 4 mm)",
+      "model": false
+    },
+    {
+      "name": "guard_z0",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "gap from the table end (bracket face) to the guard's back",
+      "model": false
+    },
+    {
+      "name": "oldham_d",
+      "expr": "24 mm",
+      "unit": "mm",
+      "comment": "Oldham disc diameter; the pass-through in the back is 4 mm larger",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "guard_r1 + guard_wall",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "guard_r2 + guard_wall",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "C",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "GuardSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "guard_z0"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "a1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.start",
+            "pos": [
+              38.80889122291029,
+              -8.965356455030628
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a1.end",
+            "pos": [
+              -38.80889122291029,
+              -8.965356455030628
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.center",
+            "pos": [
+              0.0,
+              -70.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.start",
+            "pos": [
+              -23.30180217417956,
+              -76.09184887000715
+            ],
+            "fixed": false
+          },
+          {
+            "id": "a2.end",
+            "pos": [
+              23.30180217417956,
+              -76.09184887000715
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p1",
+            "pos": [
+              0.0,
+              -100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          },
+          {
+            "id": "p2",
+            "pos": [
+              0.0,
+              100.0
+            ],
+            "fixed": true,
+            "link": "j1"
+          }
+        ],
+        "curves": [
+          {
+            "id": "a1",
+            "type": "arc",
+            "c": 1,
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "a2",
+            "type": "arc",
+            "c": 4,
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 6,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 3,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 7,
+            "b": 8,
+            "construction": true,
+            "link": "j1"
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "tangent",
+            "a": 2,
+            "b": 0
+          },
+          {
+            "id": "k3",
+            "type": "tangent",
+            "a": 2,
+            "b": 1
+          },
+          {
+            "id": "k4",
+            "type": "tangent",
+            "a": 3,
+            "b": 0
+          },
+          {
+            "id": "k5",
+            "type": "tangent",
+            "a": 3,
+            "b": 1
+          },
+          {
+            "id": "k6",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 4
+          },
+          {
+            "id": "k7",
+            "type": "radius",
+            "c": 0,
+            "value": 39.83098861837907,
+            "param": "d2"
+          },
+          {
+            "id": "k8",
+            "type": "radius",
+            "c": 1,
+            "value": 23.915494309189533,
+            "param": "d3"
+          },
+          {
+            "id": "k9",
+            "type": "distance_y",
+            "p": 0,
+            "q": 4,
+            "value": 70.70883080499217,
+            "param": "d4"
+          }
+        ],
+        "links": [
+          {
+            "id": "j1",
+            "kind": "project",
+            "source": {
+              "type": "sketch_axis",
+              "name": "y"
+            }
+          }
+        ],
+        "counters": {
+          "a": 2,
+          "j": 1,
+          "k": 9,
+          "l": 3,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "GuardBlank",
+      "suppressed": false,
+      "body_names": [
+        "belt_guard"
+      ],
+      "param_names": [
+        "d5"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "chamber - 1 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "GuardShell",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "face_names": [
+        "F2:top"
+      ],
+      "type": "shell",
+      "faces": [
+        [
+          0.0,
+          -30.0,
+          34.5
+        ]
+      ],
+      "thickness": "guard_wall"
+    },
+    {
+      "id": 4,
+      "name": "LeadscrewPassThrough",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "face_names": [
+        "F2:start"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        0.0,
+        0.5
+      ],
+      "at": [
+        "0 mm",
+        "0 mm",
+        "guard_z0"
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        1.0
+      ],
+      "diameter": "oldham_d + 4 mm",
+      "depth": "guard_wall",
+      "hole": {
+        "type": "simple"
+      }
+    }
+  ],
+  "next_id": 5,
+  "next_component_color_index": 0,
+  "materials": {
+    "belt_guard": "PETG"
+  },
+  "user_materials": [
+    {
+      "name": "PETG",
+      "density": 1.27
+    }
+  ]
+}

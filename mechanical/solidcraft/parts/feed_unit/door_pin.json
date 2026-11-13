@@ -1,0 +1,75 @@
+{
+  "format": "solidcraft/53",
+  "name": "door_pin",
+  "units": "mm",
+  "params": [
+    {
+      "name": "pin_d",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "hinge pin diameter (silver steel / drill blank), 2 to 5 mm",
+      "model": false
+    },
+    {
+      "name": "pin_w0",
+      "expr": "70 mm",
+      "unit": "mm",
+      "comment": "W of the pin's plate end (the first shell knuckle starts here)",
+      "model": false
+    },
+    {
+      "name": "pin_len",
+      "expr": "178 mm",
+      "unit": "mm",
+      "comment": "pin length, first knuckle start to the last knuckle end (W 70 .. 248), 100 to 200 mm",
+      "model": false
+    },
+    {
+      "name": "hinge_x",
+      "expr": "-58.75 mm",
+      "unit": "mm",
+      "comment": "world x of the hinge axis: 0.75 mm outside the back wall (XB - panel_t - 0.75)",
+      "model": false
+    },
+    {
+      "name": "hinge_y",
+      "expr": "-148.20883080499217 mm",
+      "unit": "mm",
+      "comment": "world y of the hinge axis: the door split line, PLATE_BOT - panel_t + R_BOTTOM",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "DoorPin",
+      "suppressed": false,
+      "body_names": [
+        "door_pin"
+      ],
+      "param_names": [
+        "d1",
+        "d2"
+      ],
+      "type": "cylinder",
+      "base": [
+        "hinge_x",
+        "hinge_y",
+        "pin_w0"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "(pin_d) / 2",
+      "height": "pin_len",
+      "operation": "new_body"
+    }
+  ],
+  "next_id": 2,
+  "next_component_color_index": 0,
+  "materials": {
+    "door_pin": "Steel"
+  }
+}

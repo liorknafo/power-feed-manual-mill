@@ -1,0 +1,430 @@
+{
+  "format": "solidcraft/53",
+  "name": "pushbutton_pbs110",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "panel (recess floor) thickness; 0.5 to 3.4 mm (thread above the flange 4.9)",
+      "model": false
+    },
+    {
+      "name": "d5",
+      "expr": "10",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Flange",
+      "suppressed": false,
+      "body_names": [
+        "pushbutton_pbs110"
+      ],
+      "param_names": [
+        "d1",
+        "d2"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "-panel_t - 1.6"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "4.9",
+      "height": "(-panel_t) - (-panel_t - 1.6)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Thread",
+      "suppressed": false,
+      "param_names": [
+        "d3",
+        "d4"
+      ],
+      "participants": [
+        "pushbutton_pbs110"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "-panel_t"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "3.5",
+      "height": "(4.9 - panel_t) - (-panel_t)",
+      "operation": "join"
+    },
+    {
+      "id": 3,
+      "name": "NutSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              2.8867513459547314,
+              4.999999999998035
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -2.886751345937327,
+              5.000000000001968
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -5.773502691896345,
+              1.3105588173403817e-11
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -2.88675134596154,
+              -4.999999999991484
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              2.886751345934301,
+              -5.000000000006337
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              5.773502691894075,
+              -1.0922731470370367e-11
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 5.0,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 5.773502691895209,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 10.0,
+            "param": "d5"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Nut",
+      "suppressed": false,
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "1.5",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "pushbutton_pbs110"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Cap",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "participants": [
+        "pushbutton_pbs110"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "4.9 - panel_t"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "3",
+      "height": "(11.2 - panel_t) - (4.9 - panel_t)",
+      "operation": "join"
+    },
+    {
+      "id": 6,
+      "name": "Body",
+      "suppressed": false,
+      "param_names": [
+        "d9",
+        "d10"
+      ],
+      "participants": [
+        "pushbutton_pbs110"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "-panel_t - 10.6"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "3.6",
+      "height": "(-panel_t - 1.6) - (-panel_t - 10.6)",
+      "operation": "join"
+    },
+    {
+      "id": 7,
+      "name": "WireJoints",
+      "suppressed": false,
+      "param_names": [
+        "d11",
+        "d12",
+        "d13"
+      ],
+      "participants": [
+        "pushbutton_pbs110"
+      ],
+      "type": "box",
+      "corner": [
+        -2.0,
+        -0.25,
+        "-panel_t - 16.1"
+      ],
+      "length": "4",
+      "width": "0.5",
+      "height": "(-panel_t - 10.6) - (-panel_t - 16.1)",
+      "operation": "join"
+    }
+  ],
+  "next_id": 8,
+  "next_component_color_index": 0,
+  "materials": {
+    "pushbutton_pbs110": "ABS Plastic"
+  }
+}

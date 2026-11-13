@@ -1,0 +1,799 @@
+{
+  "format": "solidcraft/53",
+  "name": "field_housing",
+  "units": "mm",
+  "params": [
+    {
+      "name": "housing_od",
+      "expr": "80 mm",
+      "unit": "mm",
+      "comment": "Field housing OD (the cover's spigot registers on it); 70..90 mm",
+      "model": false
+    },
+    {
+      "name": "housing_len",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "Field housing length along the axis (motor flange face to pole face); 15..30 mm",
+      "model": false
+    },
+    {
+      "name": "back_plate",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "Back plate thickness under the coil pocket; 3..8 mm",
+      "model": false
+    },
+    {
+      "name": "bore_d",
+      "expr": "19.2 mm",
+      "unit": "mm",
+      "comment": "Inner pole bore (the rotor hub runs inside with 0.3 radial gap); 15..2*coil_r_in-3 mm",
+      "model": false
+    },
+    {
+      "name": "coil_r_in",
+      "expr": "14 mm",
+      "unit": "mm",
+      "comment": "Coil pocket inner radius (inner pole wall); bore_d/2+1.5..coil_r_out-5 mm",
+      "model": false
+    },
+    {
+      "name": "coil_r_out",
+      "expr": "27 mm",
+      "unit": "mm",
+      "comment": "Coil pocket outer radius; coil_r_in+5..28 mm (clear of the motor bolt counterbores)",
+      "model": false
+    },
+    {
+      "name": "edge_chamfer",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "45-degree edge break on the front face's OD and bore; 0.2..1 mm",
+      "model": false
+    },
+    {
+      "name": "pilot_d",
+      "expr": "38.1 mm",
+      "unit": "mm",
+      "comment": "Motor pilot diameter (the recess is 0.2 larger); NEMA 23: 38.1 mm",
+      "model": false
+    },
+    {
+      "name": "pilot_h",
+      "expr": "1.6 mm",
+      "unit": "mm",
+      "comment": "Motor pilot height (the recess is 0.4 deeper); 1..3 mm",
+      "model": false
+    },
+    {
+      "name": "bolt_square",
+      "expr": "47 mm",
+      "unit": "mm",
+      "comment": "Motor bolt square (23HS45 drawing: 47.0); 4x M5 through, counterbored from the front",
+      "model": false
+    },
+    {
+      "name": "bolt_cb_z",
+      "expr": "6 mm",
+      "unit": "mm",
+      "comment": "Height of the M5 counterbore floor (head seat) above the motor face; 4..housing_len-4 mm",
+      "model": false
+    },
+    {
+      "name": "lead_d",
+      "expr": "3.2 mm",
+      "unit": "mm",
+      "comment": "Coil lead exit hole diameter, also the width of the radial lead groove on the motor side; 2..4 mm",
+      "model": false
+    },
+    {
+      "name": "cover_spigot_z",
+      "expr": "2 mm",
+      "unit": "mm",
+      "comment": "Where the cover's spigot over the housing OD starts (cover parameter); 0..housing_len-8 mm",
+      "model": false
+    },
+    {
+      "name": "cover_screw_z",
+      "expr": "(cover_spigot_z + housing_len) / 2 + 1 mm",
+      "unit": "mm",
+      "comment": "Height of the radial M4 holes for the cover spigot (derived: middle of the spigot + 1 mm)",
+      "model": false
+    },
+    {
+      "name": "cover_screw_depth",
+      "expr": "9 mm",
+      "unit": "mm",
+      "comment": "Depth of the radial M4 tap-drill holes from the OD; 6..housing_od/2-coil_r_out-2 mm",
+      "model": false
+    },
+    {
+      "name": "cover_screws",
+      "expr": "6",
+      "unit": "",
+      "comment": "Number of radial M4 cover screws, whole number 2..12 (first at 30 deg)",
+      "model": false
+    },
+    {
+      "name": "d1",
+      "expr": "housing_od",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d2",
+      "expr": "bore_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "coil_r_out",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "coil_r_in",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "pilot_d + 0.2 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "HousingSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 40.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 9.6,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 80.0,
+            "param": "d1"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 19.2,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "HousingBlank",
+      "suppressed": false,
+      "body_names": [
+        "field_housing"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "housing_len",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "CoilPocketSketch",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "housing_len"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 27.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 14.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "radius",
+            "c": 0,
+            "value": 27.0,
+            "param": "d5"
+          },
+          {
+            "id": "k3",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k4",
+            "type": "radius",
+            "c": 1,
+            "value": 14.0,
+            "param": "d6"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "CoilPocket",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "housing_len - back_plate",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 5,
+      "name": "FrontChamfers",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "edge_refs": [
+        {
+          "dir": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "min": [
+            -40.0,
+            -40.00000000000001,
+            -1.175660927181459e-15
+          ],
+          "max": [
+            40.0,
+            40.0,
+            20.000000000000007
+          ]
+        },
+        {
+          "dir": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "min": [
+            -40.0,
+            -40.00000000000001,
+            -1.175660927181459e-15
+          ],
+          "max": [
+            40.0,
+            40.0,
+            20.000000000000007
+          ]
+        }
+      ],
+      "edge_names": [
+        "F2:side:c1|F2:top#[F2:side:c1,F4:side:c1]",
+        "F2:side:c2|F2:top#[F2:side:c2,F4:side:c2]"
+      ],
+      "type": "chamfer",
+      "edges": [
+        [
+          -6.9459,
+          39.3923,
+          20.0
+        ],
+        [
+          -1.667,
+          9.4542,
+          20.0
+        ]
+      ],
+      "distance": "edge_chamfer"
+    },
+    {
+      "id": 6,
+      "name": "PilotRecessSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 19.150000000000002,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 38.300000000000004,
+            "param": "d9"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "PilotRecess",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "pilot_h + 0.4 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 8,
+      "name": "MotorBoltHole",
+      "suppressed": false,
+      "param_names": [
+        "d11",
+        "d12",
+        "d13"
+      ],
+      "face_names": [
+        "F2:top#[F2:side:c1,F4:side:c1]"
+      ],
+      "type": "hole",
+      "position": [
+        23.5,
+        23.5,
+        20.0
+      ],
+      "at": [
+        "bolt_square/2",
+        "bolt_square/2",
+        "housing_len"
+      ],
+      "direction": [
+        -0.0,
+        -1.1418854244972908e-16,
+        -1.0
+      ],
+      "diameter": "5.5",
+      "hole": {
+        "type": "counterbore",
+        "cb_diameter": "9",
+        "cb_depth": "housing_len - bolt_cb_z"
+      }
+    },
+    {
+      "id": 9,
+      "name": "MotorBoltHoles",
+      "suppressed": false,
+      "param_names": [
+        "d14",
+        "d15"
+      ],
+      "type": "pattern",
+      "features": [
+        8
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "4",
+        "angle": "360 deg"
+      }
+    },
+    {
+      "id": 10,
+      "name": "LeadHole",
+      "suppressed": false,
+      "param_names": [
+        "d16",
+        "d17"
+      ],
+      "face_names": [
+        "F2:start"
+      ],
+      "type": "hole",
+      "position": [
+        20.5,
+        0.0,
+        0.0
+      ],
+      "at": [
+        "(coil_r_in + coil_r_out)/2",
+        0.0,
+        0.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        1.0
+      ],
+      "diameter": "lead_d",
+      "depth": "back_plate + 1 mm",
+      "hole": {
+        "type": "simple"
+      }
+    },
+    {
+      "id": 11,
+      "name": "LeadGrooveSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              20.5,
+              -1.6
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(coil_r_in + coil_r_out)/2",
+              "y": "-lead_d/2"
+            }
+          },
+          {
+            "id": "p2",
+            "pos": [
+              41.0,
+              -1.6
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "housing_od/2 + 1 mm",
+              "y": "-lead_d/2"
+            }
+          },
+          {
+            "id": "p3",
+            "pos": [
+              41.0,
+              1.6
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "housing_od/2 + 1 mm",
+              "y": "lead_d/2"
+            }
+          },
+          {
+            "id": "p4",
+            "pos": [
+              20.5,
+              1.6
+            ],
+            "fixed": true,
+            "exprs": {
+              "x": "(coil_r_in + coil_r_out)/2",
+              "y": "lead_d/2"
+            }
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [],
+        "counters": {
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "LeadGroove",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "extrude",
+      "sketch": 11,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "1.5 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "cut"
+    },
+    {
+      "id": 13,
+      "name": "CoverScrewHole",
+      "suppressed": false,
+      "param_names": [
+        "d19",
+        "d20"
+      ],
+      "participants": [
+        "field_housing"
+      ],
+      "type": "cylinder",
+      "base": [
+        "(housing_od/2 - cover_screw_depth) * cos(30 deg)",
+        "(housing_od/2 - cover_screw_depth) * sin(30 deg)",
+        "cover_screw_z"
+      ],
+      "axis": [
+        0.8660254037844387,
+        0.5,
+        0.0
+      ],
+      "radius": "(3.3 mm) / 2",
+      "height": "cover_screw_depth + 1 mm",
+      "operation": "cut"
+    },
+    {
+      "id": 14,
+      "name": "CoverScrewHoles",
+      "suppressed": false,
+      "param_names": [
+        "d21",
+        "d22"
+      ],
+      "type": "pattern",
+      "features": [
+        13
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "cover_screws",
+        "angle": "360 deg"
+      }
+    }
+  ],
+  "next_id": 15,
+  "next_component_color_index": 0,
+  "materials": {
+    "field_housing": "Steel"
+  }
+}

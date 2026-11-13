@@ -1,0 +1,673 @@
+{
+  "format": "solidcraft/53",
+  "name": "tension_block",
+  "units": "mm",
+  "params": [
+    {
+      "name": "C",
+      "expr": "70.70883080499217 mm",
+      "unit": "mm",
+      "comment": "belt centre distance (solved from the 295-5M belt): the clutch/motor axis is at y = -C, straight below the leadscrew",
+      "model": false
+    },
+    {
+      "name": "chamber",
+      "expr": "35 mm",
+      "unit": "mm",
+      "comment": "bracket face to the plate's chamber face (Z_PLATE_IN), 25 to 60 mm",
+      "model": false
+    },
+    {
+      "name": "plate_t",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "plate thickness; the tongue fills the plate's slot through it",
+      "model": false
+    },
+    {
+      "name": "tension_slot",
+      "expr": "3 mm",
+      "unit": "mm",
+      "comment": "+- belt-tension travel of the module along the centre line (1 to 6 mm)",
+      "model": false
+    },
+    {
+      "name": "cover_r",
+      "expr": "44 mm",
+      "unit": "mm",
+      "comment": "clutch cover outer radius (housing_od/2 + cover_wall)",
+      "model": false
+    },
+    {
+      "name": "clutch_bearing_od",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "clutch output bearing OD (6001); the clutch boss is this + 10 mm",
+      "model": false
+    },
+    {
+      "name": "tray_stack",
+      "expr": "36 mm",
+      "unit": "mm",
+      "comment": "cover bottom at the lowest tension to the plate's bottom edge: 3 gap + 1 + PSU 30 + tray 1.5 + 0.5",
+      "model": false
+    },
+    {
+      "name": "tb_half",
+      "expr": "36 mm",
+      "unit": "mm",
+      "comment": "half width of the block (its M5 screws go into the plate legs beside the slot), more than tb_screw_x + 4 mm",
+      "model": false
+    },
+    {
+      "name": "tb_h",
+      "expr": "14 mm",
+      "unit": "mm",
+      "comment": "block height along y (10 to 20 mm)",
+      "model": false
+    },
+    {
+      "name": "tb_t",
+      "expr": "12 mm",
+      "unit": "mm",
+      "comment": "block thickness off the plate's outer face (8 to 16 mm)",
+      "model": false
+    },
+    {
+      "name": "tb_screw_x",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "x of the 2 M5 screws, outside the slot (clutch_bearing_od/2 + 9 mm to tb_half - 4 mm)",
+      "model": false
+    },
+    {
+      "name": "plate_bot",
+      "expr": "-(C + cover_r + tension_slot + tray_stack)",
+      "unit": "mm",
+      "comment": "world y of the plate's bottom edge (derived)",
+      "model": false
+    },
+    {
+      "name": "tb_y",
+      "expr": "-(C + cover_r + tension_slot + 10 mm)",
+      "unit": "mm",
+      "comment": "world y of the block centre (derived)",
+      "model": false
+    },
+    {
+      "name": "key_top",
+      "expr": "-(C + clutch_bearing_od/2 + 5 mm + tension_slot + 0.5 mm)",
+      "unit": "mm",
+      "comment": "world y of the tongue top: just under the clutch boss at its lowest tension (derived)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "tb_half",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "tb_half",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "-tb_y + tb_h/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "-tb_y - tb_h/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "clutch_bearing_od/2 + 5.9 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "clutch_bearing_od/2 + 5.9 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "-plate_bot",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "-key_top",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "tb_screw_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "-tb_y",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "tb_screw_x",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d17",
+      "expr": "-tb_y",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BlockSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -36.0,
+              -134.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              36.0,
+              -134.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              36.0,
+              -120.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -36.0,
+              -120.70883080499217
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 36.0,
+            "param": "d2"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 36.0,
+            "param": "d3"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 134.70883080499217,
+            "param": "d4"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 120.70883080499217,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Block",
+      "suppressed": false,
+      "body_names": [
+        "tension_block"
+      ],
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "tb_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "TongueSketch",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -19.9,
+              -153.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              19.9,
+              -153.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              19.9,
+              -93.20883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -19.9,
+              -93.20883080499217
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 19.9,
+            "param": "d8"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 19.9,
+            "param": "d9"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 153.70883080499217,
+            "param": "d10"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 93.20883080499217,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Tongue",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "plate_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "tension_block"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ScrewHolePoints",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t + tb_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              30.0,
+              -127.70883080499217
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -30.0,
+              -127.70883080499217
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 30.0,
+            "param": "d14"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 127.70883080499217,
+            "param": "d15"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 30.0,
+            "param": "d16"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 127.70883080499217,
+            "param": "d17"
+          }
+        ],
+        "counters": {
+          "k": 4,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "ScrewHoles",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "hole",
+      "position": [
+        30.0,
+        -127.70883080499217,
+        75.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "5.5",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 5,
+        "ids": [
+          "p1",
+          "p2"
+        ]
+      }
+    },
+    {
+      "id": 7,
+      "name": "DrawboltHole",
+      "suppressed": false,
+      "param_names": [
+        "d19"
+      ],
+      "face_names": [
+        "F2:side:l3"
+      ],
+      "type": "hole",
+      "position": [
+        0.0,
+        -120.70883080499217,
+        67.0
+      ],
+      "at": [
+        "0 mm",
+        "tb_y + tb_h/2",
+        "chamber + plate_t + 4 mm"
+      ],
+      "direction": [
+        -0.0,
+        -1.0,
+        0.0
+      ],
+      "diameter": "4.5",
+      "hole": {
+        "type": "simple"
+      }
+    }
+  ],
+  "next_id": 8,
+  "next_component_color_index": 0,
+  "materials": {
+    "tension_block": "Aluminum"
+  }
+}

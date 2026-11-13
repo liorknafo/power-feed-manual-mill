@@ -272,7 +272,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
   - the pin bends over at most the 1.1 mm gap between armature and hub: negligible for Ø6 steel;
   - backlash: the 0.01–0.03 pin clearance at r 21 is ≤ 0.1° at the motor, ≤ 0.05° at the leadscrew; the leadscrew nut's own backlash is far larger.
 - **Rotor fixing:** a round Ø10 H7 bore glued with Loctite 243 (Amazon B004L439FE) onto the motor's D-shaft (medium strength, ~7.5 N/mm² on the round part of the bore, ~370 mm² once the D-flat's too-wide gap is left out: ~14 N·m against the motor's 3 N·m). It avoids broaching a D-bore and comes off with hand tools or moderate heat; a high-strength retainer (680, 648) would need the whole motor heated. (Loctite 641, the usual bearing retainer here, doesn't ship to Israel from Amazon; 243 does.) An M3 screw into the tapped shaft end pulls the rotor's shoulder onto the shaft end, which sets its axial position.
-- **Model and machining data:** `mechanical/clutch/clutch.py` holds the parametric model; `mechanical/clutch/MACHINING.md` has the dimension tables, fits and tooth-cutting notes, generated from the same parameters.
+- **Model and machining data:** the SolidCraft parts in `mechanical/solidcraft/parts/clutch/` (assembly `clutch.sc`) hold the parametric model; `mechanical/clutch/MACHINING.md` has the dimension tables, fits and tooth-cutting notes, with the same numbers.
 - **Shimming:** the rotor's axial position comes from its bore depth (measured shaft length − 2.2 mm). The released gap (1.25) is set by where the hub sits, which the stepped spacer between the hub boss and the inner bearing sets: grind it shorter or shim it (MACHINING.md, step 6).
 
 ## 8. Firmware
@@ -293,7 +293,7 @@ The driver is an asymmetric half-bridge: a high-side P-FET and a low-side N-FET,
   - All 230 V parts (IEC inlet with fuse and switch, the LRS-150-36, L/N/PE wiring) sit in an **earthed folded-aluminium
     tray** with a lid over the terminals. It is a metal fire enclosure; the printed PETG housing never touches mains, and
     the floor below the tray has no vents.
-  - Only the 36 V pair leaves the tray (grommet in the lid). No low-voltage wire enters it; `check_feed_unit.py` checks
+  - Only the 36 V pair leaves the tray (grommet in the lid). No low-voltage wire enters it; `mechanical/solidcraft/tools/check.py` checks
     that nothing else intrudes into the tray and that the wiring zone (≥ 35 mm) is empty.
   - The tray goes in from below through the bottom door: its two floor tabs screw up into rebates in the plate's bottom
     edge (2× M4 + star washers), which fixes it and bonds it to PE; the plate in turn earths the motor, clutch, encoder

@@ -1,0 +1,577 @@
+{
+  "format": "solidcraft/53",
+  "name": "oldham_disc",
+  "units": "mm",
+  "params": [
+    {
+      "name": "oldham_d",
+      "expr": "24 mm",
+      "unit": "mm",
+      "comment": "disc diameter (outside the bracket; 20 to 30 mm)",
+      "model": false
+    },
+    {
+      "name": "oldham_t",
+      "expr": "9 mm",
+      "unit": "mm",
+      "comment": "disc thickness, more than stub_tongue_h + 1 mm (6 to 12 mm)",
+      "model": false
+    },
+    {
+      "name": "oldham_gap",
+      "expr": "0.5 mm",
+      "unit": "mm",
+      "comment": "axial gap each side of the disc (0.2 to 1 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_d",
+      "expr": "16 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER leadscrew OD; the tongue is screw_d - 2 long (12 to 20 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_end_z",
+      "expr": "-1 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER leadscrew end face relative to the bracket face (-5 to 2 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_end_slot_w",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER drive slot width across the leadscrew end; tongue is 0.2 narrower (3 to 6 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_end_slot_d",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER drive slot depth; tongue tip 0.5 off its bottom (3 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "stub_tongue_w",
+      "expr": "4.8 mm",
+      "unit": "mm",
+      "comment": "stub tongue width; the disc's cross slot is 0.2 wider (3 to 6 mm)",
+      "model": false
+    },
+    {
+      "name": "stub_tongue_h",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "stub tongue height; the cross slot is 0.5 deeper (2 to oldham_t - 2 mm)",
+      "model": false
+    },
+    {
+      "name": "z_oldham",
+      "expr": "max(screw_end_z, 0 mm) + oldham_gap",
+      "unit": "mm",
+      "comment": "world z of the disc's leadscrew-side face (derived)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "oldham_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "screw_end_slot_w - 0.2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "screw_d - 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "oldham_d + 2 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "stub_tongue_w + 0.2 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "DiscSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_oldham"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 12.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 24.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Disc",
+      "suppressed": false,
+      "body_names": [
+        "oldham_disc"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "oldham_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "TongueSketch",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_oldham"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -7.0,
+              -1.9
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              7.0,
+              -1.9
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              7.0,
+              1.9
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -7.0,
+              1.9
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 1,
+            "value": 3.8,
+            "param": "d5"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 0,
+            "value": 14.0,
+            "param": "d6"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Tongue",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "z_oldham - (screw_end_z - screw_end_slot_d + 0.5 mm)",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "join",
+      "targets": [
+        "oldham_disc"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "CrossSlotSketch",
+      "suppressed": false,
+      "param_names": [
+        "d8"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "z_oldham + oldham_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -2.5,
+              -13.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              2.5,
+              -13.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              2.5,
+              13.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -2.5,
+              13.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 1,
+            "value": 26.0,
+            "param": "d9"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 0,
+            "value": 5.0,
+            "param": "d10"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "CrossSlot",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "stub_tongue_h + 0.5 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "oldham_disc"
+      ]
+    }
+  ],
+  "next_id": 7,
+  "next_component_color_index": 0,
+  "materials": {
+    "oldham_disc": "Steel"
+  }
+}

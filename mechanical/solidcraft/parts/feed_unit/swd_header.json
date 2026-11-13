@@ -1,0 +1,111 @@
+{
+  "format": "solidcraft/53",
+  "name": "swd_header",
+  "units": "mm",
+  "params": [
+    {
+      "name": "w_end",
+      "expr": "316.5 mm",
+      "unit": "mm",
+      "comment": "world Z (W) of the end wall's outer face (W_END)",
+      "model": false
+    },
+    {
+      "name": "swd_x",
+      "expr": "-15 mm",
+      "unit": "mm",
+      "comment": "world X of the header's centre (SWD_PORT)",
+      "model": false
+    },
+    {
+      "name": "swd_y",
+      "expr": "10 mm",
+      "unit": "mm",
+      "comment": "world Y of the header's centre (SWD_PORT)",
+      "model": false
+    },
+    {
+      "name": "pitch",
+      "expr": "2.54 mm",
+      "unit": "mm",
+      "comment": "pin pitch (0.1 in)",
+      "model": false
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "HeaderBody",
+      "suppressed": false,
+      "body_names": [
+        "swd_header"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        "swd_x - 1.5 * pitch",
+        "swd_y - pitch / 2",
+        "w_end - 9.4"
+      ],
+      "length": "(swd_x + 1.5 * pitch) - (swd_x - 1.5 * pitch)",
+      "width": "(swd_y + pitch / 2) - (swd_y - pitch / 2)",
+      "height": "(w_end - 6.9) - (w_end - 9.4)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Pin",
+      "suppressed": false,
+      "param_names": [
+        "d4",
+        "d5",
+        "d6"
+      ],
+      "participants": [
+        "swd_header"
+      ],
+      "type": "box",
+      "corner": [
+        "swd_x - pitch - 0.32",
+        "swd_y - 0.32",
+        "w_end - 12.4"
+      ],
+      "length": "(swd_x - pitch + 0.32) - (swd_x - pitch - 0.32)",
+      "width": "(swd_y + 0.32) - (swd_y - 0.32)",
+      "height": "(w_end - 1) - (w_end - 12.4)",
+      "operation": "join"
+    },
+    {
+      "id": 3,
+      "name": "Pins",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "type": "pattern",
+      "features": [
+        2
+      ],
+      "pattern": {
+        "type": "rectangular",
+        "dir1": [
+          1.0,
+          0.0,
+          0.0
+        ],
+        "count1": "3",
+        "spacing1": "pitch"
+      }
+    }
+  ],
+  "next_id": 4,
+  "next_component_color_index": 0,
+  "materials": {
+    "swd_header": "ABS Plastic"
+  }
+}

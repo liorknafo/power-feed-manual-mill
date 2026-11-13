@@ -1,0 +1,828 @@
+{
+  "format": "solidcraft/53",
+  "name": "mill_reference",
+  "units": "mm",
+  "params": [
+    {
+      "name": "screw_d",
+      "expr": "16 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER leadscrew OD (12 to 20 mm); the bracket bore is 4 mm larger",
+      "model": false
+    },
+    {
+      "name": "screw_end_z",
+      "expr": "-1 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER leadscrew end face relative to the bracket face (-5 to 2 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_end_slot_w",
+      "expr": "4 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER drive slot width across the leadscrew end (3 to 6 mm)",
+      "model": false
+    },
+    {
+      "name": "screw_end_slot_d",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER drive slot depth (3 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "bracket_w",
+      "expr": "70 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER left leadscrew bracket width (50 to 120 mm)",
+      "model": false
+    },
+    {
+      "name": "bracket_h",
+      "expr": "60 mm",
+      "unit": "mm",
+      "comment": "PLACEHOLDER bracket height, centred 10 mm below the leadscrew axis (45 to 80 mm)",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "bracket_h/2 + 10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d3",
+      "expr": "bracket_h/2 - 10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d4",
+      "expr": "bracket_w/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "bracket_w/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "10 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d9",
+      "expr": "80 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d10",
+      "expr": "90 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "90 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "screw_d + 4 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "screw_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d19",
+      "expr": "screw_end_slot_w",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d20",
+      "expr": "screw_d + 1 mm",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "BracketSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-40 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -35.0,
+              -40.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              35.0,
+              -40.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              35.0,
+              20.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -35.0,
+              20.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 40.0,
+            "param": "d2"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 20.0,
+            "param": "d3"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 35.0,
+            "param": "d4"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 35.0,
+            "param": "d5"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Bracket",
+      "suppressed": false,
+      "body_names": [
+        "table_end"
+      ],
+      "param_names": [
+        "d6"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "40 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "TableSketch",
+      "suppressed": false,
+      "param_names": [
+        "d7"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-120 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -90.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              90.0,
+              10.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              90.0,
+              80.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -90.0,
+              80.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 10.0,
+            "param": "d8"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 80.0,
+            "param": "d9"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 90.0,
+            "param": "d10"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 90.0,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "TableEnd",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "120 mm",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "table_end"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "BracketBoreSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 10.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 20.0,
+            "param": "d13"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "BracketBore",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "40 mm",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "table_end"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "LeadscrewSketch",
+      "suppressed": false,
+      "param_names": [
+        "d15"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "-120 mm"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 8.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 16.0,
+            "param": "d16"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Leadscrew",
+      "suppressed": false,
+      "body_names": [
+        "leadscrew"
+      ],
+      "param_names": [
+        "d17"
+      ],
+      "type": "extrude",
+      "sketch": 7,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "120 mm + screw_end_z",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 9,
+      "name": "DriveSlotSketch",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "screw_end_z"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -8.5,
+              -2.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              8.5,
+              -2.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              8.5,
+              2.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -8.5,
+              2.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 1,
+            "b": 3,
+            "construction": true
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 2,
+            "b": 4,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "midpoint",
+            "p": 5,
+            "l": 4
+          },
+          {
+            "id": "k6",
+            "type": "coincident",
+            "p": 0,
+            "q": 5
+          },
+          {
+            "id": "k7",
+            "type": "length",
+            "l": 1,
+            "value": 4.0,
+            "param": "d19"
+          },
+          {
+            "id": "k8",
+            "type": "length",
+            "l": 0,
+            "value": 17.0,
+            "param": "d20"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 6,
+          "p": 5
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "DriveSlot",
+      "suppressed": false,
+      "param_names": [
+        "d21"
+      ],
+      "type": "extrude",
+      "sketch": 9,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "screw_end_slot_d",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "leadscrew"
+      ]
+    }
+  ],
+  "next_id": 11,
+  "next_component_color_index": 0,
+  "materials": {
+    "leadscrew": "Steel",
+    "table_end": "Cast Iron"
+  }
+}

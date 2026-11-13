@@ -1,0 +1,632 @@
+{
+  "format": "solidcraft/53",
+  "name": "encoder_disc",
+  "units": "mm",
+  "params": [
+    {
+      "name": "chamber",
+      "expr": "35 mm",
+      "unit": "mm",
+      "comment": "bracket face to the plate's chamber face (Z_PLATE_IN)",
+      "model": false
+    },
+    {
+      "name": "plate_t",
+      "expr": "28 mm",
+      "unit": "mm",
+      "comment": "plate thickness",
+      "model": false
+    },
+    {
+      "name": "enc_post_len",
+      "expr": "30 mm",
+      "unit": "mm",
+      "comment": "hex standoff length, plate outer face to the disc (25 to 40 mm)",
+      "model": false
+    },
+    {
+      "name": "enc_disc_d",
+      "expr": "50 mm",
+      "unit": "mm",
+      "comment": "adapter disc diameter (more than 2 x enc_post_r + 6 mm)",
+      "model": false
+    },
+    {
+      "name": "enc_disc_t",
+      "expr": "5 mm",
+      "unit": "mm",
+      "comment": "adapter disc thickness (3 to 8 mm)",
+      "model": false
+    },
+    {
+      "name": "enc_disc_flat",
+      "expr": "20 mm",
+      "unit": "mm",
+      "comment": "axis to the flat toward the clutch module (more than enc_bolt_r + 3 mm, less than enc_disc_d/2)",
+      "model": false
+    },
+    {
+      "name": "enc_post_r",
+      "expr": "23 mm",
+      "unit": "mm",
+      "comment": "radius of the 3 post holes, outside the bearing bore (18 to enc_disc_d/2 - 3 mm)",
+      "model": false
+    },
+    {
+      "name": "enc_bolt_r",
+      "expr": "15 mm",
+      "unit": "mm",
+      "comment": "LPD3806 face screw radius (3x M3 on r 15)",
+      "model": false
+    },
+    {
+      "name": "enc_pilot_d",
+      "expr": "22 mm",
+      "unit": "mm",
+      "comment": "centre bore: encoder pilot + coupling access (15 to 26 mm)",
+      "model": false
+    },
+    {
+      "name": "enc_hole_d",
+      "expr": "3.4 mm",
+      "unit": "mm",
+      "comment": "M3 clearance holes",
+      "model": false
+    },
+    {
+      "name": "d2",
+      "expr": "enc_disc_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d5",
+      "expr": "enc_disc_flat",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d6",
+      "expr": "enc_disc_flat + 20 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d7",
+      "expr": "enc_disc_d/2 + 5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d8",
+      "expr": "enc_disc_d/2 + 5 mm",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d11",
+      "expr": "enc_pilot_d",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d14",
+      "expr": "enc_post_r*cos(30 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d15",
+      "expr": "enc_post_r/2",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d16",
+      "expr": "enc_bolt_r*cos(30 deg)",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d17",
+      "expr": "enc_bolt_r/2",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "DiscSketch",
+      "suppressed": false,
+      "param_names": [
+        "d1"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t + enc_post_len"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 25.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 50.0,
+            "param": "d2"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Disc",
+      "suppressed": false,
+      "body_names": [
+        "encoder_disc"
+      ],
+      "param_names": [
+        "d3"
+      ],
+      "type": "extrude",
+      "sketch": 1,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "enc_disc_t",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "new_body"
+    },
+    {
+      "id": 3,
+      "name": "FlatSketch",
+      "suppressed": false,
+      "param_names": [
+        "d4"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t + enc_post_len + enc_disc_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              -30.0,
+              -40.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              30.0,
+              -40.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              30.0,
+              -20.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -30.0,
+              -20.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 1,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "horizontal",
+            "l": 0
+          },
+          {
+            "id": "k2",
+            "type": "horizontal",
+            "l": 2
+          },
+          {
+            "id": "k3",
+            "type": "vertical",
+            "l": 1
+          },
+          {
+            "id": "k4",
+            "type": "vertical",
+            "l": 3
+          },
+          {
+            "id": "k5",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 2,
+            "value": 20.0,
+            "param": "d5"
+          },
+          {
+            "id": "k6",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 0,
+            "value": 40.0,
+            "param": "d6"
+          },
+          {
+            "id": "k7",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 1,
+            "value": 30.0,
+            "param": "d7"
+          },
+          {
+            "id": "k8",
+            "type": "point_line_distance",
+            "p": 0,
+            "l": 3,
+            "value": 30.0,
+            "param": "d8"
+          }
+        ],
+        "counters": {
+          "k": 8,
+          "l": 4,
+          "p": 4
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Flat",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "extrude",
+      "sketch": 3,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "enc_disc_t",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "encoder_disc"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "BoreSketch",
+      "suppressed": false,
+      "param_names": [
+        "d10"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t + enc_post_len + enc_disc_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 11.0,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "diameter",
+            "c": 0,
+            "value": 22.0,
+            "param": "d11"
+          }
+        ],
+        "counters": {
+          "c": 1,
+          "k": 2
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "PilotBore",
+      "suppressed": false,
+      "param_names": [
+        "d12"
+      ],
+      "type": "extrude",
+      "sketch": 5,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "enc_disc_t",
+        "convention": "total_distance",
+        "direction": "negative"
+      },
+      "operation": "cut",
+      "targets": [
+        "encoder_disc"
+      ]
+    },
+    {
+      "id": 7,
+      "name": "HolePoints",
+      "suppressed": false,
+      "param_names": [
+        "d13"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "chamber + plate_t + enc_post_len + enc_disc_t"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              19.91858428704209,
+              -11.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              12.99038105676658,
+              7.5
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "distance_x",
+            "p": 0,
+            "q": 1,
+            "value": 19.91858428704209,
+            "param": "d14"
+          },
+          {
+            "id": "k2",
+            "type": "distance_y",
+            "p": 0,
+            "q": 1,
+            "value": 11.5,
+            "param": "d15"
+          },
+          {
+            "id": "k3",
+            "type": "distance_x",
+            "p": 0,
+            "q": 2,
+            "value": 12.99038105676658,
+            "param": "d16"
+          },
+          {
+            "id": "k4",
+            "type": "distance_y",
+            "p": 0,
+            "q": 2,
+            "value": 7.5,
+            "param": "d17"
+          }
+        ],
+        "counters": {
+          "k": 4,
+          "p": 2
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "PostAndEncoderHoles",
+      "suppressed": false,
+      "param_names": [
+        "d18"
+      ],
+      "type": "hole",
+      "position": [
+        19.91858428704209,
+        -11.5,
+        98.0
+      ],
+      "direction": [
+        -0.0,
+        -0.0,
+        -1.0
+      ],
+      "diameter": "enc_hole_d",
+      "hole": {
+        "type": "simple"
+      },
+      "points": {
+        "sketch": 7,
+        "ids": [
+          "p1",
+          "p2"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "name": "HolePattern",
+      "suppressed": false,
+      "param_names": [
+        "d19",
+        "d20"
+      ],
+      "type": "pattern",
+      "features": [
+        8
+      ],
+      "pattern": {
+        "type": "circular",
+        "origin": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "axis": [
+          0.0,
+          0.0,
+          1.0
+        ],
+        "count": "3",
+        "angle": "360 deg"
+      }
+    }
+  ],
+  "next_id": 10,
+  "next_component_color_index": 0,
+  "materials": {
+    "encoder_disc": "Aluminum"
+  }
+}

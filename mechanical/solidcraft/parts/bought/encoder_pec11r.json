@@ -1,0 +1,533 @@
+{
+  "format": "solidcraft/53",
+  "name": "encoder_pec11r",
+  "units": "mm",
+  "params": [
+    {
+      "name": "panel_t",
+      "expr": "2.75 mm",
+      "unit": "mm",
+      "comment": "control strip thickness (STRIP_T); 0.5 to 5 mm (bushing 7)",
+      "model": false
+    },
+    {
+      "name": "d10",
+      "expr": "11",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d12",
+      "expr": "12",
+      "unit": "mm",
+      "model": true
+    },
+    {
+      "name": "d13",
+      "expr": "7.2",
+      "unit": "mm",
+      "model": true
+    }
+  ],
+  "features": [
+    {
+      "id": 1,
+      "name": "Body",
+      "suppressed": false,
+      "body_names": [
+        "encoder_pec11r"
+      ],
+      "param_names": [
+        "d1",
+        "d2",
+        "d3"
+      ],
+      "type": "box",
+      "corner": [
+        -6.25,
+        -6.7,
+        "-panel_t - 6.5"
+      ],
+      "length": "12.5",
+      "width": "13.4",
+      "height": "(-panel_t) - (-panel_t - 6.5)",
+      "operation": "new_body"
+    },
+    {
+      "id": 2,
+      "name": "Pins",
+      "suppressed": false,
+      "param_names": [
+        "d4",
+        "d5",
+        "d6"
+      ],
+      "participants": [
+        "encoder_pec11r"
+      ],
+      "type": "box",
+      "corner": [
+        -5.0,
+        -0.5,
+        "-panel_t - 10.2"
+      ],
+      "length": "10",
+      "width": "1",
+      "height": "(-panel_t - 6.5) - (-panel_t - 10.2)",
+      "operation": "join"
+    },
+    {
+      "id": 3,
+      "name": "Bushing",
+      "suppressed": false,
+      "param_names": [
+        "d7",
+        "d8"
+      ],
+      "participants": [
+        "encoder_pec11r"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "-panel_t"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "3.5",
+      "height": "(7 - panel_t) - (-panel_t)",
+      "operation": "join"
+    },
+    {
+      "id": 4,
+      "name": "NutSketch",
+      "suppressed": false,
+      "param_names": [
+        "d9"
+      ],
+      "type": "sketch",
+      "plane": {
+        "type": "offset",
+        "base": {
+          "type": "origin",
+          "name": "XY"
+        },
+        "distance": "0.5"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "p1",
+            "pos": [
+              3.175426480542942,
+              5.499999999999999
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p2",
+            "pos": [
+              -3.17542648054294,
+              5.5
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p3",
+            "pos": [
+              -6.350852961085883,
+              7.777551750649317e-16
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p4",
+            "pos": [
+              -3.175426480542944,
+              -5.499999999999997
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p5",
+            "pos": [
+              3.175426480542937,
+              -5.500000000000002
+            ],
+            "fixed": false
+          },
+          {
+            "id": "p6",
+            "pos": [
+              6.350852961085883,
+              -1.5555103501298633e-15
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "l1",
+            "type": "line",
+            "a": 1,
+            "b": 2,
+            "construction": false
+          },
+          {
+            "id": "l2",
+            "type": "line",
+            "a": 2,
+            "b": 3,
+            "construction": false
+          },
+          {
+            "id": "l3",
+            "type": "line",
+            "a": 3,
+            "b": 4,
+            "construction": false
+          },
+          {
+            "id": "l4",
+            "type": "line",
+            "a": 4,
+            "b": 5,
+            "construction": false
+          },
+          {
+            "id": "l5",
+            "type": "line",
+            "a": 5,
+            "b": 6,
+            "construction": false
+          },
+          {
+            "id": "l6",
+            "type": "line",
+            "a": 6,
+            "b": 1,
+            "construction": false
+          },
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 7,
+            "r": 5.5,
+            "construction": true
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 8,
+            "r": 6.350852961085883,
+            "construction": true
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "equal",
+            "a": 0,
+            "b": 1
+          },
+          {
+            "id": "k2",
+            "type": "equal",
+            "a": 1,
+            "b": 2
+          },
+          {
+            "id": "k3",
+            "type": "equal",
+            "a": 2,
+            "b": 3
+          },
+          {
+            "id": "k4",
+            "type": "equal",
+            "a": 3,
+            "b": 4
+          },
+          {
+            "id": "k5",
+            "type": "equal",
+            "a": 4,
+            "b": 5
+          },
+          {
+            "id": "k6",
+            "type": "concentric",
+            "a": 6,
+            "b": 7
+          },
+          {
+            "id": "k7",
+            "type": "point_on_curve",
+            "p": 1,
+            "c": 7
+          },
+          {
+            "id": "k8",
+            "type": "point_on_curve",
+            "p": 2,
+            "c": 7
+          },
+          {
+            "id": "k9",
+            "type": "point_on_curve",
+            "p": 3,
+            "c": 7
+          },
+          {
+            "id": "k10",
+            "type": "point_on_curve",
+            "p": 4,
+            "c": 7
+          },
+          {
+            "id": "k11",
+            "type": "point_on_curve",
+            "p": 5,
+            "c": 7
+          },
+          {
+            "id": "k12",
+            "type": "point_on_curve",
+            "p": 6,
+            "c": 7
+          },
+          {
+            "id": "k13",
+            "type": "tangent",
+            "a": 0,
+            "b": 6
+          },
+          {
+            "id": "k14",
+            "type": "coincident",
+            "p": 0,
+            "q": 7
+          },
+          {
+            "id": "k15",
+            "type": "coincident",
+            "p": 0,
+            "q": 8
+          },
+          {
+            "id": "k16",
+            "type": "diameter",
+            "c": 6,
+            "value": 11.0,
+            "param": "d10"
+          },
+          {
+            "id": "k17",
+            "type": "horizontal",
+            "l": 0
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 17,
+          "l": 6,
+          "p": 6
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Nut",
+      "suppressed": false,
+      "param_names": [
+        "d11"
+      ],
+      "type": "extrude",
+      "sketch": 4,
+      "profiles": {
+        "type": "all"
+      },
+      "extent": {
+        "distance": "2",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "encoder_pec11r"
+      ]
+    },
+    {
+      "id": 6,
+      "name": "WasherSketch",
+      "suppressed": false,
+      "type": "sketch",
+      "plane": {
+        "type": "origin",
+        "name": "XY"
+      },
+      "sketch": {
+        "points": [
+          {
+            "id": "origin",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": true
+          },
+          {
+            "id": "c1.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          },
+          {
+            "id": "c2.center",
+            "pos": [
+              0.0,
+              0.0
+            ],
+            "fixed": false
+          }
+        ],
+        "curves": [
+          {
+            "id": "c1",
+            "type": "circle",
+            "c": 1,
+            "r": 6.0,
+            "construction": false
+          },
+          {
+            "id": "c2",
+            "type": "circle",
+            "c": 2,
+            "r": 3.6,
+            "construction": false
+          }
+        ],
+        "constraints": [
+          {
+            "id": "k1",
+            "type": "coincident",
+            "p": 0,
+            "q": 1
+          },
+          {
+            "id": "k2",
+            "type": "coincident",
+            "p": 0,
+            "q": 2
+          },
+          {
+            "id": "k3",
+            "type": "diameter",
+            "c": 0,
+            "value": 12.0,
+            "param": "d12"
+          },
+          {
+            "id": "k4",
+            "type": "diameter",
+            "c": 1,
+            "value": 7.2,
+            "param": "d13"
+          }
+        ],
+        "counters": {
+          "c": 2,
+          "k": 4
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "Washer",
+      "suppressed": false,
+      "param_names": [
+        "d14"
+      ],
+      "type": "extrude",
+      "sketch": 6,
+      "profiles": {
+        "type": "curves",
+        "loops": [
+          [
+            "c1"
+          ]
+        ]
+      },
+      "extent": {
+        "distance": "0.5",
+        "convention": "total_distance",
+        "direction": "positive"
+      },
+      "operation": "join",
+      "targets": [
+        "encoder_pec11r"
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Shaft",
+      "suppressed": false,
+      "param_names": [
+        "d15",
+        "d16"
+      ],
+      "participants": [
+        "encoder_pec11r"
+      ],
+      "type": "cylinder",
+      "base": [
+        0.0,
+        0.0,
+        "7 - panel_t"
+      ],
+      "axis": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "radius": "3",
+      "height": "(20 - panel_t) - (7 - panel_t)",
+      "operation": "join"
+    }
+  ],
+  "next_id": 9,
+  "next_component_color_index": 0,
+  "materials": {
+    "encoder_pec11r": "ABS Plastic"
+  }
+}
