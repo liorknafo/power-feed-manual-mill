@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Power Feed — table traverse">
+<title>Power Feed — table traverse</title>
+<rect width="1024" height="1024" fill="#122536"/>
+
+<!-- T-slotted milling table above its saddle -->
+<path fill="#F2F6F5" d="M216 292h592v164H216z"/>
+<path fill="#122536" d="M320 292h48v72h-48zM488 292h48v72h-48zM656 292h48v72h-48z"/>
+<!-- Opposed arrows describe the powered X travel -->
+<path fill="#39D6B0" d="M260 484 156 588l104 104v-70h504v70l104-104-104-104v70H260z"/>
+<!-- Compact saddle / dovetail base -->
+<path fill="#F2F6F5" d="M392 664h240l64 92H328z"/>
+
+</svg>
